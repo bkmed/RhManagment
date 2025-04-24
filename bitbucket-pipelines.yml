@@ -1,0 +1,209 @@
+image: node:16
+
+definitions:
+  caches:
+    npm: ~/.npm
+    pods: ~/Library/Caches/CocoaPods
+    gradle: ~/.gradle
+
+  steps:
+    - step: &install-dependencies
+        name: Install dependencies
+        caches:
+          - npm
+        script:
+          - npm ci
+        artifacts:
+          - node_modules/**
+
+    - step: &lint-and-test
+        name: Lint and test
+        caches:
+          - npm
+        script:
+          - npm run lint
+          - npm test
+        artifacts:
+          - coverage/**
+
+    - step: &build-web
+        name: Build web app
+        caches:
+          - npm
+        script:
+          - npm run build
+        artifacts:
+          - dist/**
+
+    - step: &deploy-web-staging
+        name: Deploy web to staging
+        deployment: staging
+        script:
+          - pipe: atlassian/aws-s3-deploy:1.1.0
+            variables:
+              AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+              AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+              AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+              S3_BUCKET: $S3_BUCKET_STAGING
+              LOCAL_PATH: 'dist'
+              ACL: 'public-read'
+              CACHE_CONTROL: 'max-age=3600'
+          - pipe: atlassian/aws-cloudfront-invalidate:0.6.0
+            variables:
+              AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+              AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+              AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+              DISTRIBUTION_ID: $CLOUDFRONT_DISTRIBUTION_ID_STAGING
+              PATHS: '/*'
+
+    - step: &deploy-web-production
+        name: Deploy web to production
+        deployment: production
+        trigger: manual
+        script:
+          - pipe: atlassian/aws-s3-deploy:1.1.0
+            variables:
+              AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+              AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+              AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+              S3_BUCKET: $S3_BUCKET_PRODUCTION
+              LOCAL_PATH: 'dist'
+              ACL: 'public-read'
+              CACHE_CONTROL: 'max-age=3600'
+          - pipe: atlassian/aws-cloudfront-invalidate:0.6.0
+            variables:
+              AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+              AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+              AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+              DISTRIBUTION_ID: $CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION
+              PATHS: '/*'
+
+    - step: &build-android
+        name: Build Android app
+        image: reactnativecommunity/react-native-android:latest
+        caches:
+          - npm
+          - gradle
+        script:
+          - cd android
+          - ./gradlew assembleRelease
+        artifacts:
+          - android/app/build/outputs/apk/release/app-release.apk
+
+    - step: &deploy-android-staging
+        name: Deploy Android to Firebase App Distribution (Staging)
+        deployment: staging
+        script:
+          - npm install -g firebase-tools
+          - firebase appdistribution:distribute android/app/build/outputs/apk/release/app-release.apk --app $FIREBASE_APP_ID_ANDROID --groups "testers" --token $FIREBASE_TOKEN --release-notes "Staging build from Bitbucket Pipelines"
+
+    - step: &deploy-android-production
+        name: Deploy Android to Google Play
+        deployment: production
+        trigger: manual
+        script:
+          - pipe: atlassian/google-play-deploy:0.3.0
+            variables:
+              GPLAY_SERVICE_ACCOUNT_KEY_FILE: $GPLAY_SERVICE_ACCOUNT_KEY_FILE
+              PACKAGE_NAME: 'com.yourcompany.hrmanagement'
+              APK_FILE: 'android/app/build/outputs/apk/release/app-release.apk'
+              TRACK: 'production'
+
+    - step: &build-ios
+        name: Build iOS app
+        image: reactnativecommunity/react-native-ios:latest
+        caches:
+          - npm
+          - pods
+        script:
+          - cd ios
+          - pod install
+          - xcodebuild -workspace HRManagement.xcworkspace -scheme HRManagement -configuration Release -archivePath HRManagement.xcarchive archive
+          - xcodebuild -exportArchive -archivePath HRManagement.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build
+        artifacts:
+          - ios/build/HRManagement.ipa
+
+    - step: &deploy-ios-testflight
+        name: Deploy iOS to TestFlight
+        deployment: staging
+        script:
+          - pipe: atlassian/bitbucket-upload-file:0.3.2
+            variables:
+              BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+              BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+              FILENAME: 'ios/build/HRManagement.ipa'
+          - pipe: atlassian/apple-app-store-deploy:0.4.0
+            variables:
+              IPA_PATH: 'ios/build/HRManagement.ipa'
+              APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
+              APP_STORE_CONNECT_PASSWORD: $APP_STORE_CONNECT_PASSWORD
+              APP_ID: $IOS_APP_ID
+              TEAM_ID: $IOS_TEAM_ID
+              DISTRIBUTE_TO_TESTFLIGHT: 'true'
+
+    - step: &deploy-ios-appstore
+        name: Deploy iOS to App Store
+        deployment: production
+        trigger: manual
+        script:
+          - pipe: atlassian/apple-app-store-deploy:0.4.0
+            variables:
+              IPA_PATH: 'ios/build/HRManagement.ipa'
+              APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
+              APP_STORE_CONNECT_PASSWORD: $APP_STORE_CONNECT_PASSWORD
+              APP_ID: $IOS_APP_ID
+              TEAM_ID: $IOS_TEAM_ID
+              DISTRIBUTE_TO_APP_STORE: 'true'
+              SUBMIT_FOR_REVIEW: 'true'
+
+pipelines:
+  default:
+    - step: *install-dependencies
+    - step: *lint-and-test
+
+  branches:
+    develop:
+      - step: *install-dependencies
+      - step: *lint-and-test
+      - step: *build-web
+      - step: *deploy-web-staging
+      - parallel:
+        - step: *build-android
+        - step: *build-ios
+      - parallel:
+        - step: *deploy-android-staging
+        - step: *deploy-ios-testflight
+
+    master:
+      - step: *install-dependencies
+      - step: *lint-and-test
+      - step: *build-web
+      - step: *deploy-web-production
+      - parallel:
+        - step: *build-android
+        - step: *build-ios
+      - parallel:
+        - step: *deploy-android-production
+        - step: *deploy-ios-appstore
+
+  pull-requests:
+    '**':
+      - step: *install-dependencies
+      - step: *lint-and-test
+      - step: *build-web
+
+  custom:
+    deploy-web-only:
+      - step: *install-dependencies
+      - step: *build-web
+      - step: *deploy-web-staging
+      
+    deploy-android-only:
+      - step: *install-dependencies
+      - step: *build-android
+      - step: *deploy-android-staging
+      
+    deploy-ios-only:
+      - step: *install-dependencies
+      - step: *build-ios
+      - step: *deploy-ios-testflight

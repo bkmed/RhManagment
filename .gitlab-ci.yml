@@ -1,0 +1,206 @@
+image: node:16
+
+stages:
+  - install
+  - lint_test
+  - build
+  - deploy_staging
+  - deploy_production
+
+variables:
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+  PODS_CACHE: "$CI_PROJECT_DIR/.pods"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm/
+    - .gradle/
+    - .pods/
+    - node_modules/
+
+# Install dependencies
+install_dependencies:
+  stage: install
+  script:
+    - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
+
+# Lint and test
+lint:
+  stage: lint_test
+  script:
+    - npm run lint
+  dependencies:
+    - install_dependencies
+
+unit_tests:
+  stage: lint_test
+  script:
+    - npm test
+  dependencies:
+    - install_dependencies
+  artifacts:
+    paths:
+      - coverage/
+    expire_in: 1 day
+
+cypress_tests:
+  stage: lint_test
+  image: cypress/browsers:node16-chrome100
+  script:
+    - npm run cypress:run
+  dependencies:
+    - install_dependencies
+  artifacts:
+    paths:
+      - cypress/screenshots/
+      - cypress/videos/
+    expire_in: 1 day
+    when: always
+
+# Build
+build_web:
+  stage: build
+  script:
+    - npm run build
+  dependencies:
+    - install_dependencies
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 day
+
+build_android:
+  stage: build
+  image: reactnativecommunity/react-native-android:latest
+  script:
+    - cd android
+    - ./gradlew assembleRelease
+  dependencies:
+    - install_dependencies
+  artifacts:
+    paths:
+      - android/app/build/outputs/apk/release/app-release.apk
+    expire_in: 1 day
+  only:
+    - develop
+    - master
+
+build_ios:
+  stage: build
+  image: reactnativecommunity/react-native-ios:latest
+  script:
+    - cd ios
+    - pod install
+    - xcodebuild -workspace HRManagement.xcworkspace -scheme HRManagement -configuration Release -archivePath HRManagement.xcarchive archive
+    - xcodebuild -exportArchive -archivePath HRManagement.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build
+  dependencies:
+    - install_dependencies
+  artifacts:
+    paths:
+      - ios/build/HRManagement.ipa
+    expire_in: 1 day
+  only:
+    - develop
+    - master
+  tags:
+    - ios
+    - macos
+
+# Deploy to staging
+deploy_web_staging:
+  stage: deploy_staging
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+    - aws s3 sync dist/ s3://$S3_BUCKET_STAGING/ --delete
+    - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID_STAGING --paths "/*"
+  dependencies:
+    - build_web
+  environment:
+    name: staging
+    url: https://staging.hrmanagement.example.com
+  only:
+    - develop
+
+deploy_android_staging:
+  stage: deploy_staging
+  image: node:16
+  script:
+    - npm install -g firebase-tools
+    - firebase appdistribution:distribute android/app/build/outputs/apk/release/app-release.apk --app $FIREBASE_APP_ID_ANDROID --groups "testers" --token $FIREBASE_TOKEN --release-notes "Staging build from GitLab CI/CD"
+  dependencies:
+    - build_android
+  environment:
+    name: staging
+  only:
+    - develop
+
+deploy_ios_staging:
+  stage: deploy_staging
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+    - pip install fastlane
+    - cd ios
+    - fastlane pilot upload --ipa build/HRManagement.ipa --skip_waiting_for_build_processing true
+  dependencies:
+    - build_ios
+  environment:
+    name: staging
+  only:
+    - develop
+  tags:
+    - ios
+    - macos
+
+# Deploy to production
+deploy_web_production:
+  stage: deploy_production
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+    - aws s3 sync dist/ s3://$S3_BUCKET_PRODUCTION/ --delete
+    - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID_PRODUCTION --paths "/*"
+  dependencies:
+    - build_web
+  environment:
+    name: production
+    url: https://hrmanagement.example.com
+  only:
+    - master
+  when: manual
+
+deploy_android_production:
+  stage: deploy_production
+  image: node:16
+  script:
+    - npm install -g google-play-cli
+    - google-play upload --package-name com.yourcompany.hrmanagement --apk android/app/build/outputs/apk/release/app-release.apk --track production
+  dependencies:
+    - build_android
+  environment:
+    name: production
+  only:
+    - master
+  when: manual
+
+deploy_ios_production:
+  stage: deploy_production
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+    - pip install fastlane
+    - cd ios
+    - fastlane deliver --ipa build/HRManagement.ipa --submit_for_review true
+  dependencies:
+    - build_ios
+  environment:
+    name: production
+  only:
+    - master
+  when: manual
+  tags:
+    - ios
+    - macos
