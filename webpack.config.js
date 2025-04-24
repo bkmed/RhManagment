@@ -1,13 +1,13 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
-const { SentryWebpackPlugin } = require('@sentry/webpack-plugin')
+const {sentryWebpackPlugin} = require('@sentry/webpack-plugin')
 
 module.exports = {
-  entry: './packages/app/src/index.web.js',
+  entry: './index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[contenthash].js',

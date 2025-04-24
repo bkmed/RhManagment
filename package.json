@@ -45,6 +45,7 @@
     "i18next": "23.7.6",
     "lucide-react-native": "0.302.0",
     "metro-react-native-babel-preset": "0.77.0",
+    "react-native-reanimated": "3.17.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-ga4": "2.1.0",
