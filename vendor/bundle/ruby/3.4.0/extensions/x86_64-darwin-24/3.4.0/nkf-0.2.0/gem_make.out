@@ -1,0 +1,18 @@
+current directory: /Users/mohamedbenkhedher/Documents/GitHub/hr-management/HrSystem/vendor/bundle/ruby/3.4.0/gems/nkf-0.2.0/ext/nkf
+/Users/mohamedbenkhedher/.rvm/rubies/ruby-3.4.2/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/mohamedbenkhedher/Documents/GitHub/hr-management/HrSystem/vendor/bundle/ruby/3.4.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250424-36833-ngx8f6 sitelibdir\=./.gem.20250424-36833-ngx8f6 clean
+
+current directory: /Users/mohamedbenkhedher/Documents/GitHub/hr-management/HrSystem/vendor/bundle/ruby/3.4.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250424-36833-ngx8f6 sitelibdir\=./.gem.20250424-36833-ngx8f6
+compiling nkf.c
+linking shared-object nkf.bundle
+
+current directory: /Users/mohamedbenkhedher/Documents/GitHub/hr-management/HrSystem/vendor/bundle/ruby/3.4.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250424-36833-ngx8f6 sitelibdir\=./.gem.20250424-36833-ngx8f6 install
+/usr/local/opt/coreutils/bin/ginstall -c -m 0755 nkf.bundle ./.gem.20250424-36833-ngx8f6
+
+current directory: /Users/mohamedbenkhedher/Documents/GitHub/hr-management/HrSystem/vendor/bundle/ruby/3.4.0/gems/nkf-0.2.0/ext/nkf
+make DESTDIR\= sitearchdir\=./.gem.20250424-36833-ngx8f6 sitelibdir\=./.gem.20250424-36833-ngx8f6 clean
