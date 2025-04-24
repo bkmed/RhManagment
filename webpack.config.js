@@ -1,17 +1,17 @@
-const path = require("path")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const CopyWebpackPlugin = require("copy-webpack-plugin")
-const { CleanWebpackPlugin } = require("clean-webpack-plugin")
-const TerserPlugin = require("terser-webpack-plugin")
-const CompressionPlugin = require("compression-webpack-plugin")
-const SentryWebpackPlugin = require("@sentry/webpack-plugin")
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
+const { SentryWebpackPlugin } = require('@sentry/webpack-plugin')
 
 module.exports = {
-  entry: "./packages/app/src/index.web.js",
+  entry: './packages/app/src/index.web.js',
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "[name].[contenthash].js",
-    publicPath: "/",
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[contenthash].js',
+    publicPath: '/',
   },
   module: {
     rules: [
@@ -19,10 +19,15 @@ module.exports = {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ["@babel/preset-env", "@babel/preset-react", "@babel/preset-typescript"],
-            plugins: ["react-native-web"],
+            presets: [
+              'module:metro-react-native-babel-preset',
+              '@babel/preset-env',
+              '@babel/preset-react',
+              '@babel/preset-typescript',
+            ],
+            plugins: ['react-native-web'],
           },
         },
       },
@@ -30,9 +35,9 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)$/i,
         use: [
           {
-            loader: "file-loader",
+            loader: 'file-loader',
             options: {
-              name: "images/[name].[contenthash].[ext]",
+              name: 'images/[name].[contenthash].[ext]',
             },
           },
         ],
@@ -41,9 +46,9 @@ module.exports = {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         use: [
           {
-            loader: "file-loader",
+            loader: 'file-loader',
             options: {
-              name: "fonts/[name].[contenthash].[ext]",
+              name: 'fonts/[name].[contenthash].[ext]',
             },
           },
         ],
@@ -51,15 +56,15 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".web.js", ".web.jsx", ".web.ts", ".web.tsx", ".js", ".jsx", ".ts", ".tsx"],
+    extensions: ['.web.js', '.web.jsx', '.web.ts', '.web.tsx', '.js', '.jsx', '.ts', '.tsx'],
     alias: {
-      "react-native$": "react-native-web",
+      'react-native$': 'react-native-web',
     },
   },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: "./packages/app/public/index.html",
+      template: './packages/app/public/index.html',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -76,29 +81,29 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: "packages/app/public",
-          to: "",
+          from: 'packages/app/public',
+          to: '',
           globOptions: {
-            ignore: ["**/index.html"],
+            ignore: ['**/index.html'],
           },
         },
       ],
     }),
     new CompressionPlugin({
-      algorithm: "gzip",
+      algorithm: 'gzip',
       test: /\.(js|css|html|svg)$/,
       threshold: 10240,
       minRatio: 0.8,
     }),
     // Only add Sentry plugin in production
-    ...(process.env.NODE_ENV === "production" && process.env.SENTRY_AUTH_TOKEN
+    ...(process.env.NODE_ENV === 'production' && process.env.SENTRY_AUTH_TOKEN
       ? [
-          new SentryWebpackPlugin({
+          sentryWebpackPlugin({
             org: process.env.SENTRY_ORG,
             project: process.env.SENTRY_PROJECT,
             authToken: process.env.SENTRY_AUTH_TOKEN,
-            include: "./dist",
-            ignore: ["node_modules", "webpack.config.js"],
+            include: './dist',
+            ignore: ['node_modules', 'webpack.config.js'],
           }),
         ]
       : []),
@@ -129,11 +134,11 @@ module.exports = {
       }),
     ],
     splitChunks: {
-      chunks: "all",
+      chunks: 'all',
       name: false,
     },
     runtimeChunk: {
-      name: (entrypoint) => `runtime-${entrypoint.name}`,
+      name: entrypoint => `runtime-${entrypoint.name}`,
     },
   },
   devServer: {
@@ -142,14 +147,14 @@ module.exports = {
     compress: true,
     hot: true,
     headers: {
-      "X-Content-Type-Options": "nosniff",
-      "X-Frame-Options": "DENY",
-      "X-XSS-Protection": "1; mode=block",
-      "Content-Security-Policy":
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+      'Content-Security-Policy':
         "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://your-domain.com; connect-src 'self' https://*.sentry.io https://*.google-analytics.com https://*.firebaseio.com https://*.googleapis.com",
-      "Referrer-Policy": "no-referrer-when-downgrade",
-      "Feature-Policy": "camera 'self'; microphone 'none'; geolocation 'none'",
-      "Permissions-Policy": "camera=self, microphone=(), geolocation=()",
+      'Referrer-Policy': 'no-referrer-when-downgrade',
+      'Feature-Policy': "camera 'self'; microphone 'none'; geolocation 'none'",
+      'Permissions-Policy': 'camera=self, microphone=(), geolocation=()',
     },
   },
 }

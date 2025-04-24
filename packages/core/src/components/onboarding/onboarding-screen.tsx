@@ -14,19 +14,19 @@ const { width } = Dimensions.get("window")
 const slides = [
   {
     key: "slide1",
-    image: require("../../assets/onboarding/employee-management.png"),
+    //image: require("../../assets/onboarding/employee-management.png"),
     titleKey: "onboarding.slide1.title",
     descriptionKey: "onboarding.slide1.description",
   },
   {
     key: "slide2",
-    image: require("../../assets/onboarding/leave-management.png"),
+  //  image: require("../../assets/onboarding/leave-management.png"),
     titleKey: "onboarding.slide2.title",
     descriptionKey: "onboarding.slide2.description",
   },
   {
     key: "slide3",
-    image: require("../../assets/onboarding/payroll.png"),
+  //  image: require("../../assets/onboarding/payroll.png"),
     titleKey: "onboarding.slide3.title",
     descriptionKey: "onboarding.slide3.description",
   },

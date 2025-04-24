@@ -62,7 +62,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
           },
         ]}
       >
-        <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
+       {/*  <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" /> */}
         <Text style={[styles.title, isDarkMode && styles.darkTitle]}>HR Management</Text>
         <Text style={[styles.subtitle, isDarkMode && styles.darkSubtitle]}>Your complete HR solution</Text>
       </Animated.View>

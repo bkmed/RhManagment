@@ -1,40 +1,50 @@
-import * as Sentry from "@sentry/react-native"
-import { Platform } from "react-native"
-import { BrowserTracing } from "@sentry/browser"
+/* import * as Sentry from '@sentry/react-native'
+import * as SentryWeb from '@sentry/react' */
+import { Platform } from 'react-native'
 
 // Initialize Sentry
 export const initSentry = () => {
   const dsn = process.env.SENTRY_DSN
 
   if (!dsn) {
-    console.warn("Sentry DSN not provided. Error tracking is disabled.")
+    console.warn('Sentry DSN not provided. Error tracking is disabled.')
     return
   }
 
-  if (Platform.OS === "web") {
+  if (Platform.OS === 'web') {
     // Web-specific initialization
-    Sentry.init({
+    /*  SentryWeb.init({
       dsn,
-      integrations: [new BrowserTracing()],
-      tracesSampleRate: 1.0,
+      integrations: [
+        SentryWeb.browserTracingIntegration(),
+        SentryWeb.browserProfilingIntegration(),
+        SentryWeb.replayIntegration(), // Use ReplayIntegration for session replay 
+      ],
+      debug: true,
+      sendDefaultPii: true,
+      release: 'rh-managment',
+      tracesSampleRate: 1.0, 
+      profilesSampleRate: 1.0, 
+      replaysOnErrorSampleRate: 1.0, 
       environment: process.env.NODE_ENV,
-    })
+    }) */
   } else {
     // React Native initialization
-    Sentry.init({
+    /*   Sentry.init({
       dsn,
+      sendDefaultPii: true,
       tracesSampleRate: 1.0,
       environment: process.env.NODE_ENV,
       enableAutoSessionTracking: true,
       sessionTrackingIntervalMillis: 30000,
-    })
+    }) */
   }
 }
 
 // Capture exceptions
 export const captureException = (error: Error, context?: Record<string, any>) => {
   if (context) {
-    Sentry.withScope((scope) => {
+    Sentry.withScope(scope => {
       Object.entries(context).forEach(([key, value]) => {
         scope.setExtra(key, value)
       })
@@ -63,7 +73,7 @@ export const addBreadcrumb = (
   message: string,
   category?: string,
   level?: Sentry.Severity,
-  data?: Record<string, any>,
+  data?: Record<string, any>
 ) => {
   Sentry.addBreadcrumb({
     message,
@@ -85,7 +95,7 @@ export const clearUserContext = () => {
 
 // Log error
 export const logError = (error: Error) => {
-  if (Platform.OS !== "web") {
+  if (Platform.OS !== 'web') {
     Sentry.captureException(error)
   }
 }
