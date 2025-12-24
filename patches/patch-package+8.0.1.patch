@@ -1,0 +1,29 @@
+diff --git a/node_modules/patch-package/dist/makePatch.js b/node_modules/patch-package/dist/makePatch.js
+index a240b7e..94fd795 100644
+--- a/node_modules/patch-package/dist/makePatch.js
++++ b/node_modules/patch-package/dist/makePatch.js
+@@ -155,7 +155,7 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+         const git = (...args) => spawnSafe_1.spawnSafeSync("git", args, {
+             cwd: tmpRepo.name,
+             env: Object.assign(Object.assign({}, process.env), { HOME: tmpRepo.name }),
+-            maxBuffer: 1024 * 1024 * 100,
++            maxBuffer: 2044 * 1024 * 100,
+         });
+         // remove nested node_modules just to be safe
+         fs_extra_1.removeSync(path_1.join(tmpRepoPackagePath, "node_modules"));
+@@ -210,7 +210,6 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+                 console_1.default.log("\n💡 To remove a patch file, delete it and then reinstall node_modules from scratch.");
+             }
+             process.exit(1);
+-            return;
+         }
+         try {
+             parse_1.parsePatchFile(diffResult.stdout.toString());
+@@ -253,7 +252,6 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+ `);
+             }
+             process.exit(1);
+-            return;
+         }
+         // maybe delete existing
+         if (mode.type === "append" && !isRebasing && existingPatches.length === 1) {

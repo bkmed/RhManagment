@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "379449511736",
+    "project_id": "rhmanager-68310",
+    "storage_bucket": "rhmanager-68310.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:379449511736:android:09fd786074eb8cd8ee7bcd",
+        "android_client_info": {
+          "package_name": "com.bk.rhmanagment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUzsUpARhp3i7zwEBgV6K4h3G0njKY9TI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

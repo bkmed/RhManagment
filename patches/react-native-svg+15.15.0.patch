@@ -1,0 +1,100 @@
+diff --git a/node_modules/react-native-svg/src/utils/fetchData.ts b/node_modules/react-native-svg/src/utils/fetchData.ts
+index d141be3..ae24bbb 100644
+--- a/node_modules/react-native-svg/src/utils/fetchData.ts
++++ b/node_modules/react-native-svg/src/utils/fetchData.ts
+@@ -1,6 +1,14 @@
+ import { Platform } from 'react-native';
+ import { Buffer } from 'buffer';
+ 
++export async function fetchTextWithHeaders(uri: string, headers: {}) {
++  const response = await fetch(uri, { headers });
++  if (response.ok || (response.status === 0 && uri.startsWith('file://'))) {
++    return await response.text();
++  }
++  throw new Error(`Fetching ${uri} failed with status ${response.status}`);
++}
++
+ export async function fetchText(uri?: string): Promise<string | null> {
+   if (!uri) {
+     return null;
+diff --git a/node_modules/react-native-svg/src/xml.tsx b/node_modules/react-native-svg/src/xml.tsx
+index 073888c..45bd431 100644
+--- a/node_modules/react-native-svg/src/xml.tsx
++++ b/node_modules/react-native-svg/src/xml.tsx
+@@ -1,7 +1,7 @@
+ import type { ComponentType, ComponentProps, JSX } from 'react';
+ import * as React from 'react';
+ import { Component, useEffect, useMemo, useState } from 'react';
+-import { fetchText } from './utils/fetchData';
++import { fetchText, fetchTextWithHeaders } from './utils/fetchData';
+ import type { SvgProps } from './elements/Svg';
+ import { tags } from './xmlTags';
+ 
+@@ -39,7 +39,7 @@ export type AdditionalProps = {
+   fallback?: JSX.Element;
+ };
+ 
+-export type UriProps = SvgProps & { uri: string | null } & AdditionalProps;
++export type UriProps = SvgProps & { uri: string | null; headers: object; } & AdditionalProps;
+ export type UriState = { xml: string | null };
+ 
+ export type XmlProps = SvgProps & { xml: string | null } & AdditionalProps;
+@@ -80,14 +80,15 @@ export function SvgXml(props: XmlProps) {
+ }
+ 
+ export function SvgUri(props: UriProps) {
+-  const { onError = err, uri, onLoad, fallback } = props;
++  const { onError = err, uri, onLoad, fallback, headers } = props;
+   const [xml, setXml] = useState<string | null>(null);
+   const [isError, setIsError] = useState(false);
+   useEffect(() => {
++    let isCancelled = false;
+     uri
+-      ? fetchText(uri)
++      ? fetchTextWithHeaders(uri, headers)
+           .then((data) => {
+-            setXml(data);
++            !isCancelled && setXml(data);
+             isError && setIsError(false);
+             onLoad?.();
+           })
+@@ -96,8 +97,11 @@ export function SvgUri(props: UriProps) {
+             setIsError(true);
+           })
+       : setXml(null);
++    return () => {
++      isCancelled = true;
++    };
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+-  }, [onError, uri, onLoad]);
++  }, [onError, uri, onLoad, headers]);
+   if (isError) {
+     return fallback ?? null;
+   }
+@@ -296,7 +300,7 @@ export function parse(source: string, middleware?: Middleware): JsxAST | null {
+     }
+ 
+     if (/\S/.test(text)) {
+-      children.push(text);
++      children?.push(text);
+     }
+ 
+     if (source[i] === '<') {
+@@ -342,7 +346,7 @@ export function parse(source: string, middleware?: Middleware): JsxAST | null {
+     };
+ 
+     if (currentElement) {
+-      children.push(element);
++      children?.push(element);
+     } else {
+       root = element;
+     }
+@@ -391,7 +395,7 @@ export function parse(source: string, middleware?: Middleware): JsxAST | null {
+       error('expected ]]>');
+     }
+ 
+-    children.push(source.slice(i + 7, index));
++    children?.push(source.slice(i + 7, index));
+ 
+     i = index + 2;
+     return neutral;

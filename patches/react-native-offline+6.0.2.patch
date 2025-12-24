@@ -1,0 +1,66 @@
+diff --git a/node_modules/react-native-offline/dist/react-native-offline.js b/node_modules/react-native-offline/dist/react-native-offline.js
+index d6db41f..e13d61e 100644
+--- a/node_modules/react-native-offline/dist/react-native-offline.js
++++ b/node_modules/react-native-offline/dist/react-native-offline.js
+@@ -5,6 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
+ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+ 
+ var React = require('react');
++var axios = require('axios');
+ var React__default = _interopDefault(React);
+ var reactNative = require('react-native');
+ var NetInfo = _interopDefault(require('@react-native-community/netinfo'));
+@@ -3287,39 +3288,21 @@ var DEFAULT_OPTIONS = {
+ function makeHttpRequest(args) {
+     var _a = args || DEFAULT_OPTIONS, _b = _a.method, method = _b === void 0 ? DEFAULT_HTTP_METHOD : _b, _c = _a.url, url = _c === void 0 ? DEFAULT_PING_SERVER_URL : _c, _d = _a.timeout, timeout = _d === void 0 ? DEFAULT_TIMEOUT : _d, _e = _a.customHeaders, customHeaders = _e === void 0 ? DEFAULT_CUSTOM_HEADERS : _e, testMethod = _a.testMethod;
+     return new Promise(function (resolve, reject) {
+-        // @ts-ignore
+-        var xhr = new XMLHttpRequest(testMethod);
+-        xhr.open(method, url);
+-        xhr.timeout = timeout;
+-        xhr.onload = function onLoad() {
+-            // 3xx is a valid response for us, since the server was reachable
+-            if (this.status >= 200 && this.status < 400) {
+-                resolve({
+-                    status: this.status,
+-                });
+-            }
+-            else {
+-                reject({
+-                    status: this.status,
+-                });
+-            }
+-        };
+-        xhr.onerror = function onError() {
+-            reject({
+-                status: this.status,
+-            });
+-        };
+-        xhr.ontimeout = function onTimeOut() {
+-            reject({
+-                status: this.status,
+-            });
+-        };
+-        var combinedHeaders = __assign(__assign({}, headers), customHeaders);
+-        Object.keys(combinedHeaders).forEach(function (key) {
+-            var k = key;
+-            xhr.setRequestHeader(k, combinedHeaders[k]);
++      var cleanHeaders = __assign(__assign({}, headers), customHeaders);
++      axios
++        .request({url, method, headers: cleanHeaders, timeout})
++        .then((res) => {
++          var {status} = res || {};
++          if (status >= 200 && status < 400) {
++            resolve({status});
++          } else {
++            reject({status});
++          }
++        })
++        .catch((res) => {
++          var {status} = res || {};
++          reject({status});
+         });
+-        xhr.send(null);
+     });
+ }
+ 
