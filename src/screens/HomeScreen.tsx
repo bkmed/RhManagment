@@ -23,12 +23,16 @@ import { permissionsService } from '../services/permissions';
 import { useTheme } from '../context/ThemeContext';
 import { Theme } from '../theme';
 
+import { WebNavigationContext } from '../navigation/WebNavigationContext';
+
 export const HomeScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   const [summary, setSummary] = useState({
     payroll: 0,
@@ -82,14 +86,6 @@ export const HomeScreen = () => {
       setLoading(false);
     }
   };
-
-  // Safe access à WebNavigationContext
-  const webContext =
-    Platform.OS === 'web'
-      ? useContext((require('../navigation/AppNavigator').WebNavigationContext) as React.Context<any>)
-      : null;
-
-  const setActiveTab = webContext?.setActiveTab || (() => { });
 
   const navigateToTab = (tab: string, screen?: string) => {
     if (Platform.OS === 'web') {

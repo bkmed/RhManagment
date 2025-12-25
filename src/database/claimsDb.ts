@@ -1,86 +1,83 @@
-import { storageService } from '../services/storage';
+import { store } from '../store';
+import {
+    setClaims,
+    addClaim as addClaimAction,
+    updateClaim as updateClaimAction,
+    deleteClaim as deleteClaimAction,
+    selectAllClaims,
+} from '../store/slices/claimsSlice';
 import { Claim } from './schema';
 
-const CLAIMS_KEY = 'claims';
-
-// Mock Data
+// Mock Data for initial seeding
 const MOCK_CLAIMS: Claim[] = [
     {
         id: 1,
-        employeeId: 1, // Alice
+        employeeId: 1,
         type: 'material',
         description: 'Laptop screen value incorrect',
         isUrgent: true,
         status: 'pending',
-        createdAt: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
+        createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
         updatedAt: new Date().toISOString(),
     },
     {
         id: 2,
-        employeeId: 2, // Bob
+        employeeId: 2,
         type: 'account',
         description: 'Password reset for email',
         isUrgent: false,
         status: 'processed',
-        createdAt: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
+        createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
         updatedAt: new Date().toISOString(),
     },
     {
         id: 3,
-        employeeId: 1, // Alice
+        employeeId: 1,
         type: 'other',
         description: 'Air conditioning too cold in office 302',
         isUrgent: false,
         status: 'rejected',
         createdAt: new Date(Date.now() - 86400000 * 10).toISOString(),
         updatedAt: new Date().toISOString(),
-    }
+    },
 ];
 
-const getAllClaims = (): Claim[] => {
-    const json = storageService.getString(CLAIMS_KEY);
-    if (!json) {
-        // Seed if empty
-        saveAllClaims(MOCK_CLAIMS);
-        return MOCK_CLAIMS;
-    }
-    return JSON.parse(json);
-};
-
-const saveAllClaims = (items: Claim[]): void => {
-    storageService.setString(CLAIMS_KEY, JSON.stringify(items));
-};
+// Initialize with mock data if empty
+if (selectAllClaims(store.getState()).length === 0) {
+    store.dispatch(setClaims(MOCK_CLAIMS));
+}
 
 export const claimsDb = {
     getAll: async (): Promise<Claim[]> => {
-        return getAllClaims();
+        return selectAllClaims(store.getState());
     },
 
     getByEmployeeId: async (employeeId: number): Promise<Claim[]> => {
-        return getAllClaims().filter(c => c.employeeId === employeeId);
+        return selectAllClaims(store.getState()).filter(c => c.employeeId === employeeId);
     },
 
     add: async (item: Omit<Claim, 'id'>): Promise<number> => {
-        const items = getAllClaims();
         const id = Date.now();
         const newItem: Claim = { ...item, id };
-        items.push(newItem);
-        saveAllClaims(items);
+        store.dispatch(addClaimAction(newItem));
         return id;
     },
 
     update: async (id: number, updates: Partial<Claim>): Promise<void> => {
-        const items = getAllClaims();
-        const index = items.findIndex(c => c.id === id);
-        if (index !== -1) {
-            items[index] = { ...items[index], ...updates, updatedAt: new Date().toISOString() };
-            saveAllClaims(items);
+        const items = selectAllClaims(store.getState());
+        const existing = items.find(c => c.id === id);
+
+        if (existing) {
+            const updated = {
+                ...existing,
+                ...updates,
+                updatedAt: new Date().toISOString()
+            };
+            store.dispatch(updateClaimAction(updated));
         }
     },
 
     delete: async (id: number): Promise<void> => {
-        const items = getAllClaims();
-        const filtered = items.filter(c => c.id !== id);
-        saveAllClaims(filtered);
-    }
+        store.dispatch(deleteClaimAction(id));
+    },
 };

@@ -41,6 +41,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [notes, setNotes] = useState('');
   const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [sendEmail, setSendEmail] = useState(true);
   const [type, setType] = useState<'leave' | 'permission'>('leave');
   const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>('pending');
   const [department, setDepartment] = useState('');
@@ -169,14 +170,18 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         // Notify HR/Admin (Simulated via local notification for now)
         await notificationService.notifyNewLeaveRequest(id, employeeName, t(`leaveTypes.${type}`));
 
-        // Open Email Draft for HR
-        await emailService.sendLeaveRequestEmail(
-          employeeName,
-          t(`leaveTypes.${type}`),
-          startDate!.toLocaleDateString(),
-          endDate!.toLocaleDateString(),
-          notes || ''
-        );
+        if (sendEmail) {
+          // Open Email Draft for HR
+          await emailService.sendLeaveRequestEmail(
+            employeeName,
+            t(`leaveTypes.${type}`),
+            startDate!.toLocaleDateString(),
+            endDate!.toLocaleDateString(),
+            notes || ''
+          );
+        } else {
+          // Just notify via app service (already handled above)
+        }
       }
 
       if (reminderEnabled) {
@@ -189,11 +194,13 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         await notificationService.cancelLeaveReminder(id);
       }
 
+      // Navigation Logic
       if (Platform.OS === 'web') {
+        // Explicitly reset subScreen to empty to return to list
         if (initialEmployeeName) {
-          setActiveTab('Employees');
+          setActiveTab('Employees', '', {});
         } else {
-          setActiveTab('Leaves');
+          setActiveTab('Leaves', '', {});
         }
       } else {
         navigation.goBack();
@@ -391,6 +398,24 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
               <Switch
                 value={reminderEnabled}
                 onValueChange={setReminderEnabled}
+                trackColor={{
+                  false: theme.colors.border,
+                  true: theme.colors.primary,
+                }}
+                thumbColor={theme.colors.surface}
+              />
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.switchRow}>
+              <View>
+                <Text style={styles.label}>{t('common.sendEmail') || "Envoyer un email"}</Text>
+                <Text style={styles.captionText}>{t('common.notifyHr') || "Notifier les RH"}</Text>
+              </View>
+              <Switch
+                value={sendEmail}
+                onValueChange={setSendEmail}
                 trackColor={{
                   false: theme.colors.border,
                   true: theme.colors.primary,

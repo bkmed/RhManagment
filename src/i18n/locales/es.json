@@ -5,6 +5,8 @@
         "service": "Servicio",
         "local": "Local",
         "cancel": "Cancelar",
+        "sendEmail": "Enviar correo",
+        "notifyHr": "Notificar a RRHH",
         "delete": "Eliminar",
         "edit": "Editar",
         "add": "Añadir",

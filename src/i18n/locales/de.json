@@ -5,6 +5,8 @@
         "service": "Abteilung",
         "local": "Standort",
         "cancel": "Abbrechen",
+        "sendEmail": "E-Mail senden",
+        "notifyHr": "HR benachrichtigen",
         "delete": "Löschen",
         "edit": "Bearbeiten",
         "add": "Hinzufügen",

@@ -1,22 +1,18 @@
-import { storageService } from '../services/storage';
+import { store } from '../store';
+import {
+  addLeave as addLeaveAction,
+  updateLeave as updateLeaveAction,
+  deleteLeave as deleteLeaveAction,
+  selectAllLeaves,
+  selectUpcomingLeaves,
+  selectPendingLeaves,
+} from '../store/slices/leavesSlice';
 import { Leave } from './schema';
-
-const LEAVES_KEY = 'leaves';
-
-// Helper functions
-const getAllLeaves = (): Leave[] => {
-  const json = storageService.getString(LEAVES_KEY);
-  return json ? JSON.parse(json) : [];
-};
-
-const saveAllLeaves = (leaves: Leave[]): void => {
-  storageService.setString(LEAVES_KEY, JSON.stringify(leaves));
-};
 
 export const leavesDb = {
   // Get all leaves
   getAll: async (): Promise<Leave[]> => {
-    const leaves = getAllLeaves();
+    const leaves = selectAllLeaves(store.getState());
     return leaves.sort(
       (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
     );
@@ -24,20 +20,12 @@ export const leavesDb = {
 
   // Get upcoming leaves
   getUpcoming: async (): Promise<Leave[]> => {
-    const leaves = getAllLeaves();
-    const now = new Date().toISOString();
-
-    return leaves
-      .filter(a => a.dateTime >= now)
-      .sort(
-        (a, b) =>
-          new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
-      );
+    return selectUpcomingLeaves(store.getState());
   },
 
   // Get leaves by employee ID
   getByEmployeeId: async (employeeId: number): Promise<Leave[]> => {
-    const leaves = getAllLeaves();
+    const leaves = selectAllLeaves(store.getState());
     return leaves
       .filter(a => a.employeeId === employeeId)
       .sort(
@@ -48,7 +36,7 @@ export const leavesDb = {
 
   // Get leave by ID
   getById: async (id: number): Promise<Leave | null> => {
-    const leaves = getAllLeaves();
+    const leaves = selectAllLeaves(store.getState());
     return leaves.find(a => a.id === id) || null;
   },
 
@@ -56,7 +44,6 @@ export const leavesDb = {
   add: async (
     leave: Omit<Leave, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<number> => {
-    const leaves = getAllLeaves();
     const now = new Date().toISOString();
     const id = Date.now();
 
@@ -69,43 +56,38 @@ export const leavesDb = {
       updatedAt: now,
     };
 
-    leaves.push(newLeave);
-    saveAllLeaves(leaves);
-
+    store.dispatch(addLeaveAction(newLeave));
     return id;
   },
 
   // Update leave
   update: async (id: number, updates: Partial<Leave>): Promise<void> => {
-    const leaves = getAllLeaves();
-    const index = leaves.findIndex(a => a.id === id);
+    const leaves = selectAllLeaves(store.getState());
+    const existing = leaves.find(a => a.id === id);
 
-    if (index !== -1) {
-      leaves[index] = {
-        ...leaves[index],
+    if (existing) {
+      const updated = {
+        ...existing,
         ...updates,
         updatedAt: new Date().toISOString(),
       };
-      saveAllLeaves(leaves);
+      store.dispatch(updateLeaveAction(updated));
     }
   },
 
   // Delete leave
   delete: async (id: number): Promise<void> => {
-    const leaves = getAllLeaves();
-    const filtered = leaves.filter(a => a.id !== id);
-    saveAllLeaves(filtered);
+    store.dispatch(deleteLeaveAction(id));
   },
 
   // Get pending leaves
   getPending: async (): Promise<Leave[]> => {
-    const leaves = getAllLeaves();
-    return leaves.filter(l => l.status === 'pending');
+    return selectPendingLeaves(store.getState());
   },
 
   // Get approved leaves for an employee
   getApprovedByEmployeeId: async (employeeId: number): Promise<Leave[]> => {
-    const leaves = getAllLeaves();
+    const leaves = selectAllLeaves(store.getState());
     return leaves.filter(l => l.employeeId === employeeId && l.status === 'approved');
   },
 };

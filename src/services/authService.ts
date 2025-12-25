@@ -29,10 +29,10 @@ export const authService = {
 
         // Demo accounts
         const demoAccounts: { [key: string]: { password: string; user: User } } = {
-            'admin@demo.com': { password: 'admin123', user: { id: 'demo-admin', name: 'Demo Admin', email: 'admin@demo.com', role: 'admin', vacationDaysPerYear: 30, remainingVacationDays: 20, statePaidLeaves: 25, country: 'France' } },
-            'hr@demo.com': { password: 'hr123', user: { id: 'demo-hr', name: 'Demo HR', email: 'hr@demo.com', role: 'rh', vacationDaysPerYear: 28, remainingVacationDays: 15, statePaidLeaves: 30, country: 'Tunisia' } },
-            'manager@demo.com': { password: 'manager123', user: { id: 'demo-manager', name: 'Demo Manager', email: 'manager@demo.com', role: 'chef_dequipe', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 10, statePaidLeaves: 30, country: 'Tunisia' } },
-            'employee@demo.com': { password: 'employee123', user: { id: 'demo-emp', name: 'Demo Employee', email: 'employee@demo.com', role: 'employee', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 25, statePaidLeaves: 30, country: 'Tunisia' } },
+            'admin@demo.com': { password: 'admin123', user: { id: 'demo-admin', name: 'Demo Admin', email: 'admin@demo.com', role: 'admin', vacationDaysPerYear: 30, remainingVacationDays: 20, statePaidLeaves: 25, country: 'France', hiringDate: '2018-01-15' } },
+            'hr@demo.com': { password: 'hr123', user: { id: 'demo-hr', name: 'Demo HR', email: 'hr@demo.com', role: 'rh', vacationDaysPerYear: 28, remainingVacationDays: 15, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2019-03-10' } },
+            'manager@demo.com': { password: 'manager123', user: { id: 'demo-manager', name: 'Demo Manager', email: 'manager@demo.com', role: 'chef_dequipe', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 10, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2020-06-01' } },
+            'employee@demo.com': { password: 'employee123', user: { id: 'demo-emp', name: 'Demo Employee', email: 'employee@demo.com', role: 'employee', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 25, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2021-09-20' } },
         };
 
         if (demoAccounts[email] && demoAccounts[email].password === password) {
@@ -169,6 +169,7 @@ const seedDemoData = async () => {
         remainingVacationDays: 20,
         statePaidLeaves: 25,
         country: 'France',
+        hiringDate: '2018-01-15',
         notes: 'Demo admin account',
     });
 
@@ -182,6 +183,7 @@ const seedDemoData = async () => {
         remainingVacationDays: 15,
         statePaidLeaves: 30,
         country: 'Tunisia',
+        hiringDate: '2021-09-20',
         notes: 'Demo account',
     });
 
@@ -195,6 +197,7 @@ const seedDemoData = async () => {
         remainingVacationDays: 10,
         statePaidLeaves: 30,
         country: 'Tunisia',
+        hiringDate: '2020-06-01',
         notes: 'Demo manager account',
     });
 
@@ -208,6 +211,7 @@ const seedDemoData = async () => {
         remainingVacationDays: 20,
         statePaidLeaves: 25,
         country: 'France',
+        hiringDate: '2019-03-10',
         notes: 'Demo HR account',
     });
 

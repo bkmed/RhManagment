@@ -1,36 +1,29 @@
-import { storageService } from '../services/storage';
+import { store } from '../store';
+import {
+  addEmployee as addEmployeeAction,
+  updateEmployee as updateEmployeeAction,
+  deleteEmployee as deleteEmployeeAction,
+  selectAllEmployees,
+  selectEmployeeById,
+} from '../store/slices/employeesSlice';
 import { Employee } from './schema';
-
-const EMPLOYEES_KEY = 'employees';
-
-// Helper functions
-const getAllEmployees = (): Employee[] => {
-  const json = storageService.getString(EMPLOYEES_KEY);
-  return json ? JSON.parse(json) : [];
-};
-
-const saveAllEmployees = (employees: Employee[]): void => {
-  storageService.setString(EMPLOYEES_KEY, JSON.stringify(employees));
-};
 
 export const employeesDb = {
   // Get all employees
   getAll: async (): Promise<Employee[]> => {
-    const employees = getAllEmployees();
+    const employees = selectAllEmployees(store.getState());
     return employees.sort((a, b) => a.name.localeCompare(b.name));
   },
 
   // Get employee by ID
   getById: async (id: number): Promise<Employee | null> => {
-    const employees = getAllEmployees();
-    return employees.find(e => e.id === id) || null;
+    return selectEmployeeById(id)(store.getState()) || null;
   },
 
   // Add new employee
   add: async (
     employee: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<number> => {
-    const employees = getAllEmployees();
     const now = new Date().toISOString();
     const id = Date.now();
 
@@ -41,31 +34,26 @@ export const employeesDb = {
       updatedAt: now,
     };
 
-    employees.push(newEmployee);
-    saveAllEmployees(employees);
-
+    store.dispatch(addEmployeeAction(newEmployee));
     return id;
   },
 
   // Update employee
   update: async (id: number, updates: Partial<Employee>): Promise<void> => {
-    const employees = getAllEmployees();
-    const index = employees.findIndex(e => e.id === id);
+    const existing = selectEmployeeById(id)(store.getState());
 
-    if (index !== -1) {
-      employees[index] = {
-        ...employees[index],
+    if (existing) {
+      const updated = {
+        ...existing,
         ...updates,
         updatedAt: new Date().toISOString(),
       };
-      saveAllEmployees(employees);
+      store.dispatch(updateEmployeeAction(updated));
     }
   },
 
   // Delete employee
   delete: async (id: number): Promise<void> => {
-    const employees = getAllEmployees();
-    const filtered = employees.filter(e => e.id !== id);
-    saveAllEmployees(filtered);
+    store.dispatch(deleteEmployeeAction(id));
   },
 };

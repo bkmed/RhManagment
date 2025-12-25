@@ -1,18 +1,15 @@
-import { storageService } from '../services/storage';
+import { store } from '../store';
+import {
+  addIllness as addIllnessAction,
+  updateIllness as updateIllnessAction,
+  deleteIllness as deleteIllnessAction,
+  selectAllIllnesses,
+  selectExpiringSoonIllnesses,
+} from '../store/slices/illnessesSlice';
 import { Illness, IllnessHistory } from './schema';
+import { storageService } from '../services/storage';
 
-const ILLNESSES_KEY = 'illnesses';
 const ILLNESSES_HISTORY_KEY = 'illnesses_history';
-
-// Helper functions
-const getAllIllnesses = (): Illness[] => {
-  const json = storageService.getString(ILLNESSES_KEY);
-  return json ? JSON.parse(json) : [];
-};
-
-const saveAllIllnesses = (illnesses: Illness[]): void => {
-  storageService.setString(ILLNESSES_KEY, JSON.stringify(illnesses));
-};
 
 const getAllHistory = (): IllnessHistory[] => {
   const json = storageService.getString(ILLNESSES_HISTORY_KEY);
@@ -43,7 +40,7 @@ const recordHistory = (
 export const illnessesDb = {
   // Get all illnesses
   getAll: async (): Promise<Illness[]> => {
-    const illnesses = getAllIllnesses();
+    const illnesses = selectAllIllnesses(store.getState());
     return illnesses.sort(
       (a, b) =>
         new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime(),
@@ -52,25 +49,12 @@ export const illnessesDb = {
 
   // Get expiring illnesses (within 30 days)
   getExpiringSoon: async (): Promise<Illness[]> => {
-    const illnesses = getAllIllnesses();
-    const now = new Date();
-    const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-    return illnesses
-      .filter(p => {
-        if (!p.expiryDate) return false;
-        const expiryDate = new Date(p.expiryDate);
-        return expiryDate >= now && expiryDate <= thirtyDaysLater;
-      })
-      .sort(
-        (a, b) =>
-          new Date(a.expiryDate!).getTime() - new Date(b.expiryDate!).getTime(),
-      );
+    return selectExpiringSoonIllnesses(store.getState());
   },
 
   // Get illness by ID
   getById: async (id: number): Promise<Illness | null> => {
-    const illnesses = getAllIllnesses();
+    const illnesses = selectAllIllnesses(store.getState());
     return illnesses.find(p => p.id === id) || null;
   },
 
@@ -78,7 +62,6 @@ export const illnessesDb = {
   add: async (
     illness: Omit<Illness, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<number> => {
-    const illnesses = getAllIllnesses();
     const now = new Date().toISOString();
     const id = Date.now();
 
@@ -89,8 +72,7 @@ export const illnessesDb = {
       updatedAt: now,
     };
 
-    illnesses.push(newIllness);
-    saveAllIllnesses(illnesses);
+    store.dispatch(addIllnessAction(newIllness));
     recordHistory(id, 'created', 'Initial illness record created');
 
     return id;
@@ -98,25 +80,23 @@ export const illnessesDb = {
 
   // Update illness
   update: async (id: number, updates: Partial<Illness>): Promise<void> => {
-    const illnesses = getAllIllnesses();
-    const index = illnesses.findIndex(p => p.id === id);
+    const illnesses = selectAllIllnesses(store.getState());
+    const existing = illnesses.find(p => p.id === id);
 
-    if (index !== -1) {
-      illnesses[index] = {
-        ...illnesses[index],
+    if (existing) {
+      const updated = {
+        ...existing,
         ...updates,
         updatedAt: new Date().toISOString(),
       };
-      saveAllIllnesses(illnesses);
+      store.dispatch(updateIllnessAction(updated));
       recordHistory(id, 'updated', 'Illness details updated');
     }
   },
 
   // Delete illness
   delete: async (id: number): Promise<void> => {
-    const illnesses = getAllIllnesses();
-    const filtered = illnesses.filter(p => p.id !== id);
-    saveAllIllnesses(filtered);
+    store.dispatch(deleteIllnessAction(id));
 
     // Also delete associated history
     const history = getAllHistory();

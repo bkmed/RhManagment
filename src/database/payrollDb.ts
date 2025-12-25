@@ -1,18 +1,14 @@
-import { storageService } from '../services/storage';
+import { store } from '../store';
+import {
+  addPayroll as addPayrollAction,
+  updatePayroll as updatePayrollAction,
+  deletePayroll as deletePayrollAction,
+  selectAllPayroll,
+} from '../store/slices/payrollSlice';
 import { Payroll, PayrollHistory } from './schema';
+import { storageService } from '../services/storage';
 
-const PAYROLL_KEY = 'payroll';
 const PAYROLL_HISTORY_KEY = 'payroll_history';
-
-// Helper functions
-const getAllPayrollItems = (): Payroll[] => {
-  const json = storageService.getString(PAYROLL_KEY);
-  return json ? JSON.parse(json) : [];
-};
-
-const saveAllPayrollItems = (items: Payroll[]): void => {
-  storageService.setString(PAYROLL_KEY, JSON.stringify(items));
-};
 
 const getAllHistory = (): PayrollHistory[] => {
   const json = storageService.getString(PAYROLL_HISTORY_KEY);
@@ -26,12 +22,12 @@ const saveAllHistory = (history: PayrollHistory[]): void => {
 export const payrollDb = {
   // Get all payroll items
   getAll: async (): Promise<Payroll[]> => {
-    return getAllPayrollItems();
+    return selectAllPayroll(store.getState());
   },
 
   // Get payroll item by ID
   getById: async (id: number): Promise<Payroll | null> => {
-    const items = getAllPayrollItems();
+    const items = selectAllPayroll(store.getState());
     return items.find(m => m.id === id) || null;
   },
 
@@ -39,9 +35,8 @@ export const payrollDb = {
   add: async (
     item: Omit<Payroll, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<number> => {
-    const items = getAllPayrollItems();
     const now = new Date().toISOString();
-    const id = Date.now(); // Use timestamp as ID
+    const id = Date.now();
 
     const newItem: Payroll = {
       ...item,
@@ -50,32 +45,28 @@ export const payrollDb = {
       updatedAt: now,
     };
 
-    items.push(newItem);
-    saveAllPayrollItems(items);
-
+    store.dispatch(addPayrollAction(newItem));
     return id;
   },
 
   // Update payroll item
   update: async (id: number, updates: Partial<Payroll>): Promise<void> => {
-    const items = getAllPayrollItems();
-    const index = items.findIndex(m => m.id === id);
+    const items = selectAllPayroll(store.getState());
+    const existing = items.find(m => m.id === id);
 
-    if (index !== -1) {
-      items[index] = {
-        ...items[index],
+    if (existing) {
+      const updated = {
+        ...existing,
         ...updates,
         updatedAt: new Date().toISOString(),
       };
-      saveAllPayrollItems(items);
+      store.dispatch(updatePayrollAction(updated));
     }
   },
 
   // Delete payroll item
   delete: async (id: number): Promise<void> => {
-    const items = getAllPayrollItems();
-    const filtered = items.filter(m => m.id !== id);
-    saveAllPayrollItems(filtered);
+    store.dispatch(deletePayrollAction(id));
 
     // Also delete associated history
     const history = getAllHistory();
