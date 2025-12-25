@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Switch,
   TouchableOpacity,
-  Alert,
   ScrollView,
   Platform,
   I18nManager,
@@ -17,6 +16,8 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { authService } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { Dropdown } from '../../components/Dropdown';
 import { AuthInput } from '../../components/auth/AuthInput';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
@@ -36,6 +37,7 @@ const LANGUAGES = [
 
 export const ProfileScreen = ({ navigation }: any) => {
   const { theme, isDark, toggleTheme } = useTheme();
+  const { showToast } = useToast();
   const { t, i18n } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);

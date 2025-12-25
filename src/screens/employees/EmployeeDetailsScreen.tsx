@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Platform,
   Image,
 } from 'react-native';
@@ -19,10 +18,13 @@ import { Theme } from '../../theme';
 import { LoadingScreen } from '../../components/LoadingScreen';
 
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { employeeId } = route.params;
   const { t } = useTranslation();
   const { theme } = useTheme();

@@ -3,7 +3,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   View,
 } from 'react-native';
@@ -11,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { Theme } from '../../theme';
 import { isValidEmail, isValidPassword } from '../../utils/validation';
 import { AuthLayout } from '../../components/auth/AuthLayout';
@@ -18,6 +18,7 @@ import { AuthInput } from '../../components/auth/AuthInput';
 
 export const SignUpScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
+  const { showToast } = useToast();
   const { t } = useTranslation();
   const { signUp } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);

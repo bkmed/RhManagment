@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Platform,
   SafeAreaView,
 } from 'react-native';
@@ -17,10 +16,13 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const PayrollDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { payrollId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -57,7 +59,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
         }
       }
     } catch (error) {
-      Alert.alert(t('payrollDetails.errorLoadFailed'));
+      showToast(t('payrollDetails.errorLoadFailed'), 'info');
     } finally {
       setLoading(false);
     }

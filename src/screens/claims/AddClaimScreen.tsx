@@ -6,7 +6,6 @@ import {
     TextInput,
     ScrollView,
     TouchableOpacity,
-    Alert,
     Platform,
     Switch,
 } from 'react-native';
@@ -16,11 +15,14 @@ import { claimsDb } from '../../database/claimsDb';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { ClaimType } from '../../database/schema';
 import { Dropdown } from '../../components/Dropdown';
 
 export const AddClaimScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
+  const { showToast } = useToast();
     const { t } = useTranslation();
     const { user } = useAuth();
     const styles = useMemo(() => createStyles(theme), [theme]);

@@ -14,21 +14,51 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
     payroll,
     onPress,
 }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { theme } = useTheme();
     const styles = createStyles(theme);
     const times = JSON.parse(payroll.times) as string[];
+
+    // Format month/year display
+    const getMonthYearDisplay = () => {
+        if (payroll.month && payroll.year) {
+            const monthIndex = parseInt(payroll.month) - 1;
+            const monthNames = {
+                fr: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+                de: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                es: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            };
+            const currentLang = i18n.language as keyof typeof monthNames;
+            const monthName = monthNames[currentLang]?.[monthIndex] || monthNames.en[monthIndex];
+            return `${monthName} ${payroll.year}`;
+        }
+        return null;
+    };
+
+    const monthYearDisplay = getMonthYearDisplay();
 
     return (
         <TouchableOpacity style={styles.card} onPress={onPress}>
             <View style={styles.header}>
                 <View style={styles.nameContainer}>
-                    <Text style={styles.name}>{payroll.name}</Text>
-                    {payroll.isUrgent && (
-                        <View style={styles.urgentBadge}>
-                            <Text style={styles.urgentText}>{t('payroll.urgent')}</Text>
+                    <View style={styles.titleColumn}>
+                        <View style={styles.nameRow}>
+                            <Text style={styles.name}>{payroll.name}</Text>
+                            {payroll.isUrgent && (
+                                <View style={styles.urgentBadge}>
+                                    <Text style={styles.urgentText}>{t('payroll.urgent')}</Text>
+                                </View>
+                            )}
                         </View>
-                    )}
+                        {monthYearDisplay && (
+                            <View style={styles.monthYearBadge}>
+                                <Text style={styles.monthYearIcon}>📅</Text>
+                                <Text style={styles.monthYearText}>{monthYearDisplay}</Text>
+                            </View>
+                        )}
+                    </View>
                 </View>
                 <View style={styles.amountContainer}>
                     <Text style={styles.amountLabel}>{t('payroll.baseSalary')}</Text>
@@ -96,14 +126,38 @@ const createStyles = (theme: Theme) =>
         },
         nameContainer: {
             flex: 1,
+        },
+        titleColumn: {
+            flex: 1,
+        },
+        nameRow: {
             flexDirection: 'row',
             alignItems: 'center',
             gap: theme.spacing.xs,
+            marginBottom: 4,
         },
         name: {
             ...theme.textVariants.subheader,
             color: theme.colors.text,
             fontSize: 18,
+        },
+        monthYearBadge: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: theme.colors.primary + '15',
+            paddingHorizontal: theme.spacing.s,
+            paddingVertical: 4,
+            borderRadius: 12,
+            alignSelf: 'flex-start',
+            gap: 4,
+        },
+        monthYearIcon: {
+            fontSize: 12,
+        },
+        monthYearText: {
+            color: theme.colors.primary,
+            fontSize: 12,
+            fontWeight: '600',
         },
         urgentBadge: {
             backgroundColor: theme.colors.error,

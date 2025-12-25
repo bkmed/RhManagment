@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import {
   View,
@@ -8,7 +10,6 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Image,
   Switch,
   Platform,
@@ -23,6 +24,7 @@ import { DateTimePickerField } from '../../components/DateTimePickerField';
 
 export const AddIllnessScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
+  const { showToast } = useToast();
   const { t } = useTranslation();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);

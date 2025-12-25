@@ -5,7 +5,6 @@ import {
     StyleSheet,
     FlatList,
     TouchableOpacity,
-    Alert,
     ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import {
   View,
@@ -8,7 +9,6 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Switch,
   Platform,
 } from 'react-native';
@@ -25,6 +25,7 @@ import { Dropdown } from '../../components/Dropdown';
 
 export const AddLeaveScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
+  const { showToast } = useToast();
   const { t } = useTranslation();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Platform,
 } from 'react-native';
 import { leavesDb } from '../../database/leavesDb';
@@ -17,10 +16,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const LeaveDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { leaveId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -47,7 +49,7 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
       const data = await leavesDb.getById(leaveId);
       setLeave(data);
     } catch (error) {
-      Alert.alert(t('leaveDetails.errorLoadFailed'));
+      showToast(t('leaveDetails.errorLoadFailed'), 'info');
     } finally {
       setLoading(false);
     }
@@ -98,7 +100,7 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
               await notificationService.cancelLeaveReminder(leaveId);
               navigateBack();
             } catch (error) {
-              Alert.alert(t('leaveDetails.errorDeleteFailed'));
+              showToast(t('leaveDetails.errorDeleteFailed'), 'info');
             }
           },
         },

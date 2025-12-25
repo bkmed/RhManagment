@@ -3,7 +3,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';

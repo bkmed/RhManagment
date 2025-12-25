@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Platform,
 } from 'react-native';
 import { illnessesDb } from '../../database/illnessesDb';
@@ -16,10 +15,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const IllnessDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { illnessId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();

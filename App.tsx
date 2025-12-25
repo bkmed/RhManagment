@@ -7,6 +7,8 @@ import { Platform } from 'react-native';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { notificationService } from './src/services/notificationService';
 import { ThemeProvider } from './src/context/ThemeContext';
+import { ToastProvider } from './src/context/ToastContext';
+import { ModalProvider } from './src/context/ModalContext';
 import { OfflineIndicator } from './src/components/OfflineIndicator';
 import { WebThemeHandler } from './src/components/WebThemeHandler';
 import './src/i18n'; // Initialize i18n
@@ -100,11 +102,15 @@ const App = () => {
     <Provider store={store}>
       <PersistGate loading={<LoadingScreen />} persistor={persistor}>
         <ThemeProvider>
-          <SafeAreaProvider>
-            <WebThemeHandler />
-            <OfflineIndicator />
-            <AppNavigator />
-          </SafeAreaProvider>
+          <ToastProvider>
+            <ModalProvider>
+              <SafeAreaProvider>
+                <WebThemeHandler />
+                <OfflineIndicator />
+                <AppNavigator />
+              </SafeAreaProvider>
+            </ModalProvider>
+          </ToastProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

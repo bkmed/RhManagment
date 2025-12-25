@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert,
   ActivityIndicator,
   Modal,
   SafeAreaView,
@@ -15,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { remoteDb } from '../../database/remoteDb';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { holidaysService } from '../../services/holidaysService';
@@ -22,6 +22,7 @@ import { leavesDb } from '../../database/leavesDb';
 
 export const RemoteCalendarScreen = () => {
   const { theme } = useTheme();
+  const { showToast } = useToast();
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);

@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  Alert,
   Platform,
 } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -17,6 +16,8 @@ import { Theme } from '../../theme';
 import { ROLES, UserRole } from '../../services/authService';
 import { Dropdown } from '../../components/Dropdown';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { permissionsService } from '../../services/permissions';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
@@ -76,7 +77,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         }
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('employees.loadError'));
+      showToast(t('employees.loadError'));
     }
   };
 
@@ -96,7 +97,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
     }
 
     // In a real app, we'd use react-native-image-picker here
-    Alert.alert(t('common.info'), 'Camera integration would go here');
+    showToast('Camera integration would go here', 'info');
   };
 
   const handleSave = async () => {
@@ -124,10 +125,10 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
 
       if (employeeId) {
         await employeesDb.update(employeeId, employeeData);
-        Alert.alert(t('common.success'), t('employees.updated'));
+        showToast(t('employees.updated'));
       } else {
         await employeesDb.add(employeeData);
-        Alert.alert(t('common.success'), t('employees.added'));
+        showToast(t('employees.added'));
       }
       if (Platform.OS === 'web') {
         setActiveTab('Employees');
@@ -135,7 +136,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         navigation?.goBack();
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('employees.saveError'));
+      showToast(t('employees.saveError'));
     } finally {
       setLoading(false);
     }
@@ -159,7 +160,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 navigation?.goBack();
               }
             } catch (error) {
-              Alert.alert(t('common.error'), t('employees.deleteError'));
+              showToast(t('employees.deleteError'));
             }
           },
         },

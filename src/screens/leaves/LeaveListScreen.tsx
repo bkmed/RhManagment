@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -16,11 +15,13 @@ import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 export const LeaveListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,7 +42,7 @@ export const LeaveListScreen = ({ navigation }: any) => {
       setLeaves(data);
     } catch (error) {
       console.error('Error loading leaves:', error);
-      Alert.alert(t('common.error'), t('leaves.loadError'));
+      showToast(t('leaves.loadError'), 'error');
     } finally {
       setLoading(false);
     }

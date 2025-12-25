@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
   Image,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -17,9 +16,12 @@ import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 
 export const IllnessListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
