@@ -34,6 +34,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [notes, setNotes] = useState('');
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [isUrgent, setIsUrgent] = useState(false);
+  const [mealVouchers, setMealVouchers] = useState('');
+  const [giftVouchers, setGiftVouchers] = useState('');
+  const [bonusAmount, setBonusAmount] = useState('');
+  const [bonusType, setBonusType] = useState('none');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
@@ -53,7 +57,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
       : null;
 
   const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext)
+    ? useContext(WebNavigationContext) as any
     : { setActiveTab: () => { } };
 
   const loadPayroll = async () => {
@@ -65,8 +69,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         setAmount(item.amount || '');
         setFrequency(item.frequency || 'Daily');
 
-        // Parse times usually string "['08:00', '20:00']"
-        // Convert to Date objects for the picker
         let parsedTimes: Date[] = [];
         try {
           const timeStrings = item.times ? JSON.parse(item.times) : ['08:00', '20:00'];
@@ -87,6 +89,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         setNotes(item.notes || '');
         setReminderEnabled(!!item.reminderEnabled);
         setIsUrgent(!!item.isUrgent);
+        setMealVouchers(item.mealVouchers || '');
+        setGiftVouchers(item.giftVouchers || '');
+        setBonusAmount(item.bonusAmount || '');
+        setBonusType(item.bonusType || 'none');
       }
     } catch (error) {
       Alert.alert(t('common.error'), t('payroll.loadError'));
@@ -99,7 +105,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
     if (!amount.trim()) newErrors.amount = t('common.required');
     if (!startDate) newErrors.startDate = t('common.required');
 
-    // Validate End Date > Start Date
     if (startDate && endDate && endDate < startDate) {
       newErrors.endDate = t('common.invalidDateRange');
     }
@@ -109,7 +114,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
     setLoading(true);
     try {
-      // Format times back to string array HH:MM
       const timeStrings = times.map(t =>
         t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
       );
@@ -124,6 +128,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         notes: notes.trim() || undefined,
         reminderEnabled,
         isUrgent,
+        mealVouchers: mealVouchers.trim() || undefined,
+        giftVouchers: giftVouchers.trim() || undefined,
+        bonusAmount: bonusAmount.trim() || undefined,
+        bonusType,
       };
 
       let id: number;
@@ -156,7 +164,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const handleRemoveTime = (index: number) =>
     setTimes(times.filter((_, i) => i !== index));
 
-  // Time change
   const handleTimeChange = (index: number, newDate: Date) => {
     const newTimes = [...times];
     newTimes[index] = newDate;
@@ -166,139 +173,251 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.label}>{t('payroll.name')} *</Text>
-        <TextInput
-          style={[styles.input, errors.name && styles.inputError]}
-          value={name}
-          onChangeText={text => {
-            setName(text);
-            if (errors.name) setErrors({ ...errors, name: '' });
-          }}
-          placeholder={t('payroll.namePlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-        />
-        {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+        <View style={styles.formContainer}>
+          {/* Section: Payment Information */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('common.generalInfo') || t('navigation.personalInfo')}</Text>
 
-        <Text style={styles.label}>{t('payroll.amount')} *</Text>
-        <TextInput
-          style={[styles.input, errors.amount && styles.inputError]}
-          value={amount}
-          onChangeText={text => {
-            setAmount(text);
-            if (errors.amount) setErrors({ ...errors, amount: '' });
-          }}
-          placeholder={t('payroll.amountPlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-        />
-        {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.name')} *</Text>
+                <TextInput
+                  style={[styles.input, errors.name && styles.inputError]}
+                  value={name}
+                  onChangeText={text => {
+                    setName(text);
+                    if (errors.name) setErrors({ ...errors, name: '' });
+                  }}
+                  placeholder={t('payroll.namePlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+                {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+              </View>
 
-        <Text style={styles.label}>{t('payroll.frequency')}</Text>
-        <View style={styles.frequencyContainer}>
-          {['Daily', 'Twice a day', 'Weekly'].map(freq => (
-            <TouchableOpacity
-              key={freq}
-              style={[
-                styles.frequencyButton,
-                frequency === freq && styles.frequencyButtonActive,
-              ]}
-              onPress={() => setFrequency(freq)}
-            >
-              <Text
-                style={[
-                  styles.frequencyText,
-                  frequency === freq && styles.frequencyTextActive,
-                ]}
-              >
-                {t(`payroll.freq${freq.replace(/\s+/g, '')}`)}
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.baseSalary')} *</Text>
+                <TextInput
+                  style={[styles.input, errors.amount && styles.inputError]}
+                  value={amount}
+                  onChangeText={text => {
+                    setAmount(text);
+                    if (errors.amount) setErrors({ ...errors, amount: '' });
+                  }}
+                  placeholder={t('payroll.amountPlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                  keyboardType="numeric"
+                />
+                {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
+              </View>
+            </View>
+
+            <View style={styles.divider} />
+            <Text style={styles.sectionTitle}>{t('common.details') || 'Benefits & Bonuses'}</Text>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.mealVouchers')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={mealVouchers}
+                  onChangeText={setMealVouchers}
+                  placeholder="e.g. 15 x 6.50"
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.giftVouchers')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={giftVouchers}
+                  onChangeText={setGiftVouchers}
+                  placeholder="e.g. 100.00"
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+            </View>
+
+            <View style={[styles.responsiveRow, { marginTop: theme.spacing.m }]}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.bonusType')}</Text>
+                <View style={styles.frequencyContainer}>
+                  {[
+                    { key: 'none', label: t('payroll.none') },
+                    { key: '13th_month', label: t('payroll.thirtheenthMonth') },
+                    { key: 'performance', label: t('payroll.performanceBonus') }
+                  ].map(bonus => (
+                    <TouchableOpacity
+                      key={bonus.key}
+                      style={[
+                        styles.frequencyButton,
+                        bonusType === bonus.key && styles.frequencyButtonActive,
+                      ]}
+                      onPress={() => {
+                        setBonusType(bonus.key);
+                        if (bonus.key === '13th_month' && !bonusAmount) {
+                          setBonusAmount(amount);
+                        }
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.frequencyText,
+                          bonusType === bonus.key && styles.frequencyTextActive,
+                        ]}
+                      >
+                        {bonus.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.bonusAmount')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={bonusAmount}
+                  onChangeText={setBonusAmount}
+                  placeholder={t('payroll.amountPlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Section: Schedule */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('payroll.freqWeekly') || t('leaves.time')}</Text>
+
+            <Text style={styles.label}>{t('payroll.frequency')}</Text>
+            <View style={styles.frequencyContainer}>
+              {['Daily', 'Twice a day', 'Weekly'].map(freq => (
+                <TouchableOpacity
+                  key={freq}
+                  style={[
+                    styles.frequencyButton,
+                    frequency === freq && styles.frequencyButtonActive,
+                  ]}
+                  onPress={() => setFrequency(freq)}
+                >
+                  <Text
+                    style={[
+                      styles.frequencyText,
+                      frequency === freq && styles.frequencyTextActive,
+                    ]}
+                  >
+                    {t(`payroll.freq${freq.replace(/\s+/g, '')}`)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <DateTimePickerField
+                  label={t('payroll.startDate')}
+                  value={startDate}
+                  onChange={setStartDate}
+                  mode="date"
+                  minimumDate={new Date()}
+                  required
+                  error={errors.startDate}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <DateTimePickerField
+                  label={t('payroll.endDate')}
+                  value={endDate}
+                  onChange={setEndDate}
+                  mode="date"
+                  minimumDate={startDate || new Date()}
+                  error={errors.endDate}
+                />
+              </View>
+            </View>
+
+            <View style={styles.divider} />
+
+            <Text style={styles.label}>{t('payroll.reminderTimes')}</Text>
+            <View style={styles.timesGrid}>
+              {times.map((time, index) => (
+                <View key={index} style={styles.timeRow}>
+                  <View style={{ flex: 1 }}>
+                    <DateTimePickerField
+                      label=""
+                      value={time}
+                      onChange={(d) => handleTimeChange(index, d)}
+                      mode="time"
+                      placeholder={t('common.timePlaceholder')}
+                    />
+                  </View>
+                  {times.length > 1 && (
+                    <TouchableOpacity
+                      onPress={() => handleRemoveTime(index)}
+                      style={styles.removeButton}
+                    >
+                      <Text style={styles.removeButtonText}>✕</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))}
+            </View>
+            <TouchableOpacity onPress={handleAddTime} style={styles.addTimeButton}>
+              <Text style={styles.addTimeButtonText}>
+                + {t('payroll.addTime')}
               </Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          </View>
 
-        <Text style={styles.label}>{t('payroll.reminderTimes')}</Text>
-        {times.map((time, index) => (
-          <View key={index} style={styles.timeRow}>
-            <View style={{ flex: 1 }}>
-              <DateTimePickerField
-                label=""
-                value={time}
-                onChange={(d) => handleTimeChange(index, d)}
-                mode="time"
-                placeholder={t('common.timePlaceholder')}
+          {/* Section: Settings */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('payroll.notes')}</Text>
+
+            <Text style={styles.label}>{t('payroll.notes')}</Text>
+            <TextInput
+              style={[styles.input, styles.notesInput]}
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t('payroll.notesPlaceholder')}
+              placeholderTextColor={theme.colors.subText}
+              multiline
+              numberOfLines={4}
+            />
+
+            <View style={styles.divider} />
+
+            <View style={styles.switchRow}>
+              <View>
+                <Text style={styles.label}>{t('payroll.enableReminders')}</Text>
+                <Text style={styles.captionText}>{t('profile.notifications')}</Text>
+              </View>
+              <Switch
+                value={reminderEnabled}
+                onValueChange={setReminderEnabled}
+                trackColor={{
+                  false: theme.colors.border,
+                  true: theme.colors.primary,
+                }}
+                thumbColor={theme.colors.surface}
               />
             </View>
-            {times.length > 1 && (
-              <TouchableOpacity
-                onPress={() => handleRemoveTime(index)}
-                style={styles.removeButton}
-              >
-                <Text style={styles.removeButtonText}>✕</Text>
-              </TouchableOpacity>
-            )}
+
+            <View style={[styles.switchRow, { marginTop: theme.spacing.m }]}>
+              <View>
+                <Text style={[styles.label, { color: theme.colors.error }]}>{t('payroll.isUrgent')}</Text>
+                <Text style={styles.captionText}>{t('employees.notes')}</Text>
+              </View>
+              <Switch
+                value={isUrgent}
+                onValueChange={setIsUrgent}
+                trackColor={{
+                  false: theme.colors.border,
+                  true: theme.colors.error,
+                }}
+                thumbColor={theme.colors.surface}
+              />
+            </View>
           </View>
-        ))}
-        <TouchableOpacity onPress={handleAddTime} style={styles.addTimeButton}>
-          <Text style={styles.addTimeButtonText}>
-            + {t('payroll.addTime')}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Start Date */}
-        <DateTimePickerField
-          label={t('payroll.startDate')}
-          value={startDate}
-          onChange={setStartDate}
-          mode="date"
-          minimumDate={new Date()}
-          required
-          error={errors.startDate}
-        />
-
-        {/* End Date */}
-        <DateTimePickerField
-          label={t('payroll.endDate')}
-          value={endDate}
-          onChange={setEndDate}
-          mode="date"
-          minimumDate={startDate || new Date()}
-          error={errors.endDate}
-        />
-
-        <Text style={styles.label}>{t('payroll.notes')}</Text>
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          value={notes}
-          onChangeText={setNotes}
-          placeholder={t('payroll.notesPlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-          multiline
-          numberOfLines={4}
-        />
-
-        <View style={styles.switchRow}>
-          <Text style={styles.label}>{t('payroll.enableReminders')}</Text>
-          <Switch
-            value={reminderEnabled}
-            onValueChange={setReminderEnabled}
-            trackColor={{
-              false: theme.colors.border,
-              true: theme.colors.primary,
-            }}
-            thumbColor={theme.colors.surface}
-          />
-        </View>
-
-        <View style={styles.switchRow}>
-          <Text style={styles.label}>{t('payroll.isUrgent')}</Text>
-          <Switch
-            value={isUrgent}
-            onValueChange={setIsUrgent}
-            trackColor={{
-              false: theme.colors.border,
-              true: theme.colors.error,
-            }}
-            thumbColor={theme.colors.surface}
-          />
         </View>
 
         <TouchableOpacity
@@ -307,7 +426,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {isEdit ? t('payroll.update') : t('common.save')}
+            {loading ? t('common.loading') : isEdit ? t('payroll.update') : t('common.save')}
             {' '}{t('payroll.payroll')}
           </Text>
         </TouchableOpacity>
@@ -318,10 +437,40 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { backgroundColor: theme.colors.background },
-    content: { padding: theme.spacing.m },
+    container: { backgroundColor: theme.colors.background, flex: 1 },
+    content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
+    formContainer: {
+      flex: 1,
+      maxWidth: Platform.OS === 'web' ? 800 : undefined,
+      width: '100%',
+      alignSelf: 'center',
+    },
+    section: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.spacing.m,
+      padding: theme.spacing.l,
+      marginBottom: theme.spacing.l,
+      ...theme.shadows.small,
+    },
+    sectionTitle: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.l,
+      fontSize: 18,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+      paddingBottom: theme.spacing.s,
+    },
+    responsiveRow: {
+      flexDirection: Platform.OS === 'web' ? 'row' : 'column',
+      gap: theme.spacing.m,
+    },
+    fieldContainer: {
+      flex: 1,
+      marginBottom: Platform.OS === 'web' ? 0 : theme.spacing.m,
+    },
     label: {
-      ...theme.textVariants.body,
+      ...theme.textVariants.caption,
       fontWeight: '600',
       color: theme.colors.text,
       marginBottom: theme.spacing.s,
@@ -332,15 +481,15 @@ const createStyles = (theme: Theme) =>
       borderRadius: theme.spacing.s,
       padding: theme.spacing.m,
       fontSize: 16,
+      color: theme.colors.text,
       borderWidth: 1,
       borderColor: theme.colors.border,
-      color: theme.colors.text,
     },
-    notesInput: { minHeight: 100, textAlignVertical: 'top' },
+    notesInput: { height: 100, textAlignVertical: 'top' },
     frequencyContainer: {
       flexDirection: 'row',
       gap: theme.spacing.s,
-      marginBottom: theme.spacing.s,
+      marginBottom: theme.spacing.m,
     },
     frequencyButton: {
       flex: 1,
@@ -357,6 +506,9 @@ const createStyles = (theme: Theme) =>
     },
     frequencyText: { ...theme.textVariants.body, color: theme.colors.subText },
     frequencyTextActive: { color: theme.colors.surface, fontWeight: '600' },
+    timesGrid: {
+      marginBottom: theme.spacing.m,
+    },
     timeRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -396,14 +548,24 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       marginTop: theme.spacing.m,
     },
+    captionText: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: theme.colors.border,
+      marginVertical: theme.spacing.l,
+    },
     saveButton: {
       backgroundColor: theme.colors.primary,
       padding: theme.spacing.m,
       borderRadius: theme.spacing.s,
       alignItems: 'center',
       marginTop: theme.spacing.l,
-      marginBottom: theme.spacing.xl,
-      ...theme.shadows.small,
+      maxWidth: Platform.OS === 'web' ? 800 : undefined,
+      width: '100%',
+      alignSelf: 'center',
     },
     saveButtonDisabled: { opacity: 0.5 },
     saveButtonText: {

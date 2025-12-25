@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { Platform } from 'react-native';
 import { authService, User } from '../services/authService';
 
 interface AuthContextType {
@@ -8,6 +7,7 @@ interface AuthContextType {
     signIn: (user: User) => Promise<void>;
     signUp: (user: User) => Promise<void>;
     signOut: (navigation: any) => Promise<void>;
+    updateProfile: (updatedData: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,7 +47,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             // Always clear local user state to redirect to Login
             setUser(null);
-            navigation.navigate('Login')
+            navigation.navigate('Login');
+        }
+    };
+
+    const updateProfile = async (updatedData: Partial<User>) => {
+        try {
+            const updatedUser = await authService.updateUser(updatedData);
+            setUser(updatedUser);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            throw error;
         }
     };
 
@@ -59,6 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 signIn,
                 signUp,
                 signOut,
+                updateProfile,
             }}
         >
             {children}

@@ -1,6 +1,9 @@
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Payroll } from '../database/schema';
+import { useTheme } from '../context/ThemeContext';
+import { Theme } from '../theme';
 
 interface PayrollCardProps {
     payroll: Payroll;
@@ -12,6 +15,8 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
     onPress,
 }) => {
     const { t } = useTranslation();
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
     const times = JSON.parse(payroll.times) as string[];
 
     return (
@@ -25,100 +30,161 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
                         </View>
                     )}
                 </View>
-                <Text style={styles.amount}>{payroll.amount}</Text>
+                <View style={styles.amountContainer}>
+                    <Text style={styles.amountLabel}>{t('payroll.baseSalary')}</Text>
+                    <Text style={styles.amount}>{payroll.amount}</Text>
+                </View>
             </View>
 
-            <Text style={styles.frequency}>{payroll.frequency}</Text>
-
-            <View style={styles.timesContainer}>
-                {times.map((time, index) => (
-                    <View key={index} style={styles.timeBadge}>
-                        <Text style={styles.timeText}>{time}</Text>
+            <View style={styles.benefitsRow}>
+                {payroll.mealVouchers && (
+                    <View style={styles.benefitItem}>
+                        <Text style={styles.benefitIcon}>🍱</Text>
+                        <Text style={styles.benefitText}>{payroll.mealVouchers}</Text>
                     </View>
-                ))}
+                )}
+                {payroll.giftVouchers && (
+                    <View style={styles.benefitItem}>
+                        <Text style={styles.benefitIcon}>🎁</Text>
+                        <Text style={styles.benefitText}>{payroll.giftVouchers}</Text>
+                    </View>
+                )}
+                {payroll.bonusAmount && payroll.bonusType !== 'none' && (
+                    <View style={styles.benefitItem}>
+                        <Text style={styles.benefitIcon}>💰</Text>
+                        <Text style={styles.benefitText}>
+                            {payroll.bonusType === '13th_month' ? t('payroll.thirtheenthMonth') : t('payroll.performanceBonus')}
+                            : {payroll.bonusAmount}
+                        </Text>
+                    </View>
+                )}
             </View>
 
-            {payroll.notes && (
-                <Text style={styles.notes} numberOfLines={2}>
-                    {payroll.notes}
-                </Text>
-            )}
+            <View style={styles.footer}>
+                <Text style={styles.frequency}>{t(`payroll.freq${payroll.frequency.replace(/\s+/g, '')}`)}</Text>
+                <View style={styles.timesContainer}>
+                    {times.slice(0, 3).map((time, index) => (
+                        <View key={index} style={styles.timeBadge}>
+                            <Text style={styles.timeText}>{time}</Text>
+                        </View>
+                    ))}
+                    {times.length > 3 && (
+                        <Text style={styles.moreTimes}>+{times.length - 3}</Text>
+                    )}
+                </View>
+            </View>
         </TouchableOpacity>
     );
 };
 
-const styles = StyleSheet.create({
-    card: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    name: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#000',
-        flex: 1,
-    },
-    nameContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    urgentBadge: {
-        backgroundColor: '#FF3B30', // Red
-        paddingHorizontal: 8,
-        paddingVertical: 2,
-        borderRadius: 8,
-    },
-    urgentText: {
-        color: '#FFF',
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    amount: {
-        fontSize: 14,
-        color: '#666',
-        fontWeight: '600',
-    },
-    frequency: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 12,
-    },
-    timesContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-        marginBottom: 8,
-    },
-    timeBadge: {
-        backgroundColor: '#007AFF',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 16,
-    },
-    timeText: {
-        color: '#FFF',
-        fontSize: 12,
-        fontWeight: '600',
-    },
-    notes: {
-        fontSize: 12,
-        color: '#999',
-        fontStyle: 'italic',
-        marginTop: 8,
-    },
-});
+const createStyles = (theme: Theme) =>
+    StyleSheet.create({
+        card: {
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.spacing.m,
+            padding: theme.spacing.m,
+            marginBottom: theme.spacing.m,
+            ...theme.shadows.small,
+            borderLeftWidth: 4,
+            borderLeftColor: theme.colors.primary,
+        },
+        header: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            marginBottom: theme.spacing.s,
+        },
+        nameContainer: {
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: theme.spacing.xs,
+        },
+        name: {
+            ...theme.textVariants.subheader,
+            color: theme.colors.text,
+            fontSize: 18,
+        },
+        urgentBadge: {
+            backgroundColor: theme.colors.error,
+            paddingHorizontal: theme.spacing.s,
+            paddingVertical: 2,
+            borderRadius: 8,
+        },
+        urgentText: {
+            color: '#FFF',
+            fontSize: 10,
+            fontWeight: 'bold',
+        },
+        amountContainer: {
+            alignItems: 'flex-end',
+        },
+        amountLabel: {
+            ...theme.textVariants.caption,
+            color: theme.colors.subText,
+            fontSize: 10,
+        },
+        amount: {
+            ...theme.textVariants.header,
+            color: theme.colors.primary,
+            fontSize: 20,
+        },
+        benefitsRow: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: theme.spacing.m,
+            marginVertical: theme.spacing.s,
+            paddingVertical: theme.spacing.xs,
+        },
+        benefitItem: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: theme.colors.background,
+            paddingHorizontal: theme.spacing.s,
+            paddingVertical: 4,
+            borderRadius: 6,
+            gap: 4,
+        },
+        benefitIcon: {
+            fontSize: 12,
+        },
+        benefitText: {
+            ...theme.textVariants.caption,
+            color: theme.colors.text,
+            fontWeight: '600',
+        },
+        footer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: theme.spacing.s,
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.border,
+            paddingTop: theme.spacing.s,
+        },
+        frequency: {
+            ...theme.textVariants.body,
+            color: theme.colors.subText,
+            fontSize: 14,
+        },
+        timesContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 4,
+        },
+        timeBadge: {
+            backgroundColor: theme.colors.secondary + '20',
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+            borderRadius: 10,
+        },
+        timeText: {
+            color: theme.colors.secondary,
+            fontSize: 12,
+            fontWeight: '600',
+        },
+        moreTimes: {
+            fontSize: 12,
+            color: theme.colors.subText,
+        },
+    });

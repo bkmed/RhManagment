@@ -13,7 +13,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
 import { notificationService } from '../../services/notificationService';
-import { calendarService } from '../../services/calendarService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
@@ -44,7 +43,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
       : null;
 
   const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext)
+    ? useContext(WebNavigationContext) as any
     : { setActiveTab: () => { } };
 
   useEffect(() => {
@@ -109,8 +108,6 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         await notificationService.cancelLeaveReminder(id);
       }
 
-      // If came from EmployeeDetails (has initialEmployeeName), return to Employees
-      // Otherwise return to Leaves
       if (Platform.OS === 'web') {
         if (initialEmployeeName) {
           setActiveTab('Employees');
@@ -131,101 +128,131 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Title */}
-        <Text style={styles.label}>{t('leaves.leaveTitle')} *</Text>
-        <TextInput
-          style={[styles.input, errors.title && styles.inputError]}
-          value={title}
-          onChangeText={text => {
-            setTitle(text);
-            if (errors.title) setErrors({ ...errors, title: '' });
-          }}
-          placeholder={t('leaves.titlePlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-        />
-        {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
+        <View style={styles.formContainer}>
+          {/* Section: General Information */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('common.generalInfo') || t('navigation.personalInfo')}</Text>
 
-        {/* Employee */}
-        <Text style={styles.label}>{t('leaves.employee')}</Text>
-        <TextInput
-          style={styles.input}
-          value={employeeName}
-          onChangeText={setEmployeeName}
-          placeholder={t('leaves.employeePlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-        />
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('leaves.leaveTitle')} *</Text>
+                <TextInput
+                  style={[styles.input, errors.title && styles.inputError]}
+                  value={title}
+                  onChangeText={text => {
+                    setTitle(text);
+                    if (errors.title) setErrors({ ...errors, title: '' });
+                  }}
+                  placeholder={t('leaves.titlePlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+                {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
+              </View>
 
-        {/* Location/Type */}
-        <Text style={styles.label}>{t('leaves.location')}</Text>
-        <TextInput
-          style={styles.input}
-          value={location}
-          onChangeText={setLocation}
-          placeholder={t('leaves.locationPlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-        />
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('leaves.employee')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={employeeName}
+                  onChangeText={setEmployeeName}
+                  placeholder={t('leaves.employeePlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+            </View>
 
-        {/* Date & Time */}
-        <DateTimePickerField
-          label={t('leaves.date')}
-          value={dateTime}
-          onChange={setDateTime}
-          mode="date"
-          minimumDate={new Date()}
-          required
-          error={errors.dateTime}
-        />
+            <View style={styles.fieldGroup}>
+              <Text style={styles.label}>{t('leaves.location')}</Text>
+              <TextInput
+                style={styles.input}
+                value={location}
+                onChangeText={setLocation}
+                placeholder={t('leaves.locationPlaceholder')}
+                placeholderTextColor={theme.colors.subText}
+              />
+            </View>
+          </View>
 
-        <DateTimePickerField
-          label={t('leaves.time')}
-          value={dateTime}
-          onChange={setDateTime}
-          mode="time"
-        />
+          {/* Section: Schedule */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('payroll.freqWeekly') || t('leaves.time')}</Text>
 
-        {/* Notes */}
-        <Text style={styles.label}>{t('leaves.notes')}</Text>
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          value={notes}
-          onChangeText={setNotes}
-          placeholder={t('leaves.notesPlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-          multiline
-          numberOfLines={4}
-        />
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <DateTimePickerField
+                  label={t('leaves.date')}
+                  value={dateTime}
+                  onChange={setDateTime}
+                  mode="date"
+                  minimumDate={new Date()}
+                  required
+                  error={errors.dateTime}
+                />
+              </View>
 
-        {/* Reminder */}
-        <View style={styles.switchRow}>
-          <Text style={styles.label}>{t('leaves.enableReminder')}</Text>
-          <Switch
-            value={reminderEnabled}
-            onValueChange={setReminderEnabled}
-            trackColor={{
-              false: theme.colors.border,
-              true: theme.colors.primary,
-            }}
-            thumbColor={theme.colors.surface}
-          />
+              <View style={styles.fieldContainer}>
+                <DateTimePickerField
+                  label={t('leaves.time')}
+                  value={dateTime}
+                  onChange={setDateTime}
+                  mode="time"
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Section: Additional Details */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('payroll.notes')}</Text>
+
+            <Text style={styles.label}>{t('leaves.notes')}</Text>
+            <TextInput
+              style={[styles.input, styles.notesInput]}
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t('leaves.notesPlaceholder')}
+              placeholderTextColor={theme.colors.subText}
+              multiline
+              numberOfLines={4}
+            />
+
+            <View style={styles.divider} />
+
+            <View style={styles.switchRow}>
+              <View>
+                <Text style={styles.label}>{t('leaves.enableReminder')}</Text>
+                <Text style={styles.captionText}>{t('profile.notifications')}</Text>
+              </View>
+              <Switch
+                value={reminderEnabled}
+                onValueChange={setReminderEnabled}
+                trackColor={{
+                  false: theme.colors.border,
+                  true: theme.colors.primary,
+                }}
+                thumbColor={theme.colors.surface}
+              />
+            </View>
+
+            <View style={styles.calendarButtonContainer}>
+              <CalendarButton
+                title={title || t('leaves.title')}
+                date={dateTime ? dateTime.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                time={dateTime ? dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '12:00'}
+                location={location}
+                notes={`${t('leaves.employee')}: ${employeeName}\n${notes}`}
+              />
+            </View>
+          </View>
         </View>
 
-        {/* Add to Calendar */}
-        <CalendarButton
-          title={title || t('leaves.title')}
-          date={dateTime ? dateTime.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
-          time={dateTime ? dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '12:00'}
-          location={location}
-          notes={`${t('leaves.employee')}: ${employeeName}\n${notes}`}
-        />
-
-        {/* Save Button */}
         <TouchableOpacity
           style={[styles.saveButton, loading && styles.saveButtonDisabled]}
           onPress={handleSave}
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {isEdit ? t('leaves.update') : t('leaves.save')}
+            {loading ? t('common.loading') : isEdit ? t('leaves.update') : t('leaves.save')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -235,14 +262,43 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: {
-      backgroundColor: theme.colors.background,
+    container: { backgroundColor: theme.colors.background, flex: 1 },
+    content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
+    formContainer: {
+      flex: 1,
+      maxWidth: Platform.OS === 'web' ? 800 : undefined,
+      width: '100%',
+      alignSelf: 'center',
     },
-    content: {
-      padding: theme.spacing.m,
+    section: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.spacing.m,
+      padding: theme.spacing.l,
+      marginBottom: theme.spacing.l,
+      ...theme.shadows.small,
+    },
+    sectionTitle: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.l,
+      fontSize: 18,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+      paddingBottom: theme.spacing.s,
+    },
+    responsiveRow: {
+      flexDirection: Platform.OS === 'web' ? 'row' : 'column',
+      gap: theme.spacing.m,
+    },
+    fieldContainer: {
+      flex: 1,
+      marginBottom: Platform.OS === 'web' ? 0 : theme.spacing.m,
+    },
+    fieldGroup: {
+      marginTop: theme.spacing.m,
     },
     label: {
-      ...theme.textVariants.body,
+      ...theme.textVariants.caption,
       fontWeight: '600',
       color: theme.colors.text,
       marginBottom: theme.spacing.s,
@@ -253,19 +309,28 @@ const createStyles = (theme: Theme) =>
       borderRadius: theme.spacing.s,
       padding: theme.spacing.m,
       fontSize: 16,
+      color: theme.colors.text,
       borderWidth: 1,
       borderColor: theme.colors.border,
-      color: theme.colors.text,
     },
-    notesInput: {
-      minHeight: 100,
-      textAlignVertical: 'top',
-    },
+    notesInput: { height: 100, textAlignVertical: 'top' },
     switchRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       marginTop: theme.spacing.m,
+    },
+    captionText: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: theme.colors.border,
+      marginVertical: theme.spacing.l,
+    },
+    calendarButtonContainer: {
+      marginTop: theme.spacing.l,
     },
     saveButton: {
       backgroundColor: theme.colors.primary,
@@ -273,19 +338,16 @@ const createStyles = (theme: Theme) =>
       borderRadius: theme.spacing.s,
       alignItems: 'center',
       marginTop: theme.spacing.l,
-      marginBottom: theme.spacing.xl,
-      ...theme.shadows.small,
+      maxWidth: Platform.OS === 'web' ? 800 : undefined,
+      width: '100%',
+      alignSelf: 'center',
     },
-    saveButtonDisabled: {
-      opacity: 0.5,
-    },
+    saveButtonDisabled: { opacity: 0.5 },
     saveButtonText: {
       ...theme.textVariants.button,
       color: theme.colors.surface,
     },
-    inputError: {
-      borderColor: theme.colors.error,
-    },
+    inputError: { borderColor: theme.colors.error },
     errorText: {
       color: theme.colors.error,
       fontSize: 12,

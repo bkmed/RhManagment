@@ -19,7 +19,6 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { PayrollListScreen } from '../screens/payroll/PayrollListScreen';
 import { AddPayrollScreen } from '../screens/payroll/AddPayrollScreen';
 import { PayrollDetailsScreen } from '../screens/payroll/PayrollDetailsScreen';
-import { PayrollHistoryScreen } from '../screens/payroll/PayrollHistoryScreen';
 import { LeaveListScreen } from '../screens/leaves/LeaveListScreen';
 import { AddLeaveScreen } from '../screens/leaves/AddLeaveScreen';
 import { LeaveDetailsScreen } from '../screens/leaves/LeaveDetailsScreen';
@@ -31,7 +30,6 @@ import { EmployeeListScreen } from '../screens/employees/EmployeeListScreen';
 import { AddEmployeeScreen } from '../screens/employees/AddEmployeeScreen';
 import { EmployeeDetailsScreen } from '../screens/employees/EmployeeDetailsScreen';
 import { AnalyticsScreen } from '../screens/analytics/AnalyticsScreen';
-import { GlobalHistoryScreen } from '../screens/history/GlobalHistoryScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
@@ -80,11 +78,6 @@ const PayrollStack = () => {
         name="PayrollDetails"
         component={PayrollDetailsScreen}
         options={{ title: t('payroll.details') }}
-      />
-      <Stack.Screen
-        name="PayrollHistory"
-        component={PayrollHistoryScreen}
-        options={{ title: t('history.payrollHistory') }}
       />
     </Stack.Navigator>
   );
@@ -164,18 +157,6 @@ const EmployeesStack = () => {
   );
 };
 
-const HistoryStack = () => {
-  const { t } = useTranslation();
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="GlobalHistory"
-        component={GlobalHistoryScreen}
-        options={{ title: t('navigation.history') }}
-      />
-    </Stack.Navigator>
-  );
-};
 
 const ProfileStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -218,7 +199,6 @@ const DrawerNavigator = () => {
       {user?.role !== 'employee' && (
         <Drawer.Screen name="Employees" component={EmployeesStack} />
       )}
-      <Drawer.Screen name="History" component={HistoryStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
     </Drawer.Navigator>
   );
@@ -264,8 +244,6 @@ const WebNavigator = () => {
           return <AddPayrollScreen route={mockRoute} />;
         if (subScreen === 'PayrollDetails')
           return <PayrollDetailsScreen route={mockRoute} />;
-        if (subScreen === 'PayrollHistory')
-          return <PayrollHistoryScreen route={mockRoute} />;
         return <PayrollStack />;
       case 'Leaves':
         if (subScreen === 'AddLeave')
@@ -289,8 +267,6 @@ const WebNavigator = () => {
         if (subScreen === 'EmployeeDetails')
           return <EmployeeDetailsScreen route={mockRoute} />;
         return <EmployeesStack />;
-      case 'History':
-        return <HistoryStack />;
       case 'Profile':
         return <ProfileStack />;
       default:
@@ -322,7 +298,6 @@ const WebNavigator = () => {
       items.push(['Employees', t('navigation.employees')]);
     }
 
-    items.push(['History', t('navigation.history') || 'History']);
     items.push(['Profile', t('navigation.profile')]);
 
     return items;

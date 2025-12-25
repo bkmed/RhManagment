@@ -23,6 +23,8 @@
         "required": "Este campo es obligatorio",
         "invalidEmail": "Correo electrónico no válido",
         "invalidPhone": "Número de teléfono no válido",
+        "invalidDateRange": "Rango de fechas no válido",
+        "timePlaceholder": "HH:MM",
         "searchPlaceholder": "Buscar...",
         "week": "Semana",
         "month": "Mes",
@@ -47,7 +49,9 @@
         "illnesses": "Enfermedad / Facturación",
         "employees": "Empleados",
         "history": "Historial",
-        "profile": "Perfil"
+        "profile": "Perfil",
+        "personalInfo": "Información Personal",
+        "employmentDetails": "Detalles de Empleo"
     },
     "roles": {
         "admin": "Administrador",
@@ -106,7 +110,15 @@
         "noPayroll": "No se encontraron elementos de nómina",
         "addFirst": "Añada su primera nómina para comenzar",
         "urgent": "URGENTE",
-        "isUrgent": "Urgente"
+        "isUrgent": "Urgente",
+        "mealVouchers": "Vales de Comida",
+        "giftVouchers": "Vales de Regalo",
+        "bonusAmount": "Monto del Bono",
+        "bonusType": "Tipo de Bono",
+        "thirtheenthMonth": "13er Mes",
+        "performanceBonus": "Bono de Desempeño",
+        "none": "Ninguno",
+        "baseSalary": "Salario Base"
     },
     "leaves": {
         "title": "Vacaciones",
@@ -256,7 +268,14 @@
         "restartRequired": "Reinicio necesario",
         "restartRequiredMessage": "Por favor, reinicie la aplicación para aplicar los cambios de idioma.",
         "languageChangeError": "Error al cambiar el idioma",
-        "logoutError": "Error al cerrar sesión"
+        "logoutError": "Error al cerrar sesión",
+        "accountSettings": "Ajustes de la Cuenta",
+        "securityPermissions": "Seguridad y Permisos",
+        "professionalProfile": "Perfil Profesional",
+        "edit": "Editar Perfil",
+        "save": "Guardar Cambios",
+        "changePhoto": "Cambiar Foto",
+        "updatedSuccessfully": "Perfil actualizado con éxito"
     },
     "permissions": {
         "camera": "Permiso de cámara",

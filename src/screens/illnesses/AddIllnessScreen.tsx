@@ -44,7 +44,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
       : null;
 
   const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext)
+    ? useContext(WebNavigationContext) as any
     : { setActiveTab: () => { } };
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
 
   const handleTakePhoto = async () => {
     if (Platform.OS === 'web') {
-      const input = document.createElement('input');
+      const input = (window as any).document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
       input.onchange = (e: any) => {
@@ -147,12 +147,8 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
           payrollName,
           expiryDate.toISOString(),
         );
-      } else {
-        await notificationService.cancelIllnessReminder(id);
       }
 
-      // If came from EmployeeDetails (has initialEmployeeName), return to Employees
-      // Otherwise return to Illnesses
       if (Platform.OS === 'web') {
         if (initialEmployeeName) {
           setActiveTab('Employees');
@@ -173,69 +169,98 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <TouchableOpacity style={styles.photoButton} onPress={handleTakePhoto}>
-          {photoUri ? (
-            <Image source={{ uri: photoUri }} style={styles.photo} />
-          ) : (
-            <View style={styles.photoPlaceholder}>
-              <Text style={styles.photoPlaceholderText}>
-                {t('illnesses.photoButton')}
-              </Text>
+        <View style={styles.formContainer}>
+          {/* Section: Medical Case */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('common.generalInfo') || t('navigation.personalInfo')}</Text>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('illnesses.payrollNameLabel')} *</Text>
+                <TextInput
+                  style={[styles.input, errors.payrollName && styles.inputError]}
+                  value={payrollName}
+                  onChangeText={text => {
+                    setPayrollName(text);
+                    if (errors.payrollName) setErrors({ ...errors, payrollName: '' });
+                  }}
+                  placeholder={t('illnesses.payrollPlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+                {errors.payrollName && (
+                  <Text style={styles.errorText}>{errors.payrollName}</Text>
+                )}
+              </View>
+
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('illnesses.employeeNameLabel')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={employeeName}
+                  onChangeText={setEmployeeName}
+                  placeholder={t('illnesses.employeePlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
             </View>
-          )}
-        </TouchableOpacity>
+          </View>
 
-        <Text style={styles.label}>{t('illnesses.payrollNameLabel')} *</Text>
-        <TextInput
-          style={[styles.input, errors.payrollName && styles.inputError]}
-          value={payrollName}
-          onChangeText={text => {
-            setPayrollName(text);
-            if (errors.payrollName) setErrors({ ...errors, payrollName: '' });
-          }}
-          placeholder={t('illnesses.payrollPlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-        />
-        {errors.payrollName && (
-          <Text style={styles.errorText}>{errors.payrollName}</Text>
-        )}
+          {/* Section: Period */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('payroll.freqWeekly') || t('leaves.time')}</Text>
 
-        <Text style={styles.label}>{t('illnesses.employeeNameLabel')}</Text>
-        <TextInput
-          style={styles.input}
-          value={employeeName}
-          onChangeText={setEmployeeName}
-          placeholder={t('illnesses.employeePlaceholder')}
-          placeholderTextColor={theme.colors.subText}
-        />
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <DateTimePickerField
+                  label={t('illnesses.issueDateLabel')}
+                  value={issueDate}
+                  onChange={setIssueDate}
+                  mode="date"
+                  required
+                  error={errors.issueDate}
+                />
+              </View>
 
-        <DateTimePickerField
-          label={t('illnesses.issueDateLabel')}
-          value={issueDate}
-          onChange={setIssueDate}
-          mode="date"
-          required
-          error={errors.issueDate}
-        />
+              <View style={styles.fieldContainer}>
+                <DateTimePickerField
+                  label={t('illnesses.expiryDateLabel')}
+                  value={expiryDate}
+                  onChange={setExpiryDate}
+                  mode="date"
+                  minimumDate={issueDate || new Date()}
+                />
+              </View>
+            </View>
+          </View>
 
-        <DateTimePickerField
-          label={t('illnesses.expiryDateLabel')}
-          value={expiryDate}
-          onChange={setExpiryDate}
-          mode="date"
-          minimumDate={issueDate || new Date()}
-        />
+          {/* Section: Documentation */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('payroll.notes')}</Text>
 
-        <Text style={styles.label}>{t('illnesses.notesLabel')}</Text>
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          value={notes}
-          onChangeText={setNotes}
-          placeholder={t('illnesses.notesLabel')}
-          placeholderTextColor={theme.colors.subText}
-          multiline
-          numberOfLines={4}
-        />
+            <TouchableOpacity style={styles.photoButton} onPress={handleTakePhoto}>
+              {photoUri ? (
+                <Image source={{ uri: photoUri }} style={styles.photo} />
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Text style={styles.photoPlaceholderText}>
+                    {t('illnesses.photoButton')}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+
+            <Text style={styles.label}>{t('illnesses.notesLabel')}</Text>
+            <TextInput
+              style={[styles.input, styles.notesInput]}
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t('illnesses.notesLabel')}
+              placeholderTextColor={theme.colors.subText}
+              multiline
+              numberOfLines={4}
+            />
+          </View>
+        </View>
 
         <TouchableOpacity
           style={[styles.saveButton, loading && styles.saveButtonDisabled]}
@@ -243,7 +268,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {isEdit ? t('illnesses.updateButton') : t('illnesses.saveButton')}
+            {loading ? t('common.loading') : isEdit ? t('illnesses.updateButton') : t('illnesses.saveButton')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -253,8 +278,38 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { backgroundColor: theme.colors.background },
-    content: { padding: theme.spacing.m },
+    container: { backgroundColor: theme.colors.background, flex: 1 },
+    content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
+    formContainer: {
+      flex: 1,
+      maxWidth: Platform.OS === 'web' ? 800 : undefined,
+      width: '100%',
+      alignSelf: 'center',
+    },
+    section: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.spacing.m,
+      padding: theme.spacing.l,
+      marginBottom: theme.spacing.l,
+      ...theme.shadows.small,
+    },
+    sectionTitle: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.l,
+      fontSize: 18,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+      paddingBottom: theme.spacing.s,
+    },
+    responsiveRow: {
+      flexDirection: Platform.OS === 'web' ? 'row' : 'column',
+      gap: theme.spacing.m,
+    },
+    fieldContainer: {
+      flex: 1,
+      marginBottom: Platform.OS === 'web' ? 0 : theme.spacing.m,
+    },
     photoButton: { alignItems: 'center', marginBottom: theme.spacing.l },
     photo: { width: 150, height: 100, borderRadius: theme.spacing.s },
     photoPlaceholder: {
@@ -273,6 +328,7 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.primary,
       textAlign: 'center',
       fontSize: 12,
+      padding: 4,
     },
     label: {
       ...theme.textVariants.caption,
@@ -290,14 +346,16 @@ const createStyles = (theme: Theme) =>
       borderWidth: 1,
       borderColor: theme.colors.border,
     },
-    notesInput: { minHeight: 100, textAlignVertical: 'top' },
+    notesInput: { height: 100, textAlignVertical: 'top' },
     saveButton: {
       backgroundColor: theme.colors.primary,
       padding: theme.spacing.m,
       borderRadius: theme.spacing.s,
       alignItems: 'center',
       marginTop: theme.spacing.l,
-      marginBottom: theme.spacing.xl,
+      maxWidth: Platform.OS === 'web' ? 800 : undefined,
+      width: '100%',
+      alignSelf: 'center',
     },
     saveButtonDisabled: { opacity: 0.5 },
     saveButtonText: {

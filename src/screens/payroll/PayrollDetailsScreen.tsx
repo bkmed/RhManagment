@@ -85,13 +85,6 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
     navigation.navigate('AddPayroll', { payrollId });
   };
 
-  const handleViewHistory = () => {
-    if (Platform.OS === 'web') {
-      setActiveTab('Payroll', 'PayrollHistory', { payrollId });
-    } else {
-      navigation.navigate('PayrollHistory', { payrollId });
-    }
-  };
 
   if (loading || !payroll) {
     return (
@@ -109,9 +102,45 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.section}>
+          <Text style={styles.label}>{t('payroll.name')}</Text>
           <Text style={styles.name}>{payroll.name}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>{t('payroll.baseSalary')}</Text>
           <Text style={styles.amount}>{payroll.amount}</Text>
         </View>
+
+        {(payroll.mealVouchers || payroll.giftVouchers || (payroll.bonusAmount && payroll.bonusType !== 'none')) && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('common.details') || 'Benefits & Bonuses'}</Text>
+
+            {payroll.mealVouchers && (
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>{t('payroll.mealVouchers')}</Text>
+                <Text style={styles.value}>{payroll.mealVouchers}</Text>
+              </View>
+            )}
+
+            {payroll.giftVouchers && (
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>{t('payroll.giftVouchers')}</Text>
+                <Text style={styles.value}>{payroll.giftVouchers}</Text>
+              </View>
+            )}
+
+            {payroll.bonusAmount && payroll.bonusType !== 'none' && (
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>
+                  {payroll.bonusType === '13th_month' ? t('payroll.thirtheenthMonth') : t('payroll.performanceBonus')}
+                </Text>
+                <Text style={[styles.value, { color: theme.colors.success, fontWeight: 'bold' }]}>
+                  {payroll.bonusAmount}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.label}>
@@ -173,11 +202,6 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleViewHistory}>
-          <Text style={styles.buttonText}>
-            {t('payrollDetails.viewHistoryButton')}
-          </Text>
-        </TouchableOpacity>
 
         {(user?.role === 'admin' || user?.role === 'rh') && (
           <>
@@ -226,9 +250,18 @@ const createStyles = (theme: Theme) =>
       marginBottom: 4,
     },
     amount: {
+      ...theme.textVariants.header,
+      color: theme.colors.primary,
+      fontSize: 24,
+    },
+    sectionTitle: {
       ...theme.textVariants.subheader,
-      color: theme.colors.subText,
-      fontWeight: '600',
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.m,
+      fontSize: 16,
+    },
+    detailRow: {
+      marginBottom: theme.spacing.s,
     },
     label: {
       ...theme.textVariants.caption,

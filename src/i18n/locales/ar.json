@@ -24,6 +24,7 @@
         "invalidEmail": "عنوان البريد الإلكتروني غير صالح",
         "invalidPhone": "رقم الهاتف غير صالح",
         "invalidDateRange": "نطاق تاريخ غير صالح",
+        "timePlaceholder": "س س:د د",
         "searchPlaceholder": "بحث...",
         "week": "أسبوع",
         "month": "شهر",
@@ -47,7 +48,10 @@
         "analytics": "التحليلات",
         "illnesses": "المرض / الفوترة",
         "employees": "الموظفون",
-        "profile": "الملف الشخصي"
+        "history": "السجل",
+        "profile": "الملف الشخصي",
+        "personalInfo": "معلومات شخصية",
+        "employmentDetails": "تفاصيل التوظيف"
     },
     "roles": {
         "admin": "مدير",
@@ -106,7 +110,15 @@
         "noPayroll": "لم يتم العثور على عناصر رواتب",
         "addFirst": "أضف عنصر راتبك الأول للبدء",
         "urgent": "عاجل",
-        "isUrgent": "عاجل"
+        "isUrgent": "عاجل",
+        "mealVouchers": "قسائم طعام",
+        "giftVouchers": "قسائم هدايا",
+        "bonusAmount": "مبلغ المكافأة",
+        "bonusType": "نوع المكافأة",
+        "thirtheenthMonth": "الشهر الثالث عشر",
+        "performanceBonus": "مكافأة الأداء",
+        "none": "لا يوجد",
+        "baseSalary": "الراتب الأساسي"
     },
     "leaves": {
         "title": "الإجازات",
@@ -256,7 +268,14 @@
         "restartRequired": "يجب إعادة التشغيل",
         "restartRequiredMessage": "يرجى إعادة تشغيل التطبيق لتطبيق تغييرات اللغة.",
         "languageChangeError": "فشل تغيير اللغة",
-        "logoutError": "فشل تسجيل الخروج"
+        "logoutError": "فشل تسجيل الخروج",
+        "accountSettings": "إعدادات الحساب",
+        "securityPermissions": "الأمان والأذونات",
+        "professionalProfile": "الملف الشخصي المهني",
+        "edit": "تعديل الملف الشخصي",
+        "save": "حفظ التغييرات",
+        "changePhoto": "تغيير الصورة",
+        "updatedSuccessfully": "تم تحديث الملف الشخصي بنجاح"
     },
     "permissions": {
         "camera": "إذن الكاميرا",
@@ -356,6 +375,7 @@
         "reminderDisabled": "معطل",
         "editButton": "تعديل",
         "deleteButton": "حذف",
+        "errorLoadFailed": "فشل تحميل الإجازة",
         "loadError": "فشل تحميل الإجازة",
         "deleteConfirmTitle": "حذف الإجازة",
         "deleteConfirmMessage": "هل أنت متأكد من حذف هذه الإجازة؟",
@@ -390,6 +410,7 @@
         "en": "English",
         "fr": "Français",
         "ar": "العربية",
-        "de": "Deutsch"
+        "de": "Deutsch",
+        "es": "Español"
     }
 }

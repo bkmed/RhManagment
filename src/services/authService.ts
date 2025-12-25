@@ -4,6 +4,7 @@ const AUTH_KEY = 'auth_session';
 const USERS_KEY = 'auth_users';
 
 export type UserRole = 'admin' | 'employee' | 'rh' | 'chef_dequipe';
+export const ROLES: UserRole[] = ['admin', 'employee', 'rh', 'chef_dequipe'];
 
 export interface User {
     id: string;
@@ -12,6 +13,7 @@ export interface User {
     role: UserRole;
     employeeId?: number;
     department?: string;
+    photoUri?: string;
 }
 
 export const authService = {
@@ -47,7 +49,15 @@ export const authService = {
         const user = users.find((u: any) => u.email === email && u.password === password);
 
         if (user) {
-            const sessionUser: User = { id: user.id, name: user.name, email: user.email, role: user.role };
+            const sessionUser: User = {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                photoUri: user.photoUri,
+                department: user.department,
+                employeeId: user.employeeId
+            };
             storageService.setString(AUTH_KEY, JSON.stringify(sessionUser));
             return sessionUser;
         }
@@ -83,10 +93,34 @@ export const authService = {
         return sessionUser;
     },
 
+    // Update User
+    updateUser: async (updatedData: Partial<User>): Promise<User> => {
+        const currentJson = storageService.getString(AUTH_KEY);
+        if (!currentJson) throw new Error('Not logged in');
+
+        const currentUser = JSON.parse(currentJson);
+        const newUser = { ...currentUser, ...updatedData };
+
+        // Update session
+        storageService.setString(AUTH_KEY, JSON.stringify(newUser));
+
+        // Update user record in USERS_KEY if it's not a demo account
+        const usersJson = storageService.getString(USERS_KEY);
+        if (usersJson) {
+            const users = JSON.parse(usersJson);
+            const userIndex = users.findIndex((u: any) => u.id === newUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = { ...users[userIndex], ...updatedData };
+                storageService.setString(USERS_KEY, JSON.stringify(users));
+            }
+        }
+
+        return newUser;
+    },
+
     // Logout
     logout: async (): Promise<void> => {
         storageService.delete(AUTH_KEY);
-        // Ensure web storage is cleared instantly if async issues exist (though this is sync)
         return Promise.resolve();
     },
 

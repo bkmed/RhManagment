@@ -24,6 +24,7 @@
         "invalidEmail": "Ungültige E-Mail-Adresse",
         "invalidPhone": "Ungültige Telefonnummer",
         "invalidDateRange": "Ungültiger Datumsbereich",
+        "timePlaceholder": "SS:MM",
         "searchPlaceholder": "Suchen...",
         "week": "Woche",
         "month": "Monat",
@@ -47,7 +48,10 @@
         "analytics": "Analytik",
         "illnesses": "Krankheit / Abrechnung",
         "employees": "Mitarbeiter",
-        "profile": "Profil"
+        "history": "Verlauf",
+        "profile": "Profil",
+        "personalInfo": "Persönliche Informationen",
+        "employmentDetails": "Beschäftigungsdetails"
     },
     "roles": {
         "admin": "Administrator",
@@ -106,7 +110,15 @@
         "noPayroll": "Keine Gehaltsposten gefunden",
         "addFirst": "Fügen Sie Ihren ersten Posten hinzu, um zu beginnen",
         "urgent": "DRINGEND",
-        "isUrgent": "Dringend"
+        "isUrgent": "Dringend",
+        "mealVouchers": "Essensgutscheine",
+        "giftVouchers": "Geschenkgutscheine",
+        "bonusAmount": "Bonusbetrag",
+        "bonusType": "Bonustyp",
+        "thirtheenthMonth": "13. Monatsgehalt",
+        "performanceBonus": "Leistungsbonus",
+        "none": "Keiner",
+        "baseSalary": "Grundgehalt"
     },
     "leaves": {
         "title": "Abwesenheiten",
@@ -256,7 +268,14 @@
         "restartRequired": "Neustart erforderlich",
         "restartRequiredMessage": "Bitte starten Sie die App neu, um Sprachänderungen anzuwenden.",
         "languageChangeError": "Fehler beim Ändern der Sprache",
-        "logoutError": "Fehler beim Abmelden"
+        "logoutError": "Fehler beim Abmelden",
+        "accountSettings": "Kontoeinstellungen",
+        "securityPermissions": "Sicherheit & Berechtigungen",
+        "professionalProfile": "Berufliches Profil",
+        "edit": "Profil bearbeiten",
+        "save": "Änderungen speichern",
+        "changePhoto": "Foto ändern",
+        "updatedSuccessfully": "Profil erfolgreich aktualisiert"
     },
     "permissions": {
         "camera": "Kamera-Berechtigung",
@@ -390,6 +409,7 @@
         "en": "English",
         "fr": "Français",
         "ar": "العربية",
-        "de": "Deutsch"
+        "de": "Deutsch",
+        "es": "Español"
     }
 }

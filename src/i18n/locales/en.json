@@ -49,7 +49,9 @@
     "illnesses": "Illness / Invoicing",
     "employees": "Employees",
     "history": "History",
-    "profile": "Profile"
+    "profile": "Profile",
+    "personalInfo": "Personal Information",
+    "employmentDetails": "Employment Details"
   },
   "roles": {
     "admin": "Administrator",
@@ -108,7 +110,15 @@
     "noPayroll": "No payroll items found",
     "addFirst": "Add your first payroll item to get started",
     "urgent": "URGENT",
-    "isUrgent": "Urgent"
+    "isUrgent": "Urgent",
+    "mealVouchers": "Meal Vouchers",
+    "giftVouchers": "Gift Vouchers",
+    "bonusAmount": "Bonus Amount",
+    "bonusType": "Bonus Type",
+    "thirtheenthMonth": "13th Month",
+    "performanceBonus": "Performance Bonus",
+    "none": "None",
+    "baseSalary": "Base Salary"
   },
   "leaves": {
     "title": "Leaves",
@@ -258,7 +268,14 @@
     "restartRequired": "Restart Required",
     "restartRequiredMessage": "Please restart the app to apply language changes.",
     "languageChangeError": "Failed to change language",
-    "logoutError": "Failed to logout"
+    "logoutError": "Failed to logout",
+    "accountSettings": "Account Settings",
+    "securityPermissions": "Security & Permissions",
+    "professionalProfile": "Professional Profile",
+    "edit": "Edit Profile",
+    "save": "Save Changes",
+    "changePhoto": "Change Photo",
+    "updatedSuccessfully": "Profile updated successfully"
   },
   "permissions": {
     "camera": "Camera Permission",
@@ -392,6 +409,7 @@
     "en": "English",
     "fr": "Français",
     "ar": "العربية",
-    "de": "Deutsch"
+    "de": "Deutsch",
+    "es": "Español"
   }
 }

@@ -10,6 +10,10 @@ export interface Payroll {
   reminderEnabled: boolean;
   isUrgent?: boolean;
   employeeId?: number;
+  mealVouchers?: string;
+  giftVouchers?: string;
+  bonusAmount?: string;
+  bonusType?: string; // '13th_month', 'performance', 'none'
   createdAt: string;
   updatedAt: string;
 }

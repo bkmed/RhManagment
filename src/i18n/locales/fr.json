@@ -24,6 +24,7 @@
         "invalidEmail": "Adresse e-mail invalide",
         "invalidPhone": "Numéro de téléphone invalide",
         "invalidDateRange": "Plage de dates invalide",
+        "timePlaceholder": "HH:MM",
         "searchPlaceholder": "Rechercher...",
         "week": "Semaine",
         "month": "Mois",
@@ -47,7 +48,10 @@
         "analytics": "Analytiques",
         "illnesses": "Maladies / Facturation",
         "employees": "Employés",
-        "profile": "Profil"
+        "history": "Historique",
+        "profile": "Profil",
+        "personalInfo": "Informations Personnelles",
+        "employmentDetails": "Détails d'Emploi"
     },
     "roles": {
         "admin": "Administrateur",
@@ -106,7 +110,15 @@
         "noPayroll": "Aucun élément de paie trouvé",
         "addFirst": "Ajoutez votre premier élément de paie pour commencer",
         "urgent": "URGENT",
-        "isUrgent": "Urgent"
+        "isUrgent": "Urgent",
+        "mealVouchers": "Tickets Restaurant",
+        "giftVouchers": "Tickets Cadeaux",
+        "bonusAmount": "Montant du Bonus",
+        "bonusType": "Type de Bonus",
+        "thirtheenthMonth": "13ème Mois",
+        "performanceBonus": "Prime de Performance",
+        "none": "Aucun",
+        "baseSalary": "Salaire de Base"
     },
     "leaves": {
         "title": "Congés",
@@ -256,7 +268,14 @@
         "restartRequired": "Redémarrage requis",
         "restartRequiredMessage": "Veuillez redémarrer l'application pour appliquer les changements de langue.",
         "languageChangeError": "Échec du changement de langue",
-        "logoutError": "Échec de la déconnexion"
+        "logoutError": "Échec de la déconnexion",
+        "accountSettings": "Paramètres du Compte",
+        "securityPermissions": "Sécurité et Permissions",
+        "professionalProfile": "Profil Professionnel",
+        "edit": "Modifier le Profil",
+        "save": "Enregistrer les Modifications",
+        "changePhoto": "Changer la Photo",
+        "updatedSuccessfully": "Profil mis à jour avec succès"
     },
     "permissions": {
         "camera": "Autorisation de la caméra",
@@ -390,6 +409,7 @@
         "en": "English",
         "fr": "Français",
         "ar": "العربية",
-        "de": "Deutsch"
+        "de": "Deutsch",
+        "es": "Español"
     }
 }
