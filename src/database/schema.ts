@@ -1,3 +1,16 @@
+export type ClaimType = 'material' | 'account' | 'other';
+
+export interface Claim {
+  id?: number;
+  employeeId: number;
+  type: ClaimType;
+  description: string;
+  isUrgent: boolean;
+  status: 'pending' | 'processed' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Payroll {
   id?: number;
   name: string;
@@ -18,6 +31,9 @@ export interface Payroll {
   updatedAt: string;
   department?: string; // Service
   location?: string;   // Local
+  month?: string;      // e.g., "1" for January
+  year?: string;       // e.g., "2024"
+  hoursWorked?: number;
 }
 
 export interface PayrollHistory {

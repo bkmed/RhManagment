@@ -36,17 +36,13 @@ import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
 import { RemoteCalendarScreen } from '../screens/remote/RemoteCalendarScreen';
+import { AddClaimScreen } from '../screens/claims/AddClaimScreen';
+import { ClaimsListScreen } from '../screens/claims/ClaimsListScreen';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 enableScreens();
 
-// ======= Web Navigation Context (avec subScreen) =======
-export const WebNavigationContext = createContext({
-  activeTab: 'Home',
-  subScreen: '',
-  screenParams: {} as any,
-  setActiveTab: (tab: string, subScreen?: string, params?: any) => { },
-});
+import { WebNavigationContext } from './WebNavigationContext';
 
 // ======= Stacks =======
 const Stack = createNativeStackNavigator();
@@ -165,6 +161,24 @@ const EmployeesStack = () => {
 };
 
 
+const ClaimsStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="ClaimsList"
+        component={ClaimsListScreen}
+        options={{ title: t('navigation.claims') }}
+      />
+      <Stack.Screen
+        name="AddClaim"
+        component={AddClaimScreen}
+        options={{ title: t('claims.newClaim') }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const ProfileStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Profile" component={ProfileScreen} />
@@ -185,6 +199,7 @@ const TabNavigator = () => (
     <Tab.Screen name="HomeTab" component={HomeStack} />
     <Tab.Screen name="PayrollTab" component={PayrollStack} />
     <Tab.Screen name="LeavesTab" component={LeavesStack} />
+    <Tab.Screen name="ClaimsTab" component={ClaimsStack} options={{ title: 'Claims' }} />
   </Tab.Navigator>
 );
 
@@ -193,6 +208,7 @@ const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <Drawer.Navigator screenOptions={{ headerShown: false }}>
@@ -207,6 +223,7 @@ const DrawerNavigator = () => {
         <Drawer.Screen name="Employees" component={EmployeesStack} />
       )}
       <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
+      <Drawer.Screen name="Claims" component={ClaimsStack} options={{ title: t('navigation.claims') }} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
     </Drawer.Navigator>
   );
@@ -279,6 +296,9 @@ const WebNavigator = () => {
         if (subScreen === 'EmployeeDetails')
           return <EmployeeDetailsScreen route={mockRoute} />;
         return <EmployeesStack />;
+      case 'Claims':
+        if (subScreen === 'AddClaim') return <AddClaimScreen route={mockRoute} />;
+        return <ClaimsStack />;
       case 'Profile':
         return <ProfileStack />;
       default:
@@ -297,6 +317,9 @@ const WebNavigator = () => {
 
     // Remote visible to all
     items.push(['Remote', t('remote.title')]);
+
+    // Claims visible to all
+    items.push(['Claims', t('navigation.claims')]);
 
     // Analytics: Not for employees
     if (user?.role !== 'employee') {

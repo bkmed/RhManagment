@@ -49,7 +49,8 @@
         "deleteTitle": "حذف العنصر",
         "deleteMessage": "هل أنت متأكد من حذف هذا العنصر؟",
         "viewHistory": "عرض السجل",
-        "historyUnavailable": "تتبع السجل غير متاح بعد"
+        "historyUnavailable": "تتبع السجل غير متاح بعد",
+        "validate": "تأكيد"
     },
     "navigation": {
         "home": "الرئيسية",
@@ -88,6 +89,7 @@
         "selectStatus": "تغيير الحالة"
     },
     "leavePolicy": {
+        "title": "رصيد إجازاتي",
         "remaining": "الأيام المتبقية",
         "perYear": "سنوياً",
         "country": "البلد",
@@ -155,7 +157,26 @@
         "thirtheenthMonth": "الشهر الثالث عشر",
         "performanceBonus": "مكافأة الأداء",
         "none": "لا يوجد",
-        "baseSalary": "الراتب الأساسي"
+        "baseSalary": "الراتب الأساسي",
+        "month": "شهر الراتب",
+        "year": "السنة",
+        "hoursWorked": "ساعات العمل"
+    },
+    "claims": {
+        "newClaim": "مطالبة جديدة",
+        "type": "النوع",
+        "typeMaterial": "معدات",
+        "typeAccount": "حساب / وصول",
+        "typeOther": "أخرى",
+        "description": "الوصف",
+        "descriptionPlaceholder": "صف مشكلتك أو طلبك...",
+        "urgentNote": "وضع علامة عاجل",
+        "saveError": "خطأ في حفظ المطالبة",
+        "successMessage": "تم تقديم المطالبة بنجاح",
+        "statusPending": "قيد الانتظار",
+        "statusProcessed": "تمت المعالجة",
+        "statusRejected": "مرفوضة",
+        "empty": "لم يتم العثور على مطالبات"
     },
     "leaves": {
         "title": "الإجازات",

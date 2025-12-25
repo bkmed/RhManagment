@@ -39,16 +39,35 @@ export const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
     const { t } = useTranslation();
     const styles = createStyles(theme);
     const [show, setShow] = useState(false);
+    const [tempDate, setTempDate] = useState<Date | null>(null);
+
+    const handleOpen = () => {
+        setTempDate(value || new Date());
+        setShow(true);
+    };
 
     const handleChange = (event: any, selectedDate?: Date) => {
-        // On Android, the picker closes automatically after selection
         if (Platform.OS === 'android') {
             setShow(false);
+            if (selectedDate) {
+                onChange(selectedDate);
+            }
+        } else {
+            if (selectedDate) {
+                setTempDate(selectedDate);
+            }
         }
+    };
 
-        if (selectedDate) {
-            onChange(selectedDate);
+    const handleConfirm = () => {
+        if (tempDate) {
+            onChange(tempDate);
         }
+        setShow(false);
+    };
+
+    const handleCancel = () => {
+        setShow(false);
     };
 
     const formattedValue = value
@@ -60,9 +79,22 @@ export const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
     // Web Support: Use native HTML input
     if (Platform.OS === 'web') {
         const handleWebChange = (e: any) => {
-            const dateValue = new Date(e.target.value);
-            if (!isNaN(dateValue.getTime())) {
-                onChange(dateValue);
+            const inputValue = e.target.value;
+            if (mode === 'time') {
+                if (inputValue) {
+                    const [hours, minutes] = inputValue.split(':').map(Number);
+                    const newDate = value ? new Date(value) : new Date();
+                    newDate.setHours(hours);
+                    newDate.setMinutes(minutes);
+                    newDate.setSeconds(0);
+                    newDate.setMilliseconds(0);
+                    onChange(newDate);
+                }
+            } else {
+                const dateValue = new Date(inputValue);
+                if (!isNaN(dateValue.getTime())) {
+                    onChange(dateValue);
+                }
             }
         };
 
@@ -112,7 +144,7 @@ export const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
 
             <TouchableOpacity
                 style={[styles.input, error ? styles.inputError : null]}
-                onPress={() => setShow(true)}
+                onPress={handleOpen}
             >
                 <Text style={[styles.inputText, !value && styles.placeholder]}>
                     {formattedValue}
@@ -124,16 +156,19 @@ export const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
             {/* Android/iOS Date Picker */}
             {show && (
                 Platform.OS === 'ios' ? (
-                    <Modal transparent animationType="slide" visible={show} onRequestClose={() => setShow(false)}>
+                    <Modal transparent animationType="slide" visible={show} onRequestClose={handleCancel}>
                         <View style={styles.modalOverlay}>
                             <View style={styles.modalContent}>
                                 <View style={styles.modalHeader}>
-                                    <TouchableOpacity onPress={() => setShow(false)}>
-                                        <Text style={styles.doneButton}>{t('common.done')}</Text>
+                                    <TouchableOpacity onPress={handleCancel}>
+                                        <Text style={styles.cancelButton}>{t('common.cancel')}</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={handleConfirm}>
+                                        <Text style={styles.doneButton}>{t('common.validate')}</Text>
                                     </TouchableOpacity>
                                 </View>
                                 <DateTimePicker
-                                    value={value || new Date()}
+                                    value={tempDate || value || new Date()}
                                     mode={mode}
                                     is24Hour={true}
                                     display="spinner"
@@ -209,7 +244,7 @@ const createStyles = (theme: Theme) =>
         },
         modalHeader: {
             flexDirection: 'row',
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             padding: 15,
             borderBottomWidth: 1,
             borderBottomColor: theme.colors.border
@@ -218,5 +253,10 @@ const createStyles = (theme: Theme) =>
             color: theme.colors.primary,
             fontSize: 16,
             fontWeight: '600'
+        },
+        cancelButton: {
+            color: theme.colors.error,
+            fontSize: 16,
+            fontWeight: '400'
         }
     });

@@ -61,7 +61,8 @@
     "history": "History",
     "profile": "Profile",
     "personalInfo": "Personal Information",
-    "employmentDetails": "Employment Details"
+    "employmentDetails": "Employment Details",
+    "claims": "Claims"
   },
   "roles": {
     "admin": "Administrator",
@@ -88,6 +89,7 @@
     "selectStatus": "Change Status"
   },
   "leavePolicy": {
+    "title": "My Leave Balance",
     "remaining": "Remaining Days",
     "perYear": "Per Year",
     "country": "Country",
@@ -155,7 +157,26 @@
     "thirtheenthMonth": "13th Month",
     "performanceBonus": "Performance Bonus",
     "none": "None",
-    "baseSalary": "Base Salary"
+    "baseSalary": "Base Salary",
+    "month": "Payroll Month",
+    "year": "Year",
+    "hoursWorked": "Hours Worked"
+  },
+  "claims": {
+    "newClaim": "New Claim",
+    "type": "Type",
+    "typeMaterial": "Material",
+    "typeAccount": "Account / Access",
+    "typeOther": "Other",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your issue or request...",
+    "urgentNote": "Mark as urgent",
+    "saveError": "Error saving claim",
+    "successMessage": "Claim submitted successfully",
+    "statusPending": "Pending",
+    "statusProcessed": "Processed",
+    "statusRejected": "Rejected",
+    "empty": "No claims found"
   },
   "leaves": {
     "title": "Leaves",
@@ -318,9 +339,17 @@
     "edit": "Edit Profile",
     "save": "Save Changes",
     "changePhoto": "Change Photo",
-    "updatedSuccessfully": "Profile updated successfully"
+    "updatedSuccessfully": "Profile updated successfully",
+    "validate": "Validate"
   },
   "permissions": {
+    "settings": "Permission Settings",
+    "maxHours": "Max Permission Hours",
+    "errorDuration": "Permission cannot exceed {{hours}} hours",
+    "date": "Permission Date",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "invalidTime": "End time must be after start time",
     "camera": "Camera Permission",
     "cameraDesc": "Allow camera access to scan documents",
     "notifications": "Notifications Permission",

@@ -46,7 +46,8 @@
         "deleteTitle": "Element löschen",
         "deleteMessage": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
         "viewHistory": "Verlauf anzeigen",
-        "historyUnavailable": "Verlaufsverfolgung noch nicht verfügbar"
+        "historyUnavailable": "Verlaufsverfolgung noch nicht verfügbar",
+        "validate": "Bestätigen"
     },
     "navigation": {
         "home": "Startseite",
@@ -58,7 +59,8 @@
         "history": "Verlauf",
         "profile": "Profil",
         "personalInfo": "Persönliche Informationen",
-        "employmentDetails": "Beschäftigungsdetails"
+        "employmentDetails": "Beschäftigungsdetails",
+        "claims": "Reklamationen"
     },
     "roles": {
         "admin": "Administrator",
@@ -85,6 +87,7 @@
         "selectStatus": "Status ändern"
     },
     "leavePolicy": {
+        "title": "Mein Urlaubssaldo",
         "remaining": "Verbleibende Tage",
         "perYear": "Pro Jahr",
         "country": "Land",
@@ -152,7 +155,10 @@
         "thirtheenthMonth": "13. Monatsgehalt",
         "performanceBonus": "Leistungsbonus",
         "none": "Keiner",
-        "baseSalary": "Grundgehalt"
+        "baseSalary": "Grundgehalt",
+        "month": "Abrechnungsmonat",
+        "year": "Jahr",
+        "hoursWorked": "Arbeitsstunden"
     },
     "leaves": {
         "title": "Abwesenheiten",

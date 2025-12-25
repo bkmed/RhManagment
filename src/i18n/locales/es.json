@@ -46,7 +46,8 @@
         "deleteTitle": "Eliminar elemento",
         "deleteMessage": "¿Está seguro de que desea eliminar este elemento?",
         "viewHistory": "Ver historial",
-        "historyUnavailable": "El seguimiento del historial aún no está disponible"
+        "historyUnavailable": "El seguimiento del historial aún no está disponible",
+        "validate": "Validar"
     },
     "navigation": {
         "home": "Inicio",
@@ -58,7 +59,8 @@
         "history": "Historial",
         "profile": "Perfil",
         "personalInfo": "Información Personal",
-        "employmentDetails": "Detalles de Empleo"
+        "employmentDetails": "Detalles de Empleo",
+        "claims": "Reclamaciones"
     },
     "roles": {
         "admin": "Administrador",
@@ -85,6 +87,7 @@
         "selectStatus": "Cambiar estado"
     },
     "leavePolicy": {
+        "title": "Mi Saldo de Vacaciones",
         "remaining": "Días restantes",
         "perYear": "Por año",
         "country": "País",
@@ -152,7 +155,26 @@
         "thirtheenthMonth": "13er Mes",
         "performanceBonus": "Bono de Desempeño",
         "none": "Ninguno",
-        "baseSalary": "Salario Base"
+        "baseSalary": "Salario Base",
+        "month": "Mes de nómina",
+        "year": "Año",
+        "hoursWorked": "Horas trabajadas"
+    },
+    "claims": {
+        "newClaim": "Nueva Reclamación",
+        "type": "Tipo",
+        "typeMaterial": "Material",
+        "typeAccount": "Cuenta / Acceso",
+        "typeOther": "Otro",
+        "description": "Descripción",
+        "descriptionPlaceholder": "Describa su problema o solicitud...",
+        "urgentNote": "Marcar como urgente",
+        "saveError": "Error al guardar la reclamación",
+        "successMessage": "Reclamación enviada con éxito",
+        "statusPending": "Pendiente",
+        "statusProcessed": "Procesada",
+        "statusRejected": "Rechazada",
+        "empty": "No se encontraron reclamaciones"
     },
     "leaves": {
         "title": "Vacaciones",

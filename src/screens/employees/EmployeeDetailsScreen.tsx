@@ -19,6 +19,7 @@ import { Theme } from '../../theme';
 import { LoadingScreen } from '../../components/LoadingScreen';
 
 import { useAuth } from '../../context/AuthContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
@@ -30,14 +31,7 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const WebNavigationContext =
-    Platform.OS === 'web'
-      ? require('../../navigation/AppNavigator').WebNavigationContext
-      : null;
-
-  const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext) as any
-    : { setActiveTab: (tab: string, screen?: string, params?: any) => { } };
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   const navigateToAddLeave = () => {
     if (Platform.OS === 'web') {

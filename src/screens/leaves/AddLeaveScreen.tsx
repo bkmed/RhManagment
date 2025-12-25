@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import {
   View,
   Text,
@@ -68,14 +69,9 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const WebNavigationContext =
-    Platform.OS === 'web'
-      ? require('../../navigation/AppNavigator').WebNavigationContext
-      : null;
 
-  const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext) as any
-    : { setActiveTab: () => { } };
+
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   useEffect(() => {
     navigation?.setOptions({

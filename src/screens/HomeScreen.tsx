@@ -257,6 +257,19 @@ export const HomeScreen = () => {
           </TouchableOpacity>
         )}
 
+        {/* Claims Action */}
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => navigateToTab('Claims', 'AddClaim')}
+        >
+          <Text style={styles.actionIcon}>📝</Text>
+          <View style={styles.actionContent}>
+            <Text style={styles.actionTitle}>{t('claims.newClaim')}</Text>
+            <Text style={styles.actionSubtitle}>{t('claims.descriptionPlaceholder')}</Text>
+          </View>
+          <Text style={styles.actionArrow}>›</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => navigateToTab('Leaves', 'AddLeave')}

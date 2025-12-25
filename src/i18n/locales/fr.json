@@ -1,10 +1,11 @@
 {
     "common": {
         "generalInfo": "Informations Générales",
-        "save": "Enregistrer",
         "service": "Service",
         "local": "Local",
         "cancel": "Annuler",
+        "submit": "Soumettre",
+        "save": "Enregistrer",
         "delete": "Supprimer",
         "edit": "Modifier",
         "add": "Ajouter",
@@ -49,7 +50,8 @@
         "deleteTitle": "Supprimer l'élément",
         "deleteMessage": "Êtes-vous sûr de vouloir supprimer cet élément ?",
         "viewHistory": "Voir l'historique",
-        "historyUnavailable": "Le suivi de l'historique n'est pas encore disponible"
+        "historyUnavailable": "Le suivi de l'historique n'est pas encore disponible",
+        "validate": "Valider"
     },
     "navigation": {
         "home": "Accueil",
@@ -61,7 +63,8 @@
         "history": "Historique",
         "profile": "Profil",
         "personalInfo": "Informations Personnelles",
-        "employmentDetails": "Détails d'Emploi"
+        "employmentDetails": "Détails d'Emploi",
+        "claims": "Réclamations"
     },
     "roles": {
         "admin": "Administrateur",
@@ -88,6 +91,7 @@
         "selectStatus": "Changer le statut"
     },
     "leavePolicy": {
+        "title": "Mon Solde de Congés",
         "remaining": "Jours restants",
         "perYear": "Par an",
         "country": "Pays",
@@ -155,7 +159,26 @@
         "thirtheenthMonth": "13ème Mois",
         "performanceBonus": "Prime de Performance",
         "none": "Aucun",
-        "baseSalary": "Salaire de Base"
+        "baseSalary": "Salaire de Base",
+        "month": "Mois de paie",
+        "year": "Année",
+        "hoursWorked": "Heures travaillées"
+    },
+    "claims": {
+        "newClaim": "Nouvelle Réclamation",
+        "type": "Type",
+        "typeMaterial": "Matériel",
+        "typeAccount": "Compte / Accès",
+        "typeOther": "Autre",
+        "description": "Description",
+        "descriptionPlaceholder": "Décrivez votre problème ou demande...",
+        "urgentNote": "Signaler comme urgent",
+        "saveError": "Erreur lors de l'enregistrement",
+        "successMessage": "Réclamation soumise avec succès",
+        "statusPending": "En attente",
+        "statusProcessed": "Traitée",
+        "statusRejected": "Rejetée",
+        "empty": "Aucune réclamation trouvée"
     },
     "leaves": {
         "title": "Congés",

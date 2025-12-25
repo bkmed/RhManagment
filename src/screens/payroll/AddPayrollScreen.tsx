@@ -11,11 +11,13 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { payrollDb } from '../../database/payrollDb';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
+import { Dropdown } from '../../components/Dropdown';
 
 export const AddPayrollScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
@@ -40,6 +42,12 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [bonusType, setBonusType] = useState('none');
   const [department, setDepartment] = useState('');
   const [location, setLocation] = useState('');
+
+  // New fields
+  const [month, setMonth] = useState(new Date().getMonth() + 1 + '');
+  const [year, setYear] = useState(new Date().getFullYear() + '');
+  const [hoursWorked, setHoursWorked] = useState('');
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
@@ -53,14 +61,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
     });
   }, [isEdit, navigation, t]);
 
-  const WebNavigationContext =
-    Platform.OS === 'web'
-      ? require('../../navigation/AppNavigator').WebNavigationContext
-      : null;
+  /* Removed require */
 
-  const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext) as any
-    : { setActiveTab: () => { } };
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   const loadPayroll = async () => {
     if (!payrollId) return;
@@ -97,6 +100,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         setBonusType(item.bonusType || 'none');
         setDepartment(item.department || '');
         setLocation(item.location || '');
+        setMonth(item.month || new Date().getMonth() + 1 + '');
+        setYear(item.year || new Date().getFullYear() + '');
+        setHoursWorked(item.hoursWorked ? item.hoursWorked.toString() : '');
       }
     } catch (error) {
       Alert.alert(t('common.error'), t('payroll.loadError'));
@@ -138,6 +144,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         bonusType,
         department,
         location,
+        month,
+        year,
+        hoursWorked: hoursWorked ? parseFloat(hoursWorked) : undefined,
       };
 
       let id: number;
@@ -310,6 +319,43 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                   placeholder={t('payroll.amountPlaceholder')}
                   placeholderTextColor={theme.colors.subText}
                   keyboardType="numeric"
+                />
+              </View>
+            </View>
+
+            {/* New Section: Period & Worked Hours */}
+            <View style={[styles.responsiveRow, { marginTop: theme.spacing.m }]}>
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('payroll.month')}
+                  data={Array.from({ length: 12 }, (_, i) => ({
+                    label: new Date(0, i).toLocaleString(undefined, { month: 'long' }),
+                    value: (i + 1).toString()
+                  }))}
+                  value={month}
+                  onSelect={setMonth}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.year')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={year}
+                  onChangeText={setYear}
+                  keyboardType="numeric"
+                  placeholder="2024"
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.hoursWorked')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={hoursWorked}
+                  onChangeText={setHoursWorked}
+                  keyboardType="numeric"
+                  placeholder="e.g., 150"
+                  placeholderTextColor={theme.colors.subText}
                 />
               </View>
             </View>

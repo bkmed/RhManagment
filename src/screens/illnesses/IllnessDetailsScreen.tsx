@@ -16,6 +16,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
 import { useAuth } from '../../context/AuthContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const IllnessDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
@@ -26,14 +27,7 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
   const [illness, setIllness] = useState<Illness | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const WebNavigationContext =
-    Platform.OS === 'web'
-      ? require('../../navigation/AppNavigator').WebNavigationContext
-      : null;
-
-  const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext) as any
-    : { setActiveTab: (tab: string, screen?: string, params?: any) => { } };
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {

@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const PayrollDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
@@ -29,14 +30,9 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const WebNavigationContext =
-    Platform.OS === 'web'
-      ? require('../../navigation/AppNavigator').WebNavigationContext
-      : null;
+  /* Removed require */
 
-  const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext) as any
-    : { setActiveTab: () => { } };
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
@@ -150,8 +146,14 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
             </View>
             <View style={[styles.infoBlock, { alignItems: 'flex-end' }]}>
               <Text style={styles.sectionTitle}>{t('payslip.period')}</Text>
-              <Text style={styles.infoValue}>{payroll.startDate}</Text>
-              <Text style={styles.infoLabel}>{payroll.frequency}</Text>
+              <Text style={styles.infoValue}>
+                {payroll.month && payroll.year
+                  ? `${new Date(0, parseInt(payroll.month) - 1).toLocaleString(undefined, { month: 'long' })} ${payroll.year}`
+                  : payroll.startDate}
+              </Text>
+              <Text style={styles.infoLabel}>
+                {t('payroll.hoursWorked')}: {payroll.hoursWorked || '-'}
+              </Text>
             </View>
           </View>
 

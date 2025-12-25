@@ -17,6 +17,7 @@ import { Theme } from '../../theme';
 import { ROLES, UserRole } from '../../services/authService';
 import { Dropdown } from '../../components/Dropdown';
 import { useAuth } from '../../context/AuthContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { permissionsService } from '../../services/permissions';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 
@@ -26,14 +27,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { user: currentUser } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const WebNavigationContext =
-    Platform.OS === 'web'
-      ? require('../../navigation/AppNavigator').WebNavigationContext
-      : null;
+  /* Removed require */
 
-  const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext) as any
-    : { setActiveTab: () => { } };
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   const employeeId = route.params?.id || route.params?.employeeId;
 
