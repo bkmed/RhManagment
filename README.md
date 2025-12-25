@@ -55,7 +55,6 @@ Rh-management/
 ├── e2e/                     # End-to-end tests with Detox
 ├── cypress/                 # Cypress tests for web
 ├── __tests__/               # Unit and integration tests
-├── bitbucket-pipelines.yml  # CI/CD configuration
 └── webpack.config.js        # Webpack configuration with optimizations
 \`\`\`
 
@@ -83,7 +82,7 @@ Rh-management/
 
 1. Clone the repository:
    \`\`\`bash
-   git clone https://bitbucket.org/your-org/Rh-management.git
+   git clone https://github.com/bkmed/RhManagment.git
    cd Rh-management
    \`\`\`
 
@@ -149,10 +148,6 @@ npm run build:ios
 # Build Android app
 npm run build:android
 \`\`\`
-
-## Deployment
-
-The project is configured with Bitbucket Pipelines for CI/CD. See `bitbucket-pipelines.yml` for details.
 
 ## License
 
