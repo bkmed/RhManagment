@@ -212,9 +212,10 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         {/* Add to Calendar */}
         <CalendarButton
           title={title || t('leaves.title')}
-          startDate={dateTime || new Date()}
+          date={dateTime ? dateTime.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+          time={dateTime ? dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '12:00'}
           location={location}
-          notes={`Employee: ${employeeName}\n${notes}`}
+          notes={`${t('leaves.employee')}: ${employeeName}\n${notes}`}
         />
 
         {/* Save Button */}

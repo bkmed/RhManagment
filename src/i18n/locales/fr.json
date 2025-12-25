@@ -23,6 +23,7 @@
         "required": "Ce champ est obligatoire",
         "invalidEmail": "Adresse e-mail invalide",
         "invalidPhone": "Numéro de téléphone invalide",
+        "invalidDateRange": "Plage de dates invalide",
         "searchPlaceholder": "Rechercher...",
         "week": "Semaine",
         "month": "Mois",

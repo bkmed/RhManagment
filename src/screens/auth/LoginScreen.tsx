@@ -111,7 +111,33 @@ export const LoginScreen = ({ navigation }: any) => {
 
       <View style={styles.tipContainer}>
         <Text style={styles.tipTitle}>{t('login.tipTitle')}</Text>
-        <Text style={styles.tipText}>{t('login.tipMessage')}</Text>
+        <View style={styles.demoTable}>
+          <View style={styles.demoRow}>
+            <Text style={[styles.demoCell, styles.demoHeader]}>Role</Text>
+            <Text style={[styles.demoCell, styles.demoHeader]}>Email</Text>
+            <Text style={[styles.demoCell, styles.demoHeader]}>Password</Text>
+          </View>
+          <View style={styles.demoRow}>
+            <Text style={styles.demoCell}>Admin</Text>
+            <Text style={styles.demoCell}>admin@demo.com</Text>
+            <Text style={styles.demoCell}>admin123</Text>
+          </View>
+          <View style={styles.demoRow}>
+            <Text style={styles.demoCell}>HR</Text>
+            <Text style={styles.demoCell}>hr@demo.com</Text>
+            <Text style={styles.demoCell}>hr123</Text>
+          </View>
+          <View style={styles.demoRow}>
+            <Text style={styles.demoCell}>Team</Text>
+            <Text style={styles.demoCell}>chef@demo.com</Text>
+            <Text style={styles.demoCell}>chef123</Text>
+          </View>
+          <View style={styles.demoRow}>
+            <Text style={styles.demoCell}>User</Text>
+            <Text style={styles.demoCell}>employee@demo.com</Text>
+            <Text style={styles.demoCell}>employee123</Text>
+          </View>
+        </View>
       </View>
 
       <View style={styles.footer}>
@@ -183,5 +209,27 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.caption,
       color: theme.colors.text,
       textAlign: 'center',
+    },
+    demoTable: {
+      width: '100%',
+      marginTop: theme.spacing.s,
+    },
+    demoRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 4,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.primary + '15',
+    },
+    demoCell: {
+      ...theme.textVariants.caption,
+      fontSize: 10,
+      flex: 1,
+      color: theme.colors.text,
+      textAlign: 'center',
+    },
+    demoHeader: {
+      fontWeight: 'bold',
+      color: theme.colors.primary,
     },
   });

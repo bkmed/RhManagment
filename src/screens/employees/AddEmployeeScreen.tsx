@@ -17,10 +17,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { Dropdown } from '../../components/Dropdown';
 import { isValidEmail, isValidPhone } from '../../utils/validation';
+import { useAuth } from '../../context/AuthContext';
 
 const DEPARTMENTS = ['hr', 'it', 'finance', 'marketing', 'sales', 'operations', 'legal', 'rd'];
+const ROLES = ['admin', 'rh', 'chef_dequipe', 'employee'];
 
 export const AddEmployeeScreen = ({ navigation, route }: any) => {
+  const { user: currentUser } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -30,6 +33,7 @@ export const AddEmployeeScreen = ({ navigation, route }: any) => {
 
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
+  const [role, setRole] = useState('employee');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
@@ -84,6 +88,7 @@ export const AddEmployeeScreen = ({ navigation, route }: any) => {
         setPhone(employee.phone || '');
         setEmail(employee.email || '');
         setAddress(employee.address || '');
+        setRole(employee.role || 'employee');
         setPhotoUri(employee.photoUri || '');
         setNotes(employee.notes || '');
       }
@@ -153,6 +158,7 @@ export const AddEmployeeScreen = ({ navigation, route }: any) => {
         phone: phone || undefined,
         email: email || undefined,
         address: address || undefined,
+        role: role,
         photoUri: photoUri || undefined,
         notes: notes || undefined,
       };
@@ -230,6 +236,16 @@ export const AddEmployeeScreen = ({ navigation, route }: any) => {
           onSelect={setPosition}
           placeholder={t('employees.specialtyPlaceholder')}
         />
+
+        {currentUser?.role === 'admin' && (
+          <Dropdown
+            label={t('signUp.roleLabel')}
+            data={ROLES.map(r => ({ label: t(`roles.${r}`), value: r }))}
+            value={role}
+            onSelect={setRole}
+            placeholder={t('signUp.roleLabel')}
+          />
+        )}
 
         <Text style={styles.label}>{t('employees.phone')}</Text>
         <TextInput

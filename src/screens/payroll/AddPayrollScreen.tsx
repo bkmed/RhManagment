@@ -224,7 +224,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                 value={time}
                 onChange={(d) => handleTimeChange(index, d)}
                 mode="time"
-                placeholder="HH:MM"
+                placeholder={t('common.timePlaceholder')}
               />
             </View>
             {times.length > 1 && (

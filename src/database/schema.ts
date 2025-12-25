@@ -67,6 +67,7 @@ export interface Employee {
   photoUri?: string;
   notes?: string;
   department?: string;
+  role?: string; // 'admin' | 'employee' | 'rh' | 'chef_dequipe'
   teamId?: string;
   createdAt: string;
   updatedAt: string;

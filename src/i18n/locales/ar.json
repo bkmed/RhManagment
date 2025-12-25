@@ -23,6 +23,7 @@
         "required": "هذا الحقل مطلوب",
         "invalidEmail": "عنوان البريد الإلكتروني غير صالح",
         "invalidPhone": "رقم الهاتف غير صالح",
+        "invalidDateRange": "نطاق تاريخ غير صالح",
         "searchPlaceholder": "بحث...",
         "week": "أسبوع",
         "month": "شهر",

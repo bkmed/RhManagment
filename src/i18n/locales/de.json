@@ -23,6 +23,7 @@
         "required": "Dieses Feld ist erforderlich",
         "invalidEmail": "Ungültige E-Mail-Adresse",
         "invalidPhone": "Ungültige Telefonnummer",
+        "invalidDateRange": "Ungültiger Datumsbereich",
         "searchPlaceholder": "Suchen...",
         "week": "Woche",
         "month": "Monat",

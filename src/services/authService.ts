@@ -20,7 +20,21 @@ export const authService = {
         // Simulate API delay
         await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
 
-        // Add test user if not exists (for demo purposes)
+        // Demo accounts
+        const demoAccounts: { [key: string]: { password: string; user: User } } = {
+            'admin@demo.com': { password: 'admin123', user: { id: 'demo-admin', name: 'Demo Admin', email: 'admin@demo.com', role: 'admin' } },
+            'hr@demo.com': { password: 'hr123', user: { id: 'demo-hr', name: 'Demo HR', email: 'hr@demo.com', role: 'rh' } },
+            'chef@demo.com': { password: 'chef123', user: { id: 'demo-chef', name: 'Demo Chef', email: 'chef@demo.com', role: 'chef_dequipe' } },
+            'employee@demo.com': { password: 'employee123', user: { id: 'demo-emp', name: 'Demo Employee', email: 'employee@demo.com', role: 'employee' } },
+        };
+
+        if (demoAccounts[email] && demoAccounts[email].password === password) {
+            const demoUser = demoAccounts[email].user;
+            storageService.setString(AUTH_KEY, JSON.stringify(demoUser));
+            return demoUser;
+        }
+
+        // Backward compatibility for old test user
         if (email === 'test@test.com' && password === 'test') {
             const testUser: User = { id: 'test-user', name: 'Test User', email: 'test@test.com', role: 'admin' };
             storageService.setString(AUTH_KEY, JSON.stringify(testUser));
