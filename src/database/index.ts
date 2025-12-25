@@ -2,10 +2,10 @@
 // MMKV storage is initialized in services/storage.ts and used by all database files
 
 // Export database modules
-export { medicationsDb } from './medicationsDb';
-export { appointmentsDb } from './appointmentsDb';
-export { prescriptionsDb } from './prescriptionsDb';
-export { doctorsDb } from './doctorsDb';
+export { payrollDb } from './payrollDb';
+export { leavesDb } from './leavesDb';
+export { illnessesDb } from './illnessesDb';
+export { employeesDb } from './employeesDb';
 
 // Export schemas
 export * from './schema';

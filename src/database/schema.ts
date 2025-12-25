@@ -1,11 +1,11 @@
-export interface Medication {
+export interface Payroll {
   id?: number;
   name: string;
-  dosage: string;
+  amount: string;
   frequency: string; // e.g., "Daily", "Twice a day", "Weekly"
   times: string; // JSON string of times, e.g., ["08:00", "20:00"]
   startDate: string; // ISO date string
-  endDate?: string; // ISO date string, optional for ongoing medications
+  endDate?: string; // ISO date string, optional for ongoing payroll items
   notes?: string;
   reminderEnabled: boolean;
   isUrgent?: boolean;
@@ -13,19 +13,19 @@ export interface Medication {
   updatedAt: string;
 }
 
-export interface MedicationHistory {
+export interface PayrollHistory {
   id?: number;
-  medicationId: number;
-  takenAt: string; // ISO datetime string
-  status: 'taken' | 'missed' | 'skipped';
+  payrollId: number;
+  paidAt: string; // ISO datetime string
+  status: 'paid' | 'missed' | 'skipped';
   notes?: string;
 }
 
-export interface Appointment {
+export interface Leave {
   id?: number;
   title: string;
-  doctorName?: string;
-  doctorId?: number;
+  employeeName?: string;
+  employeeId?: number;
   location?: string;
   dateTime: string; // ISO datetime string
   notes?: string;
@@ -34,12 +34,12 @@ export interface Appointment {
   updatedAt: string;
 }
 
-export interface Prescription {
+export interface Illness {
   id?: number;
-  medicationName: string;
-  medicationIds?: string; // JSON string of number[] linking to Medication.id
-  doctorName?: string;
-  doctorId?: number;
+  payrollName: string;
+  payrollIds?: string; // JSON string of number[] linking to Payroll.id
+  employeeName?: string;
+  employeeId?: number;
   issueDate: string;
   expiryDate?: string;
   photoUri?: string;
@@ -48,18 +48,18 @@ export interface Prescription {
   updatedAt: string;
 }
 
-export interface PrescriptionHistory {
+export interface IllnessHistory {
   id: number;
-  prescriptionId: number;
+  illnessId: number;
   action: 'created' | 'updated' | 'refilled';
   date: string;
   notes?: string;
 }
 
-export interface Doctor {
+export interface Employee {
   id?: number;
   name: string;
-  specialty?: string;
+  position?: string;
   phone?: string;
   email?: string;
   address?: string;

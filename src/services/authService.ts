@@ -3,10 +3,13 @@ import { storageService } from './storage';
 const AUTH_KEY = 'auth_session';
 const USERS_KEY = 'auth_users';
 
+export type UserRole = 'admin' | 'employee' | 'rh' | 'chef_dequipe';
+
 export interface User {
     id: string;
     name: string;
     email: string;
+    role: UserRole;
 }
 
 export const authService = {
@@ -17,7 +20,7 @@ export const authService = {
 
         // Add test user if not exists (for demo purposes)
         if (email === 'test@test.com' && password === 'test') {
-            const testUser = { id: 'test-user', name: 'Test User', email: 'test@test.com' };
+            const testUser: User = { id: 'test-user', name: 'Test User', email: 'test@test.com', role: 'admin' };
             storageService.setString(AUTH_KEY, JSON.stringify(testUser));
             return testUser;
         }
@@ -28,7 +31,7 @@ export const authService = {
         const user = users.find((u: any) => u.email === email && u.password === password);
 
         if (user) {
-            const sessionUser = { id: user.id, name: user.name, email: user.email };
+            const sessionUser: User = { id: user.id, name: user.name, email: user.email, role: user.role };
             storageService.setString(AUTH_KEY, JSON.stringify(sessionUser));
             return sessionUser;
         }
@@ -37,7 +40,7 @@ export const authService = {
     },
 
     // Register
-    register: async (name: string, email: string, password: string): Promise<User> => {
+    register: async (name: string, email: string, password: string, role: UserRole = 'employee'): Promise<User> => {
         await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
 
         const usersJson = storageService.getString(USERS_KEY);
@@ -52,12 +55,13 @@ export const authService = {
             name,
             email,
             password,
+            role,
         };
 
         users.push(newUser);
         storageService.setString(USERS_KEY, JSON.stringify(users));
 
-        const sessionUser = { id: newUser.id, name: newUser.name, email: newUser.email };
+        const sessionUser: User = { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role };
         storageService.setString(AUTH_KEY, JSON.stringify(sessionUser));
 
         return sessionUser;
