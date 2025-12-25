@@ -9,27 +9,27 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { doctorsDb } from '../../database/doctorsDb';
-import { Doctor } from '../../database/schema';
+import { employeesDb } from '../../database/employeesDb';
+import { Employee } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
-export const DoctorListScreen = ({ navigation }: any) => {
+export const EmployeeListScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const loadDoctors = async () => {
+  const loadEmployees = async () => {
     try {
-      const data = await doctorsDb.getAll();
-      setDoctors(data);
+      const data = await employeesDb.getAll();
+      setEmployees(data);
     } catch (error) {
-      console.error('Error loading doctors:', error);
-      Alert.alert(t('common.error'), t('doctors.loadError'));
+      console.error('Error loading employees:', error);
+      Alert.alert(t('common.error'), t('employees.loadError'));
     } finally {
       setLoading(false);
     }
@@ -37,41 +37,41 @@ export const DoctorListScreen = ({ navigation }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      loadDoctors();
+      loadEmployees();
     }, []),
   );
 
-  const filteredDoctors = useMemo(() => {
-    if (!searchQuery) return doctors;
+  const filteredEmployees = useMemo(() => {
+    if (!searchQuery) return employees;
     const lowerQuery = searchQuery.toLowerCase();
-    return doctors.filter(doc => {
-      const specialty = doc.specialty
-        ? t(`specialties.${doc.specialty}`, { defaultValue: doc.specialty })
+    return employees.filter(emp => {
+      const position = emp.position
+        ? t(`departments.${emp.position}`, { defaultValue: emp.position })
         : '';
       return (
-        doc.name.toLowerCase().includes(lowerQuery) ||
-        specialty.toLowerCase().includes(lowerQuery)
+        emp.name.toLowerCase().includes(lowerQuery) ||
+        position.toLowerCase().includes(lowerQuery)
       );
     });
-  }, [doctors, searchQuery, t]);
+  }, [employees, searchQuery, t]);
 
-  const renderDoctor = ({ item }: { item: Doctor }) => {
+  const renderEmployee = ({ item }: { item: Employee }) => {
     return (
       <TouchableOpacity
         style={styles.card}
         onPress={() =>
-          navigation.navigate('DoctorDetails', { doctorId: item.id })
+          navigation.navigate('EmployeeDetails', { employeeId: item.id })
         }
       >
         <View style={styles.headerRow}>
           <Text style={styles.name}>
-            {t('doctors.doctor')} {item.name}
+            {item.name}
           </Text>
-          {item.specialty && (
-            <View style={styles.specialtyBadge}>
-              <Text style={styles.specialtyText}>
-                {t(`specialties.${item.specialty}`, {
-                  defaultValue: item.specialty,
+          {item.position && (
+            <View style={styles.positionBadge}>
+              <Text style={styles.positionText}>
+                {t(`departments.${item.position}`, {
+                  defaultValue: item.position,
                 })}
               </Text>
             </View>
@@ -89,8 +89,8 @@ export const DoctorListScreen = ({ navigation }: any) => {
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{t('doctors.empty')}</Text>
-      <Text style={styles.emptySubText}>{t('doctors.emptySubtitle')}</Text>
+      <Text style={styles.emptyText}>{t('employees.empty')}</Text>
+      <Text style={styles.emptySubText}>{t('employees.emptySubtitle')}</Text>
     </View>
   );
 
@@ -104,8 +104,8 @@ export const DoctorListScreen = ({ navigation }: any) => {
         />
       </View>
       <FlatList
-        data={filteredDoctors}
-        renderItem={renderDoctor}
+        data={filteredEmployees}
+        renderItem={renderEmployee}
         keyExtractor={item => item.id?.toString() || ''}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={!loading ? renderEmpty : null}
@@ -113,7 +113,7 @@ export const DoctorListScreen = ({ navigation }: any) => {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddDoctor')}
+        onPress={() => navigation.navigate('AddEmployee')}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
@@ -153,13 +153,13 @@ const createStyles = (theme: Theme) =>
       flex: 1,
       color: theme.colors.text,
     },
-    specialtyBadge: {
+    positionBadge: {
       backgroundColor: theme.colors.primary,
       paddingHorizontal: theme.spacing.s,
       paddingVertical: theme.spacing.xs,
       borderRadius: theme.spacing.l,
     },
-    specialtyText: {
+    positionText: {
       color: theme.colors.surface,
       fontSize: 12,
       fontWeight: '600',

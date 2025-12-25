@@ -1,71 +1,71 @@
 import { storageService } from '../services/storage';
-import { Doctor } from './schema';
+import { Employee } from './schema';
 
-const DOCTORS_KEY = 'doctors';
+const EMPLOYEES_KEY = 'employees';
 
 // Helper functions
-const getAllDoctors = (): Doctor[] => {
-  const json = storageService.getString(DOCTORS_KEY);
+const getAllEmployees = (): Employee[] => {
+  const json = storageService.getString(EMPLOYEES_KEY);
   return json ? JSON.parse(json) : [];
 };
 
-const saveAllDoctors = (doctors: Doctor[]): void => {
-  storageService.setString(DOCTORS_KEY, JSON.stringify(doctors));
+const saveAllEmployees = (employees: Employee[]): void => {
+  storageService.setString(EMPLOYEES_KEY, JSON.stringify(employees));
 };
 
-export const doctorsDb = {
-  // Get all doctors
-  getAll: async (): Promise<Doctor[]> => {
-    const doctors = getAllDoctors();
-    return doctors.sort((a, b) => a.name.localeCompare(b.name));
+export const employeesDb = {
+  // Get all employees
+  getAll: async (): Promise<Employee[]> => {
+    const employees = getAllEmployees();
+    return employees.sort((a, b) => a.name.localeCompare(b.name));
   },
 
-  // Get doctor by ID
-  getById: async (id: number): Promise<Doctor | null> => {
-    const doctors = getAllDoctors();
-    return doctors.find(d => d.id === id) || null;
+  // Get employee by ID
+  getById: async (id: number): Promise<Employee | null> => {
+    const employees = getAllEmployees();
+    return employees.find(e => e.id === id) || null;
   },
 
-  // Add new doctor
+  // Add new employee
   add: async (
-    doctor: Omit<Doctor, 'id' | 'createdAt' | 'updatedAt'>,
+    employee: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<number> => {
-    const doctors = getAllDoctors();
+    const employees = getAllEmployees();
     const now = new Date().toISOString();
     const id = Date.now();
 
-    const newDoctor: Doctor = {
-      ...doctor,
+    const newEmployee: Employee = {
+      ...employee,
       id,
       createdAt: now,
       updatedAt: now,
     };
 
-    doctors.push(newDoctor);
-    saveAllDoctors(doctors);
+    employees.push(newEmployee);
+    saveAllEmployees(employees);
 
     return id;
   },
 
-  // Update doctor
-  update: async (id: number, updates: Partial<Doctor>): Promise<void> => {
-    const doctors = getAllDoctors();
-    const index = doctors.findIndex(d => d.id === id);
+  // Update employee
+  update: async (id: number, updates: Partial<Employee>): Promise<void> => {
+    const employees = getAllEmployees();
+    const index = employees.findIndex(e => e.id === id);
 
     if (index !== -1) {
-      doctors[index] = {
-        ...doctors[index],
+      employees[index] = {
+        ...employees[index],
         ...updates,
         updatedAt: new Date().toISOString(),
       };
-      saveAllDoctors(doctors);
+      saveAllEmployees(employees);
     }
   },
 
-  // Delete doctor
+  // Delete employee
   delete: async (id: number): Promise<void> => {
-    const doctors = getAllDoctors();
-    const filtered = doctors.filter(d => d.id !== id);
-    saveAllDoctors(filtered);
+    const employees = getAllEmployees();
+    const filtered = employees.filter(e => e.id !== id);
+    saveAllEmployees(filtered);
   },
 };

@@ -4,29 +4,28 @@ import {
     Text,
     StyleSheet,
     FlatList,
-    TouchableOpacity,
 } from 'react-native';
-import { medicationsDb } from '../../database/medicationsDb';
-import { MedicationHistory } from '../../database/schema';
+import { payrollDb } from '../../database/payrollDb';
+import { PayrollHistory } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
-export const MedicationHistoryScreen = ({ route }: any) => {
-    const { medicationId } = route.params;
+export const PayrollHistoryScreen = ({ route }: any) => {
+    const { payrollId } = route.params;
     const { theme } = useTheme();
     const { t } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const [history, setHistory] = useState<MedicationHistory[]>([]);
+    const [history, setHistory] = useState<PayrollHistory[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadHistory();
-    }, [medicationId]);
+    }, [payrollId]);
 
     const loadHistory = async () => {
         try {
-            const data = await medicationsDb.getHistory(medicationId);
+            const data = await payrollDb.getHistory(payrollId);
             setHistory(data);
         } catch (error) {
             console.error('Error loading history:', error);
@@ -35,18 +34,18 @@ export const MedicationHistoryScreen = ({ route }: any) => {
         }
     };
 
-    const renderHistoryItem = ({ item }: { item: MedicationHistory }) => (
+    const renderHistoryItem = ({ item }: { item: PayrollHistory }) => (
         <View style={styles.card}>
             <View style={styles.row}>
                 <Text style={styles.date}>
-                    {new Date(item.takenAt).toLocaleDateString()}
+                    {new Date(item.paidAt).toLocaleDateString()}
                 </Text>
-                <View style={[styles.badge, styles[`badge${item.status}`]]}>
+                <View style={[styles.badge, styles[`badge${item.status}` as keyof typeof styles]]}>
                     <Text style={styles.badgeText}>{t(`history.status.${item.status}`).toUpperCase()}</Text>
                 </View>
             </View>
             <Text style={styles.time}>
-                {new Date(item.takenAt).toLocaleTimeString()}
+                {new Date(item.paidAt).toLocaleTimeString()}
             </Text>
             {item.notes && <Text style={styles.notes}>{item.notes}</Text>}
         </View>
@@ -109,7 +108,7 @@ const createStyles = (theme: Theme) =>
             paddingVertical: theme.spacing.xs,
             borderRadius: theme.spacing.l,
         },
-        badgetaken: {
+        badgepaid: {
             backgroundColor: theme.colors.success,
         },
         badgemissed: {

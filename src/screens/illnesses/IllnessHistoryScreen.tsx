@@ -1,44 +1,48 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+} from 'react-native';
+import { illnessesDb } from '../../database/illnessesDb';
+import { IllnessHistory } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
-import { prescriptionsDb } from '../../database/prescriptionsDb';
-import { PrescriptionHistory } from '../../database/schema';
-
-export const PrescriptionHistoryScreen = ({ route }: any) => {
-    const { prescriptionId } = route.params;
-    const { t } = useTranslation();
+export const IllnessHistoryScreen = ({ route }: any) => {
+    const { illnessId } = route.params;
     const { theme } = useTheme();
+    const { t } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const [history, setHistory] = useState<PrescriptionHistory[]>([]);
+    const [history, setHistory] = useState<IllnessHistory[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadHistory();
-    }, [prescriptionId]);
+    }, [illnessId]);
 
     const loadHistory = async () => {
         try {
-            const data = await prescriptionsDb.getHistory(prescriptionId);
+            const data = await illnessesDb.getHistory(illnessId);
             setHistory(data);
         } catch (error) {
-            console.error('Error loading prescription history:', error);
+            console.error('Error loading history:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const renderHistoryItem = ({ item }: { item: PrescriptionHistory }) => (
+    const renderHistoryItem = ({ item }: { item: IllnessHistory }) => (
         <View style={styles.card}>
             <View style={styles.row}>
-                <Text style={styles.action}>
-                    {t(`prescriptions.history.${item.action}`)}
-                </Text>
                 <Text style={styles.date}>
                     {new Date(item.date).toLocaleDateString()}
                 </Text>
+                <View style={[styles.badge, styles[`badge${item.action}` as keyof typeof styles]]}>
+                    <Text style={styles.badgeText}>{t(`illnesses.history.${item.action}`)}</Text>
+                </View>
             </View>
             <Text style={styles.time}>
                 {new Date(item.date).toLocaleTimeString()}
@@ -58,7 +62,7 @@ export const PrescriptionHistoryScreen = ({ route }: any) => {
             <FlatList
                 data={history}
                 renderItem={renderHistoryItem}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={item => item.id?.toString() || ''}
                 contentContainerStyle={styles.listContent}
                 ListEmptyComponent={!loading ? renderEmpty : null}
             />
@@ -89,25 +93,41 @@ const createStyles = (theme: Theme) =>
             alignItems: 'center',
             marginBottom: theme.spacing.xs,
         },
-        action: {
-            ...theme.textVariants.subheader,
-            color: theme.colors.text,
-            fontWeight: 'bold',
-        },
         date: {
             ...theme.textVariants.body,
-            color: theme.colors.subText,
+            fontWeight: '600',
+            color: theme.colors.text,
         },
         time: {
             ...theme.textVariants.caption,
             color: theme.colors.subText,
             marginBottom: theme.spacing.xs,
         },
+        badge: {
+            paddingHorizontal: theme.spacing.s,
+            paddingVertical: theme.spacing.xs,
+            borderRadius: theme.spacing.l,
+            backgroundColor: theme.colors.primary,
+        },
+        badgecreated: {
+            backgroundColor: theme.colors.success,
+        },
+        badgeupdated: {
+            backgroundColor: theme.colors.secondary,
+        },
+        badgerefilled: {
+            backgroundColor: theme.colors.warning,
+        },
+        badgeText: {
+            ...theme.textVariants.caption,
+            color: theme.colors.surface,
+            fontWeight: '600',
+            fontSize: 10,
+        },
         notes: {
             ...theme.textVariants.caption,
-            color: theme.colors.text,
+            color: theme.colors.subText,
             marginTop: theme.spacing.xs,
-            fontStyle: 'italic',
         },
         emptyContainer: {
             flex: 1,

@@ -9,27 +9,27 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { appointmentsDb } from '../../database/appointmentsDb';
-import { Appointment } from '../../database/schema';
+import { leavesDb } from '../../database/leavesDb';
+import { Leave } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
-export const AppointmentListScreen = ({ navigation }: any) => {
+export const LeaveListScreen = ({ navigation }: any) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [leaves, setLeaves] = useState<Leave[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const loadAppointments = async () => {
+  const loadLeaves = async () => {
     try {
-      const data = await appointmentsDb.getUpcoming();
-      setAppointments(data);
+      const data = await leavesDb.getUpcoming();
+      setLeaves(data);
     } catch (error) {
-      console.error('Error loading appointments:', error);
-      Alert.alert(t('common.error'), t('appointments.loadError'));
+      console.error('Error loading leaves:', error);
+      Alert.alert(t('common.error'), t('leaves.loadError'));
     } finally {
       setLoading(false);
     }
@@ -37,19 +37,19 @@ export const AppointmentListScreen = ({ navigation }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      loadAppointments();
+      loadLeaves();
     }, []),
   );
 
-  const filteredAppointments = useMemo(() => {
-    if (!searchQuery) return appointments;
+  const filteredLeaves = useMemo(() => {
+    if (!searchQuery) return leaves;
     const lowerQuery = searchQuery.toLowerCase();
-    return appointments.filter(
-      appt =>
-        appt.title.toLowerCase().includes(lowerQuery) ||
-        (appt.doctorName && appt.doctorName.toLowerCase().includes(lowerQuery)),
+    return leaves.filter(
+      leave =>
+        leave.title.toLowerCase().includes(lowerQuery) ||
+        (leave.employeeName && leave.employeeName.toLowerCase().includes(lowerQuery)),
     );
-  }, [appointments, searchQuery]);
+  }, [leaves, searchQuery]);
 
   const formatDateTime = (dateTimeString: string) => {
     const date = new Date(dateTimeString);
@@ -65,14 +65,14 @@ export const AppointmentListScreen = ({ navigation }: any) => {
     return { dateStr, timeStr };
   };
 
-  const renderAppointment = ({ item }: { item: Appointment }) => {
+  const renderLeave = ({ item }: { item: Leave }) => {
     const { dateStr, timeStr } = formatDateTime(item.dateTime);
 
     return (
       <TouchableOpacity
         style={styles.card}
         onPress={() =>
-          navigation.navigate('AppointmentDetails', { appointmentId: item.id })
+          navigation.navigate('LeaveDetails', { leaveId: item.id })
         }
       >
         <View style={styles.dateColumn}>
@@ -82,8 +82,8 @@ export const AppointmentListScreen = ({ navigation }: any) => {
 
         <View style={styles.detailsColumn}>
           <Text style={styles.title}>{item.title}</Text>
-          {item.doctorName && (
-            <Text style={styles.doctor}>Dr. {item.doctorName}</Text>
+          {item.employeeName && (
+            <Text style={styles.employee}>{item.employeeName}</Text>
           )}
           {item.location && (
             <Text style={styles.location}>📍 {item.location}</Text>
@@ -95,8 +95,8 @@ export const AppointmentListScreen = ({ navigation }: any) => {
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{t('appointments.noAppointments')}</Text>
-      <Text style={styles.emptySubText}>{t('appointments.addFirst')}</Text>
+      <Text style={styles.emptyText}>{t('leaves.noLeaves')}</Text>
+      <Text style={styles.emptySubText}>{t('leaves.addFirst')}</Text>
     </View>
   );
 
@@ -110,8 +110,8 @@ export const AppointmentListScreen = ({ navigation }: any) => {
         />
       </View>
       <FlatList
-        data={filteredAppointments}
-        renderItem={renderAppointment}
+        data={filteredLeaves}
+        renderItem={renderLeave}
         keyExtractor={item => item.id?.toString() || ''}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={!loading ? renderEmpty : null}
@@ -119,7 +119,7 @@ export const AppointmentListScreen = ({ navigation }: any) => {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddAppointment')}
+        onPress={() => navigation.navigate('AddLeave')}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
@@ -179,7 +179,7 @@ const createStyles = (theme: Theme) =>
       marginBottom: 4,
       color: theme.colors.text,
     },
-    doctor: {
+    employee: {
       ...theme.textVariants.body,
       color: theme.colors.subText,
       marginBottom: 4,

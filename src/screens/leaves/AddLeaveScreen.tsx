@@ -11,19 +11,33 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { appointmentsDb } from '../../database/appointmentsDb';
+import { leavesDb } from '../../database/leavesDb';
 import { notificationService } from '../../services/notificationService';
+import { calendarService } from '../../services/calendarService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { CalendarButton } from '../../components/CalendarButton';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
+import { CalendarButton } from '../../components/CalendarButton';
 
-export const AddAppointmentScreen = ({ navigation, route }: any) => {
-  const { t } = useTranslation();
+export const AddLeaveScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  // Web Navigation context
+  const leaveId = route?.params?.leaveId;
+  const isEdit = !!leaveId;
+  const initialEmployeeName = route?.params?.employeeName || '';
+  const initialEmployeeId = route?.params?.employeeId;
+
+  const [title, setTitle] = useState('');
+  const [employeeName, setEmployeeName] = useState(initialEmployeeName);
+  const [location, setLocation] = useState('');
+  const [dateTime, setDateTime] = useState<Date | null>(new Date());
+  const [notes, setNotes] = useState('');
+  const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState(false);
+
   const WebNavigationContext =
     Platform.OS === 'web'
       ? require('../../navigation/AppNavigator').WebNavigationContext
@@ -31,103 +45,84 @@ export const AddAppointmentScreen = ({ navigation, route }: any) => {
 
   const { setActiveTab } = WebNavigationContext
     ? useContext(WebNavigationContext)
-    : { setActiveTab: () => { } }; // fallback pour mobile
-
-  // Get appointmentId only if route exists (mobile)
-  const appointmentId = route?.params?.appointmentId;
-  const isEdit = !!appointmentId;
-
-  const [title, setTitle] = useState('');
-  const [doctorName, setDoctorName] = useState('');
-  const [location, setLocation] = useState('');
-  const [date, setDate] = useState<Date | null>(new Date());
-  const [time, setTime] = useState<Date | null>(new Date());
-  const [notes, setNotes] = useState('');
-  const [reminderEnabled, setReminderEnabled] = useState(true);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (isEdit) loadAppointment();
-  }, [appointmentId]);
+    : { setActiveTab: () => { } };
 
   useEffect(() => {
     navigation?.setOptions({
-      title: isEdit ? t('appointments.edit') : t('appointments.add'),
+      title: isEdit ? t('leaves.edit') : t('leaves.add'),
     });
-  }, [isEdit, navigation, t]);
+    if (isEdit) loadLeave();
+  }, [leaveId]);
 
-  const loadAppointment = async () => {
+  const loadLeave = async () => {
+    if (!leaveId) return;
     try {
-      const appt = await appointmentsDb.getById(appointmentId);
-      if (appt) {
-        setTitle(appt.title);
-        setDoctorName(appt.doctorName || '');
-        setLocation(appt.location || '');
-        const dateTime = new Date(appt.dateTime);
-        setDate(dateTime);
-        setTime(dateTime);
-        setNotes(appt.notes || '');
-        setReminderEnabled(appt.reminderEnabled);
+      const leave = await leavesDb.getById(leaveId);
+      if (leave) {
+        setTitle(leave.title || '');
+        setEmployeeName(leave.employeeName || '');
+        setLocation(leave.location || '');
+        setDateTime(leave.dateTime ? new Date(leave.dateTime) : new Date());
+        setNotes(leave.notes || '');
+        setReminderEnabled(!!leave.reminderEnabled);
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('appointments.loadError'));
+      Alert.alert(t('common.error'), t('leaves.loadError'));
     }
   };
 
   const handleSave = async () => {
     const newErrors: { [key: string]: string } = {};
     if (!title.trim()) newErrors.title = t('common.required');
-    if (!date) newErrors.date = t('common.required');
-    if (!time) newErrors.time = t('common.required');
+    if (!dateTime) newErrors.dateTime = t('common.required');
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
     setLoading(true);
     try {
-      // Create combined DateTime
-      const finalDateTime = new Date(date!);
-      finalDateTime.setHours(time!.getHours());
-      finalDateTime.setMinutes(time!.getMinutes());
-      finalDateTime.setSeconds(0);
-      finalDateTime.setMilliseconds(0);
-
-      const appointmentData = {
+      const leaveData = {
         title: title.trim(),
-        doctorName: doctorName.trim() || undefined,
+        employeeName: employeeName.trim() || undefined,
+        employeeId: initialEmployeeId,
         location: location.trim() || undefined,
-        dateTime: finalDateTime.toISOString(),
+        dateTime: dateTime!.toISOString(),
         notes: notes.trim() || undefined,
         reminderEnabled,
       };
 
       let id: number;
-      if (isEdit) {
-        await appointmentsDb.update(appointmentId, appointmentData);
-        id = appointmentId;
-        await notificationService.cancelAppointmentReminder(appointmentId);
+      if (isEdit && leaveId) {
+        await leavesDb.update(leaveId, leaveData);
+        id = leaveId;
       } else {
-        id = await appointmentsDb.add(appointmentData);
+        id = await leavesDb.add(leaveData);
       }
 
       if (reminderEnabled) {
-        await notificationService.scheduleAppointmentReminder(
+        await notificationService.scheduleLeaveReminder(
           id,
           title,
-          finalDateTime.toISOString(),
+          dateTime!.toISOString(),
         );
+      } else {
+        await notificationService.cancelLeaveReminder(id);
       }
 
-      // Go back: Mobile stack or Web tab
+      // If came from EmployeeDetails (has initialEmployeeName), return to Employees
+      // Otherwise return to Leaves
       if (Platform.OS === 'web') {
-        setActiveTab('Appointments'); // retourne à la liste
+        if (initialEmployeeName) {
+          setActiveTab('Employees');
+        } else {
+          setActiveTab('Leaves');
+        }
       } else {
         navigation.goBack();
       }
     } catch (error) {
-      console.error('Error saving appointment:', error);
-      Alert.alert(t('common.error'), t('appointments.saveError'));
+      console.error('Error saving leave:', error);
+      Alert.alert(t('common.error'), t('leaves.saveError'));
     } finally {
       setLoading(false);
     }
@@ -137,7 +132,7 @@ export const AddAppointmentScreen = ({ navigation, route }: any) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         {/* Title */}
-        <Text style={styles.label}>{t('appointments.appointmentTitle')} *</Text>
+        <Text style={styles.label}>{t('leaves.leaveTitle')} *</Text>
         <TextInput
           style={[styles.input, errors.title && styles.inputError]}
           value={title}
@@ -145,69 +140,64 @@ export const AddAppointmentScreen = ({ navigation, route }: any) => {
             setTitle(text);
             if (errors.title) setErrors({ ...errors, title: '' });
           }}
-          placeholder={t('appointments.titlePlaceholder')}
+          placeholder={t('leaves.titlePlaceholder')}
           placeholderTextColor={theme.colors.subText}
         />
         {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
 
-        {/* Doctor */}
-        <Text style={styles.label}>{t('appointments.doctor')}</Text>
+        {/* Employee */}
+        <Text style={styles.label}>{t('leaves.employee')}</Text>
         <TextInput
           style={styles.input}
-          value={doctorName}
-          onChangeText={setDoctorName}
-          placeholder={t('appointments.doctorPlaceholder')}
+          value={employeeName}
+          onChangeText={setEmployeeName}
+          placeholder={t('leaves.employeePlaceholder')}
           placeholderTextColor={theme.colors.subText}
         />
 
-        {/* Location */}
-        <Text style={styles.label}>{t('appointments.location')}</Text>
+        {/* Location/Type */}
+        <Text style={styles.label}>{t('leaves.location')}</Text>
         <TextInput
           style={styles.input}
           value={location}
           onChangeText={setLocation}
-          placeholder={t('appointments.locationPlaceholder')}
+          placeholder={t('leaves.locationPlaceholder')}
           placeholderTextColor={theme.colors.subText}
         />
 
-        {/* Date */}
+        {/* Date & Time */}
         <DateTimePickerField
-          label={t('appointments.date')}
-          value={date}
-          onChange={setDate}
+          label={t('leaves.date')}
+          value={dateTime}
+          onChange={setDateTime}
           mode="date"
           minimumDate={new Date()}
           required
-          error={errors.date}
-          placeholder={t('appointments.date')}
+          error={errors.dateTime}
         />
 
-        {/* Time */}
         <DateTimePickerField
-          label={t('appointments.time')}
-          value={time}
-          onChange={setTime}
+          label={t('leaves.time')}
+          value={dateTime}
+          onChange={setDateTime}
           mode="time"
-          required
-          error={errors.time}
-          placeholder={t('appointments.time')}
         />
 
         {/* Notes */}
-        <Text style={styles.label}>{t('appointments.notes')}</Text>
+        <Text style={styles.label}>{t('leaves.notes')}</Text>
         <TextInput
           style={[styles.input, styles.notesInput]}
           value={notes}
           onChangeText={setNotes}
-          placeholder={t('appointments.notesPlaceholder')}
+          placeholder={t('leaves.notesPlaceholder')}
           placeholderTextColor={theme.colors.subText}
           multiline
           numberOfLines={4}
         />
 
-        {/* Reminder Switch */}
+        {/* Reminder */}
         <View style={styles.switchRow}>
-          <Text style={styles.label}>{t('appointments.enableReminder')}</Text>
+          <Text style={styles.label}>{t('leaves.enableReminder')}</Text>
           <Switch
             value={reminderEnabled}
             onValueChange={setReminderEnabled}
@@ -219,6 +209,14 @@ export const AddAppointmentScreen = ({ navigation, route }: any) => {
           />
         </View>
 
+        {/* Add to Calendar */}
+        <CalendarButton
+          title={title || t('leaves.title')}
+          startDate={dateTime || new Date()}
+          location={location}
+          notes={`Employee: ${employeeName}\n${notes}`}
+        />
+
         {/* Save Button */}
         <TouchableOpacity
           style={[styles.saveButton, loading && styles.saveButtonDisabled]}
@@ -226,18 +224,9 @@ export const AddAppointmentScreen = ({ navigation, route }: any) => {
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {isEdit ? t('appointments.update') : t('appointments.save')}
+            {isEdit ? t('leaves.update') : t('leaves.save')}
           </Text>
         </TouchableOpacity>
-
-        {/* Calendar Button */}
-        <CalendarButton
-          title={title}
-          date={date ? date.toISOString().split('T')[0] : ''}
-          time={time ? time.toTimeString().substring(0, 5) : ''}
-          location={location}
-          notes={`Doctor: ${doctorName}\n${notes}`}
-        />
       </ScrollView>
     </View>
   );
@@ -252,7 +241,7 @@ const createStyles = (theme: Theme) =>
       padding: theme.spacing.m,
     },
     label: {
-      ...theme.textVariants.caption,
+      ...theme.textVariants.body,
       fontWeight: '600',
       color: theme.colors.text,
       marginBottom: theme.spacing.s,
@@ -263,9 +252,9 @@ const createStyles = (theme: Theme) =>
       borderRadius: theme.spacing.s,
       padding: theme.spacing.m,
       fontSize: 16,
-      color: theme.colors.text,
       borderWidth: 1,
       borderColor: theme.colors.border,
+      color: theme.colors.text,
     },
     notesInput: {
       minHeight: 100,
@@ -284,6 +273,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       marginTop: theme.spacing.l,
       marginBottom: theme.spacing.xl,
+      ...theme.shadows.small,
     },
     saveButtonDisabled: {
       opacity: 0.5,

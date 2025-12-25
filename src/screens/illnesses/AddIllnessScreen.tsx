@@ -8,51 +8,35 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  Switch,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { prescriptionsDb } from '../../database/prescriptionsDb';
-import { medicationsDb } from '../../database/medicationsDb';
-import { Medication } from '../../database/schema';
+import { illnessesDb } from '../../database/illnessesDb';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 
-export const AddPrescriptionScreen = ({ navigation, route }: any) => {
+export const AddIllnessScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const prescriptionId = route?.params?.prescriptionId;
-  const isEdit = !!prescriptionId;
-  const initialDoctorName = route?.params?.doctorName || '';
+  const illnessId = route?.params?.illnessId;
+  const isEdit = !!illnessId;
+  const initialEmployeeName = route?.params?.employeeName || '';
+  const initialEmployeeId = route?.params?.employeeId;
 
-  const [allMedications, setAllMedications] = useState<Medication[]>([]);
-  const [selectedMedicationIds, setSelectedMedicationIds] = useState<number[]>([]);
-  const [medicationName, setMedicationName] = useState(''); // Fallback or computed
-  const [doctorName, setDoctorName] = useState(initialDoctorName);
+  const [payrollName, setPayrollName] = useState('');
+  const [employeeName, setEmployeeName] = useState(initialEmployeeName);
   const [issueDate, setIssueDate] = useState<Date | null>(new Date());
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
   const [photoUri, setPhotoUri] = useState('');
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    loadMedications();
-  }, []);
-
-  useEffect(() => {
-    if (isEdit) loadPrescription();
-  }, [prescriptionId]);
-
-  useEffect(() => {
-    navigation?.setOptions({
-      title: isEdit ? t('prescriptions.edit') : t('prescriptions.add'),
-    });
-  }, [isEdit, navigation, t]);
 
   const WebNavigationContext =
     Platform.OS === 'web'
@@ -63,39 +47,27 @@ export const AddPrescriptionScreen = ({ navigation, route }: any) => {
     ? useContext(WebNavigationContext)
     : { setActiveTab: () => { } };
 
-  const loadMedications = async () => {
-    try {
-      const data = await medicationsDb.getAll();
-      setAllMedications(data);
-    } catch (error) {
-      console.error('Error loading medications', error);
-    }
-  };
+  useEffect(() => {
+    navigation?.setOptions({
+      title: isEdit ? t('illnesses.edit') : t('illnesses.add'),
+    });
+    if (isEdit) loadIllness();
+  }, [illnessId]);
 
-  const loadPrescription = async () => {
-    if (!prescriptionId) return;
+  const loadIllness = async () => {
+    if (!illnessId) return;
     try {
-      const prescription = await prescriptionsDb.getById(prescriptionId);
-      if (prescription) {
-        setMedicationName(prescription.medicationName || '');
-        setDoctorName(prescription.doctorName || '');
-        setIssueDate(
-          prescription.issueDate ? new Date(prescription.issueDate) : new Date(),
-        );
-        setExpiryDate(prescription.expiryDate ? new Date(prescription.expiryDate) : null);
-        setPhotoUri(prescription.photoUri || '');
-        setNotes(prescription.notes || '');
-
-        if (prescription.medicationIds) {
-          try {
-            setSelectedMedicationIds(JSON.parse(prescription.medicationIds));
-          } catch (e) {
-            console.error('Error parsing medicationIds', e);
-          }
-        }
+      const illness = await illnessesDb.getById(illnessId);
+      if (illness) {
+        setPayrollName(illness.payrollName || '');
+        setEmployeeName(illness.employeeName || '');
+        setIssueDate(illness.issueDate ? new Date(illness.issueDate) : new Date());
+        setExpiryDate(illness.expiryDate ? new Date(illness.expiryDate) : null);
+        setPhotoUri(illness.photoUri || '');
+        setNotes(illness.notes || '');
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('prescriptions.loadError'));
+      Alert.alert(t('common.error'), t('illnesses.loadError'));
     }
   };
 
@@ -116,9 +88,9 @@ export const AddPrescriptionScreen = ({ navigation, route }: any) => {
       return;
     }
 
-    Alert.alert(t('prescriptions.addPhoto'), t('prescriptions.chooseOption'), [
+    Alert.alert(t('illnesses.addPhoto'), t('illnesses.chooseOption'), [
       {
-        text: t('prescriptions.takePhoto'),
+        text: t('illnesses.takePhoto'),
         onPress: () => {
           launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
             if (response.assets && response.assets[0]?.uri) {
@@ -128,7 +100,7 @@ export const AddPrescriptionScreen = ({ navigation, route }: any) => {
         },
       },
       {
-        text: t('prescriptions.chooseFromLibrary'),
+        text: t('illnesses.chooseFromLibrary'),
         onPress: () => {
           launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
             if (response.assets && response.assets[0]?.uri) {
@@ -141,83 +113,58 @@ export const AddPrescriptionScreen = ({ navigation, route }: any) => {
     ]);
   };
 
-  const toggleMedicationSelection = (id: number) => {
-    if (selectedMedicationIds.includes(id)) {
-      setSelectedMedicationIds(selectedMedicationIds.filter(mid => mid !== id));
-    } else {
-      setSelectedMedicationIds([...selectedMedicationIds, id]);
-    }
-  };
-
   const handleSave = async () => {
     const newErrors: { [key: string]: string } = {};
-    if (selectedMedicationIds.length === 0 && !medicationName.trim()) {
-      newErrors.medicationName = t('common.required');
-    }
+    if (!payrollName.trim()) newErrors.payrollName = t('common.required');
     if (!issueDate) newErrors.issueDate = t('common.required');
-
-    // Validate Expiry Date > Issue Date
-    if (issueDate && expiryDate && expiryDate < issueDate) {
-      newErrors.expiryDate = t('common.invalidDateRange');
-    }
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
     setLoading(true);
     try {
-      // Compute medication name from selected IDs if available
-      let computedMedicationName = medicationName.trim();
-      if (selectedMedicationIds.length > 0) {
-        const selectedNames = allMedications
-          .filter(m => m.id && selectedMedicationIds.includes(m.id))
-          .map(m => m.name);
-        computedMedicationName = selectedNames.join(', ');
-      }
-
-      const prescriptionData = {
-        medicationName: computedMedicationName,
-        medicationIds: JSON.stringify(selectedMedicationIds),
-        doctorName: doctorName.trim() || undefined,
+      const illnessData = {
+        payrollName: payrollName.trim(),
+        employeeName: employeeName.trim() || undefined,
+        employeeId: initialEmployeeId,
         issueDate: issueDate!.toISOString().split('T')[0],
         expiryDate: expiryDate ? expiryDate.toISOString().split('T')[0] : undefined,
         photoUri: photoUri || undefined,
         notes: notes.trim() || undefined,
       };
 
-      let id = prescriptionId;
-
-      if (isEdit && prescriptionId) {
-        await prescriptionsDb.update(prescriptionId, prescriptionData);
+      let id: number;
+      if (isEdit && illnessId) {
+        await illnessesDb.update(illnessId, illnessData);
+        id = illnessId;
       } else {
-        id = await prescriptionsDb.add(prescriptionData);
+        id = await illnessesDb.add(illnessData);
       }
 
-      // Notifications
-      if (prescriptionData.expiryDate) {
-        await notificationService.schedulePrescriptionExpiryReminder(
+      if (expiryDate) {
+        await notificationService.scheduleIllnessExpiryReminder(
           id,
-          prescriptionData.medicationName,
-          prescriptionData.expiryDate,
+          payrollName,
+          expiryDate.toISOString(),
         );
-      } else if (isEdit) {
-        await notificationService.cancelPrescriptionReminder(id);
+      } else {
+        await notificationService.cancelIllnessReminder(id);
       }
 
+      // If came from EmployeeDetails (has initialEmployeeName), return to Employees
+      // Otherwise return to Illnesses
       if (Platform.OS === 'web') {
-        // If came from DoctorDetails (has initialDoctorName), return to Doctors
-        // Otherwise return to Prescriptions
-        if (initialDoctorName) {
-          setActiveTab('Doctors');
+        if (initialEmployeeName) {
+          setActiveTab('Employees');
         } else {
-          setActiveTab('Prescriptions');
+          setActiveTab('Illnesses');
         }
       } else {
         navigation.goBack();
       }
     } catch (error) {
-      console.error('Error saving prescription:', error);
-      Alert.alert(t('common.error'), t('prescriptions.saveError'));
+      console.error('Error saving illness:', error);
+      Alert.alert(t('common.error'), t('illnesses.saveError'));
     } finally {
       setLoading(false);
     }
@@ -232,75 +179,38 @@ export const AddPrescriptionScreen = ({ navigation, route }: any) => {
           ) : (
             <View style={styles.photoPlaceholder}>
               <Text style={styles.photoPlaceholderText}>
-                {t('prescriptions.photoButton')}
+                {t('illnesses.photoButton')}
               </Text>
             </View>
           )}
         </TouchableOpacity>
 
-        <Text style={styles.label}>
-          {t('prescriptions.medicationNameLabel')} *
-        </Text>
-
-        {/* Medication Selection List */}
-        <View style={styles.medicationListContainer}>
-          {allMedications.map(med => {
-            const isSelected = med.id ? selectedMedicationIds.includes(med.id) : false;
-            return (
-              <TouchableOpacity
-                key={med.id}
-                style={[
-                  styles.medicationItem,
-                  isSelected && styles.medicationItemSelected,
-                ]}
-                onPress={() => med.id && toggleMedicationSelection(med.id)}
-              >
-                <Text
-                  style={[
-                    styles.medicationItemText,
-                    isSelected && styles.medicationItemTextSelected,
-                  ]}
-                >
-                  {med.name} {med.dosage ? `(${med.dosage})` : ''}
-                </Text>
-                {isSelected && <Text style={styles.checkmark}>✓</Text>}
-              </TouchableOpacity>
-            );
-          })}
-          {allMedications.length === 0 && (
-            <Text style={styles.noMedicationsText}>{t('medications.empty')}</Text>
-          )}
-        </View>
-
-        <Text style={styles.orLabel}>- {t('common.or')} -</Text>
-
+        <Text style={styles.label}>{t('illnesses.payrollNameLabel')} *</Text>
         <TextInput
-          style={[styles.input, errors.medicationName && styles.inputError]}
-          value={medicationName}
+          style={[styles.input, errors.payrollName && styles.inputError]}
+          value={payrollName}
           onChangeText={text => {
-            setMedicationName(text);
-            if (errors.medicationName)
-              setErrors({ ...errors, medicationName: '' });
+            setPayrollName(text);
+            if (errors.payrollName) setErrors({ ...errors, payrollName: '' });
           }}
-          placeholder={t('prescriptions.medicationPlaceholder')} // "Or type manually..."
+          placeholder={t('illnesses.payrollPlaceholder')}
           placeholderTextColor={theme.colors.subText}
         />
-        {errors.medicationName && (
-          <Text style={styles.errorText}>{errors.medicationName}</Text>
+        {errors.payrollName && (
+          <Text style={styles.errorText}>{errors.payrollName}</Text>
         )}
 
-        <Text style={styles.label}>{t('prescriptions.doctorNameLabel')}</Text>
+        <Text style={styles.label}>{t('illnesses.employeeNameLabel')}</Text>
         <TextInput
           style={styles.input}
-          value={doctorName}
-          onChangeText={setDoctorName}
-          placeholder={t('prescriptions.doctorPlaceholder')}
+          value={employeeName}
+          onChangeText={setEmployeeName}
+          placeholder={t('illnesses.employeePlaceholder')}
           placeholderTextColor={theme.colors.subText}
         />
 
-        {/* Issue Date */}
         <DateTimePickerField
-          label={t('prescriptions.issueDateLabel')}
+          label={t('illnesses.issueDateLabel')}
           value={issueDate}
           onChange={setIssueDate}
           mode="date"
@@ -308,22 +218,20 @@ export const AddPrescriptionScreen = ({ navigation, route }: any) => {
           error={errors.issueDate}
         />
 
-        {/* Expiry Date */}
         <DateTimePickerField
-          label={t('prescriptions.expiryDateLabel')}
+          label={t('illnesses.expiryDateLabel')}
           value={expiryDate}
           onChange={setExpiryDate}
           mode="date"
           minimumDate={issueDate || new Date()}
-          error={errors.expiryDate}
         />
 
-        <Text style={styles.label}>{t('prescriptions.notesLabel')}</Text>
+        <Text style={styles.label}>{t('illnesses.notesLabel')}</Text>
         <TextInput
           style={[styles.input, styles.notesInput]}
           value={notes}
           onChangeText={setNotes}
-          placeholder={t('appointments.notesPlaceholder')}
+          placeholder={t('illnesses.notesLabel')}
           placeholderTextColor={theme.colors.subText}
           multiline
           numberOfLines={4}
@@ -335,9 +243,7 @@ export const AddPrescriptionScreen = ({ navigation, route }: any) => {
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {isEdit
-              ? t('prescriptions.updateButton')
-              : t('prescriptions.saveButton')}
+            {isEdit ? t('illnesses.updateButton') : t('illnesses.saveButton')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -350,11 +256,11 @@ const createStyles = (theme: Theme) =>
     container: { backgroundColor: theme.colors.background },
     content: { padding: theme.spacing.m },
     photoButton: { alignItems: 'center', marginBottom: theme.spacing.l },
-    photo: { width: 200, height: 200, borderRadius: theme.spacing.m },
+    photo: { width: 150, height: 100, borderRadius: theme.spacing.s },
     photoPlaceholder: {
-      width: 200,
-      height: 200,
-      borderRadius: theme.spacing.m,
+      width: 150,
+      height: 100,
+      borderRadius: theme.spacing.s,
       backgroundColor: theme.colors.surface,
       justifyContent: 'center',
       alignItems: 'center',
@@ -365,9 +271,11 @@ const createStyles = (theme: Theme) =>
     photoPlaceholderText: {
       ...theme.textVariants.body,
       color: theme.colors.primary,
+      textAlign: 'center',
+      fontSize: 12,
     },
     label: {
-      ...theme.textVariants.body,
+      ...theme.textVariants.caption,
       fontWeight: '600',
       color: theme.colors.text,
       marginBottom: theme.spacing.s,
@@ -378,9 +286,9 @@ const createStyles = (theme: Theme) =>
       borderRadius: theme.spacing.s,
       padding: theme.spacing.m,
       fontSize: 16,
+      color: theme.colors.text,
       borderWidth: 1,
       borderColor: theme.colors.border,
-      color: theme.colors.text,
     },
     notesInput: { minHeight: 100, textAlignVertical: 'top' },
     saveButton: {
@@ -390,7 +298,6 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       marginTop: theme.spacing.l,
       marginBottom: theme.spacing.xl,
-      ...theme.shadows.small,
     },
     saveButtonDisabled: { opacity: 0.5 },
     saveButtonText: {
@@ -403,49 +310,5 @@ const createStyles = (theme: Theme) =>
       fontSize: 12,
       marginTop: 4,
       marginLeft: 4,
-    },
-    medicationListContainer: {
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.spacing.s,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      maxHeight: 200, // Scrollable if needed, but wrapper is ScrollView
-      overflow: 'hidden',
-    },
-    medicationItem: {
-      padding: theme.spacing.m,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    medicationItemSelected: {
-      backgroundColor: theme.colors.primaryBackground,
-    },
-    medicationItemText: {
-      ...theme.textVariants.body,
-      color: theme.colors.text,
-    },
-    medicationItemTextSelected: {
-      color: theme.colors.primary,
-      fontWeight: '600',
-    },
-    checkmark: {
-      color: theme.colors.primary,
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    noMedicationsText: {
-      padding: theme.spacing.m,
-      textAlign: 'center',
-      color: theme.colors.subText,
-      fontStyle: 'italic',
-    },
-    orLabel: {
-      textAlign: 'center',
-      marginVertical: theme.spacing.m,
-      color: theme.colors.subText,
-      fontWeight: '600',
     },
   });

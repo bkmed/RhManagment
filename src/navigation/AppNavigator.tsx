@@ -16,20 +16,20 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { HomeScreen } from '../screens/HomeScreen';
-import { MedicationListScreen } from '../screens/medications/MedicationListScreen';
-import { AddMedicationScreen } from '../screens/medications/AddMedicationScreen';
-import { MedicationDetailsScreen } from '../screens/medications/MedicationDetailsScreen';
-import { MedicationHistoryScreen } from '../screens/medications/MedicationHistoryScreen';
-import { AppointmentListScreen } from '../screens/appointments/AppointmentListScreen';
-import { AddAppointmentScreen } from '../screens/appointments/AddAppointmentScreen';
-import { AppointmentDetailsScreen } from '../screens/appointments/AppointmentDetailsScreen';
-import { PrescriptionListScreen } from '../screens/prescriptions/PrescriptionListScreen';
-import { AddPrescriptionScreen } from '../screens/prescriptions/AddPrescriptionScreen';
-import { PrescriptionDetailsScreen } from '../screens/prescriptions/PrescriptionDetailsScreen';
-import { PrescriptionHistoryScreen } from '../screens/prescriptions/PrescriptionHistoryScreen';
-import { DoctorListScreen } from '../screens/doctors/DoctorListScreen';
-import { AddDoctorScreen } from '../screens/doctors/AddDoctorScreen';
-import { DoctorDetailsScreen } from '../screens/doctors/DoctorDetailsScreen';
+import { PayrollListScreen } from '../screens/payroll/PayrollListScreen';
+import { AddPayrollScreen } from '../screens/payroll/AddPayrollScreen';
+import { PayrollDetailsScreen } from '../screens/payroll/PayrollDetailsScreen';
+import { PayrollHistoryScreen } from '../screens/payroll/PayrollHistoryScreen';
+import { LeaveListScreen } from '../screens/leaves/LeaveListScreen';
+import { AddLeaveScreen } from '../screens/leaves/AddLeaveScreen';
+import { LeaveDetailsScreen } from '../screens/leaves/LeaveDetailsScreen';
+import { IllnessListScreen } from '../screens/illnesses/IllnessListScreen';
+import { AddIllnessScreen } from '../screens/illnesses/AddIllnessScreen';
+import { IllnessDetailsScreen } from '../screens/illnesses/IllnessDetailsScreen';
+import { IllnessHistoryScreen } from '../screens/illnesses/IllnessHistoryScreen';
+import { EmployeeListScreen } from '../screens/employees/EmployeeListScreen';
+import { AddEmployeeScreen } from '../screens/employees/AddEmployeeScreen';
+import { EmployeeDetailsScreen } from '../screens/employees/EmployeeDetailsScreen';
 import { AnalyticsScreen } from '../screens/analytics/AnalyticsScreen';
 import { GlobalHistoryScreen } from '../screens/history/GlobalHistoryScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
@@ -62,103 +62,103 @@ const AuthStack = () => {
   );
 };
 
-const MedicationsStack = () => {
+const PayrollStack = () => {
   const { t } = useTranslation();
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="MedicationList"
-        component={MedicationListScreen}
-        options={{ title: t('navigation.medications') }}
+        name="PayrollList"
+        component={PayrollListScreen}
+        options={{ title: t('navigation.payroll') }}
       />
       <Stack.Screen
-        name="AddMedication"
-        component={AddMedicationScreen}
-        options={{ title: t('medications.add') }}
+        name="AddPayroll"
+        component={AddPayrollScreen}
+        options={{ title: t('payroll.add') }}
       />
       <Stack.Screen
-        name="MedicationDetails"
-        component={MedicationDetailsScreen}
-        options={{ title: t('medications.details') }}
+        name="PayrollDetails"
+        component={PayrollDetailsScreen}
+        options={{ title: t('payroll.details') }}
       />
       <Stack.Screen
-        name="MedicationHistory"
-        component={MedicationHistoryScreen}
-        options={{ title: t('history.medicationHistory') }}
+        name="PayrollHistory"
+        component={PayrollHistoryScreen}
+        options={{ title: t('history.payrollHistory') }}
       />
     </Stack.Navigator>
   );
 };
 
-const AppointmentsStack = () => {
+const LeavesStack = () => {
   const { t } = useTranslation();
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="AppointmentList"
-        component={AppointmentListScreen}
-        options={{ title: t('navigation.appointments') }}
+        name="LeaveList"
+        component={LeaveListScreen}
+        options={{ title: t('navigation.leaves') }}
       />
       <Stack.Screen
-        name="AddAppointment"
-        component={AddAppointmentScreen}
-        options={{ title: t('appointments.add') }}
+        name="AddLeave"
+        component={AddLeaveScreen}
+        options={{ title: t('leaves.add') }}
       />
       <Stack.Screen
-        name="AppointmentDetails"
-        component={AppointmentDetailsScreen}
-        options={{ title: t('appointments.details') }}
+        name="LeaveDetails"
+        component={LeaveDetailsScreen}
+        options={{ title: t('leaves.details') }}
       />
     </Stack.Navigator>
   );
 };
 
-const PrescriptionsStack = () => {
+const IllnessesStack = () => {
   const { t } = useTranslation();
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="PrescriptionList"
-        component={PrescriptionListScreen}
-        options={{ title: t('navigation.prescriptions') }}
+        name="IllnessList"
+        component={IllnessListScreen}
+        options={{ title: t('navigation.illnesses') }}
       />
       <Stack.Screen
-        name="AddPrescription"
-        component={AddPrescriptionScreen}
-        options={{ title: t('prescriptions.add') }}
+        name="AddIllness"
+        component={AddIllnessScreen}
+        options={{ title: t('illnesses.add') }}
       />
       <Stack.Screen
-        name="PrescriptionDetails"
-        component={PrescriptionDetailsScreen}
-        options={{ title: t('prescriptions.details') }}
+        name="IllnessDetails"
+        component={IllnessDetailsScreen}
+        options={{ title: t('illnesses.details') }}
       />
       <Stack.Screen
-        name="PrescriptionHistory"
-        component={PrescriptionHistoryScreen}
+        name="IllnessHistory"
+        component={IllnessHistoryScreen}
         options={{ title: t('common.viewHistory') }}
       />
     </Stack.Navigator>
   );
 };
 
-const DoctorsStack = () => {
+const EmployeesStack = () => {
   const { t } = useTranslation();
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="DoctorList"
-        component={DoctorListScreen}
-        options={{ title: t('navigation.doctors') }}
+        name="EmployeeList"
+        component={EmployeeListScreen}
+        options={{ title: t('navigation.employees') }}
       />
       <Stack.Screen
-        name="AddDoctor"
-        component={AddDoctorScreen}
-        options={{ title: t('doctors.add') }}
+        name="AddEmployee"
+        component={AddEmployeeScreen}
+        options={{ title: t('employees.add') }}
       />
       <Stack.Screen
-        name="DoctorDetails"
-        component={DoctorDetailsScreen}
-        options={{ title: t('doctors.details') }}
+        name="EmployeeDetails"
+        component={EmployeeDetailsScreen}
+        options={{ title: t('employees.details') }}
       />
     </Stack.Navigator>
   );
@@ -195,8 +195,8 @@ const Tab = createBottomTabNavigator();
 const TabNavigator = () => (
   <Tab.Navigator screenOptions={{ headerShown: false }}>
     <Tab.Screen name="HomeTab" component={HomeStack} />
-    <Tab.Screen name="MedicationsTab" component={MedicationsStack} />
-    <Tab.Screen name="AppointmentsTab" component={AppointmentsStack} />
+    <Tab.Screen name="PayrollTab" component={PayrollStack} />
+    <Tab.Screen name="LeavesTab" component={LeavesStack} />
   </Tab.Navigator>
 );
 
@@ -207,8 +207,8 @@ const DrawerNavigator = () => (
   <Drawer.Navigator screenOptions={{ headerShown: false }}>
     <Drawer.Screen name="Main" component={TabNavigator} />
     <Drawer.Screen name="Analytics" component={AnalyticsScreen} />
-    <Drawer.Screen name="Prescriptions" component={PrescriptionsStack} />
-    <Drawer.Screen name="Doctors" component={DoctorsStack} />
+    <Drawer.Screen name="Illnesses" component={IllnessesStack} />
+    <Drawer.Screen name="Employees" component={EmployeesStack} />
     <Drawer.Screen name="History" component={HistoryStack} />
     <Drawer.Screen name="Profile" component={ProfileStack} />
   </Drawer.Navigator>
@@ -248,36 +248,36 @@ const WebNavigator = () => {
     switch (activeTab) {
       case 'Home':
         return <HomeStack />;
-      case 'Medications':
-        if (subScreen === 'AddMedication')
-          return <AddMedicationScreen route={mockRoute} />;
-        if (subScreen === 'MedicationDetails')
-          return <MedicationDetailsScreen route={mockRoute} />;
-        if (subScreen === 'MedicationHistory')
-          return <MedicationHistoryScreen route={mockRoute} />;
-        return <MedicationsStack />;
-      case 'Appointments':
-        if (subScreen === 'AddAppointment')
-          return <AddAppointmentScreen route={mockRoute} />;
-        if (subScreen === 'AppointmentDetails')
-          return <AppointmentDetailsScreen route={mockRoute} />;
-        return <AppointmentsStack />;
+      case 'Payroll':
+        if (subScreen === 'AddPayroll')
+          return <AddPayrollScreen route={mockRoute} />;
+        if (subScreen === 'PayrollDetails')
+          return <PayrollDetailsScreen route={mockRoute} />;
+        if (subScreen === 'PayrollHistory')
+          return <PayrollHistoryScreen route={mockRoute} />;
+        return <PayrollStack />;
+      case 'Leaves':
+        if (subScreen === 'AddLeave')
+          return <AddLeaveScreen route={mockRoute} />;
+        if (subScreen === 'LeaveDetails')
+          return <LeaveDetailsScreen route={mockRoute} />;
+        return <LeavesStack />;
       case 'Analytics':
         return <AnalyticsScreen />;
-      case 'Prescriptions':
-        if (subScreen === 'AddPrescription')
-          return <AddPrescriptionScreen route={mockRoute} />;
-        if (subScreen === 'PrescriptionDetails')
-          return <PrescriptionDetailsScreen route={mockRoute} />;
-        if (subScreen === 'PrescriptionHistory')
-          return <PrescriptionHistoryScreen />;
-        return <PrescriptionsStack />;
-      case 'Doctors':
-        if (subScreen === 'AddDoctor')
-          return <AddDoctorScreen route={mockRoute} />;
-        if (subScreen === 'DoctorDetails')
-          return <DoctorDetailsScreen route={mockRoute} />;
-        return <DoctorsStack />;
+      case 'Illnesses':
+        if (subScreen === 'AddIllness')
+          return <AddIllnessScreen route={mockRoute} />;
+        if (subScreen === 'IllnessDetails')
+          return <IllnessDetailsScreen route={mockRoute} />;
+        if (subScreen === 'IllnessHistory')
+          return <IllnessHistoryScreen route={mockRoute} />;
+        return <IllnessesStack />;
+      case 'Employees':
+        if (subScreen === 'AddEmployee')
+          return <AddEmployeeScreen route={mockRoute} />;
+        if (subScreen === 'EmployeeDetails')
+          return <EmployeeDetailsScreen route={mockRoute} />;
+        return <EmployeesStack />;
       case 'History':
         return <HistoryStack />;
       case 'Profile':
@@ -289,11 +289,11 @@ const WebNavigator = () => {
 
   const navItems = [
     ['Home', t('navigation.home')],
-    ['Medications', t('navigation.medications')],
-    ['Appointments', t('navigation.appointments')],
+    ['Payroll', t('navigation.payroll')],
+    ['Leaves', t('navigation.leaves')],
     ['Analytics', t('navigation.analytics')],
-    ['Prescriptions', t('navigation.prescriptions')],
-    ['Doctors', t('navigation.doctors')],
+    ['Illnesses', t('navigation.illnesses')],
+    ['Employees', t('navigation.employees')],
     ['History', t('navigation.history') || 'History'],
     ['Profile', t('navigation.profile')],
   ];
@@ -460,8 +460,8 @@ export const AppNavigator = () => {
   const linking: LinkingOptions<any> = {
     prefixes: [
       'http://localhost:8080',
-      'medicarereminder://',
-      'https://bkmed.github.io/MedicareReminder/',
+      'rhmanagement://',
+      'https://bkmed.github.io/RhManagement/',
     ],
     config: { screens: {} },
   };

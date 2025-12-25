@@ -8,19 +8,19 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { appointmentsDb } from '../../database/appointmentsDb';
+import { leavesDb } from '../../database/leavesDb';
 import { notificationService } from '../../services/notificationService';
-import { Appointment } from '../../database/schema';
+import { Leave } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
-export const AppointmentDetailsScreen = ({ navigation, route }: any) => {
-  const { appointmentId } = route.params;
+export const LeaveDetailsScreen = ({ navigation, route }: any) => {
+  const { leaveId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [appointment, setAppointment] = useState<Appointment | null>(null);
+  const [leave, setLeave] = useState<Leave | null>(null);
   const [loading, setLoading] = useState(true);
 
   const WebNavigationContext =
@@ -34,22 +34,22 @@ export const AppointmentDetailsScreen = ({ navigation, route }: any) => {
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Appointments');
+      setActiveTab('Leaves');
     } else {
       navigation.goBack();
     }
   };
 
   useEffect(() => {
-    loadAppointment();
-  }, [appointmentId]);
+    loadLeave();
+  }, [leaveId]);
 
-  const loadAppointment = async () => {
+  const loadLeave = async () => {
     try {
-      const appt = await appointmentsDb.getById(appointmentId);
-      setAppointment(appt);
+      const data = await leavesDb.getById(leaveId);
+      setLeave(data);
     } catch (error) {
-      Alert.alert(t('appointmentDetails.errorLoadFailed'));
+      Alert.alert(t('leaveDetails.errorLoadFailed'));
     } finally {
       setLoading(false);
     }
@@ -57,8 +57,8 @@ export const AppointmentDetailsScreen = ({ navigation, route }: any) => {
 
   const handleDelete = () => {
     Alert.alert(
-      t('appointmentDetails.deleteConfirmTitle'),
-      t('appointmentDetails.deleteConfirmMessage'),
+      t('leaveDetails.deleteConfirmTitle'),
+      t('leaveDetails.deleteConfirmMessage'),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -66,13 +66,11 @@ export const AppointmentDetailsScreen = ({ navigation, route }: any) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await appointmentsDb.delete(appointmentId);
-              await notificationService.cancelAppointmentReminder(
-                appointmentId,
-              );
+              await leavesDb.delete(leaveId);
+              await notificationService.cancelLeaveReminder(leaveId);
               navigateBack();
             } catch (error) {
-              Alert.alert(t('appointmentDetails.errorDeleteFailed'));
+              Alert.alert(t('leaveDetails.errorDeleteFailed'));
             }
           },
         },
@@ -81,19 +79,19 @@ export const AppointmentDetailsScreen = ({ navigation, route }: any) => {
   };
 
   const handleEdit = () => {
-    navigation.navigate('AddAppointment', { appointmentId });
+    navigation.navigate('AddLeave', { leaveId });
   };
 
-  if (loading || !appointment) {
+  if (loading || !leave) {
     return (
       <View style={styles.container}>
-        <Text style={{ color: theme.colors.text }}>{t('appointmentDetails.loading')}</Text>
+        <Text style={{ color: theme.colors.text }}>{t('leaveDetails.loading')}</Text>
       </View>
     );
   }
 
   const formatDateTime = () => {
-    const date = new Date(appointment.dateTime);
+    const date = new Date(leave.dateTime);
     const dateStr = date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -111,57 +109,50 @@ export const AppointmentDetailsScreen = ({ navigation, route }: any) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.section}>
-          <Text style={styles.title}>{appointment.title}</Text>
+          <Text style={styles.title}>{leave.title}</Text>
           <Text style={styles.dateTime}>{formatDateTime()}</Text>
         </View>
 
-        {appointment.doctorName && (
+        {leave.employeeName && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('appointmentDetails.doctorLabel')}</Text>
-            <Text style={styles.value}>Dr. {appointment.doctorName}</Text>
+            <Text style={styles.label}>{t('leaveDetails.employeeLabel')}</Text>
+            <Text style={styles.value}>{leave.employeeName}</Text>
           </View>
         )}
 
-        {appointment.location && (
+        {leave.location && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('appointmentDetails.locationLabel')}</Text>
-            <Text style={styles.value}>{appointment.location}</Text>
+            <Text style={styles.label}>{t('leaveDetails.locationLabel')}</Text>
+            <Text style={styles.value}>{leave.location}</Text>
           </View>
         )}
 
-        {appointment.notes && (
+        {leave.notes && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('appointmentDetails.notesLabel')}</Text>
-            <Text style={styles.value}>{appointment.notes}</Text>
+            <Text style={styles.label}>{t('leaveDetails.notesLabel')}</Text>
+            <Text style={styles.value}>{leave.notes}</Text>
           </View>
         )}
 
         <View style={styles.section}>
-          <Text style={styles.label}>{t('appointmentDetails.reminderLabel')}</Text>
+          <Text style={styles.label}>{t('leaveDetails.reminderLabel')}</Text>
           <Text style={styles.value}>
-            {appointment.reminderEnabled ? t('appointmentDetails.reminderTimeText') : t('appointmentDetails.reminderDisabled')}
+            {leave.reminderEnabled ? t('leaveDetails.reminderTimeText') : t('leaveDetails.reminderDisabled')}
           </Text>
         </View>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => Alert.alert('View History', 'Appointment history tracking is not available yet.')}
-        >
-          <Text style={styles.buttonText}>View History</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, styles.editButton]}
           onPress={handleEdit}
         >
-          <Text style={styles.buttonText}>{t('appointmentDetails.editButton')}</Text>
+          <Text style={styles.buttonText}>{t('leaveDetails.editButton')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, styles.deleteButton]}
           onPress={handleDelete}
         >
-          <Text style={styles.buttonText}>{t('appointmentDetails.deleteButton')}</Text>
+          <Text style={styles.buttonText}>{t('leaveDetails.deleteButton')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

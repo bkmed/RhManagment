@@ -11,22 +11,22 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { medicationsDb } from '../../database/medicationsDb';
+import { payrollDb } from '../../database/payrollDb';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 
-export const AddMedicationScreen = ({ navigation, route }: any) => {
+export const AddPayrollScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const medicationId = route?.params?.medicationId;
-  const isEdit = !!medicationId;
+  const payrollId = route?.params?.payrollId;
+  const isEdit = !!payrollId;
 
   const [name, setName] = useState('');
-  const [dosage, setDosage] = useState('');
+  const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('Daily');
   const [times, setTimes] = useState<Date[]>([new Date(new Date().setHours(8, 0, 0, 0)), new Date(new Date().setHours(20, 0, 0, 0))]);
   const [startDate, setStartDate] = useState<Date | null>(new Date());
@@ -38,12 +38,12 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isEdit) loadMedication();
-  }, [medicationId]);
+    if (isEdit) loadPayroll();
+  }, [payrollId]);
 
   useEffect(() => {
     navigation?.setOptions({
-      title: isEdit ? t('medications.edit') : t('medications.add'),
+      title: isEdit ? t('payroll.edit') : t('payroll.add'),
     });
   }, [isEdit, navigation, t]);
 
@@ -56,20 +56,20 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
     ? useContext(WebNavigationContext)
     : { setActiveTab: () => { } };
 
-  const loadMedication = async () => {
-    if (!medicationId) return;
+  const loadPayroll = async () => {
+    if (!payrollId) return;
     try {
-      const med = await medicationsDb.getById(medicationId);
-      if (med) {
-        setName(med.name || '');
-        setDosage(med.dosage || '');
-        setFrequency(med.frequency || 'Daily');
+      const item = await payrollDb.getById(payrollId);
+      if (item) {
+        setName(item.name || '');
+        setAmount(item.amount || '');
+        setFrequency(item.frequency || 'Daily');
 
         // Parse times usually string "['08:00', '20:00']"
         // Convert to Date objects for the picker
         let parsedTimes: Date[] = [];
         try {
-          const timeStrings = med.times ? JSON.parse(med.times) : ['08:00', '20:00'];
+          const timeStrings = item.times ? JSON.parse(item.times) : ['08:00', '20:00'];
           parsedTimes = timeStrings.map((ts: string) => {
             const [h, m] = ts.split(':').map(Number);
             const d = new Date();
@@ -82,26 +82,26 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
         }
         setTimes(parsedTimes);
 
-        setStartDate(med.startDate ? new Date(med.startDate) : new Date());
-        setEndDate(med.endDate ? new Date(med.endDate) : null);
-        setNotes(med.notes || '');
-        setReminderEnabled(!!med.reminderEnabled);
-        setIsUrgent(!!med.isUrgent);
+        setStartDate(item.startDate ? new Date(item.startDate) : new Date());
+        setEndDate(item.endDate ? new Date(item.endDate) : null);
+        setNotes(item.notes || '');
+        setReminderEnabled(!!item.reminderEnabled);
+        setIsUrgent(!!item.isUrgent);
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('medications.loadError'));
+      Alert.alert(t('common.error'), t('payroll.loadError'));
     }
   };
 
   const handleSave = async () => {
     const newErrors: { [key: string]: string } = {};
     if (!name.trim()) newErrors.name = t('common.required');
-    if (!dosage.trim()) newErrors.dosage = t('common.required');
+    if (!amount.trim()) newErrors.amount = t('common.required');
     if (!startDate) newErrors.startDate = t('common.required');
 
     // Validate End Date > Start Date
     if (startDate && endDate && endDate < startDate) {
-      newErrors.endDate = t('common.invalidDateRange'); // Add key to i18n
+      newErrors.endDate = t('common.invalidDateRange');
     }
 
     setErrors(newErrors);
@@ -114,9 +114,9 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
         t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
       );
 
-      const medicationData = {
+      const payrollData = {
         name: name.trim(),
-        dosage: dosage.trim(),
+        amount: amount.trim(),
         frequency,
         times: JSON.stringify(timeStrings),
         startDate: startDate!.toISOString().split('T')[0],
@@ -127,26 +127,26 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
       };
 
       let id: number;
-      if (isEdit && medicationId) {
-        await medicationsDb.update(medicationId, medicationData);
-        id = medicationId;
+      if (isEdit && payrollId) {
+        await payrollDb.update(payrollId, payrollData);
+        id = payrollId;
       } else {
-        id = await medicationsDb.add(medicationData);
+        id = await payrollDb.add(payrollData);
       }
 
       if (reminderEnabled) {
-        const med = await medicationsDb.getById(id);
-        if (med) await notificationService.scheduleMedicationReminders(med);
+        const item = await payrollDb.getById(id);
+        if (item) await notificationService.schedulePayrollReminders(item);
       }
 
       if (Platform.OS === 'web') {
-        setActiveTab('Medications');
+        setActiveTab('Payroll');
       } else {
         navigation.goBack();
       }
     } catch (error) {
-      console.error('Error saving medication:', error);
-      Alert.alert(t('common.error'), t('medications.saveError'));
+      console.error('Error saving payroll:', error);
+      Alert.alert(t('common.error'), t('payroll.saveError'));
     } finally {
       setLoading(false);
     }
@@ -166,7 +166,7 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.label}>{t('medications.name')} *</Text>
+        <Text style={styles.label}>{t('payroll.name')} *</Text>
         <TextInput
           style={[styles.input, errors.name && styles.inputError]}
           value={name}
@@ -174,25 +174,25 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
             setName(text);
             if (errors.name) setErrors({ ...errors, name: '' });
           }}
-          placeholder={t('medications.namePlaceholder')}
+          placeholder={t('payroll.namePlaceholder')}
           placeholderTextColor={theme.colors.subText}
         />
         {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
 
-        <Text style={styles.label}>{t('medications.dosage')} *</Text>
+        <Text style={styles.label}>{t('payroll.amount')} *</Text>
         <TextInput
-          style={[styles.input, errors.dosage && styles.inputError]}
-          value={dosage}
+          style={[styles.input, errors.amount && styles.inputError]}
+          value={amount}
           onChangeText={text => {
-            setDosage(text);
-            if (errors.dosage) setErrors({ ...errors, dosage: '' });
+            setAmount(text);
+            if (errors.amount) setErrors({ ...errors, amount: '' });
           }}
-          placeholder={t('medications.dosagePlaceholder')}
+          placeholder={t('payroll.amountPlaceholder')}
           placeholderTextColor={theme.colors.subText}
         />
-        {errors.dosage && <Text style={styles.errorText}>{errors.dosage}</Text>}
+        {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
 
-        <Text style={styles.label}>{t('medications.frequency')}</Text>
+        <Text style={styles.label}>{t('payroll.frequency')}</Text>
         <View style={styles.frequencyContainer}>
           {['Daily', 'Twice a day', 'Weekly'].map(freq => (
             <TouchableOpacity
@@ -209,13 +209,13 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
                   frequency === freq && styles.frequencyTextActive,
                 ]}
               >
-                {t(`medications.freq${freq.replace(/\s+/g, '')}`)}
+                {t(`payroll.freq${freq.replace(/\s+/g, '')}`)}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <Text style={styles.label}>{t('medications.reminderTimes')}</Text>
+        <Text style={styles.label}>{t('payroll.reminderTimes')}</Text>
         {times.map((time, index) => (
           <View key={index} style={styles.timeRow}>
             <View style={{ flex: 1 }}>
@@ -239,44 +239,44 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
         ))}
         <TouchableOpacity onPress={handleAddTime} style={styles.addTimeButton}>
           <Text style={styles.addTimeButtonText}>
-            + {t('medications.addTime')}
+            + {t('payroll.addTime')}
           </Text>
         </TouchableOpacity>
 
         {/* Start Date */}
         <DateTimePickerField
-          label={t('medications.startDate')}
+          label={t('payroll.startDate')}
           value={startDate}
           onChange={setStartDate}
           mode="date"
-          minimumDate={new Date()} // No past start dates?
+          minimumDate={new Date()}
           required
           error={errors.startDate}
         />
 
         {/* End Date */}
         <DateTimePickerField
-          label={t('medications.endDate')}
+          label={t('payroll.endDate')}
           value={endDate}
           onChange={setEndDate}
           mode="date"
-          minimumDate={startDate || new Date()} // End date >= start date
+          minimumDate={startDate || new Date()}
           error={errors.endDate}
         />
 
-        <Text style={styles.label}>{t('medications.notes')}</Text>
+        <Text style={styles.label}>{t('payroll.notes')}</Text>
         <TextInput
           style={[styles.input, styles.notesInput]}
           value={notes}
           onChangeText={setNotes}
-          placeholder={t('medications.notesPlaceholder')}
+          placeholder={t('payroll.notesPlaceholder')}
           placeholderTextColor={theme.colors.subText}
           multiline
           numberOfLines={4}
         />
 
         <View style={styles.switchRow}>
-          <Text style={styles.label}>{t('medications.enableReminders')}</Text>
+          <Text style={styles.label}>{t('payroll.enableReminders')}</Text>
           <Switch
             value={reminderEnabled}
             onValueChange={setReminderEnabled}
@@ -289,7 +289,7 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
         </View>
 
         <View style={styles.switchRow}>
-          <Text style={styles.label}>{t('medications.isUrgent')}</Text>
+          <Text style={styles.label}>{t('payroll.isUrgent')}</Text>
           <Switch
             value={isUrgent}
             onValueChange={setIsUrgent}
@@ -307,8 +307,8 @@ export const AddMedicationScreen = ({ navigation, route }: any) => {
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {isEdit ? t('medications.update') : t('common.save')}
-            {t('medications.medication')}
+            {isEdit ? t('payroll.update') : t('common.save')}
+            {' '}{t('payroll.payroll')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -370,7 +370,7 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.error,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 20 // align with input
+      marginTop: 20
     },
     removeButtonText: {
       color: theme.colors.surface,

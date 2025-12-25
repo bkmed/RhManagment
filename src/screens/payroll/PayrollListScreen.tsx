@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,28 +9,28 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { medicationsDb } from '../../database/medicationsDb';
-import { Medication } from '../../database/schema';
-import { MedicationCard } from '../../components/MedicationCard';
+import { payrollDb } from '../../database/payrollDb';
+import { Payroll } from '../../database/schema';
+import { PayrollCard } from '../../components/PayrollCard';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
-export const MedicationListScreen = ({ navigation }: any) => {
+export const PayrollListScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [medications, setMedications] = useState<Medication[]>([]);
+  const [payrollItems, setPayrollItems] = useState<Payroll[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const loadMedications = async () => {
+  const loadPayrollItems = async () => {
     try {
-      const data = await medicationsDb.getAll();
-      setMedications(data);
+      const data = await payrollDb.getAll();
+      setPayrollItems(data);
     } catch (error) {
-      console.error('Error loading medications:', error);
-      Alert.alert(t('common.error'), t('medications.loadError'));
+      console.error('Error loading payroll items:', error);
+      Alert.alert(t('common.error'), t('payroll.loadError'));
     } finally {
       setLoading(false);
     }
@@ -38,17 +38,17 @@ export const MedicationListScreen = ({ navigation }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      loadMedications();
+      loadPayrollItems();
     }, []),
   );
 
-  const filteredMedications = useMemo(() => {
-    if (!searchQuery) return medications;
+  const filteredPayrollItems = useMemo(() => {
+    if (!searchQuery) return payrollItems;
     const lowerQuery = searchQuery.toLowerCase();
-    return medications.filter(
-      med =>
-        med.name.toLowerCase().includes(lowerQuery) ||
-        med.dosage.toLowerCase().includes(lowerQuery),
+    return payrollItems.filter(
+      item =>
+        item.name.toLowerCase().includes(lowerQuery) ||
+        item.amount.toLowerCase().includes(lowerQuery),
     ).sort((a, b) => {
       // Sort by urgency first
       if (a.isUrgent && !b.isUrgent) return -1;
@@ -56,16 +56,16 @@ export const MedicationListScreen = ({ navigation }: any) => {
       // Then by name
       return a.name.localeCompare(b.name);
     });
-  }, [medications, searchQuery]);
+  }, [payrollItems, searchQuery]);
 
-  const handleMedicationPress = (medication: Medication) => {
-    navigation.navigate('MedicationDetails', { medicationId: medication.id });
+  const handlePayrollPress = (payroll: Payroll) => {
+    navigation.navigate('PayrollDetails', { payrollId: payroll.id });
   };
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{t('medications.empty')}</Text>
-      <Text style={styles.emptySubText}>{t('medications.emptySubtitle')}</Text>
+      <Text style={styles.emptyText}>{t('payroll.empty')}</Text>
+      <Text style={styles.emptySubText}>{t('payroll.emptySubtitle')}</Text>
     </View>
   );
 
@@ -79,11 +79,11 @@ export const MedicationListScreen = ({ navigation }: any) => {
         />
       </View>
       <FlatList
-        data={filteredMedications}
+        data={filteredPayrollItems}
         renderItem={({ item }) => (
-          <MedicationCard
-            medication={item}
-            onPress={() => handleMedicationPress(item)}
+          <PayrollCard
+            payroll={item}
+            onPress={() => handlePayrollPress(item)}
           />
         )}
         keyExtractor={item => item.id?.toString() || ''}
@@ -93,7 +93,7 @@ export const MedicationListScreen = ({ navigation }: any) => {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddMedication')}
+        onPress={() => navigation.navigate('AddPayroll')}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>

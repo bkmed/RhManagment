@@ -10,27 +10,27 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { prescriptionsDb } from '../../database/prescriptionsDb';
-import { Prescription } from '../../database/schema';
+import { illnessesDb } from '../../database/illnessesDb';
+import { Illness } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
-export const PrescriptionListScreen = ({ navigation }: any) => {
+export const IllnessListScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [illnesses, setIllnesses] = useState<Illness[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const loadPrescriptions = async () => {
+  const loadIllnesses = async () => {
     try {
-      const data = await prescriptionsDb.getAll();
-      setPrescriptions(data);
+      const data = await illnessesDb.getAll();
+      setIllnesses(data);
     } catch (error) {
-      console.error('Error loading prescriptions:', error);
-      Alert.alert(t('common.error'), t('prescriptions.loadError'));
+      console.error('Error loading illnesses:', error);
+      Alert.alert(t('common.error'), t('illnesses.loadError'));
     } finally {
       setLoading(false);
     }
@@ -38,19 +38,19 @@ export const PrescriptionListScreen = ({ navigation }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      loadPrescriptions();
+      loadIllnesses();
     }, []),
   );
 
-  const filteredPrescriptions = useMemo(() => {
-    if (!searchQuery) return prescriptions;
+  const filteredIllnesses = useMemo(() => {
+    if (!searchQuery) return illnesses;
     const lowerQuery = searchQuery.toLowerCase();
-    return prescriptions.filter(
-      p =>
-        p.medicationName.toLowerCase().includes(lowerQuery) ||
-        (p.doctorName && p.doctorName.toLowerCase().includes(lowerQuery)),
+    return illnesses.filter(
+      illness =>
+        illness.payrollName.toLowerCase().includes(lowerQuery) ||
+        (illness.employeeName && illness.employeeName.toLowerCase().includes(lowerQuery)),
     );
-  }, [prescriptions, searchQuery]);
+  }, [illnesses, searchQuery]);
 
   const isExpiringSoon = (expiryDate: string) => {
     const expiry = new Date(expiryDate);
@@ -61,15 +61,15 @@ export const PrescriptionListScreen = ({ navigation }: any) => {
     return diffDays <= 30 && diffDays >= 0;
   };
 
-  const renderPrescription = ({ item }: { item: Prescription }) => {
+  const renderIllness = ({ item }: { item: Illness }) => {
     const expiryWarning = item.expiryDate && isExpiringSoon(item.expiryDate);
 
     return (
       <TouchableOpacity
         style={[styles.card, expiryWarning && styles.cardWarning]}
         onPress={() =>
-          navigation.navigate('PrescriptionDetails', {
-            prescriptionId: item.id,
+          navigation.navigate('IllnessDetails', {
+            illnessId: item.id,
           })
         }
       >
@@ -81,16 +81,16 @@ export const PrescriptionListScreen = ({ navigation }: any) => {
         )}
 
         <View style={styles.details}>
-          <Text style={styles.medicationName}>{item.medicationName}</Text>
+          <Text style={styles.payrollName}>{item.payrollName}</Text>
 
-          {item.doctorName && (
-            <Text style={styles.doctor}>
-              {t('prescriptions.doctor')} {item.doctorName}
+          {item.employeeName && (
+            <Text style={styles.employee}>
+              {t('illnesses.employee')} {item.employeeName}
             </Text>
           )}
 
           <Text style={styles.date}>
-            {t('prescriptions.issued')}:
+            {t('illnesses.issued')}:
             {new Date(item.issueDate).toLocaleDateString()}
           </Text>
 
@@ -98,7 +98,7 @@ export const PrescriptionListScreen = ({ navigation }: any) => {
             <Text
               style={[styles.expiry, expiryWarning && styles.expiryWarning]}
             >
-              {t('prescriptions.expires')}:
+              {t('illnesses.expires')}:
               {new Date(item.expiryDate).toLocaleDateString()}
               {expiryWarning && ' ⚠️'}
             </Text>
@@ -110,9 +110,9 @@ export const PrescriptionListScreen = ({ navigation }: any) => {
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{t('prescriptions.empty')}</Text>
+      <Text style={styles.emptyText}>{t('illnesses.empty')}</Text>
       <Text style={styles.emptySubText}>
-        {t('prescriptions.emptySubtitle')}
+        {t('illnesses.emptySubtitle')}
       </Text>
     </View>
   );
@@ -127,8 +127,8 @@ export const PrescriptionListScreen = ({ navigation }: any) => {
         />
       </View>
       <FlatList
-        data={filteredPrescriptions}
-        renderItem={renderPrescription}
+        data={filteredIllnesses}
+        renderItem={renderIllness}
         keyExtractor={item => item.id?.toString() || ''}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={!loading ? renderEmpty : null}
@@ -136,7 +136,7 @@ export const PrescriptionListScreen = ({ navigation }: any) => {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddPrescription')}
+        onPress={() => navigation.navigate('AddIllness')}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
@@ -183,12 +183,12 @@ const createStyles = (theme: Theme) =>
     details: {
       flex: 1,
     },
-    medicationName: {
+    payrollName: {
       ...theme.textVariants.subheader,
       marginBottom: theme.spacing.xs,
       color: theme.colors.text,
     },
-    doctor: {
+    employee: {
       ...theme.textVariants.body,
       color: theme.colors.subText,
       marginBottom: theme.spacing.xs,

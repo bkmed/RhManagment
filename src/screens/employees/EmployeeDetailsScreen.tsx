@@ -10,23 +10,23 @@ import {
   Image,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { doctorsDb } from '../../database/doctorsDb';
-import { appointmentsDb } from '../../database/appointmentsDb';
-import { Doctor, Appointment } from '../../database/schema';
+import { employeesDb } from '../../database/employeesDb';
+import { leavesDb } from '../../database/leavesDb';
+import { Employee, Leave } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { LoadingScreen } from '../../components/LoadingScreen';
 
-export const DoctorDetailsScreen = ({ navigation, route }: any) => {
-  const { doctorId } = route.params;
+export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
+  const { employeeId } = route.params;
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [leaves, setLeaves] = useState<Leave[]>([]);
   const [loading, setLoading] = useState(true);
-  // Déclare le contexte Web uniquement si on est sur web
+
   const WebNavigationContext =
     Platform.OS === 'web'
       ? require('../../navigation/AppNavigator').WebNavigationContext
@@ -34,18 +34,20 @@ export const DoctorDetailsScreen = ({ navigation, route }: any) => {
 
   const { setActiveTab } = WebNavigationContext
     ? useContext(WebNavigationContext)
-    : { setActiveTab: () => { } }; // fallback pour mobile
+    : { setActiveTab: () => { } };
 
-  const navigateToAddAppointment = () => {
+  const navigateToAddLeave = () => {
     if (Platform.OS === 'web') {
       if (setActiveTab) {
-        setActiveTab('Appointments', 'AddAppointment', {
-          doctorName: doctor?.name || '',
+        setActiveTab('Leaves', 'AddLeave', {
+          employeeName: employee?.name || '',
+          employeeId: employeeId,
         });
       }
     } else {
-      navigation.navigate('AddAppointment', {
-        doctorName: doctor?.name || '',
+      navigation.navigate('AddLeave', {
+        employeeName: employee?.name || '',
+        employeeId: employeeId,
       });
     }
   };
@@ -53,43 +55,45 @@ export const DoctorDetailsScreen = ({ navigation, route }: any) => {
   const navigationBack = () => {
     if (Platform.OS === 'web') {
       if (setActiveTab) {
-        setActiveTab('Doctors');
+        setActiveTab('Employees');
       }
     } else {
       navigation.goBack();
     }
   };
 
-  const navigateToAddPrescription = (doctor: Doctor) => {
+  const navigateToAddIllness = (employee: Employee) => {
     if (Platform.OS === 'web') {
       if (setActiveTab) {
-        setActiveTab('Prescriptions', 'AddPrescription', {
-          doctorName: doctor.name,
+        setActiveTab('Illnesses', 'AddIllness', {
+          employeeName: employee.name,
+          employeeId: employee.id,
         });
       }
     } else {
-      navigation.navigate('AddPrescription', {
-        doctorName: doctor.name,
+      navigation.navigate('AddIllness', {
+        employeeName: employee.name,
+        employeeId: employee.id,
       });
     }
   };
 
   const loadData = async () => {
     try {
-      const doctorData = await doctorsDb.getById(doctorId);
-      const appointmentsData = await appointmentsDb.getByDoctorId(doctorId);
+      const employeeData = await employeesDb.getById(employeeId);
+      const leavesData = await leavesDb.getByEmployeeId(employeeId);
 
-      if (doctorData) {
-        setDoctor(doctorData);
+      if (employeeData) {
+        setEmployee(employeeData);
       } else {
-        Alert.alert(t('common.error'), t('doctors.notFound'));
+        Alert.alert(t('common.error'), t('employees.notFound'));
         navigationBack();
       }
 
-      setAppointments(appointmentsData);
+      setLeaves(leavesData);
     } catch (error) {
-      console.error('Error loading doctor details:', error);
-      Alert.alert(t('common.error'), t('doctors.loadError'));
+      console.error('Error loading employee details:', error);
+      Alert.alert(t('common.error'), t('employees.loadError'));
     } finally {
       setLoading(false);
     }
@@ -98,17 +102,17 @@ export const DoctorDetailsScreen = ({ navigation, route }: any) => {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [doctorId]),
+    }, [employeeId]),
   );
 
   const handleEdit = () => {
-    navigation.navigate('AddDoctor', { doctorId });
+    navigation.navigate('AddEmployee', { employeeId });
   };
 
   const handleDelete = () => {
     Alert.alert(
-      t('doctors.deleteConfirmTitle'),
-      t('doctors.deleteConfirmMessage'),
+      t('employees.deleteConfirmTitle'),
+      t('employees.deleteConfirmMessage'),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -116,11 +120,11 @@ export const DoctorDetailsScreen = ({ navigation, route }: any) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await doctorsDb.delete(doctorId);
+              await employeesDb.delete(employeeId);
               navigationBack();
             } catch (error) {
-              console.error('Error deleting doctor:', error);
-              Alert.alert(t('common.error'), t('doctors.deleteError'));
+              console.error('Error deleting employee:', error);
+              Alert.alert(t('common.error'), t('employees.deleteError'));
             }
           },
         },
@@ -128,12 +132,13 @@ export const DoctorDetailsScreen = ({ navigation, route }: any) => {
     );
   };
 
-  const renderAppointment = ({ item }: { item: Appointment }) => (
-    <View style={styles.appointmentCard}>
-      <View style={styles.appointmentHeader}>
-        <Text style={styles.appointmentTitle}>{item.title}</Text>
-        <Text style={styles.appointmentDate}>
+  const renderLeave = ({ item }: { item: Leave }) => (
+    <View style={styles.leaveCard}>
+      <View style={styles.leaveHeader}>
+        <Text style={styles.leaveTitle}>{item.title}</Text>
+        <Text style={styles.leaveDate}>
           {new Date(item.dateTime).toLocaleDateString()}
+          {' '}
           {new Date(item.dateTime).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
@@ -141,10 +146,10 @@ export const DoctorDetailsScreen = ({ navigation, route }: any) => {
         </Text>
       </View>
       {item.location && (
-        <Text style={styles.appointmentDetail}>📍 {item.location}</Text>
+        <Text style={styles.leaveDetail}>📍 {item.location}</Text>
       )}
       {item.notes && (
-        <Text style={styles.appointmentDetail}>📝 {item.notes}</Text>
+        <Text style={styles.leaveDetail}>📝 {item.notes}</Text>
       )}
     </View>
   );
@@ -153,31 +158,31 @@ export const DoctorDetailsScreen = ({ navigation, route }: any) => {
     return <LoadingScreen />;
   }
 
-  if (!doctor) return null;
+  if (!employee) return null;
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
           <View style={styles.header}>
-            <View style={styles.doctorInfoContainer}>
-              {doctor.photoUri ? (
-                <Image source={{ uri: doctor.photoUri }} style={styles.doctorPhoto} />
+            <View style={styles.employeeInfoContainer}>
+              {employee.photoUri ? (
+                <Image source={{ uri: employee.photoUri }} style={styles.employeePhoto} />
               ) : (
-                <View style={[styles.doctorPhoto, styles.doctorPhotoPlaceholder]}>
-                  <Text style={styles.doctorPhotoPlaceholderText}>
-                    {doctor.name.charAt(0)}
+                <View style={[styles.employeePhoto, styles.employeePhotoPlaceholder]}>
+                  <Text style={styles.employeePhotoPlaceholderText}>
+                    {employee.name.charAt(0)}
                   </Text>
                 </View>
               )}
               <View>
                 <Text style={styles.name}>
-                  {t('doctors.doctor')} {doctor.name}
+                  {employee.name}
                 </Text>
-                {doctor.specialty && (
-                  <Text style={styles.specialty}>
-                    {t(`specialties.${doctor.specialty}`, {
-                      defaultValue: doctor.specialty,
+                {employee.position && (
+                  <Text style={styles.position}>
+                    {t(`departments.${employee.position}`, {
+                      defaultValue: employee.position,
                     })}
                   </Text>
                 )}
@@ -204,64 +209,64 @@ export const DoctorDetailsScreen = ({ navigation, route }: any) => {
           <View style={styles.divider} />
 
           <View style={styles.detailsSection}>
-            {doctor.phone && (
+            {employee.phone && (
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>{t('doctors.phone')}</Text>
-                <Text style={styles.detailValue}>{doctor.phone}</Text>
+                <Text style={styles.detailLabel}>{t('employees.phone')}</Text>
+                <Text style={styles.detailValue}>{employee.phone}</Text>
               </View>
             )}
-            {doctor.email && (
+            {employee.email && (
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>{t('doctors.email')}</Text>
-                <Text style={styles.detailValue}>{doctor.email}</Text>
+                <Text style={styles.detailLabel}>{t('employees.email')}</Text>
+                <Text style={styles.detailValue}>{employee.email}</Text>
               </View>
             )}
-            {doctor.address && (
+            {employee.address && (
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>{t('doctors.address')}</Text>
-                <Text style={styles.detailValue}>{doctor.address}</Text>
+                <Text style={styles.detailLabel}>{t('employees.address')}</Text>
+                <Text style={styles.detailValue}>{employee.address}</Text>
               </View>
             )}
-            {doctor.notes && (
+            {employee.notes && (
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>{t('doctors.notes')}</Text>
-                <Text style={styles.detailValue}>{doctor.notes}</Text>
+                <Text style={styles.detailLabel}>{t('employees.notes')}</Text>
+                <Text style={styles.detailValue}>{employee.notes}</Text>
               </View>
             )}
           </View>
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t('appointments.title')}</Text>
+          <Text style={styles.sectionTitle}>{t('leaves.title')}</Text>
           <View style={styles.headerActions}>
             <TouchableOpacity
-              onPress={() => navigateToAddPrescription(doctor)}
+              onPress={() => navigateToAddIllness(employee)}
               style={[styles.addButton, styles.secondaryButton]}
             >
               <Text style={[styles.addButtonText, styles.secondaryButtonText]}>
-                + {t('doctors.addPrescription')}
+                + {t('employees.addIllness')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={navigateToAddAppointment}
+              onPress={navigateToAddLeave}
               style={styles.addButton}
             >
               <Text style={styles.addButtonText}>
-                + {t('doctors.addAppointment')}
+                + {t('employees.addLeave')}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {appointments.length > 0 ? (
-          appointments.map(item => (
-            <View key={item.id} style={styles.appointmentWrapper}>
-              {renderAppointment({ item })}
+        {leaves.length > 0 ? (
+          leaves.map(item => (
+            <View key={item.id} style={styles.leaveWrapper}>
+              {renderLeave({ item })}
             </View>
           ))
         ) : (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>{t('doctors.noAppointments')}</Text>
+            <Text style={styles.emptyText}>{t('employees.noLeaves')}</Text>
           </View>
         )}
       </ScrollView>
@@ -296,23 +301,23 @@ const createStyles = (theme: Theme) =>
       alignItems: 'flex-start',
       marginBottom: theme.spacing.m,
     },
-    doctorInfoContainer: {
+    employeeInfoContainer: {
       flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.m,
     },
-    doctorPhoto: {
+    employeePhoto: {
       width: 60,
       height: 60,
       borderRadius: 30,
     },
-    doctorPhotoPlaceholder: {
+    employeePhotoPlaceholder: {
       backgroundColor: theme.colors.primaryBackground,
       justifyContent: 'center',
       alignItems: 'center',
     },
-    doctorPhotoPlaceholderText: {
+    employeePhotoPlaceholderText: {
       color: theme.colors.primary,
       fontSize: 24,
       fontWeight: 'bold',
@@ -323,7 +328,7 @@ const createStyles = (theme: Theme) =>
       marginBottom: theme.spacing.xs,
       color: theme.colors.text,
     },
-    specialty: {
+    position: {
       ...theme.textVariants.subheader,
       color: theme.colors.primary,
       fontSize: 18,
@@ -378,7 +383,7 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: theme.spacing.m,
-      flexWrap: 'wrap', // Allow wrapping
+      flexWrap: 'wrap',
       gap: theme.spacing.s,
     },
     sectionTitle: {
@@ -396,10 +401,10 @@ const createStyles = (theme: Theme) =>
       fontSize: 14,
       color: theme.colors.surface,
     },
-    appointmentWrapper: {
+    leaveWrapper: {
       marginBottom: theme.spacing.m,
     },
-    appointmentCard: {
+    leaveCard: {
       backgroundColor: theme.colors.surface,
       borderRadius: theme.spacing.s,
       padding: theme.spacing.m,
@@ -407,23 +412,23 @@ const createStyles = (theme: Theme) =>
       borderLeftWidth: 4,
       borderLeftColor: theme.colors.secondary,
     },
-    appointmentHeader: {
+    leaveHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: theme.spacing.s,
     },
-    appointmentTitle: {
+    leaveTitle: {
       ...theme.textVariants.body,
       fontWeight: '600',
       color: theme.colors.text,
     },
-    appointmentDate: {
+    leaveDate: {
       ...theme.textVariants.caption,
       color: theme.colors.primary,
       fontWeight: '600',
     },
-    appointmentDetail: {
+    leaveDetail: {
       ...theme.textVariants.caption,
       marginTop: theme.spacing.xs,
       color: theme.colors.subText,
@@ -441,8 +446,8 @@ const createStyles = (theme: Theme) =>
     headerActions: {
       flexDirection: 'row',
       gap: theme.spacing.s,
-      flexWrap: 'wrap', // Allow buttons to wrap
-      justifyContent: 'flex-end', // Keep them to the right implies standard desktop look, but wrapping handles mobile
+      flexWrap: 'wrap',
+      justifyContent: 'flex-end',
     },
     secondaryButton: {
       backgroundColor: 'transparent',

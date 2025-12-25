@@ -8,19 +8,19 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { medicationsDb } from '../../database/medicationsDb';
+import { payrollDb } from '../../database/payrollDb';
 import { notificationService } from '../../services/notificationService';
-import { Medication } from '../../database/schema';
+import { Payroll } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
-export const MedicationDetailsScreen = ({ navigation, route }: any) => {
-  const { medicationId } = route.params;
+export const PayrollDetailsScreen = ({ navigation, route }: any) => {
+  const { payrollId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [medication, setMedication] = useState<Medication | null>(null);
+  const [payroll, setPayroll] = useState<Payroll | null>(null);
   const [loading, setLoading] = useState(true);
 
   const WebNavigationContext =
@@ -34,22 +34,22 @@ export const MedicationDetailsScreen = ({ navigation, route }: any) => {
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Medications');
+      setActiveTab('Payroll');
     } else {
       navigation.goBack();
     }
   };
 
   useEffect(() => {
-    loadMedication();
-  }, [medicationId]);
+    loadPayroll();
+  }, [payrollId]);
 
-  const loadMedication = async () => {
+  const loadPayroll = async () => {
     try {
-      const med = await medicationsDb.getById(medicationId);
-      setMedication(med);
+      const item = await payrollDb.getById(payrollId);
+      setPayroll(item);
     } catch (error) {
-      Alert.alert(t('medicationDetails.errorLoadFailed'));
+      Alert.alert(t('payrollDetails.errorLoadFailed'));
     } finally {
       setLoading(false);
     }
@@ -57,8 +57,8 @@ export const MedicationDetailsScreen = ({ navigation, route }: any) => {
 
   const handleDelete = () => {
     Alert.alert(
-      t('medicationDetails.deleteConfirmTitle'),
-      t('medicationDetails.deleteConfirmMessage'),
+      t('payrollDetails.deleteConfirmTitle'),
+      t('payrollDetails.deleteConfirmMessage'),
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -66,11 +66,11 @@ export const MedicationDetailsScreen = ({ navigation, route }: any) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await medicationsDb.delete(medicationId);
-              await notificationService.cancelMedicationReminders(medicationId);
+              await payrollDb.delete(payrollId);
+              await notificationService.cancelPayrollReminders(payrollId);
               navigateBack();
             } catch (error) {
-              Alert.alert(t('medicationDetails.errorDeleteFailed'));
+              Alert.alert(t('payrollDetails.errorDeleteFailed'));
             }
           },
         },
@@ -79,47 +79,47 @@ export const MedicationDetailsScreen = ({ navigation, route }: any) => {
   };
 
   const handleEdit = () => {
-    navigation.navigate('AddMedication', { medicationId });
+    navigation.navigate('AddPayroll', { payrollId });
   };
 
   const handleViewHistory = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Medications', 'MedicationHistory', { medicationId });
+      setActiveTab('Payroll', 'PayrollHistory', { payrollId });
     } else {
-      navigation.navigate('MedicationHistory', { medicationId });
+      navigation.navigate('PayrollHistory', { payrollId });
     }
   };
 
-  if (loading || !medication) {
+  if (loading || !payroll) {
     return (
       <View style={styles.container}>
         <Text style={{ color: theme.colors.text }}>
-          {t('medicationDetails.loading')}
+          {t('payrollDetails.loading')}
         </Text>
       </View>
     );
   }
 
-  const times = JSON.parse(medication.times) as string[];
+  const times = JSON.parse(payroll.times) as string[];
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.section}>
-          <Text style={styles.name}>{medication.name}</Text>
-          <Text style={styles.dosage}>{medication.dosage}</Text>
+          <Text style={styles.name}>{payroll.name}</Text>
+          <Text style={styles.amount}>{payroll.amount}</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.label}>
-            {t('medicationDetails.frequencyLabel')}
+            {t('payrollDetails.frequencyLabel')}
           </Text>
-          <Text style={styles.value}>{medication.frequency}</Text>
+          <Text style={styles.value}>{payroll.frequency}</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.label}>
-            {t('medicationDetails.reminderTimesLabel')}
+            {t('payrollDetails.reminderTimesLabel')}
           </Text>
           <View style={styles.timesContainer}>
             {times.map((time, index) => (
@@ -132,43 +132,43 @@ export const MedicationDetailsScreen = ({ navigation, route }: any) => {
 
         <View style={styles.section}>
           <Text style={styles.label}>
-            {t('medicationDetails.startDateLabel')}
+            {t('payrollDetails.startDateLabel')}
           </Text>
-          <Text style={styles.value}>{medication.startDate}</Text>
+          <Text style={styles.value}>{payroll.startDate}</Text>
         </View>
 
-        {medication.endDate && (
+        {payroll.endDate && (
           <View style={styles.section}>
             <Text style={styles.label}>
-              {t('medicationDetails.endDateLabel')}
+              {t('payrollDetails.endDateLabel')}
             </Text>
-            <Text style={styles.value}>{medication.endDate}</Text>
+            <Text style={styles.value}>{payroll.endDate}</Text>
           </View>
         )}
 
-        {medication.notes && (
+        {payroll.notes && (
           <View style={styles.section}>
             <Text style={styles.label}>
-              {t('medicationDetails.notesLabel')}
+              {t('payrollDetails.notesLabel')}
             </Text>
-            <Text style={styles.value}>{medication.notes}</Text>
+            <Text style={styles.value}>{payroll.notes}</Text>
           </View>
         )}
 
         <View style={styles.section}>
           <Text style={styles.label}>
-            {t('medicationDetails.remindersLabel')}
+            {t('payrollDetails.remindersLabel')}
           </Text>
           <Text style={styles.value}>
-            {medication.reminderEnabled
-              ? t('medicationDetails.reminderEnabled')
-              : t('medicationDetails.reminderDisabled')}
+            {payroll.reminderEnabled
+              ? t('payrollDetails.reminderEnabled')
+              : t('payrollDetails.reminderDisabled')}
           </Text>
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleViewHistory}>
           <Text style={styles.buttonText}>
-            {t('medicationDetails.viewHistoryButton')}
+            {t('payrollDetails.viewHistoryButton')}
           </Text>
         </TouchableOpacity>
 
@@ -177,7 +177,7 @@ export const MedicationDetailsScreen = ({ navigation, route }: any) => {
           onPress={handleEdit}
         >
           <Text style={styles.buttonText}>
-            {t('medicationDetails.editButton')}
+            {t('payrollDetails.editButton')}
           </Text>
         </TouchableOpacity>
 
@@ -186,7 +186,7 @@ export const MedicationDetailsScreen = ({ navigation, route }: any) => {
           onPress={handleDelete}
         >
           <Text style={styles.buttonText}>
-            {t('medicationDetails.deleteButton')}
+            {t('payrollDetails.deleteButton')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -214,7 +214,7 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.text,
       marginBottom: 4,
     },
-    dosage: {
+    amount: {
       ...theme.textVariants.subheader,
       color: theme.colors.subText,
       fontWeight: '600',

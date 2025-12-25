@@ -6,22 +6,21 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  Image,
   Platform,
 } from 'react-native';
-import { prescriptionsDb } from '../../database/prescriptionsDb';
-import { Prescription } from '../../database/schema';
+import { illnessesDb } from '../../database/illnessesDb';
+import { notificationService } from '../../services/notificationService';
+import { Illness } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { LoadingScreen } from '../../components/LoadingScreen';
 
-export const PrescriptionDetailsScreen = ({ navigation, route }: any) => {
-  const { prescriptionId } = route.params;
-  const { t } = useTranslation();
+export const IllnessDetailsScreen = ({ navigation, route }: any) => {
+  const { illnessId } = route.params;
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const [prescription, setPrescription] = useState<Prescription | null>(null);
+  const [illness, setIllness] = useState<Illness | null>(null);
   const [loading, setLoading] = useState(true);
 
   const WebNavigationContext =
@@ -30,25 +29,25 @@ export const PrescriptionDetailsScreen = ({ navigation, route }: any) => {
       : null;
 
   const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext) as any
+    ? useContext(WebNavigationContext)
     : { setActiveTab: () => { } };
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Prescriptions');
+      setActiveTab('Illnesses');
     } else {
       navigation.goBack();
     }
   };
 
   useEffect(() => {
-    loadPrescription();
-  }, [prescriptionId]);
+    loadIllness();
+  }, [illnessId]);
 
-  const loadPrescription = async () => {
+  const loadIllness = async () => {
     try {
-      const presc = await prescriptionsDb.getById(prescriptionId);
-      setPrescription(presc);
+      const data = await illnessesDb.getById(illnessId);
+      setIllness(data);
     } catch (error) {
       Alert.alert(t('common.errorTitle'), t('common.loadFailed'));
     } finally {
@@ -67,7 +66,8 @@ export const PrescriptionDetailsScreen = ({ navigation, route }: any) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await prescriptionsDb.delete(prescriptionId);
+              await illnessesDb.delete(illnessId);
+              await notificationService.cancelIllnessReminder(illnessId);
               navigateBack();
             } catch (error) {
               Alert.alert(t('common.errorTitle'), t('common.deleteFailed'));
@@ -79,74 +79,59 @@ export const PrescriptionDetailsScreen = ({ navigation, route }: any) => {
   };
 
   const handleEdit = () => {
-    navigation.navigate('AddPrescription', { prescriptionId });
+    navigation.navigate('AddIllness', { illnessId });
   };
 
   const handleViewHistory = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Prescriptions', 'PrescriptionHistory', { prescriptionId });
+      setActiveTab('Illnesses', 'IllnessHistory', { illnessId });
     } else {
-      navigation.navigate('PrescriptionHistory', { prescriptionId });
+      navigation.navigate('IllnessHistory', { illnessId });
     }
   };
 
-  if (loading || !prescription) {
-    return <LoadingScreen />;
+  if (loading || !illness) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: theme.colors.text }}>{t('common.loading')}</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        {prescription.photoUri && (
-          <Image source={{ uri: prescription.photoUri }} style={styles.photo} />
-        )}
-
         <View style={styles.section}>
-          <Text style={styles.medicationName}>
-            {prescription.medicationName}
-          </Text>
+          <Text style={styles.title}>{illness.payrollName}</Text>
+          {illness.employeeName && (
+            <Text style={styles.employee}>{illness.employeeName}</Text>
+          )}
         </View>
 
-        {prescription.doctorName && (
-          <View style={styles.section}>
-            <Text style={styles.label}>
-              {t('prescriptions.doctorNameLabel')}
-            </Text>
-            <Text style={styles.value}>
-              {t('prescriptions.doctor')} {prescription.doctorName}
-            </Text>
-          </View>
-        )}
-
         <View style={styles.section}>
-          <Text style={styles.label}>{t('prescriptions.issueDateLabel')}</Text>
+          <Text style={styles.label}>{t('illnesses.issueDateLabel')}</Text>
           <Text style={styles.value}>
-            {new Date(prescription.issueDate).toLocaleDateString()}
+            {new Date(illness.issueDate).toLocaleDateString()}
           </Text>
         </View>
 
-        {prescription.expiryDate && (
+        {illness.expiryDate && (
           <View style={styles.section}>
-            <Text style={styles.label}>
-              {t('prescriptions.expiryDateLabel')}
-            </Text>
+            <Text style={styles.label}>{t('illnesses.expiryDateLabel')}</Text>
             <Text style={styles.value}>
-              {new Date(prescription.expiryDate).toLocaleDateString()}
+              {new Date(illness.expiryDate).toLocaleDateString()}
             </Text>
           </View>
         )}
 
-        {prescription.notes && (
+        {illness.notes && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('prescriptions.notesLabel')}</Text>
-            <Text style={styles.value}>{prescription.notes}</Text>
+            <Text style={styles.label}>{t('illnesses.notesLabel')}</Text>
+            <Text style={styles.value}>{illness.notes}</Text>
           </View>
         )}
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleViewHistory}
-        >
+        <TouchableOpacity style={styles.button} onPress={handleViewHistory}>
           <Text style={styles.buttonText}>{t('common.viewHistory')}</Text>
         </TouchableOpacity>
 
@@ -176,13 +161,6 @@ const createStyles = (theme: Theme) =>
     content: {
       padding: theme.spacing.m,
     },
-    photo: {
-      width: '100%',
-      height: 300,
-      borderRadius: theme.spacing.m,
-      marginBottom: theme.spacing.m,
-      backgroundColor: theme.colors.border,
-    },
     section: {
       backgroundColor: theme.colors.surface,
       borderRadius: theme.spacing.m,
@@ -190,14 +168,19 @@ const createStyles = (theme: Theme) =>
       marginBottom: theme.spacing.m,
       ...theme.shadows.small,
     },
-    medicationName: {
+    title: {
       ...theme.textVariants.header,
+      marginBottom: theme.spacing.s,
       color: theme.colors.text,
+    },
+    employee: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.primary,
     },
     label: {
       ...theme.textVariants.caption,
-      color: theme.colors.subText,
       marginBottom: 4,
+      color: theme.colors.subText,
     },
     value: {
       ...theme.textVariants.body,
