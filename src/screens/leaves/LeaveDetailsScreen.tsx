@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { leavesDb } from '../../database/leavesDb';
 import { notificationService } from '../../services/notificationService';
+import { emailService } from '../../services/emailService';
 import { Leave } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
@@ -64,6 +65,22 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
       setLoading(true);
       await leavesDb.update(leaveId, { ...leave, status: newStatus });
       setLeave({ ...leave, status: newStatus });
+
+      // Notify Employee (Simulated via local notification for now)
+      await notificationService.notifyLeaveRequestDecision(
+        leaveId,
+        leave.title,
+        newStatus
+      );
+
+      // Open Email Draft for Employee
+      await emailService.sendStatusUpdateEmail(
+        'employee@example.com', // In a real app, this would be the actual employee email
+        newStatus,
+        leave.title,
+        user?.name || 'HR Manager'
+      );
+
       Alert.alert(t('common.success'), t(`leaves.statusUpdated_${newStatus}`));
     } catch (error) {
       Alert.alert(t('common.error'), t('leaves.updateError'));

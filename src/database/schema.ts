@@ -98,4 +98,5 @@ export interface Employee {
   createdAt: string;
   updatedAt: string;
   location?: string; // Local
+  hiringDate?: string; // Date d'embauche
 }

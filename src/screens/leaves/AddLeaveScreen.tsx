@@ -14,6 +14,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
 import { notificationService } from '../../services/notificationService';
+import { emailService } from '../../services/emailService';
+import { storageService } from '../../services/storage';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
@@ -44,14 +46,27 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
+  // Permission specific state
+  const [permissionDate, setPermissionDate] = useState(new Date());
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date(new Date().getTime() + 60 * 60 * 1000)); // +1 hour
+  const [maxPermissionHours, setMaxPermissionHours] = useState(2);
+
   // Auto-fill logic for employees
   useEffect(() => {
+    loadConfig();
     if (!isEdit && user?.role === 'employee') {
       setEmployeeName(user.name);
       setDepartment(user.department || '');
-      // Location could also be auto-filled if available in user object or employee profile
     }
   }, [user, isEdit]);
+
+  const loadConfig = async () => {
+    const savedMax = await storageService.getString('config_max_permission_hours');
+    if (savedMax) {
+      setMaxPermissionHours(parseInt(savedMax, 10));
+    }
+  };
 
   const WebNavigationContext =
     Platform.OS === 'web'
@@ -93,25 +108,54 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const handleSave = async () => {
     const newErrors: { [key: string]: string } = {};
     if (!title.trim()) newErrors.title = t('common.required');
-    if (!startDate) newErrors.startDate = t('common.required');
-    if (!endDate) newErrors.endDate = t('common.required');
-    if (startDate && endDate && startDate > endDate) {
-      newErrors.endDate = t('common.invalidDateRange');
+
+    let permissionStart: Date | null = null;
+    let permissionEnd: Date | null = null;
+
+    if (type === 'permission') {
+      // Validate Permission
+      if (startTime >= endTime) {
+        newErrors.endDate = t('permissions.invalidTime');
+      } else {
+        const diffMs = endTime.getTime() - startTime.getTime();
+        const diffHours = diffMs / (1000 * 60 * 60);
+        if (diffHours > maxPermissionHours) {
+          newErrors.endDate = t('permissions.errorDuration', { hours: maxPermissionHours });
+        }
+      }
+
+      // Construct full dates
+      permissionStart = new Date(permissionDate);
+      permissionStart.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
+
+      permissionEnd = new Date(permissionDate);
+      permissionEnd.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
+
+    } else {
+      // Validate Leave
+      if (!startDate) newErrors.startDate = t('common.required');
+      if (!endDate) newErrors.endDate = t('common.required');
+      if (startDate && endDate && startDate > endDate) {
+        newErrors.endDate = t('common.invalidDateRange');
+      }
     }
 
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
     setLoading(true);
+
     try {
       const leaveData = {
         title: title.trim(),
         employeeName: (user?.role === 'employee' ? user.name : employeeName).trim() || undefined,
         employeeId: user?.role === 'employee' ? user.employeeId : initialEmployeeId,
         location: location.trim() || undefined,
-        dateTime: startDate!.toISOString(), // Keep dateTime for backward compat (using start)
-        startDate: startDate!.toISOString(),
-        endDate: endDate!.toISOString(),
+        dateTime: type === 'permission' ? permissionStart!.toISOString() : startDate!.toISOString(),
+        startDate: type === 'permission' ? permissionStart!.toISOString() : startDate!.toISOString(),
+        endDate: type === 'permission' ? permissionEnd!.toISOString() : endDate!.toISOString(),
         notes: notes.trim() || undefined,
         reminderEnabled,
         type,
@@ -125,6 +169,18 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         id = leaveId;
       } else {
         id = await leavesDb.add(leaveData);
+
+        // Notify HR/Admin (Simulated via local notification for now)
+        await notificationService.notifyNewLeaveRequest(id, employeeName, t(`leaveTypes.${type}`));
+
+        // Open Email Draft for HR
+        await emailService.sendLeaveRequestEmail(
+          employeeName,
+          t(`leaveTypes.${type}`),
+          startDate!.toLocaleDateString(),
+          endDate!.toLocaleDateString(),
+          notes || ''
+        );
       }
 
       if (reminderEnabled) {
@@ -253,28 +309,64 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
             <Text style={styles.sectionTitle}>{t('payroll.freqWeekly') || t('leaves.time')}</Text>
 
             <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <DateTimePickerField
-                  label={t('payroll.startDate')}
-                  value={startDate}
-                  onChange={setStartDate}
-                  mode="date"
-                  minimumDate={new Date()}
-                  required
-                  error={errors.startDate}
-                />
-              </View>
-              <View style={styles.fieldContainer}>
-                <DateTimePickerField
-                  label={t('payroll.endDate')}
-                  value={endDate}
-                  onChange={setEndDate}
-                  mode="date"
-                  minimumDate={startDate || new Date()}
-                  required
-                  error={errors.endDate}
-                />
-              </View>
+              {type === 'permission' ? (
+                <>
+                  <View style={styles.fieldContainer}>
+                    <DateTimePickerField
+                      label={t('permissions.date')}
+                      value={permissionDate}
+                      onChange={setPermissionDate}
+                      mode="date"
+                      minimumDate={new Date()}
+                      required
+                    />
+                  </View>
+                  <View style={styles.fieldContainer}>
+                    <DateTimePickerField
+                      label={t('permissions.startTime')}
+                      value={startTime}
+                      onChange={setStartTime}
+                      mode="time"
+                      required
+                    />
+                  </View>
+                  <View style={styles.fieldContainer}>
+                    <DateTimePickerField
+                      label={t('permissions.endTime')}
+                      value={endTime}
+                      onChange={setEndTime}
+                      mode="time"
+                      required
+                      error={errors.endDate}
+                    />
+                  </View>
+                </>
+              ) : (
+                <>
+                  <View style={styles.fieldContainer}>
+                    <DateTimePickerField
+                      label={t('payroll.startDate')}
+                      value={startDate}
+                      onChange={setStartDate}
+                      mode="date"
+                      minimumDate={new Date()}
+                      required
+                      error={errors.startDate}
+                    />
+                  </View>
+                  <View style={styles.fieldContainer}>
+                    <DateTimePickerField
+                      label={t('payroll.endDate')}
+                      value={endDate}
+                      onChange={setEndDate}
+                      mode="date"
+                      minimumDate={startDate || new Date()}
+                      required
+                      error={errors.endDate}
+                    />
+                  </View>
+                </>
+              )}
             </View>
           </View>
 

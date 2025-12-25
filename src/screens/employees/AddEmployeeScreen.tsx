@@ -18,6 +18,7 @@ import { ROLES, UserRole } from '../../services/authService';
 import { Dropdown } from '../../components/Dropdown';
 import { useAuth } from '../../context/AuthContext';
 import { permissionsService } from '../../services/permissions';
+import { DateTimePickerField } from '../../components/DateTimePickerField';
 
 export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { theme } = useTheme();
@@ -49,6 +50,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [loading, setLoading] = useState(false);
   const [vacationDays, setVacationDays] = useState('25');
   const [country, setCountry] = useState('France');
+  const [hiringDate, setHiringDate] = useState<Date | null>(new Date());
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -73,6 +75,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         setLocation(employee.location || '');
         setVacationDays(String(employee.vacationDaysPerYear || 25));
         setCountry(employee.country || 'France');
+        if (employee.hiringDate) {
+          setHiringDate(new Date(employee.hiringDate));
+        }
       }
     } catch (error) {
       Alert.alert(t('common.error'), t('employees.loadError'));
@@ -118,6 +123,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         remainingVacationDays: parseInt(vacationDays) || 25,
         statePaidLeaves: 0,
         country,
+        hiringDate: hiringDate ? hiringDate.toISOString() : undefined,
       };
 
       if (employeeId) {
@@ -239,15 +245,26 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
               </View>
 
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('employees.address')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={address}
-                  onChangeText={setAddress}
-                  placeholder={t('employees.addressPlaceholder')}
-                  placeholderTextColor={theme.colors.subText}
-                />
+              <View style={styles.responsiveRow}>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('employees.address')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={address}
+                    onChangeText={setAddress}
+                    placeholder={t('employees.addressPlaceholder')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
+
+                <View style={styles.fieldContainer}>
+                  <DateTimePickerField
+                    label={t('employees.hiringDate')}
+                    value={hiringDate}
+                    onChange={setHiringDate}
+                    mode="date"
+                  />
+                </View>
               </View>
             </View>
           </View>

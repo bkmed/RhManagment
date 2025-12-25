@@ -27,6 +27,10 @@
         "holiday": "Jour Férié",
         "weekend": "Weekend",
         "required": "Ce champ est obligatoire",
+        "yearUnit": "an",
+        "yearsUnit": "ans",
+        "monthUnit": "mois",
+        "monthsUnit": "mois",
         "invalidEmail": "Adresse e-mail invalide",
         "invalidPhone": "Numéro de téléphone invalide",
         "invalidDateRange": "Plage de dates invalide",
@@ -106,7 +110,9 @@
         "viewAnalytics": "Voir les analytiques",
         "viewAnalyticsSubtitle": "Consultez vos données RH",
         "tip": "Conseil : Activez les notifications pour ne jamais manquer vos rappels de paie !",
-        "statePaidLeaves": "Congés payés État"
+        "statePaidLeaves": "Congés payés État",
+        "hiringDate": "Date d'embauche",
+        "seniority": "Ancienneté"
     },
     "payroll": {
         "title": "Paie",

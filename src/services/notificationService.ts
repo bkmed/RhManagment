@@ -252,4 +252,62 @@ export const notificationService = {
         console.log('Notification pressed:', notificationId, data);
         // This will be handled in App.tsx with navigation
     },
+
+    // Notify about leave request decision
+    notifyLeaveRequestDecision: async (
+        leaveId: number,
+        title: string,
+        status: 'approved' | 'declined'
+    ) => {
+        if (Platform.OS === 'web') return;
+
+        const channelId = 'leaves'; // Reuse leaves channel
+
+        await notifee.displayNotification({
+            id: `leave-decision-${leaveId}`,
+            title: `Leave Request ${status === 'approved' ? 'Approved' : 'Declined'}`,
+            body: `Your leave request "${title}" has been ${status}.`,
+            android: {
+                channelId,
+                importance: AndroidImportance.HIGH,
+                pressAction: {
+                    id: 'default',
+                    launchActivity: 'default',
+                },
+            },
+            data: {
+                type: 'leave_decision',
+                leaveId: leaveId.toString(),
+            },
+        });
+    },
+
+    // Notify about new leave request (for HR/Manager - simplified as local notification for now)
+    notifyNewLeaveRequest: async (
+        leaveId: number,
+        employeeName: string,
+        leaveType: string
+    ) => {
+        if (Platform.OS === 'web') return;
+
+        const channelId = 'leaves';
+
+        await notifee.displayNotification({
+            id: `new-leave-${leaveId}`,
+            title: 'New Leave Request',
+            body: `${employeeName} submitted a request for ${leaveType}.`,
+            android: {
+                channelId,
+                importance: AndroidImportance.HIGH,
+                pressAction: {
+                    id: 'default',
+                    launchActivity: 'default',
+                },
+            },
+            data: {
+                type: 'new_leave',
+                leaveId: leaveId.toString(),
+            },
+        });
+    }
 };

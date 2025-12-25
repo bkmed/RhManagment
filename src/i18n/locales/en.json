@@ -28,6 +28,10 @@
     "no": "No",
     "ok": "OK",
     "required": "This field is required",
+    "yearUnit": "year",
+    "yearsUnit": "years",
+    "monthUnit": "month",
+    "monthsUnit": "months",
     "invalidEmail": "Invalid email address",
     "invalidPhone": "Invalid phone number",
     "invalidDateRange": "Invalid date range",
@@ -106,7 +110,9 @@
     "viewAnalytics": "View Analytics",
     "viewAnalyticsSubtitle": "See your HR insights",
     "tip": "Tip: Enable notifications to never miss your payroll reminders!",
-    "statePaidLeaves": "State Paid Leaves"
+    "statePaidLeaves": "State Paid Leaves",
+    "hiringDate": "Start Date",
+    "seniority": "Seniority"
   },
   "payroll": {
     "title": "Payroll",

@@ -27,6 +27,10 @@
         "no": "لا",
         "ok": "موافق",
         "required": "هذا الحقل مطلوب",
+        "yearUnit": "سنة",
+        "yearsUnit": "سنوات",
+        "monthUnit": "شهر",
+        "monthsUnit": "أشهر",
         "invalidEmail": "عنوان البريد الإلكتروني غير صالح",
         "invalidPhone": "رقم الهاتف غير صالح",
         "invalidDateRange": "نطاق تاريخ غير صالح",
@@ -106,7 +110,9 @@
         "viewAnalytics": "عرض التحليلات",
         "viewAnalyticsSubtitle": "اطلع على رؤى الموارد البشرية",
         "tip": "نصيحة: قم بتفعيل الإشعارات حتى لا تفوت تذكيرات الرواتب الخاصة بك !",
-        "statePaidLeaves": "إجازات مدفوعة من الدولة"
+        "statePaidLeaves": "إجازات مدفوعة من الدولة",
+        "hiringDate": "تاريخ التوظيف",
+        "seniority": "الأقدمية"
     },
     "payroll": {
         "title": "الرواتب",

@@ -24,6 +24,10 @@
         "no": "No",
         "ok": "Aceptar",
         "required": "Este campo es obligatorio",
+        "yearUnit": "año",
+        "yearsUnit": "años",
+        "monthUnit": "mes",
+        "monthsUnit": "meses",
         "invalidEmail": "Correo electrónico no válido",
         "invalidPhone": "Número de teléfono no válido",
         "invalidDateRange": "Rango de fechas no válido",
@@ -103,7 +107,9 @@
         "viewAnalytics": "Ver analítica",
         "viewAnalyticsSubtitle": "Ver sus perspectivas de RRHH",
         "tip": "Consejo: ¡Active las notificaciones para no perder nunca sus recordatorios de nómina!",
-        "statePaidLeaves": "Vacaciones pagadas por el estado"
+        "statePaidLeaves": "Vacaciones pagadas por el estado",
+        "hiringDate": "Fecha de inicio",
+        "seniority": "Antigüedad"
     },
     "payroll": {
         "title": "Nómina",

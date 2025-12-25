@@ -190,6 +190,35 @@ export const HomeScreen = () => {
               <Text style={styles.countryValue}>{user.country}</Text>
             </View>
           )}
+
+          {user?.hiringDate && (
+            <>
+              <View style={styles.balanceDivider} />
+              <View style={styles.countryRow}>
+                <Text style={styles.countryLabel}>{t('home.hiringDate')}: </Text>
+                <Text style={styles.countryValue}>{new Date(user.hiringDate).toLocaleDateString()}</Text>
+              </View>
+              <View style={styles.countryRow}>
+                <Text style={styles.countryLabel}>{t('home.seniority')}: </Text>
+                <Text style={styles.countryValue}>
+                  {(() => {
+                    const start = new Date(user.hiringDate);
+                    const now = new Date();
+                    let years = now.getFullYear() - start.getFullYear();
+                    let months = now.getMonth() - start.getMonth();
+                    if (months < 0) {
+                      years--;
+                      months += 12;
+                    }
+                    const parts = [];
+                    if (years > 0) parts.push(`${years} ${years > 1 ? t('common.yearsUnit') : t('common.yearUnit')}`);
+                    if (months > 0) parts.push(`${months} ${months > 1 ? t('common.monthsUnit') : t('common.monthUnit')}`);
+                    return parts.join(', ') || `0 ${t('common.monthUnit')}`;
+                  })()}
+                </Text>
+              </View>
+            </>
+          )}
         </View>
 
         {/* Alerts */}

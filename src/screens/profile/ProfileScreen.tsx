@@ -10,6 +10,7 @@ import {
   Platform,
   I18nManager,
   Image,
+  TextInput,
 } from 'react-native';
 import { storageService } from '../../services/storage';
 import { useTranslation } from 'react-i18next';
@@ -52,10 +53,17 @@ export const ProfileScreen = ({ navigation }: any) => {
     useState<PermissionStatus>('unavailable');
   const [calendarPermission, setCalendarPermission] =
     useState<PermissionStatus>('unavailable');
+  const [maxPermissionHours, setMaxPermissionHours] = useState('2');
 
   useEffect(() => {
     checkPermissions();
+    loadConfig();
   }, []);
+
+  const loadConfig = async () => {
+    const savedMax = await storageService.getString('config_max_permission_hours');
+    if (savedMax) setMaxPermissionHours(savedMax);
+  };
 
   useEffect(() => {
     setName(user?.name || '');
@@ -376,6 +384,30 @@ export const ProfileScreen = ({ navigation }: any) => {
           ))}
         </View>
 
+        {/* Admin Settings Section */}
+        {(user?.role === 'admin' || user?.role === 'rh') && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>{t('permissions.settings')}</Text>
+            </View>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>{t('permissions.maxHours')}</Text>
+              <TextInput
+                style={styles.input}
+                value={maxPermissionHours}
+                onChangeText={(text) => {
+                  const hours = text.replace(/[^0-9]/g, '');
+                  setMaxPermissionHours(hours);
+                  storageService.setString('config_max_permission_hours', hours);
+                }}
+                keyboardType="numeric"
+                placeholder="2"
+                placeholderTextColor={theme.colors.subText}
+              />
+            </View>
+          </View>
+        )}
+
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
@@ -467,6 +499,18 @@ const createStyles = (theme: Theme) =>
       paddingVertical: theme.spacing.m,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
+    },
+    fieldContainer: {
+      marginTop: theme.spacing.m,
+    },
+    input: {
+      backgroundColor: theme.colors.background,
+      borderRadius: theme.spacing.s,
+      padding: theme.spacing.m,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      color: theme.colors.text,
+      marginTop: theme.spacing.xs,
     },
     permissionInfo: { flex: 1 },
     permissionLabel: { ...theme.textVariants.body, color: theme.colors.text, marginBottom: theme.spacing.xs },

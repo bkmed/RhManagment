@@ -18,6 +18,7 @@ export interface User {
     remainingVacationDays?: number;
     statePaidLeaves?: number;
     country?: string;
+    hiringDate?: string;
 }
 
 export const authService = {

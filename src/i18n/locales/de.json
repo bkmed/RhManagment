@@ -24,6 +24,10 @@
         "no": "Nein",
         "ok": "OK",
         "required": "Dieses Feld ist erforderlich",
+        "yearUnit": "Jahr",
+        "yearsUnit": "Jahre",
+        "monthUnit": "Monat",
+        "monthsUnit": "Monate",
         "invalidEmail": "Ungültige E-Mail-Adresse",
         "invalidPhone": "Ungültige Telefonnummer",
         "invalidDateRange": "Ungültiger Datumsbereich",
@@ -103,7 +107,9 @@
         "viewAnalytics": "Analytik anzeigen",
         "viewAnalyticsSubtitle": "Sehen Sie Ihre HR-Daten",
         "tip": "Tipp: Aktivieren Sie Benachrichtigungen, um keine Gehaltserinnerungen zu verpassen!",
-        "statePaidLeaves": "Staatlich bezahlter Urlaub"
+        "statePaidLeaves": "Staatlich bezahlter Urlaub",
+        "hiringDate": "Eintrittsdatum",
+        "seniority": "Betriebszugehörigkeit"
     },
     "payroll": {
         "title": "Gehaltsabrechnung",
