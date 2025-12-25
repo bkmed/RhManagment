@@ -158,6 +158,19 @@ const seedDemoData = async () => {
     const { payrollDb } = require('../database/payrollDb');
 
     // Create Employees
+    const empAdminId = await employeesDb.add({
+        name: 'Demo Admin',
+        position: 'Administrator',
+        email: 'admin@demo.com',
+        department: 'Management',
+        role: 'admin',
+        vacationDaysPerYear: 30,
+        remainingVacationDays: 20,
+        statePaidLeaves: 25,
+        country: 'France',
+        notes: 'Demo admin account',
+    });
+
     const emp1Id = await employeesDb.add({
         name: 'Demo Employee',
         position: 'Software Engineer',

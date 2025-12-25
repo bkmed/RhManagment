@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   Modal,
   SafeAreaView,
+  Pressable,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { remoteDb } from '../../database/remoteDb';
@@ -20,7 +22,7 @@ import { leavesDb } from '../../database/leavesDb';
 
 export const RemoteCalendarScreen = () => {
   const { theme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -62,9 +64,14 @@ export const RemoteCalendarScreen = () => {
   };
 
   const updateStatus = async (status: 'remote' | 'office' | 'none') => {
-    if (!user?.employeeId || !selectedDay) return;
-
     try {
+      if (!user?.employeeId) {
+        Alert.alert(t('common.error'), t('employees.notFound'));
+        return;
+      }
+
+      if (!selectedDay) return;
+
       if (status === 'none') {
         const remoteData = await remoteDb.getByEmployeeId(user.employeeId);
         const entry = remoteData.find(r => r.date === selectedDay);
@@ -80,9 +87,10 @@ export const RemoteCalendarScreen = () => {
           date: selectedDay,
           status,
         });
-        setRemoteDays({ ...remoteDays, [selectedDay]: status });
+        setRemoteDays((prev: { [key: string]: string }) => ({ ...prev, [selectedDay]: status }));
       }
     } catch (error) {
+      console.error('Error updating remote status:', error);
       Alert.alert(t('common.error'), t('common.saveError'));
     } finally {
       setModalVisible(false);
@@ -157,31 +165,42 @@ export const RemoteCalendarScreen = () => {
           key={d}
           style={[
             styles.dayCell,
-            status === 'remote' && styles.remoteDay,
-            status === 'office' && styles.officeDay,
-            onLeave && styles.leaveDay,
-            isWeekend && !status && !onLeave && styles.weekendDay,
             isToday && styles.todayCell,
           ]}
           onPress={() => onDayPress(dateStr)}
         >
           <Text style={[
             styles.dayText,
-            (!!status || onLeave) && styles.selectedDayText,
             isWeekend && !status && !onLeave && styles.weekendText,
-            isToday && !status && !onLeave && styles.todayText,
+            isToday && styles.todayText,
           ]}>
             {d}
           </Text>
-          {status && (
-            <Text style={styles.statusLabel}>
-              {status === 'remote' ? '🏠' : '🏢'}
-            </Text>
-          )}
-          {onLeave && <Text style={styles.statusLabel}>🏖️</Text>}
-          {holiday && (
-            <View style={styles.holidayDot} />
-          )}
+
+          <View style={styles.statusContainer}>
+            {status && (
+              <View style={[
+                styles.statusBadge,
+                status.toLowerCase() === 'remote' ? styles.remoteBadge : styles.officeBadge
+              ]}>
+                <Text style={styles.statusBadgeText}>
+                  {status.toLowerCase() === 'remote' ? '🏠 ' + t('remote.remote') : '🏢 ' + t('remote.office')}
+                </Text>
+              </View>
+            )}
+            {onLeave && (
+              <View style={[styles.statusBadge, styles.leaveBadge]}>
+                <Text style={styles.statusBadgeText}>🏖️ {t('remote.onLeave')}</Text>
+              </View>
+            )}
+            {holiday && (
+              <View style={[styles.statusBadge, styles.holidayBadge]}>
+                <Text style={styles.statusBadgeText}>
+                  📅 {holiday.name[i18n.language.startsWith('ar') ? 'fr' : (i18n.language.startsWith('fr') ? 'fr' : 'en')] || holiday.name.fr}
+                </Text>
+              </View>
+            )}
+          </View>
         </TouchableOpacity>,
       );
     }
@@ -233,16 +252,20 @@ export const RemoteCalendarScreen = () => {
 
         <View style={styles.legend}>
           <View style={styles.legendItem}>
-            <View style={[styles.legendBox, styles.remoteDay]} />
+            <View style={[styles.legendBox, styles.remoteBadge]} />
             <Text style={styles.legendText}>{t('remote.remote')}</Text>
           </View>
           <View style={styles.legendItem}>
-            <View style={[styles.legendBox, styles.officeDay]} />
+            <View style={[styles.legendBox, styles.officeBadge]} />
             <Text style={styles.legendText}>{t('remote.office')}</Text>
           </View>
           <View style={styles.legendItem}>
-            <View style={[styles.legendBox, styles.leaveDay]} />
+            <View style={[styles.legendBox, styles.leaveBadge]} />
             <Text style={styles.legendText}>{t('remote.onLeave')}</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendBox, styles.holidayBadge]} />
+            <Text style={styles.legendText}>{t('common.holiday')}</Text>
           </View>
         </View>
 
@@ -252,15 +275,15 @@ export const RemoteCalendarScreen = () => {
           animationType="fade"
           onRequestClose={() => setModalVisible(false)}
         >
-          <TouchableOpacity
-            style={styles.modalCenteredView}
-            activeOpacity={1}
-            onPress={() => setModalVisible(false)}
-          >
-            <View
-              style={styles.modalContent}
-              onStartShouldSetResponder={() => true}
-            >
+          <View style={styles.modalCenteredView}>
+            {/* Backdrop: Absolute fill to catch clicks outside content */}
+            <Pressable
+              style={StyleSheet.absoluteFill}
+              onPress={() => setModalVisible(false)}
+            />
+
+            {/* Content: Z-indexed box */}
+            <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{t('remote.selectStatus')}</Text>
               <Text style={styles.modalSubtitle}>{selectedDay}</Text>
 
@@ -288,7 +311,7 @@ export const RemoteCalendarScreen = () => {
                 <Text style={styles.optionText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+          </View>
         </Modal>
       </ScrollView>
     </SafeAreaView>
@@ -361,31 +384,55 @@ const createStyles = (theme: Theme) =>
     },
     dayCell: {
       width: '14.28%',
-      aspectRatio: 1,
-      justifyContent: 'center',
+      minHeight: 60,
+      justifyContent: 'flex-start',
       alignItems: 'center',
       borderBottomWidth: 1,
       borderRightWidth: 1,
       borderColor: theme.colors.border,
       position: 'relative',
+      paddingTop: theme.spacing.xs,
     },
-    dayText: { ...theme.textVariants.body, color: theme.colors.text },
-    selectedDayText: { color: theme.colors.surface, fontWeight: 'bold' },
+    dayText: {
+      fontSize: 12,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 4,
+    },
     todayCell: {
       borderColor: theme.colors.primary,
       borderWidth: 2,
-      borderRadius: 4,
     },
     todayText: {
       color: theme.colors.primary,
       fontWeight: 'bold',
     },
-    remoteDay: { backgroundColor: theme.colors.primary },
-    officeDay: { backgroundColor: theme.colors.secondary },
-    leaveDay: { backgroundColor: theme.colors.success },
+    statusContainer: {
+      width: '100%',
+      paddingHorizontal: 2,
+      alignItems: 'center',
+    },
+    statusBadge: {
+      width: '95%',
+      paddingVertical: 2,
+      borderRadius: 4,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 2,
+    },
+    statusBadgeText: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: theme.colors.surface,
+      textAlign: 'center',
+      paddingHorizontal: 1,
+    },
+    remoteBadge: { backgroundColor: theme.colors.primary },
+    officeBadge: { backgroundColor: theme.colors.secondary },
+    leaveBadge: { backgroundColor: theme.colors.success },
+    holidayBadge: { backgroundColor: theme.colors.error },
     weekendDay: { backgroundColor: theme.colors.background },
     weekendText: { color: theme.colors.error + '80' },
-    statusLabel: { fontSize: 10, marginTop: 2 },
     holidayDot: {
       position: 'absolute',
       top: 4,
@@ -426,6 +473,7 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'rgba(0,0,0,0.5)',
+      position: 'relative',
     },
     modalContent: {
       backgroundColor: theme.colors.surface,
