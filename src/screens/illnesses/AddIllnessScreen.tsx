@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import {
   View,
   Text,
@@ -22,6 +23,7 @@ import { DateTimePickerField } from '../../components/DateTimePickerField';
 export const AddIllnessScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const illnessId = route?.params?.illnessId;
@@ -39,6 +41,15 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
   const [location, setLocation] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
+
+  // Auto-fill logic for employees
+  useEffect(() => {
+    if (!isEdit && user?.role === 'employee') {
+      setEmployeeName(user.name);
+      setDepartment(user.department || '');
+      setPayrollName(user.name); // Default payroll name to employee name for simplicity if needed
+    }
+  }, [user, isEdit]);
 
   const WebNavigationContext =
     Platform.OS === 'web'
@@ -129,8 +140,8 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
     try {
       const illnessData = {
         payrollName: payrollName.trim(),
-        employeeName: employeeName.trim() || undefined,
-        employeeId: initialEmployeeId,
+        employeeName: (user?.role === 'employee' ? user.name : employeeName).trim() || undefined,
+        employeeId: user?.role === 'employee' ? user.employeeId : initialEmployeeId,
         issueDate: issueDate!.toISOString().split('T')[0],
         expiryDate: expiryDate ? expiryDate.toISOString().split('T')[0] : undefined,
         photoUri: photoUri || undefined,
@@ -198,41 +209,45 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
                 )}
               </View>
 
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('illnesses.employeeNameLabel')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={employeeName}
-                  onChangeText={setEmployeeName}
-                  placeholder={t('illnesses.employeePlaceholder')}
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
+              {user?.role !== 'employee' && (
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('illnesses.employeeNameLabel')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={employeeName}
+                    onChangeText={setEmployeeName}
+                    placeholder={t('illnesses.employeePlaceholder')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
+              )}
             </View>
 
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.service')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={department}
-                  onChangeText={setDepartment}
-                  placeholder={t('common.service')}
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
+            {user?.role !== 'employee' && (
+              <View style={styles.responsiveRow}>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('common.service')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={department}
+                    onChangeText={setDepartment}
+                    placeholder={t('common.service')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
 
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.local')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={location}
-                  onChangeText={setLocation}
-                  placeholder={t('common.local')}
-                  placeholderTextColor={theme.colors.subText}
-                />
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('common.local')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={location}
+                    onChangeText={setLocation}
+                    placeholder={t('common.local')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
               </View>
-            </View>
+            )}
           </View>
 
           {/* Section: Period */}

@@ -1,6 +1,9 @@
 {
     "common": {
+        "generalInfo": "Allgemeine Informationen",
         "save": "Speichern",
+        "service": "Abteilung",
+        "local": "Standort",
         "cancel": "Abbrechen",
         "delete": "Löschen",
         "edit": "Bearbeiten",
@@ -73,7 +76,9 @@
         "remote": "Fernarbeit",
         "office": "Büro",
         "status": "Status",
-        "updated": "Status aktualisiert"
+        "updated": "Status aktualisiert",
+        "onLeave": "Im Urlaub",
+        "selectStatus": "Status ändern"
     },
     "leavePolicy": {
         "remaining": "Verbleibende Tage",
@@ -172,6 +177,8 @@
         "leaveType": "Anfragetyp",
         "approve": "Genehmigen",
         "decline": "Ablehnen",
+        "statusUpdated_approved": "Urlaubsantrag genehmigt",
+        "statusUpdated_declined": "Urlaubsantrag abgelehnt",
         "approvals": "Ausstehende Genehmigungen"
     },
     "illnesses": {
@@ -438,5 +445,21 @@
         "ar": "العربية",
         "de": "Deutsch",
         "es": "Español"
+    },
+    "payslip": {
+        "title": "Gehaltsabrechnung",
+        "companyHeader": "Unternehmensdetails",
+        "employeeHeader": "Mitarbeiterinformationen",
+        "earnings": "Bezüge",
+        "deductions": "Abzüge",
+        "grossPay": "Bruttogehalt",
+        "netPay": "Nettogehalt",
+        "period": "Abrechnungszeitraum",
+        "description": "Beschreibung",
+        "amount": "Betrag",
+        "companyName": "RH Management Pro",
+        "companyAddress": "123 Business Street, Tech City, Welt",
+        "totalEarnings": "Gesamtbezüge",
+        "totalDeductions": "Gesamtabzüge"
     }
 }

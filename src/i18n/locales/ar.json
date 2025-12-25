@@ -1,5 +1,6 @@
 {
     "common": {
+        "generalInfo": "معلومات عامة",
         "save": "حفظ",
         "service": "المصلحة",
         "local": "المقر",
@@ -177,8 +178,10 @@
         "saveError": "فشل حفظ الإجازة",
         "fillRequired": "يرجى إدخال عنوان",
         "leaveType": "نوع الطلب",
-        "approve": "موافقة",
+        "approve": "موافق",
         "decline": "رفض",
+        "statusUpdated_approved": "تمت الموافقة على طلب الإجازة",
+        "statusUpdated_declined": "تم رفض طلب الإجازة",
         "approvals": "الموافقات المعلقة"
     },
     "illnesses": {
@@ -246,9 +249,9 @@
         "notesPlaceholder": "ملاحظات إضافية...",
         "saveButton": "حفظ الموظف",
         "updateButton": "تحديث الموظف",
-        "deleteButton": "Supprimer l'employé",
-        "deleteConfirmTitle": "Supprimer l'employé",
-        "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cet employé ?",
+        "deleteButton": "حذف الموظف",
+        "deleteConfirmTitle": "حذف الموظف",
+        "deleteConfirmMessage": "هل أنت متأكد من حذف هذا الموظف؟ لا يمكن التراجع عن هذا الإجراء.",
         "employee": "م.",
         "notFound": "الموظف غير موجود",
         "loadError": "فشل تحميل التفاصيل",
@@ -256,7 +259,7 @@
         "noLeaves": "لا توجد إجازات مجدولة",
         "addLeave": "إضافة إجازة",
         "addIllness": "إضافة سجل مرضي",
-        "notes": "Notes"
+        "notes": "ملاحظات"
     },
     "analytics": {
         "title": "التحليلات",
@@ -410,7 +413,6 @@
         "editButton": "تعديل",
         "deleteButton": "حذف",
         "errorLoadFailed": "فشل تحميل الإجازة",
-        "loadError": "فشل تحميل الإجازة",
         "deleteConfirmTitle": "حذف الإجازة",
         "deleteConfirmMessage": "هل أنت متأكد من حذف هذه الإجازة؟",
         "errorDeleteFailed": "فشل حذف الإجازة"

@@ -82,7 +82,11 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
   };
 
   const handleEdit = () => {
-    navigation.navigate('AddIllness', { illnessId });
+    if (Platform.OS === 'web') {
+      setActiveTab('Illnesses', 'AddIllness', { illnessId });
+    } else {
+      navigation.navigate('AddIllness', { illnessId });
+    }
   };
 
   const handleViewHistory = () => {

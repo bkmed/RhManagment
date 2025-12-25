@@ -1,5 +1,6 @@
 {
     "common": {
+        "generalInfo": "Informations Générales",
         "save": "Enregistrer",
         "service": "Service",
         "local": "Local",
@@ -179,6 +180,8 @@
         "leaveType": "Type de demande",
         "approve": "Approuver",
         "decline": "Refuser",
+        "statusUpdated_approved": "Demande de congé approuvée",
+        "statusUpdated_declined": "Demande de congé refusée",
         "approvals": "Approbations en attente"
     },
     "illnesses": {

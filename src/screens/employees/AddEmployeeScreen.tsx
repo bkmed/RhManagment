@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -24,7 +24,17 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { t } = useTranslation();
   const { user: currentUser } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const employeeId = route.params?.id;
+
+  const WebNavigationContext =
+    Platform.OS === 'web'
+      ? require('../../navigation/AppNavigator').WebNavigationContext
+      : null;
+
+  const { setActiveTab } = WebNavigationContext
+    ? useContext(WebNavigationContext) as any
+    : { setActiveTab: () => { } };
+
+  const employeeId = route.params?.id || route.params?.employeeId;
 
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
@@ -117,7 +127,11 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         await employeesDb.add(employeeData);
         Alert.alert(t('common.success'), t('employees.added'));
       }
-      navigation.goBack();
+      if (Platform.OS === 'web') {
+        setActiveTab('Employees');
+      } else {
+        navigation?.goBack();
+      }
     } catch (error) {
       Alert.alert(t('common.error'), t('employees.saveError'));
     } finally {
@@ -137,7 +151,11 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
           onPress: async () => {
             try {
               await employeesDb.delete(employeeId);
-              navigation.goBack();
+              if (Platform.OS === 'web') {
+                setActiveTab('Employees');
+              } else {
+                navigation?.goBack();
+              }
             } catch (error) {
               Alert.alert(t('common.error'), t('employees.deleteError'));
             }

@@ -1,5 +1,6 @@
 {
   "common": {
+    "generalInfo": "General Information",
     "save": "Save",
     "service": "Service",
     "local": "Local",
@@ -179,6 +180,8 @@
     "leaveType": "Request Type",
     "approve": "Approve",
     "decline": "Decline",
+    "statusUpdated_approved": "Leave request approved",
+    "statusUpdated_declined": "Leave request declined",
     "approvals": "Pending Approvals"
   },
   "illnesses": {

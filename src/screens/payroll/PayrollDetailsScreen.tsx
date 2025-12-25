@@ -106,6 +106,14 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
     );
   }
 
+  const handleEdit = () => {
+    if (Platform.OS === 'web') {
+      setActiveTab('Payroll', 'AddPayroll', { payrollId });
+    } else {
+      navigation.navigate('AddPayroll', { payrollId });
+    }
+  };
+
   const renderEarningRow = (label: string, value: number) => {
     if (value === 0) return null;
     return (
@@ -210,7 +218,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
             <>
               <TouchableOpacity
                 style={[styles.button, styles.editButton]}
-                onPress={() => navigation.navigate('AddPayroll', { payrollId })}
+                onPress={handleEdit}
               >
                 <Text style={styles.buttonText}>{t('common.edit')}</Text>
               </TouchableOpacity>

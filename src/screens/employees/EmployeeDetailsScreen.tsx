@@ -109,7 +109,11 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
   );
 
   const handleEdit = () => {
-    navigation.navigate('AddEmployee', { employeeId });
+    if (Platform.OS === 'web') {
+      setActiveTab('Employees', 'AddEmployee', { id: employeeId });
+    } else {
+      navigation.navigate('AddEmployee', { employeeId });
+    }
   };
 
   const handleDelete = () => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import {
   View,
   Text,
@@ -22,6 +23,7 @@ import { Dropdown } from '../../components/Dropdown';
 export const AddLeaveScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const leaveId = route?.params?.leaveId;
@@ -41,6 +43,15 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const [department, setDepartment] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
+
+  // Auto-fill logic for employees
+  useEffect(() => {
+    if (!isEdit && user?.role === 'employee') {
+      setEmployeeName(user.name);
+      setDepartment(user.department || '');
+      // Location could also be auto-filled if available in user object or employee profile
+    }
+  }, [user, isEdit]);
 
   const WebNavigationContext =
     Platform.OS === 'web'
@@ -95,8 +106,8 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
     try {
       const leaveData = {
         title: title.trim(),
-        employeeName: employeeName.trim() || undefined,
-        employeeId: initialEmployeeId,
+        employeeName: (user?.role === 'employee' ? user.name : employeeName).trim() || undefined,
+        employeeId: user?.role === 'employee' ? user.employeeId : initialEmployeeId,
         location: location.trim() || undefined,
         dateTime: startDate!.toISOString(), // Keep dateTime for backward compat (using start)
         startDate: startDate!.toISOString(),
@@ -167,53 +178,74 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
                 {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
               </View>
 
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('leaves.employee')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={employeeName}
-                  onChangeText={setEmployeeName}
-                  placeholder={t('leaves.employeePlaceholder')}
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
-            </View>
-
-            <View style={styles.fieldGroup}>
-              <Dropdown
-                label={t('leaves.leaveType')}
-                data={[
-                  { label: t('leaveTypes.leave'), value: 'leave' },
-                  { label: t('leaveTypes.permission'), value: 'permission' },
-                ]}
-                value={type}
-                onSelect={(val: any) => setType(val)}
-              />
+              {user?.role !== 'employee' && (
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('leaves.employee')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={employeeName}
+                    onChangeText={setEmployeeName}
+                    placeholder={t('leaves.employeePlaceholder')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
+              )}
             </View>
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.service')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={department}
-                  onChangeText={setDepartment}
-                  placeholder={t('common.service')}
-                  placeholderTextColor={theme.colors.subText}
+                <Dropdown
+                  label={t('leaves.leaveType')}
+                  data={[
+                    { label: t('leaveTypes.leave'), value: 'leave' },
+                    { label: t('leaveTypes.permission'), value: 'permission' },
+                  ]}
+                  value={type}
+                  onSelect={(val: any) => setType(val)}
                 />
               </View>
 
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.local')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={location}
-                  onChangeText={setLocation}
-                  placeholder={t('common.local')}
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
+              {user?.role !== 'employee' && (
+                <View style={styles.fieldContainer}>
+                  <Dropdown
+                    label={t('leaves.status')}
+                    data={[
+                      { label: t('leaveStatus.pending'), value: 'pending' },
+                      { label: t('leaveStatus.approved'), value: 'approved' },
+                      { label: t('leaveStatus.declined'), value: 'declined' },
+                    ]}
+                    value={status}
+                    onSelect={(val: any) => setStatus(val)}
+                  />
+                </View>
+              )}
             </View>
+
+            {user?.role !== 'employee' && (
+              <View style={styles.responsiveRow}>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('common.service')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={department}
+                    onChangeText={setDepartment}
+                    placeholder={t('common.service')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
+
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('common.local')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={location}
+                    onChangeText={setLocation}
+                    placeholder={t('common.local')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
+              </View>
+            )}
           </View>
 
           {/* Section: Schedule */}

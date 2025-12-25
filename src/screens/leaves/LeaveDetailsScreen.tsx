@@ -58,6 +58,20 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
     }
   };
 
+  const handleStatusChange = async (newStatus: 'approved' | 'declined') => {
+    if (!leave) return;
+    try {
+      setLoading(true);
+      await leavesDb.update(leaveId, { ...leave, status: newStatus });
+      setLeave({ ...leave, status: newStatus });
+      Alert.alert(t('common.success'), t(`leaves.statusUpdated_${newStatus}`));
+    } catch (error) {
+      Alert.alert(t('common.error'), t('leaves.updateError'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDelete = () => {
     Alert.alert(
       t('leaveDetails.deleteConfirmTitle'),
@@ -82,7 +96,11 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
   };
 
   const handleEdit = () => {
-    navigation.navigate('AddLeave', { leaveId });
+    if (Platform.OS === 'web') {
+      setActiveTab('Leaves', 'AddLeave', { leaveId });
+    } else {
+      navigation.navigate('AddLeave', { leaveId });
+    }
   };
 
   if (loading || !leave) {
@@ -128,6 +146,23 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
             </Text>
           </View>
         </View>
+
+        {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && leave.status === 'pending' && (
+          <View style={styles.approvalActions}>
+            <TouchableOpacity
+              style={[styles.button, styles.approveButton]}
+              onPress={() => handleStatusChange('approved')}
+            >
+              <Text style={styles.buttonText}>{t('leaves.approve')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.declineButton]}
+              onPress={() => handleStatusChange('declined')}
+            >
+              <Text style={styles.buttonText}>{t('leaves.decline')}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {leave.employeeName && (
           <View style={styles.section}>
@@ -242,6 +277,19 @@ const createStyles = (theme: Theme) =>
       fontSize: 12,
       fontWeight: 'bold',
       textTransform: 'uppercase',
+    },
+    approvalActions: {
+      flexDirection: 'row',
+      gap: theme.spacing.m,
+      marginBottom: theme.spacing.m,
+    },
+    approveButton: {
+      flex: 1,
+      backgroundColor: '#4CAF50',
+    },
+    declineButton: {
+      flex: 1,
+      backgroundColor: '#F44336',
     },
   });
 
