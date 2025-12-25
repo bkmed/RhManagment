@@ -238,6 +238,17 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.detailValue}>{employee.notes}</Text>
               </View>
             )}
+            <View style={styles.divider} />
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('leavePolicy.perYear')}</Text>
+              <Text style={styles.detailValue}>{employee.vacationDaysPerYear}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('leavePolicy.remaining')}</Text>
+              <Text style={[styles.detailValue, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+                {employee.remainingVacationDays}
+              </Text>
+            </View>
           </View>
         </View>
 

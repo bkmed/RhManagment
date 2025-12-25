@@ -22,6 +22,7 @@ import { PayrollDetailsScreen } from '../screens/payroll/PayrollDetailsScreen';
 import { LeaveListScreen } from '../screens/leaves/LeaveListScreen';
 import { AddLeaveScreen } from '../screens/leaves/AddLeaveScreen';
 import { LeaveDetailsScreen } from '../screens/leaves/LeaveDetailsScreen';
+import { LeaveApprovalListScreen } from '../screens/leaves/LeaveApprovalListScreen';
 import { IllnessListScreen } from '../screens/illnesses/IllnessListScreen';
 import { AddIllnessScreen } from '../screens/illnesses/AddIllnessScreen';
 import { IllnessDetailsScreen } from '../screens/illnesses/IllnessDetailsScreen';
@@ -34,6 +35,7 @@ import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
+import { RemoteCalendarScreen } from '../screens/remote/RemoteCalendarScreen';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 enableScreens();
@@ -96,6 +98,11 @@ const LeavesStack = () => {
         name="AddLeave"
         component={AddLeaveScreen}
         options={{ title: t('leaves.add') }}
+      />
+      <Stack.Screen
+        name="LeaveApprovalList"
+        component={LeaveApprovalListScreen}
+        options={{ title: t('leaves.approvals') }}
       />
       <Stack.Screen
         name="LeaveDetails"
@@ -199,6 +206,7 @@ const DrawerNavigator = () => {
       {user?.role !== 'employee' && (
         <Drawer.Screen name="Employees" component={EmployeesStack} />
       )}
+      <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
     </Drawer.Navigator>
   );
@@ -250,7 +258,11 @@ const WebNavigator = () => {
           return <AddLeaveScreen route={mockRoute} />;
         if (subScreen === 'LeaveDetails')
           return <LeaveDetailsScreen route={mockRoute} />;
+        if (subScreen === 'LeaveApprovalList')
+          return <LeaveApprovalListScreen />;
         return <LeavesStack />;
+      case 'Remote':
+        return <RemoteCalendarScreen />;
       case 'Analytics':
         return <AnalyticsScreen />;
       case 'Illnesses':
@@ -282,6 +294,9 @@ const WebNavigator = () => {
 
     // Leaves visible to all
     items.push(['Leaves', t('navigation.leaves')]);
+
+    // Remote visible to all
+    items.push(['Remote', t('remote.title')]);
 
     // Analytics: Not for employees
     if (user?.role !== 'employee') {

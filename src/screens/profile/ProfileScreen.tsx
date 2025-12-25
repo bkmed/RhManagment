@@ -387,7 +387,7 @@ export const ProfileScreen = ({ navigation }: any) => {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: theme.colors.background },
+    container: { backgroundColor: theme.colors.background },
     content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
     section: {
       backgroundColor: theme.colors.surface,

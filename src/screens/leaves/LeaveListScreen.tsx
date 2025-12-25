@@ -65,12 +65,12 @@ export const LeaveListScreen = ({ navigation }: any) => {
 
   const formatDateTime = (dateTimeString: string) => {
     const date = new Date(dateTimeString);
-    const dateStr = date.toLocaleDateString('en-US', {
+    const dateStr = date.toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     });
-    const timeStr = date.toLocaleTimeString('en-US', {
+    const timeStr = date.toLocaleTimeString(undefined, {
       hour: 'numeric',
       minute: '2-digit',
     });
@@ -78,7 +78,8 @@ export const LeaveListScreen = ({ navigation }: any) => {
   };
 
   const renderLeave = ({ item }: { item: Leave }) => {
-    const { dateStr, timeStr } = formatDateTime(item.dateTime);
+    const { dateStr, timeStr } = formatDateTime(item.startDate || item.dateTime);
+    const end = item.endDate ? formatDateTime(item.endDate).dateStr : null;
 
     return (
       <TouchableOpacity
@@ -89,7 +90,9 @@ export const LeaveListScreen = ({ navigation }: any) => {
       >
         <View style={styles.dateColumn}>
           <Text style={styles.dateText}>{dateStr}</Text>
-          <Text style={styles.timeText}>{timeStr}</Text>
+          {end && end !== dateStr && <Text style={styles.rangeDivider}>to</Text>}
+          {end && end !== dateStr && <Text style={styles.dateText}>{end}</Text>}
+          {!end && <Text style={styles.timeText}>{timeStr}</Text>}
         </View>
 
         <View style={styles.detailsColumn}>
@@ -100,6 +103,11 @@ export const LeaveListScreen = ({ navigation }: any) => {
           {item.location && (
             <Text style={styles.location}>📍 {item.location}</Text>
           )}
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
+            <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+              {t(`leaveStatus.${item.status}`)}
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -121,6 +129,15 @@ export const LeaveListScreen = ({ navigation }: any) => {
           placeholder={t('common.searchPlaceholder')}
         />
       </View>
+
+      {user?.role !== 'employee' && (
+        <TouchableOpacity
+          style={styles.approvalLink}
+          onPress={() => navigation.navigate('LeaveApprovalList')}
+        >
+          <Text style={styles.approvalLinkText}>🔔 {t('leaves.approvals')}</Text>
+        </TouchableOpacity>
+      )}
       <FlatList
         data={filteredLeaves}
         renderItem={renderLeave}
@@ -181,7 +198,13 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.body,
       color: theme.colors.primary,
       fontWeight: 'bold',
-      marginTop: 4,
+      marginTop: 2,
+    },
+    rangeDivider: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      marginVertical: 2,
+      fontSize: 10,
     },
     detailsColumn: {
       flex: 1,
@@ -235,4 +258,38 @@ const createStyles = (theme: Theme) =>
       fontWeight: '300',
       marginTop: -2,
     },
+    statusBadge: {
+      alignSelf: 'flex-start',
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 4,
+      marginTop: 4,
+    },
+    statusText: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+    },
+    approvalLink: {
+      marginHorizontal: theme.spacing.m,
+      marginBottom: theme.spacing.s,
+      padding: theme.spacing.m,
+      backgroundColor: theme.colors.primary + '10',
+      borderRadius: theme.spacing.s,
+      borderWidth: 1,
+      borderColor: theme.colors.primary + '30',
+      alignItems: 'center',
+    },
+    approvalLinkText: {
+      color: theme.colors.primary,
+      fontWeight: 'bold',
+    },
   });
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'approved': return '#4CAF50';
+    case 'declined': return '#F44336';
+    default: return '#FF9800';
+  }
+};

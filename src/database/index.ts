@@ -5,6 +5,7 @@
 export { payrollDb } from './payrollDb';
 export { leavesDb } from './leavesDb';
 export { illnessesDb } from './illnessesDb';
+export { remoteDb } from './remoteDb';
 export { employeesDb } from './employeesDb';
 
 // Export schemas

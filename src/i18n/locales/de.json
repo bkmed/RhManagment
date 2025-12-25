@@ -59,6 +59,28 @@
         "rh": "Personalwesen (HR)",
         "chef_dequipe": "Teamleiter"
     },
+    "leaveStatus": {
+        "pending": "Ausstehend",
+        "approved": "Genehmigt",
+        "declined": "Abgelehnt"
+    },
+    "leaveTypes": {
+        "leave": "Urlaub",
+        "permission": "Berechtigung"
+    },
+    "remote": {
+        "title": "Fernarbeit / Büro",
+        "remote": "Fernarbeit",
+        "office": "Büro",
+        "status": "Status",
+        "updated": "Status aktualisiert"
+    },
+    "leavePolicy": {
+        "remaining": "Verbleibende Tage",
+        "perYear": "Pro Jahr",
+        "country": "Land",
+        "managedBy": "Verwaltet von Admin & HR"
+    },
     "home": {
         "greeting": "Willkommen bei",
         "appName": "RH Management",
@@ -75,7 +97,8 @@
         "scheduleLeaveSubtitle": "Abwesenheit oder Urlaub buchen",
         "viewAnalytics": "Analytik anzeigen",
         "viewAnalyticsSubtitle": "Sehen Sie Ihre HR-Daten",
-        "tip": "Tipp: Aktivieren Sie Benachrichtigungen, um keine Gehaltserinnerungen zu verpassen!"
+        "tip": "Tipp: Aktivieren Sie Benachrichtigungen, um keine Gehaltserinnerungen zu verpassen!",
+        "statePaidLeaves": "Staatlich bezahlter Urlaub"
     },
     "payroll": {
         "title": "Gehaltsabrechnung",
@@ -145,7 +168,11 @@
         "enableReminder": "Erinnerung aktivieren (1 Stunde vorher)",
         "loadError": "Fehler beim Laden der Abwesenheit",
         "saveError": "Fehler beim Speichern der Abwesenheit",
-        "fillRequired": "Bitte geben Sie einen Titel ein"
+        "fillRequired": "Bitte geben Sie einen Titel ein",
+        "leaveType": "Anfragetyp",
+        "approve": "Genehmigen",
+        "decline": "Ablehnen",
+        "approvals": "Ausstehende Genehmigungen"
     },
     "illnesses": {
         "title": "Krankheit / Abrechnung",

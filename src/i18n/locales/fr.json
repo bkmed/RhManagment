@@ -59,6 +59,28 @@
         "rh": "RH",
         "chef_dequipe": "Chef d'équipe"
     },
+    "leaveStatus": {
+        "pending": "En attente",
+        "approved": "Approuvé",
+        "declined": "Refusé"
+    },
+    "leaveTypes": {
+        "leave": "Congé",
+        "permission": "Autorisation"
+    },
+    "remote": {
+        "title": "Télétravail / Bureau",
+        "remote": "Télétravail",
+        "office": "Bureau",
+        "status": "Statut",
+        "updated": "Statut mis à jour"
+    },
+    "leavePolicy": {
+        "remaining": "Jours restants",
+        "perYear": "Par an",
+        "country": "Pays",
+        "managedBy": "Géré par Admin & RH"
+    },
     "home": {
         "greeting": "Bienvenue sur",
         "appName": "RH Management",
@@ -75,7 +97,8 @@
         "scheduleLeaveSubtitle": "Réserver une période de congé",
         "viewAnalytics": "Voir les analytiques",
         "viewAnalyticsSubtitle": "Consultez vos données RH",
-        "tip": "Conseil : Activez les notifications pour ne jamais manquer vos rappels de paie !"
+        "tip": "Conseil : Activez les notifications pour ne jamais manquer vos rappels de paie !",
+        "statePaidLeaves": "Congés payés État"
     },
     "payroll": {
         "title": "Paie",
@@ -145,7 +168,11 @@
         "enableReminder": "Activer le rappel (1 heure avant)",
         "loadError": "Échec du chargement du congé",
         "saveError": "Échec de l'enregistrement du congé",
-        "fillRequired": "Veuillez saisir un titre"
+        "fillRequired": "Veuillez saisir un titre",
+        "leaveType": "Type de demande",
+        "approve": "Approuver",
+        "decline": "Refuser",
+        "approvals": "Approbations en attente"
     },
     "illnesses": {
         "title": "Maladies / Facturation",

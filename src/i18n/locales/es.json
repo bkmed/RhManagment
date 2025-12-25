@@ -59,6 +59,28 @@
         "rh": "RRHH",
         "chef_dequipe": "Jefe de equipo"
     },
+    "leaveStatus": {
+        "pending": "Pendiente",
+        "approved": "Aprobado",
+        "declined": "Rechazado"
+    },
+    "leaveTypes": {
+        "leave": "Vacaciones",
+        "permission": "Permiso"
+    },
+    "remote": {
+        "title": "Remoto / Oficina",
+        "remote": "Remoto",
+        "office": "Oficina",
+        "status": "Estado",
+        "updated": "Estado actualizado"
+    },
+    "leavePolicy": {
+        "remaining": "Días restantes",
+        "perYear": "Por año",
+        "country": "País",
+        "managedBy": "Gestionado por Admin y RRHH"
+    },
     "home": {
         "greeting": "Bienvenido a",
         "appName": "Gestión de RRHH",
@@ -75,7 +97,8 @@
         "scheduleLeaveSubtitle": "Reservar tiempo libre",
         "viewAnalytics": "Ver analítica",
         "viewAnalyticsSubtitle": "Ver sus perspectivas de RRHH",
-        "tip": "Consejo: ¡Active las notificaciones para no perder nunca sus recordatorios de nómina!"
+        "tip": "Consejo: ¡Active las notificaciones para no perder nunca sus recordatorios de nómina!",
+        "statePaidLeaves": "Vacaciones pagadas por el estado"
     },
     "payroll": {
         "title": "Nómina",
@@ -145,7 +168,11 @@
         "enableReminder": "Activar recordatorio (1 hora antes)",
         "loadError": "Error al cargar las vacaciones",
         "saveError": "Error al guardar las vacaciones",
-        "fillRequired": "Por favor, introduzca un título"
+        "fillRequired": "Por favor, introduzca un título",
+        "leaveType": "Tipo de solicitud",
+        "approve": "Aprobar",
+        "decline": "Rechazar",
+        "approvals": "Aprobaciones pendientes"
     },
     "illnesses": {
         "title": "Enfermedad / Facturación",

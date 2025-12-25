@@ -93,27 +93,40 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
     );
   }
 
-  const formatDateTime = () => {
-    const date = new Date(leave.dateTime);
-    const dateStr = date.toLocaleDateString('en-US', {
+  const formatDateTime = (dateStr?: string) => {
+    const date = dateStr ? new Date(dateStr) : new Date(leave.dateTime);
+    const d = date.toLocaleDateString(undefined, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
-    const timeStr = date.toLocaleTimeString('en-US', {
+    const tStr = date.toLocaleTimeString(undefined, {
       hour: 'numeric',
       minute: '2-digit',
     });
-    return `${dateStr} at ${timeStr}`;
+    return { d, tStr };
   };
+
+  const start = formatDateTime(leave.startDate);
+  const end = leave.endDate ? formatDateTime(leave.endDate) : null;
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.section}>
           <Text style={styles.title}>{leave.title}</Text>
-          <Text style={styles.dateTime}>{formatDateTime()}</Text>
+          <Text style={styles.dateTime}>
+            {start.d} {!end && `at ${start.tStr}`}
+          </Text>
+          {end && end.d !== start.d && (
+            <Text style={styles.dateTime}>to {end.d}</Text>
+          )}
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(leave.status) + '20' }]}>
+            <Text style={[styles.statusText, { color: getStatusColor(leave.status) }]}>
+              {t(`leaveStatus.${leave.status}`)}
+            </Text>
+          </View>
         </View>
 
         {leave.employeeName && (
@@ -218,4 +231,24 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.button,
       color: theme.colors.surface,
     },
+    statusBadge: {
+      alignSelf: 'flex-start',
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 4,
+      marginTop: theme.spacing.m,
+    },
+    statusText: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+    },
   });
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'approved': return '#4CAF50';
+    case 'declined': return '#F44336';
+    default: return '#FF9800';
+  }
+};

@@ -279,6 +279,33 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </View>
               ))}
             </View>
+
+            {/* Leave Policy Section */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitle}>{t('leavePolicy.managedBy')}</Text>
+              </View>
+              <View style={styles.policyRow}>
+                <Text style={styles.policyLabel}>{t('leavePolicy.perYear')}</Text>
+                <Text style={styles.policyValue}>{user?.vacationDaysPerYear || 25}</Text>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.policyRow}>
+                <Text style={styles.policyLabel}>{t('leavePolicy.remaining')}</Text>
+                <Text style={[styles.policyValue, { color: theme.colors.primary, fontSize: 24 }]}>
+                  {user?.remainingVacationDays ?? 25}
+                </Text>
+              </View>
+              {user?.country && (
+                <>
+                  <View style={styles.divider} />
+                  <View style={styles.policyRow}>
+                    <Text style={styles.policyLabel}>{t('leavePolicy.country')}</Text>
+                    <Text style={styles.policyValue}>{user.country}</Text>
+                  </View>
+                </>
+              )}
+            </View>
           </View>
 
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -392,4 +419,19 @@ const createStyles = (theme: Theme) =>
       borderColor: theme.colors.error,
     },
     logoutText: { ...theme.textVariants.button, color: theme.colors.error },
+    policyRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: theme.spacing.s,
+    },
+    policyLabel: {
+      ...theme.textVariants.body,
+      color: theme.colors.subText,
+    },
+    policyValue: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.text,
+      fontWeight: 'bold',
+    },
   });

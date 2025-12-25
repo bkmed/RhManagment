@@ -158,6 +158,40 @@ export const HomeScreen = () => {
           </TouchableOpacity>
         </View>
 
+        {/* My Leave Balance Section */}
+        <View style={styles.balanceCard}>
+          <View style={styles.balanceHeader}>
+            <Text style={styles.balanceTitle}>{t('leavePolicy.title')}</Text>
+            <Text style={styles.balanceManaged}>{t('leavePolicy.managedBy')}</Text>
+          </View>
+
+          <View style={styles.balanceGrid}>
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceLabel}>{t('leavePolicy.perYear')}</Text>
+              <Text style={styles.balanceValue}>{user?.vacationDaysPerYear || 25}</Text>
+            </View>
+            <View style={styles.balanceDivider} />
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceLabel}>{t('leavePolicy.remaining')}</Text>
+              <Text style={[styles.balanceValue, { color: theme.colors.primary }]}>
+                {user?.remainingVacationDays ?? 25}
+              </Text>
+            </View>
+            <View style={styles.balanceDivider} />
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceLabel}>{t('home.statePaidLeaves')}</Text>
+              <Text style={styles.balanceValue}>{user?.statePaidLeaves || 0}</Text>
+            </View>
+          </View>
+
+          {user?.country && (
+            <View style={styles.countryRow}>
+              <Text style={styles.countryLabel}>{t('leavePolicy.country')}: </Text>
+              <Text style={styles.countryValue}>{user.country}</Text>
+            </View>
+          )}
+        </View>
+
         {/* Alerts */}
         {summary.expiringIllness > 0 && (
           <View style={styles.alertCard}>
@@ -388,5 +422,71 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.body,
       color: theme.colors.primary,
       lineHeight: 20,
+    },
+    balanceCard: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.spacing.m,
+      padding: theme.spacing.l,
+      marginBottom: theme.spacing.l,
+      ...theme.shadows.medium,
+    },
+    balanceHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'baseline',
+      marginBottom: theme.spacing.m,
+      flexWrap: 'wrap',
+    },
+    balanceTitle: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.text,
+      fontSize: 18,
+    },
+    balanceManaged: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      fontStyle: 'italic',
+    },
+    balanceGrid: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      paddingVertical: theme.spacing.s,
+    },
+    balanceItem: {
+      alignItems: 'center',
+      flex: 1,
+    },
+    balanceLabel: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      marginBottom: 4,
+    },
+    balanceValue: {
+      ...theme.textVariants.header,
+      fontSize: 24,
+      color: theme.colors.text,
+    },
+    balanceDivider: {
+      width: 1,
+      height: '60%',
+      backgroundColor: theme.colors.border,
+    },
+    countryRow: {
+      flexDirection: 'row',
+      marginTop: theme.spacing.m,
+      paddingTop: theme.spacing.s,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
+      justifyContent: 'center',
+    },
+    countryLabel: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+    },
+    countryValue: {
+      ...theme.textVariants.caption,
+      color: theme.colors.text,
+      fontWeight: 'bold',
     },
   });

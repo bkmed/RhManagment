@@ -59,6 +59,28 @@
         "rh": "الموارد البشرية",
         "chef_dequipe": "رئيس فريق"
     },
+    "leaveStatus": {
+        "pending": "قيد الانتظار",
+        "approved": "مقبول",
+        "declined": "مرفوض"
+    },
+    "leaveTypes": {
+        "leave": "إجازة",
+        "permission": "إذن"
+    },
+    "remote": {
+        "title": "عن بعد / مكتب",
+        "remote": "عن بعد",
+        "office": "مكتب",
+        "status": "الحالة",
+        "updated": "تم تحديث الحالة"
+    },
+    "leavePolicy": {
+        "remaining": "الأيام المتبقية",
+        "perYear": "سنوياً",
+        "country": "البلد",
+        "managedBy": "إدارة المسؤول والموارد البشرية"
+    },
     "home": {
         "greeting": "مرحباً بك في",
         "appName": "إدارة الموارد البشرية",
@@ -75,7 +97,8 @@
         "scheduleLeaveSubtitle": "حجز فترة إجازة",
         "viewAnalytics": "عرض التحليلات",
         "viewAnalyticsSubtitle": "اطلع على رؤى الموارد البشرية",
-        "tip": "نصيحة: قم بتفعيل الإشعارات حتى لا تفوت تذكيرات الرواتب الخاصة بك!"
+        "tip": "نصيحة: قم بتفعيل الإشعارات حتى لا تفوت تذكيرات الرواتب الخاصة بك !",
+        "statePaidLeaves": "إجازات مدفوعة من الدولة"
     },
     "payroll": {
         "title": "الرواتب",
@@ -145,7 +168,11 @@
         "enableReminder": "تفعيل التذكير (قبل ساعة)",
         "loadError": "فشل تحميل الإجازة",
         "saveError": "فشل حفظ الإجازة",
-        "fillRequired": "يرجى إدخال عنوان"
+        "fillRequired": "يرجى إدخال عنوان",
+        "leaveType": "نوع الطلب",
+        "approve": "موافقة",
+        "decline": "رفض",
+        "approvals": "الموافقات المعلقة"
     },
     "illnesses": {
         "title": "المرض / الفوترة",

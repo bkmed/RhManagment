@@ -17,6 +17,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 import { CalendarButton } from '../../components/CalendarButton';
+import { Dropdown } from '../../components/Dropdown';
 
 export const AddLeaveScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
@@ -31,9 +32,12 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const [title, setTitle] = useState('');
   const [employeeName, setEmployeeName] = useState(initialEmployeeName);
   const [location, setLocation] = useState('');
-  const [dateTime, setDateTime] = useState<Date | null>(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [notes, setNotes] = useState('');
   const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [type, setType] = useState<'leave' | 'permission'>('leave');
+  const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>('pending');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
@@ -61,9 +65,12 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         setTitle(leave.title || '');
         setEmployeeName(leave.employeeName || '');
         setLocation(leave.location || '');
-        setDateTime(leave.dateTime ? new Date(leave.dateTime) : new Date());
+        setStartDate(leave.startDate ? new Date(leave.startDate) : new Date(leave.dateTime));
+        setEndDate(leave.endDate ? new Date(leave.endDate) : new Date(leave.dateTime));
         setNotes(leave.notes || '');
         setReminderEnabled(!!leave.reminderEnabled);
+        setType(leave.type || 'leave');
+        setStatus(leave.status || 'pending');
       }
     } catch (error) {
       Alert.alert(t('common.error'), t('leaves.loadError'));
@@ -73,7 +80,11 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const handleSave = async () => {
     const newErrors: { [key: string]: string } = {};
     if (!title.trim()) newErrors.title = t('common.required');
-    if (!dateTime) newErrors.dateTime = t('common.required');
+    if (!startDate) newErrors.startDate = t('common.required');
+    if (!endDate) newErrors.endDate = t('common.required');
+    if (startDate && endDate && startDate > endDate) {
+      newErrors.endDate = t('common.invalidDateRange');
+    }
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
@@ -85,9 +96,13 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         employeeName: employeeName.trim() || undefined,
         employeeId: initialEmployeeId,
         location: location.trim() || undefined,
-        dateTime: dateTime!.toISOString(),
+        dateTime: startDate!.toISOString(), // Keep dateTime for backward compat (using start)
+        startDate: startDate!.toISOString(),
+        endDate: endDate!.toISOString(),
         notes: notes.trim() || undefined,
         reminderEnabled,
+        type,
+        status,
       };
 
       let id: number;
@@ -102,7 +117,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         await notificationService.scheduleLeaveReminder(
           id,
           title,
-          dateTime!.toISOString(),
+          startDate!.toISOString(),
         );
       } else {
         await notificationService.cancelLeaveReminder(id);
@@ -162,6 +177,18 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
             </View>
 
             <View style={styles.fieldGroup}>
+              <Dropdown
+                label={t('leaves.leaveType')}
+                data={[
+                  { label: t('leaveTypes.leave'), value: 'leave' },
+                  { label: t('leaveTypes.permission'), value: 'permission' },
+                ]}
+                value={type}
+                onSelect={(val: any) => setType(val)}
+              />
+            </View>
+
+            <View style={styles.fieldGroup}>
               <Text style={styles.label}>{t('leaves.location')}</Text>
               <TextInput
                 style={styles.input}
@@ -180,22 +207,24 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
                 <DateTimePickerField
-                  label={t('leaves.date')}
-                  value={dateTime}
-                  onChange={setDateTime}
+                  label={t('payroll.startDate')}
+                  value={startDate}
+                  onChange={setStartDate}
                   mode="date"
                   minimumDate={new Date()}
                   required
-                  error={errors.dateTime}
+                  error={errors.startDate}
                 />
               </View>
-
               <View style={styles.fieldContainer}>
                 <DateTimePickerField
-                  label={t('leaves.time')}
-                  value={dateTime}
-                  onChange={setDateTime}
-                  mode="time"
+                  label={t('payroll.endDate')}
+                  value={endDate}
+                  onChange={setEndDate}
+                  mode="date"
+                  minimumDate={startDate || new Date()}
+                  required
+                  error={errors.endDate}
                 />
               </View>
             </View>
@@ -237,8 +266,8 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
             <View style={styles.calendarButtonContainer}>
               <CalendarButton
                 title={title || t('leaves.title')}
-                date={dateTime ? dateTime.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
-                time={dateTime ? dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '12:00'}
+                date={startDate ? startDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                time={startDate ? startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '12:00'}
                 location={location}
                 notes={`${t('leaves.employee')}: ${employeeName}\n${notes}`}
               />
@@ -255,8 +284,8 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
             {loading ? t('common.loading') : isEdit ? t('leaves.update') : t('leaves.save')}
           </Text>
         </TouchableOpacity>
-      </ScrollView>
-    </View>
+      </ScrollView >
+    </View >
   );
 };
 

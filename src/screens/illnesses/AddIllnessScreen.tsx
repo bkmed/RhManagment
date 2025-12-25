@@ -278,7 +278,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { backgroundColor: theme.colors.background, flex: 1 },
+    container: { backgroundColor: theme.colors.background },
     content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
     formContainer: {
       flex: 1,

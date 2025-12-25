@@ -33,8 +33,21 @@ export interface Leave {
   employeeId?: number;
   location?: string;
   dateTime: string; // ISO datetime string
+  startDate?: string; // ISO date string
+  endDate?: string; // ISO date string
   notes?: string;
   reminderEnabled: boolean;
+  status: 'pending' | 'approved' | 'declined';
+  type: 'leave' | 'permission';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RemoteWork {
+  id?: number;
+  employeeId: number;
+  date: string; // ISO date string (YYYY-MM-DD)
+  status: 'remote' | 'office';
   createdAt: string;
   updatedAt: string;
 }
@@ -73,6 +86,10 @@ export interface Employee {
   department?: string;
   role?: string; // 'admin' | 'employee' | 'rh' | 'chef_dequipe'
   teamId?: string;
+  vacationDaysPerYear: number;
+  remainingVacationDays: number;
+  statePaidLeaves: number;
+  country: string;
   createdAt: string;
   updatedAt: string;
 }

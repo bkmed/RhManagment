@@ -59,6 +59,28 @@
     "rh": "HR",
     "chef_dequipe": "Team Leader"
   },
+  "leaveStatus": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "declined": "Declined"
+  },
+  "leaveTypes": {
+    "leave": "Leave",
+    "permission": "Permission"
+  },
+  "remote": {
+    "title": "Remote / Office",
+    "remote": "Remote",
+    "office": "Office",
+    "status": "Status",
+    "updated": "Status updated"
+  },
+  "leavePolicy": {
+    "remaining": "Remaining Days",
+    "perYear": "Per Year",
+    "country": "Country",
+    "managedBy": "Managed by Admin & HR"
+  },
   "home": {
     "greeting": "Welcome to",
     "appName": "RH Management",
@@ -75,7 +97,8 @@
     "scheduleLeaveSubtitle": "Book time off",
     "viewAnalytics": "View Analytics",
     "viewAnalyticsSubtitle": "See your HR insights",
-    "tip": "Tip: Enable notifications to never miss your payroll reminders!"
+    "tip": "Tip: Enable notifications to never miss your payroll reminders!",
+    "statePaidLeaves": "State Paid Leaves"
   },
   "payroll": {
     "title": "Payroll",
@@ -145,7 +168,11 @@
     "enableReminder": "Enable Reminder (1 hour before)",
     "loadError": "Failed to load leave",
     "saveError": "Failed to save leave",
-    "fillRequired": "Please enter a title"
+    "fillRequired": "Please enter a title",
+    "leaveType": "Request Type",
+    "approve": "Approve",
+    "decline": "Decline",
+    "approvals": "Pending Approvals"
   },
   "illnesses": {
     "title": "Illness / Invoicing",

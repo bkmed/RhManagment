@@ -63,6 +63,8 @@ export const leavesDb = {
     const newLeave: Leave = {
       ...leave,
       id,
+      status: leave.status || 'pending',
+      type: leave.type || 'leave',
       createdAt: now,
       updatedAt: now,
     };
@@ -93,5 +95,11 @@ export const leavesDb = {
     const leaves = getAllLeaves();
     const filtered = leaves.filter(a => a.id !== id);
     saveAllLeaves(filtered);
+  },
+
+  // Get pending leaves
+  getPending: async (): Promise<Leave[]> => {
+    const leaves = getAllLeaves();
+    return leaves.filter(l => l.status === 'pending');
   },
 };
