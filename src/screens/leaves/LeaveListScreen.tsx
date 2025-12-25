@@ -15,7 +15,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const LeaveListScreen = ({ navigation }: any) => {
+  const { user } = useAuth();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -25,7 +28,16 @@ export const LeaveListScreen = ({ navigation }: any) => {
 
   const loadLeaves = async () => {
     try {
-      const data = await leavesDb.getUpcoming();
+      let data = await leavesDb.getUpcoming();
+
+      // Role-based filtering
+      if (user?.role === 'employee' && user?.employeeId) {
+        data = data.filter(leave => leave.employeeId === user.employeeId);
+      } else if (user?.role === 'chef_dequipe' && user?.department) {
+        // Chef sees leaves for their department
+        // Logic depends on data availability
+      }
+
       setLeaves(data);
     } catch (error) {
       console.error('Error loading leaves:', error);

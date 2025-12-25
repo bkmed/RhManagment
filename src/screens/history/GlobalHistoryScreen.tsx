@@ -9,16 +9,18 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { medicationsDb } from '../../database/medicationsDb';
-import { MedicationHistory } from '../../database/schema';
+import { payrollDb } from '../../database/payrollDb';
+import { PayrollHistory, Payroll } from '../../database/schema';
+import { useAuth } from '../../context/AuthContext';
 
-type HistoryItem = MedicationHistory & {
-    medicationName: string;
+type HistoryItem = PayrollHistory & {
+    payrollName: string;
 };
 
 export const GlobalHistoryScreen = () => {
     const { theme } = useTheme();
     const { t } = useTranslation();
+    const { user } = useAuth();
     const styles = useMemo(() => createStyles(theme), [theme]);
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -31,19 +33,25 @@ export const GlobalHistoryScreen = () => {
     const loadHistory = async () => {
         try {
             setLoading(true);
-            const [allHistory, allMedications] = await Promise.all([
-                medicationsDb.getAllHistory(),
-                medicationsDb.getAll(),
+            const [allHistory, allPayroll] = await Promise.all([
+                payrollDb.getAllHistory(),
+                payrollDb.getAll(),
             ]);
 
-            const medicationMap = new Map(
-                allMedications.map((m) => [m.id, m.name])
+            let filteredHistoryData = allHistory;
+            if (user?.role === 'employee' && user?.employeeId) {
+                const myPayrollIds = allPayroll.filter(p => p.employeeId === user.employeeId).map(p => p.id);
+                filteredHistoryData = allHistory.filter(h => myPayrollIds.includes(h.payrollId));
+            }
+
+            const payrollMap = new Map(
+                allPayroll.map((p) => [p.id, p.name])
             );
 
-            const enrichedHistory: HistoryItem[] = allHistory.map((item) => ({
+            const enrichedHistory: HistoryItem[] = filteredHistoryData.map((item) => ({
                 ...item,
-                medicationName: medicationMap.get(item.medicationId) || t('history.unknownMedication'),
-            })).sort((a, b) => new Date(b.takenAt).getTime() - new Date(a.takenAt).getTime());
+                payrollName: payrollMap.get(item.payrollId) || t('history.unknownPayroll'),
+            })).sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime());
 
             setHistory(enrichedHistory);
         } catch (error) {
@@ -54,24 +62,24 @@ export const GlobalHistoryScreen = () => {
     };
 
     const filteredHistory = history.filter((item) =>
-        item.medicationName.toLowerCase().includes(searchQuery.toLowerCase())
+        item.payrollName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const renderHistoryItem = ({ item }: { item: HistoryItem }) => (
         <View style={styles.card}>
             <View style={styles.row}>
-                <Text style={styles.medicationName}>{item.medicationName}</Text>
-                <View style={[styles.badge, styles[`badge${item.status}`]]}>
+                <Text style={styles.payrollName}>{item.payrollName}</Text>
+                <View style={[styles.badge, styles[`badge${item.status}` as keyof typeof styles]]}>
                     <Text style={styles.badgeText}>{t(`history.status.${item.status}`).toUpperCase()}</Text>
                 </View>
             </View>
 
             <View style={styles.row}>
                 <Text style={styles.date}>
-                    {new Date(item.takenAt).toLocaleDateString()}
+                    {new Date(item.paidAt).toLocaleDateString()}
                 </Text>
                 <Text style={styles.time}>
-                    {new Date(item.takenAt).toLocaleTimeString()}
+                    {new Date(item.paidAt).toLocaleTimeString()}
                 </Text>
             </View>
 
@@ -144,7 +152,7 @@ const createStyles = (theme: Theme) =>
             alignItems: 'center',
             marginBottom: theme.spacing.xs,
         },
-        medicationName: {
+        payrollName: {
             ...theme.textVariants.subheader,
             color: theme.colors.text,
             fontWeight: 'bold',
@@ -162,7 +170,7 @@ const createStyles = (theme: Theme) =>
             paddingVertical: theme.spacing.xs,
             borderRadius: theme.spacing.l,
         },
-        badgetaken: {
+        badgepaid: {
             backgroundColor: theme.colors.success,
         },
         badgemissed: {

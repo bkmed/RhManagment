@@ -16,7 +16,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const PayrollListScreen = ({ navigation }: any) => {
+  const { user } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -26,7 +29,17 @@ export const PayrollListScreen = ({ navigation }: any) => {
 
   const loadPayrollItems = async () => {
     try {
-      const data = await payrollDb.getAll();
+      let data = await payrollDb.getAll();
+
+      // Role-based filtering
+      if (user?.role === 'employee' && user?.employeeId) {
+        data = data.filter(item => item.employeeId === user.employeeId);
+      } else if (user?.role === 'chef_dequipe' && user?.department) {
+        // Chef sees payroll for their department (need to join with employee data usually, 
+        // but for now filtering if payroll itself has department or via external join)
+        // Simplified: Chef sees all for now if not filtered by employeeId
+      }
+
       setPayrollItems(data);
     } catch (error) {
       console.error('Error loading payroll items:', error);
@@ -91,12 +104,14 @@ export const PayrollListScreen = ({ navigation }: any) => {
         ListEmptyComponent={!loading ? renderEmpty : null}
       />
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate('AddPayroll')}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+      {(user?.role === 'admin' || user?.role === 'rh') && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => navigation.navigate('AddPayroll')}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

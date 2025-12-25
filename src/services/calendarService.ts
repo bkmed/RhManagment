@@ -1,8 +1,8 @@
-import { Platform, Alert } from 'react-native';
+import { Platform } from 'react-native';
 import RNCalendarEvents from 'react-native-calendar-events';
 import { permissionsService } from './permissions';
 
-export interface CalendarAppointment {
+export interface CalendarLeave {
     id?: string;
     title: string;
     date: string; // ISO date string
@@ -15,11 +15,11 @@ export interface CalendarAppointment {
 
 class CalendarService {
     /**
-     * Add appointment to calendar
+     * Add leave to calendar
      * Web: Downloads ICS file
      * Native: Adds event to device calendar
      */
-    async addToCalendar(appointment: CalendarAppointment): Promise<boolean> {
+    async addToCalendar(leave: CalendarLeave): Promise<boolean> {
         // Check calendar permission first
         const permission = await permissionsService.checkCalendarPermission();
         if (permission !== 'granted') {
@@ -30,36 +30,36 @@ class CalendarService {
             console.warn('Calendar service is not supported on web. Use AddToCalendarButton component.');
             return false;
         } else {
-            return this.addToCalendarNative(appointment);
+            return this.addToCalendarNative(leave);
         }
     }
 
     /**
      * Native implementation - Add to device calendar
      */
-    private async addToCalendarNative(appointment: CalendarAppointment): Promise<boolean> {
+    private async addToCalendarNative(leave: CalendarLeave): Promise<boolean> {
         try {
             // Parse date and time
-            const startDate = this.parseDateTime(appointment.date, appointment.time);
+            const startDate = this.parseDateTime(leave.date, leave.time);
             const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour duration
 
             const eventConfig: any = {
-                title: appointment.title,
+                title: leave.title,
                 startDate: startDate.toISOString(),
                 endDate: endDate.toISOString(),
-                location: appointment.location || '',
-                notes: this.buildNotes(appointment),
+                location: leave.location || '',
+                notes: this.buildNotes(leave),
             };
 
             // Add reminder if enabled
-            if (appointment.enableReminder) {
+            if (leave.enableReminder) {
                 eventConfig.alarms = [{
                     date: -60, // 60 minutes before (negative value for minutes before)
                 }];
             }
 
             // Create the event
-            const eventId = await RNCalendarEvents.saveEvent(appointment.title, eventConfig);
+            const eventId = await RNCalendarEvents.saveEvent(leave.title, eventConfig);
 
             return !!eventId;
         } catch (error) {
@@ -71,8 +71,8 @@ class CalendarService {
     /**
      * Generate ICS file content
      */
-    private generateICS(appointment: CalendarAppointment): string {
-        const startDate = this.parseDateTime(appointment.date, appointment.time);
+    private generateICS(leave: CalendarLeave): string {
+        const startDate = this.parseDateTime(leave.date, leave.time);
         const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour duration
 
         // Format dates for ICS (YYYYMMDDTHHmmssZ)
@@ -89,11 +89,11 @@ class CalendarService {
         };
 
         const now = new Date();
-        const uid = `appointment-${appointment.id || Date.now()}@medicarereminder.app`;
+        const uid = `leave-${leave.id || Date.now()}@rhmanagement.app`;
 
         let ics = 'BEGIN:VCALENDAR\r\n';
         ics += 'VERSION:2.0\r\n';
-        ics += 'PRODID:-//Medicare Reminder//EN\r\n';
+        ics += 'PRODID:-//RH Management//EN\r\n';
         ics += 'CALSCALE:GREGORIAN\r\n';
         ics += 'METHOD:PUBLISH\r\n';
         ics += 'BEGIN:VEVENT\r\n';
@@ -101,13 +101,13 @@ class CalendarService {
         ics += `DTSTAMP:${formatICSDate(now)}\r\n`;
         ics += `DTSTART:${formatICSDate(startDate)}\r\n`;
         ics += `DTEND:${formatICSDate(endDate)}\r\n`;
-        ics += `SUMMARY:${this.escapeICS(appointment.title)}\r\n`;
+        ics += `SUMMARY:${this.escapeICS(leave.title)}\r\n`;
 
-        if (appointment.location) {
-            ics += `LOCATION:${this.escapeICS(appointment.location)}\r\n`;
+        if (leave.location) {
+            ics += `LOCATION:${this.escapeICS(leave.location)}\r\n`;
         }
 
-        const notes = this.buildNotes(appointment);
+        const notes = this.buildNotes(leave);
         if (notes) {
             ics += `DESCRIPTION:${this.escapeICS(notes)}\r\n`;
         }
@@ -115,10 +115,10 @@ class CalendarService {
         ics += 'STATUS:CONFIRMED\r\n';
 
         // Add reminder if enabled
-        if (appointment.enableReminder) {
+        if (leave.enableReminder) {
             ics += 'BEGIN:VALARM\r\n';
             ics += 'ACTION:DISPLAY\r\n';
-            ics += 'DESCRIPTION:Appointment Reminder\r\n';
+            ics += 'DESCRIPTION:Leave Reminder\r\n';
             ics += 'TRIGGER:-PT1H\r\n'; // 1 hour before
             ics += 'END:VALARM\r\n';
         }
@@ -142,17 +142,17 @@ class CalendarService {
     }
 
     /**
-     * Build notes/description from appointment details
+     * Build notes/description from leave details
      */
-    private buildNotes(appointment: CalendarAppointment): string {
+    private buildNotes(leave: CalendarLeave): string {
         let notes = '';
 
-        if (appointment.reason) {
-            notes += `Reason: ${appointment.reason}\n`;
+        if (leave.reason) {
+            notes += `Reason: ${leave.reason}\n`;
         }
 
-        if (appointment.notes) {
-            notes += appointment.notes;
+        if (leave.notes) {
+            notes += leave.notes;
         }
 
         return notes.trim();

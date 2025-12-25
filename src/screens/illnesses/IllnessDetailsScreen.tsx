@@ -15,7 +15,10 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const IllnessDetailsScreen = ({ navigation, route }: any) => {
+  const { user } = useAuth();
   const { illnessId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -29,8 +32,8 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
       : null;
 
   const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext)
-    : { setActiveTab: () => { } };
+    ? useContext(WebNavigationContext) as any
+    : { setActiveTab: (tab: string, screen?: string, params?: any) => { } };
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
@@ -135,19 +138,25 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
           <Text style={styles.buttonText}>{t('common.viewHistory')}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.editButton]}
-          onPress={handleEdit}
-        >
-          <Text style={styles.buttonText}>{t('common.edit')}</Text>
-        </TouchableOpacity>
+        {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && (
+          <>
+            <TouchableOpacity
+              style={[styles.button, styles.editButton]}
+              onPress={handleEdit}
+            >
+              <Text style={styles.buttonText}>{t('common.edit')}</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
-          onPress={handleDelete}
-        >
-          <Text style={styles.buttonText}>{t('common.delete')}</Text>
-        </TouchableOpacity>
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <TouchableOpacity
+                style={[styles.button, styles.deleteButton]}
+                onPress={handleDelete}
+              >
+                <Text style={styles.buttonText}>{t('common.delete')}</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
       </ScrollView>
     </View>
   );

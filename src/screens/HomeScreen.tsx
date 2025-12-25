@@ -4,6 +4,7 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
+import { useAuth } from '../context/AuthContext';
 import {
   View,
   Text,
@@ -15,9 +16,9 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { medicationsDb } from '../database/medicationsDb';
-import { appointmentsDb } from '../database/appointmentsDb';
-import { prescriptionsDb } from '../database/prescriptionsDb';
+import { payrollDb } from '../database/payrollDb';
+import { leavesDb } from '../database/leavesDb';
+import { illnessesDb } from '../database/illnessesDb';
 import { permissionsService } from '../services/permissions';
 import { useTheme } from '../context/ThemeContext';
 import { Theme } from '../theme';
@@ -26,12 +27,13 @@ export const HomeScreen = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [summary, setSummary] = useState({
-    medications: 0,
-    upcomingAppointments: 0,
-    expiringPrescriptions: 0,
+    payroll: 0,
+    upcomingLeaves: 0,
+    expiringIllness: 0,
   });
   const [loading, setLoading] = useState(true);
   const [hasNotificationPermission, setHasNotificationPermission] =
@@ -57,16 +59,22 @@ export const HomeScreen = () => {
 
   const loadSummary = async () => {
     try {
-      const [meds, appts, prescriptions] = await Promise.all([
-        medicationsDb.getAll(),
-        appointmentsDb.getUpcoming(),
-        prescriptionsDb.getExpiringSoon(),
+      let [allPayroll, upcomingLeaves, expiringIllnesses] = await Promise.all([
+        payrollDb.getAll(),
+        leavesDb.getUpcoming(),
+        illnessesDb.getExpiringSoon(),
       ]);
 
+      if (user?.role === 'employee' && user?.employeeId) {
+        allPayroll = allPayroll.filter(p => p.employeeId === user.employeeId);
+        upcomingLeaves = upcomingLeaves.filter(l => l.employeeId === user.employeeId);
+        expiringIllnesses = expiringIllnesses.filter(i => i.employeeId === user.employeeId);
+      }
+
       setSummary({
-        medications: meds.length,
-        upcomingAppointments: appts.length,
-        expiringPrescriptions: prescriptions.length,
+        payroll: allPayroll.length,
+        upcomingLeaves: upcomingLeaves.length,
+        expiringIllness: expiringIllnesses.length,
       });
     } catch (error) {
       console.error('Error loading summary:', error);
@@ -90,11 +98,11 @@ export const HomeScreen = () => {
     } else {
       // For native, navigate to the appropriate tab
       const stackScreen =
-        tab === 'medications' || tab === 'Medications'
-          ? 'MedicationsTab'
-          : tab === 'appointments' || tab === 'Appointments'
-            ? 'AppointmentsTab'
-            : tab === 'analytics'
+        tab === 'Payroll'
+          ? 'PayrollTab'
+          : tab === 'Leaves'
+            ? 'LeavesTab'
+            : tab === 'Analytics'
               ? 'Analytics'
               : undefined;
 
@@ -131,36 +139,36 @@ export const HomeScreen = () => {
         <View style={styles.statsContainer}>
           <TouchableOpacity
             style={[styles.statCard, styles.statCardBlue]}
-            onPress={() => navigateToTab('Medications')}
+            onPress={() => navigateToTab('Payroll')}
           >
-            <Text style={styles.statNumber}>{summary.medications}</Text>
-            <Text style={styles.statLabel}>{t('home.activeMedications')}</Text>
+            <Text style={styles.statNumber}>{summary.payroll}</Text>
+            <Text style={styles.statLabel}>{t('home.activePayroll')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.statCard, styles.statCardGreen]}
-            onPress={() => navigateToTab('Appointments')}
+            onPress={() => navigateToTab('Leaves')}
           >
             <Text style={styles.statNumber}>
-              {summary.upcomingAppointments}
+              {summary.upcomingLeaves}
             </Text>
             <Text style={styles.statLabel}>
-              {t('home.upcomingAppointments')}
+              {t('home.upcomingLeaves')}
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Alerts */}
-        {summary.expiringPrescriptions > 0 && (
+        {summary.expiringIllness > 0 && (
           <View style={styles.alertCard}>
             <Text style={styles.alertIcon}>⚠️</Text>
             <View style={styles.alertContent}>
               <Text style={styles.alertTitle}>
-                {t('home.prescriptionAlert')}
+                {t('home.illnessAlert')}
               </Text>
               <Text style={styles.alertMessage}>
-                {t('home.prescriptionsExpiring', {
-                  count: summary.expiringPrescriptions,
+                {t('home.illnessExpiring', {
+                  count: summary.expiringIllness,
                 })}
               </Text>
             </View>
@@ -170,49 +178,53 @@ export const HomeScreen = () => {
         {/* Quick Actions */}
         <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
 
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => navigateToTab('Medications', 'AddMedication')}
-        >
-          <Text style={styles.actionIcon}>💊</Text>
-          <View style={styles.actionContent}>
-            <Text style={styles.actionTitle}>{t('home.addMedication')}</Text>
-            <Text style={styles.actionSubtitle}>
-              {t('home.addMedicationSubtitle')}
-            </Text>
-          </View>
-          <Text style={styles.actionArrow}>›</Text>
-        </TouchableOpacity>
+        {(user?.role === 'admin' || user?.role === 'rh') && (
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => navigateToTab('Payroll', 'AddPayroll')}
+          >
+            <Text style={styles.actionIcon}>💰</Text>
+            <View style={styles.actionContent}>
+              <Text style={styles.actionTitle}>{t('home.addPayroll')}</Text>
+              <Text style={styles.actionSubtitle}>
+                {t('home.addPayrollSubtitle')}
+              </Text>
+            </View>
+            <Text style={styles.actionArrow}>›</Text>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => navigateToTab('Appointments', 'AddAppointment')}
+          onPress={() => navigateToTab('Leaves', 'AddLeave')}
         >
           <Text style={styles.actionIcon}>📅</Text>
           <View style={styles.actionContent}>
             <Text style={styles.actionTitle}>
-              {t('home.scheduleAppointment')}
+              {t('home.scheduleLeave')}
             </Text>
             <Text style={styles.actionSubtitle}>
-              {t('home.scheduleAppointmentSubtitle')}
+              {t('home.scheduleLeaveSubtitle')}
             </Text>
           </View>
           <Text style={styles.actionArrow}>›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => navigateToTab('Analytics')}
-        >
-          <Text style={styles.actionIcon}>📊</Text>
-          <View style={styles.actionContent}>
-            <Text style={styles.actionTitle}>{t('home.viewAnalytics')}</Text>
-            <Text style={styles.actionSubtitle}>
-              {t('home.viewAnalyticsSubtitle')}
-            </Text>
-          </View>
-          <Text style={styles.actionArrow}>›</Text>
-        </TouchableOpacity>
+        {user?.role !== 'employee' && (
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => navigateToTab('Analytics')}
+          >
+            <Text style={styles.actionIcon}>📊</Text>
+            <View style={styles.actionContent}>
+              <Text style={styles.actionTitle}>{t('home.viewAnalytics')}</Text>
+              <Text style={styles.actionSubtitle}>
+                {t('home.viewAnalyticsSubtitle')}
+              </Text>
+            </View>
+            <Text style={styles.actionArrow}>›</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Tips Section */}
         {!hasNotificationPermission && (

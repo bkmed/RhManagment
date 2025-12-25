@@ -16,7 +16,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const IllnessListScreen = ({ navigation }: any) => {
+  const { user } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -26,7 +29,15 @@ export const IllnessListScreen = ({ navigation }: any) => {
 
   const loadIllnesses = async () => {
     try {
-      const data = await illnessesDb.getAll();
+      let data = await illnessesDb.getAll();
+
+      // Role-based filtering
+      if (user?.role === 'employee' && user?.employeeId) {
+        data = data.filter(ill => ill.employeeId === user.employeeId);
+      } else if (user?.role === 'chef_dequipe' && user?.department) {
+        // Chef logic...
+      }
+
       setIllnesses(data);
     } catch (error) {
       console.error('Error loading illnesses:', error);
@@ -134,12 +145,14 @@ export const IllnessListScreen = ({ navigation }: any) => {
         ListEmptyComponent={!loading ? renderEmpty : null}
       />
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate('AddIllness')}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+      {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => navigation.navigate('AddIllness')}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

@@ -15,7 +15,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const EmployeeListScreen = ({ navigation }: any) => {
+  const { user } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -25,7 +28,15 @@ export const EmployeeListScreen = ({ navigation }: any) => {
 
   const loadEmployees = async () => {
     try {
-      const data = await employeesDb.getAll();
+      let data = await employeesDb.getAll();
+
+      // Role-based filtering
+      if (user?.role === 'chef_dequipe' && user?.department) {
+        data = data.filter(emp => emp.department === user.department);
+      } else if (user?.role === 'employee' && user?.employeeId) {
+        data = data.filter(emp => emp.id === user.employeeId);
+      }
+
       setEmployees(data);
     } catch (error) {
       console.error('Error loading employees:', error);
@@ -111,12 +122,14 @@ export const EmployeeListScreen = ({ navigation }: any) => {
         ListEmptyComponent={!loading ? renderEmpty : null}
       />
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate('AddEmployee')}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+      {(user?.role === 'admin' || user?.role === 'rh') && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => navigation.navigate('AddEmployee')}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

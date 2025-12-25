@@ -62,7 +62,7 @@ export const CalendarButton: React.FC<CalendarButtonProps> = ({
                     --btn-font-weight: 600;
                     --btn-font-size: 16px;
                 `}
-        label={t('appointments.addToCalendar')}
+        label={t('leaves.addToCalendar')}
       />
     </View>
   );

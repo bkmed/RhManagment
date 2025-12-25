@@ -36,7 +36,7 @@ export const CalendarButton: React.FC<CalendarButtonProps> = ({
       if (permission !== 'granted') {
         Alert.alert(
           t('common.error'),
-          t('appointments.calendarPermissionRequired'),
+          t('leaves.calendarPermissionRequired'),
           [{ text: t('common.ok') }],
         );
         return;
@@ -52,15 +52,15 @@ export const CalendarButton: React.FC<CalendarButtonProps> = ({
       });
 
       if (success) {
-        Alert.alert(t('common.success'), t('appointments.addedToCalendar'));
+        Alert.alert(t('common.success'), t('leaves.addedToCalendar'));
         onSuccess?.();
       } else {
-        Alert.alert(t('common.error'), t('appointments.calendarError'));
+        Alert.alert(t('common.error'), t('leaves.calendarError'));
         onError?.();
       }
     } catch (error) {
       console.error('Error adding to calendar:', error);
-      Alert.alert(t('common.error'), t('appointments.calendarError'));
+      Alert.alert(t('common.error'), t('leaves.calendarError'));
       onError?.();
     }
   };
@@ -71,7 +71,7 @@ export const CalendarButton: React.FC<CalendarButtonProps> = ({
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <Text style={styles.text}>{t('appointments.addToCalendar')}</Text>
+      <Text style={styles.text}>{t('leaves.addToCalendar')}</Text>
     </TouchableOpacity>
   );
 };

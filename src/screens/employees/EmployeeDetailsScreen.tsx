@@ -18,7 +18,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { LoadingScreen } from '../../components/LoadingScreen';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
+  const { user } = useAuth();
   const { employeeId } = route.params;
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -33,8 +36,8 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
       : null;
 
   const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext)
-    : { setActiveTab: () => { } };
+    ? useContext(WebNavigationContext) as any
+    : { setActiveTab: (tab: string, screen?: string, params?: any) => { } };
 
   const navigateToAddLeave = () => {
     if (Platform.OS === 'web') {
@@ -188,22 +191,24 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 )}
               </View>
             </View>
-            <View style={styles.actions}>
-              <TouchableOpacity
-                onPress={handleEdit}
-                style={styles.actionButton}
-              >
-                <Text style={styles.actionText}>{t('common.edit')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleDelete}
-                style={[styles.actionButton, styles.deleteButton]}
-              >
-                <Text style={[styles.actionText, styles.deleteText]}>
-                  {t('common.delete')}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <View style={styles.actions}>
+                <TouchableOpacity
+                  onPress={handleEdit}
+                  style={styles.actionButton}
+                >
+                  <Text style={styles.actionText}>{t('common.edit')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleDelete}
+                  style={[styles.actionButton, styles.deleteButton]}
+                >
+                  <Text style={[styles.actionText, styles.deleteText]}>
+                    {t('common.delete')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
 
           <View style={styles.divider} />
@@ -238,24 +243,26 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{t('leaves.title')}</Text>
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              onPress={() => navigateToAddIllness(employee)}
-              style={[styles.addButton, styles.secondaryButton]}
-            >
-              <Text style={[styles.addButtonText, styles.secondaryButtonText]}>
-                + {t('employees.addIllness')}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={navigateToAddLeave}
-              style={styles.addButton}
-            >
-              <Text style={styles.addButtonText}>
-                + {t('employees.addLeave')}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && (
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                onPress={() => navigateToAddIllness(employee)}
+                style={[styles.addButton, styles.secondaryButton]}
+              >
+                <Text style={[styles.addButtonText, styles.secondaryButtonText]}>
+                  + {t('employees.addIllness')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={navigateToAddLeave}
+                style={styles.addButton}
+              >
+                <Text style={styles.addButtonText}>
+                  + {t('employees.addLeave')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {leaves.length > 0 ? (

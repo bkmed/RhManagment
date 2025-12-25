@@ -15,7 +15,7 @@ A comprehensive HR management solution built with React Native Web for cross-pla
 - **SEO Optimized**: Enhanced search engine visibility and social media sharing
 - **PWA Support**: Progressive Web App capabilities for mobile web users
 - **Smartbanner Integration**: Promote native app installations
-- **Multi-language Support**: Interface available in English, French, and Arabic
+- **Multi-language Support**: Interface available in English, French, Arabic, German, and Spanish
 - **Illness Management**: Track and manage employee sick leaves and medical certificates
 - **Permission System**: Fine-grained permission management for user roles
 
@@ -23,40 +23,14 @@ A comprehensive HR management solution built with React Native Web for cross-pla
 
 - **Frontend**: React Native Web
 - **Navigation**: React Navigation
-- **Backend**: Firebase (Authentication, Firestore, Storage)
+- **Backend**: 
 - **State Management**: Redux with Redux Toolkit
 - **Internationalization**: i18next for multi-language support
 - **Bundling**: Webpack with optimization plugins
 - **Testing**: Jest, Cypress (web), Detox (mobile)
-- **CI/CD**: Bitbucket Pipelines
 - **PWA**: Service workers and Web App Manifest
 
 ## Project Structure
-
-\`\`\`
-Rh-management/
-├── packages/                # Monorepo structure
-│   ├── app/                 # Main application entry point
-│   ├── auth/                # Authentication module
-│   ├── core/                # Shared UI components and utilities
-│   ├── employees/           # Employee management module
-│   ├── leave/               # Leave management module
-│   ├── payroll/             # Payroll and payslip module
-│   ├── notifications/       # Notifications system
-│   ├── calendar/            # Calendar and scheduling module
-│   ├── admin/               # Admin management interfaces
-│   └── illness/             # Illness tracking and management
-├── app/                     # Next.js app directory
-├── public/                  # Static assets and PWA files
-│   ├── icons/               # App icons for various platforms
-│   ├── manifest.json        # PWA manifest
-│   ├── robots.txt           # Search engine instructions
-│   └── sitemap.xml          # Site structure for search engines
-├── e2e/                     # End-to-end tests with Detox
-├── cypress/                 # Cypress tests for web
-├── __tests__/               # Unit and integration tests
-└── webpack.config.js        # Webpack configuration with optimizations
-\`\`\`
 
 ## Recent Enhancements
 
@@ -94,7 +68,7 @@ Rh-management/
 3. Configure Firebase:
    - Create a Firebase project
    - Enable Authentication, Firestore, and Storage
-   - Update the Firebase configuration in `packages/auth/src/firebase-config.ts`
+   - Update the Firebase configuration
 
 4. Start the development server:
    \`\`\`bash
@@ -156,30 +130,30 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 Let's summarize all the changes we've made to the Rh management :
 
-1. **Enhanced Admin Dashboard** (packages/admin/src/components/admin-dashboard.tsx):
+1. **Enhanced Admin Dashboard** 
    - Added links to manage leave, illness, payroll, and system settings modules
    - Reorganized the quick actions grid for better visibility
    - Improved layout to accommodate more administrative functions
 
-2. **Interactive Calendar** (packages/calendar/src/components/calendar-view.tsx):
+2. **Interactive Calendar** 
    - Added buttons for requesting leave, authorization, or reporting illness directly from the calendar view
    - Created an integrated request form that works with the date context
    - Improved event display and interaction capabilities
 
-3. **Profile Management** (packages/employees/src/components/edit-profile.tsx):
+3. **Profile Management** 
    - Created a comprehensive profile editing page
    - Added photo upload functionality
    - Implemented form validation and error handling
    - Integrated with employee profile view
 
-4. **Request Leave Modal** (packages/leave/src/components/request-leave-modal.tsx):
+4. **Request Leave Modal**
    - Created a reusable modal for requesting different types of leave
    - Implemented date selection and reason entry
    - Integrated with the calendar system
    - Added support for leave, authorization, and illness requests
 
 5. **SEO Optimization**:
-   - Updated HTML head with meta tags for better SEO (packages/app/public/index.html)
+   - Updated HTML head with meta tags for better SEO 
    - Added Open Graph and Twitter card tags for social media sharing
    - Created robots.txt and sitemap.xml files
    - Added structured data using JSON-LD for better search engine indexing

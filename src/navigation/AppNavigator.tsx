@@ -203,21 +203,32 @@ const TabNavigator = () => (
 // ======= Drawer (Mobile) =======
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigator = () => (
-  <Drawer.Navigator screenOptions={{ headerShown: false }}>
-    <Drawer.Screen name="Main" component={TabNavigator} />
-    <Drawer.Screen name="Analytics" component={AnalyticsScreen} />
-    <Drawer.Screen name="Illnesses" component={IllnessesStack} />
-    <Drawer.Screen name="Employees" component={EmployeesStack} />
-    <Drawer.Screen name="History" component={HistoryStack} />
-    <Drawer.Screen name="Profile" component={ProfileStack} />
-  </Drawer.Navigator>
-);
+const DrawerNavigator = () => {
+  const { user } = useAuth();
+
+  return (
+    <Drawer.Navigator screenOptions={{ headerShown: false }}>
+      <Drawer.Screen name="Main" component={TabNavigator} />
+      {user?.role !== 'employee' && (
+        <Drawer.Screen name="Analytics" component={AnalyticsScreen} />
+      )}
+      {user?.role !== 'employee' && (
+        <Drawer.Screen name="Illnesses" component={IllnessesStack} />
+      )}
+      {user?.role !== 'employee' && (
+        <Drawer.Screen name="Employees" component={EmployeesStack} />
+      )}
+      <Drawer.Screen name="History" component={HistoryStack} />
+      <Drawer.Screen name="Profile" component={ProfileStack} />
+    </Drawer.Navigator>
+  );
+};
 
 // ======= Web Navigator avec subScreen =======
 const WebNavigator = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const { width, height } = useWindowDimensions();
   const isMobile = width < 1024;
 
@@ -287,16 +298,35 @@ const WebNavigator = () => {
     }
   };
 
-  const navItems = [
-    ['Home', t('navigation.home')],
-    ['Payroll', t('navigation.payroll')],
-    ['Leaves', t('navigation.leaves')],
-    ['Analytics', t('navigation.analytics')],
-    ['Illnesses', t('navigation.illnesses')],
-    ['Employees', t('navigation.employees')],
-    ['History', t('navigation.history') || 'History'],
-    ['Profile', t('navigation.profile')],
-  ];
+  const navItems = useMemo(() => {
+    const items = [['Home', t('navigation.home')]];
+
+    // Payroll visible to all
+    items.push(['Payroll', t('navigation.payroll')]);
+
+    // Leaves visible to all
+    items.push(['Leaves', t('navigation.leaves')]);
+
+    // Analytics: Not for employees
+    if (user?.role !== 'employee') {
+      items.push(['Analytics', t('navigation.analytics')]);
+    }
+
+    // Illnesses: Not for employees
+    if (user?.role !== 'employee') {
+      items.push(['Illnesses', t('navigation.illnesses')]);
+    }
+
+    // Employees: Only for admin, rh, chef_dequipe
+    if (user?.role !== 'employee') {
+      items.push(['Employees', t('navigation.employees')]);
+    }
+
+    items.push(['History', t('navigation.history') || 'History']);
+    items.push(['Profile', t('navigation.profile')]);
+
+    return items;
+  }, [t, user?.role]);
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
@@ -476,12 +506,13 @@ export const AppNavigator = () => {
 };
 
 const AppContent = () => {
+  const { t } = useTranslation();
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Loading...</Text>
+        <Text>{t('common.loading')}</Text>
       </View>
     );
   }

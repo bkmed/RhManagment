@@ -8,6 +8,7 @@ import en from './locales/en.json';
 import fr from './locales/fr.json';
 import ar from './locales/ar.json';
 import de from './locales/de.json';
+import es from './locales/es.json';
 
 // Language detector for web and mobile
 const languageDetector = {
@@ -27,7 +28,7 @@ const languageDetector = {
       callback('en');
     }
   },
-  init: () => {},
+  init: () => { },
   cacheUserLanguage: async (language: string) => {
     try {
       storageService.setString('user-language', language);
@@ -46,6 +47,7 @@ i18n
       fr: { translation: fr },
       ar: { translation: ar },
       de: { translation: de },
+      es: { translation: es },
     },
     fallbackLng: 'en',
     interpolation: {

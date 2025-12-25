@@ -9,6 +9,7 @@ export interface Payroll {
   notes?: string;
   reminderEnabled: boolean;
   isUrgent?: boolean;
+  employeeId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -65,6 +66,8 @@ export interface Employee {
   address?: string;
   photoUri?: string;
   notes?: string;
+  department?: string;
+  teamId?: string;
   createdAt: string;
   updatedAt: string;
 }

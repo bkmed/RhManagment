@@ -15,7 +15,10 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const PayrollDetailsScreen = ({ navigation, route }: any) => {
+  const { user } = useAuth();
   const { payrollId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -118,16 +121,20 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>
-            {t('payrollDetails.reminderTimesLabel')}
-          </Text>
-          <View style={styles.timesContainer}>
-            {times.map((time, index) => (
-              <View key={index} style={styles.timeBadge}>
-                <Text style={styles.timeText}>{time}</Text>
+          {user?.role !== 'employee' && (
+            <>
+              <Text style={styles.label}>
+                {t('payrollDetails.reminderTimesLabel')}
+              </Text>
+              <View style={styles.timesContainer}>
+                {times.map((time, index) => (
+                  <View key={index} style={styles.timeBadge}>
+                    <Text style={styles.timeText}>{time}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
+            </>
+          )}
         </View>
 
         <View style={styles.section}>
@@ -172,23 +179,27 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.editButton]}
-          onPress={handleEdit}
-        >
-          <Text style={styles.buttonText}>
-            {t('payrollDetails.editButton')}
-          </Text>
-        </TouchableOpacity>
+        {(user?.role === 'admin' || user?.role === 'rh') && (
+          <>
+            <TouchableOpacity
+              style={[styles.button, styles.editButton]}
+              onPress={handleEdit}
+            >
+              <Text style={styles.buttonText}>
+                {t('payrollDetails.editButton')}
+              </Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
-          onPress={handleDelete}
-        >
-          <Text style={styles.buttonText}>
-            {t('payrollDetails.deleteButton')}
-          </Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.deleteButton]}
+              onPress={handleDelete}
+            >
+              <Text style={styles.buttonText}>
+                {t('payrollDetails.deleteButton')}
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
       </ScrollView>
     </View>
   );

@@ -10,6 +10,8 @@ export interface User {
     name: string;
     email: string;
     role: UserRole;
+    employeeId?: number;
+    department?: string;
 }
 
 export const authService = {

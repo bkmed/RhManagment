@@ -15,7 +15,10 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
+import { useAuth } from '../../context/AuthContext';
+
 export const LeaveDetailsScreen = ({ navigation, route }: any) => {
+  const { user } = useAuth();
   const { leaveId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -29,8 +32,8 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
       : null;
 
   const { setActiveTab } = WebNavigationContext
-    ? useContext(WebNavigationContext)
-    : { setActiveTab: () => { } };
+    ? useContext(WebNavigationContext) as any
+    : { setActiveTab: (tab: string, screen?: string, params?: any) => { } };
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
@@ -141,19 +144,25 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={[styles.button, styles.editButton]}
-          onPress={handleEdit}
-        >
-          <Text style={styles.buttonText}>{t('leaveDetails.editButton')}</Text>
-        </TouchableOpacity>
+        {(user?.role === 'admin' || user?.role === 'rh' || (user?.role === 'employee' && leave.employeeId === user.employeeId)) && (
+          <>
+            <TouchableOpacity
+              style={[styles.button, styles.editButton]}
+              onPress={handleEdit}
+            >
+              <Text style={styles.buttonText}>{t('leaveDetails.editButton')}</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
-          onPress={handleDelete}
-        >
-          <Text style={styles.buttonText}>{t('leaveDetails.deleteButton')}</Text>
-        </TouchableOpacity>
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <TouchableOpacity
+                style={[styles.button, styles.deleteButton]}
+                onPress={handleDelete}
+              >
+                <Text style={styles.buttonText}>{t('leaveDetails.deleteButton')}</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
       </ScrollView>
     </View>
   );

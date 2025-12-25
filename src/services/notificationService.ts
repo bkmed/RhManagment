@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import notifee, { TimestampTrigger, TriggerType, AndroidImportance, RepeatFrequency } from '@notifee/react-native';
-import { Medication } from '../database/schema';
+import { Payroll } from '../database/schema';
 
 export const notificationService = {
     // Initialize notifications
@@ -15,15 +15,15 @@ export const notificationService = {
 
         // Create notification channel (Android)
         await notifee.createChannel({
-            id: 'medications',
-            name: 'Medication Reminders',
+            id: 'payroll',
+            name: 'Payroll Reminders',
             importance: AndroidImportance.HIGH,
             sound: 'default',
         });
 
         await notifee.createChannel({
-            id: 'appointments',
-            name: 'Appointment Reminders',
+            id: 'leaves',
+            name: 'Leave Reminders',
             importance: AndroidImportance.HIGH,
             sound: 'default',
         });
@@ -60,16 +60,16 @@ export const notificationService = {
         return settings.authorizationStatus >= 1;
     },
 
-    // Schedule medication reminders
-    scheduleMedicationReminders: async (medication: Medication) => {
+    // Schedule payroll reminders
+    schedulePayrollReminders: async (payroll: Payroll) => {
         if (Platform.OS === 'web') return;
-        if (!medication.reminderEnabled || !medication.id) return;
+        if (!payroll.reminderEnabled || !payroll.id) return;
 
-        // Cancel existing notifications for this medication
-        await notificationService.cancelMedicationReminders(medication.id);
+        // Cancel existing notifications for this payroll
+        await notificationService.cancelPayrollReminders(payroll.id);
 
         try {
-            const times = JSON.parse(medication.times) as string[];
+            const times = JSON.parse(payroll.times) as string[];
             const today = new Date();
 
             for (const time of times) {
@@ -85,27 +85,27 @@ export const notificationService = {
                 const trigger: TimestampTrigger = {
                     type: TriggerType.TIMESTAMP,
                     timestamp: notificationTime.getTime(),
-                    repeatFrequency: medication.frequency.toLowerCase().includes('daily')
+                    repeatFrequency: payroll.frequency.toLowerCase().includes('daily')
                         ? RepeatFrequency.DAILY
                         : undefined,
                 };
 
                 await notifee.createTriggerNotification(
                     {
-                        id: `med-${medication.id}-${time}`,
-                        title: 'Medication Reminder',
-                        body: `Time to take ${medication.name} (${medication.dosage})`,
+                        id: `pay-${payroll.id}-${time}`,
+                        title: 'Payroll Reminder',
+                        body: `Time to process payroll ${payroll.name} (${payroll.amount})`,
                         android: {
-                            channelId: 'medications',
+                            channelId: 'payroll',
                             pressAction: {
                                 id: 'default',
                                 launchActivity: 'default',
                             },
                             actions: [
                                 {
-                                    title: 'Mark as Taken',
+                                    title: 'Mark as Paid',
                                     pressAction: {
-                                        id: 'mark-taken',
+                                        id: 'mark-paid',
                                     },
                                 },
                                 {
@@ -117,8 +117,8 @@ export const notificationService = {
                             ],
                         },
                         data: {
-                            type: 'medication',
-                            medicationId: medication.id.toString(),
+                            type: 'payroll',
+                            payrollId: payroll.id.toString(),
                             time,
                         },
                     },
@@ -126,38 +126,38 @@ export const notificationService = {
                 );
             }
 
-            console.log(`Scheduled ${times.length} reminder(s) for ${medication.name}`);
+            console.log(`Scheduled ${times.length} reminder(s) for ${payroll.name}`);
         } catch (error) {
-            console.error('Error scheduling medication reminders:', error);
+            console.error('Error scheduling payroll reminders:', error);
         }
     },
 
-    // Cancel medication reminders
-    cancelMedicationReminders: async (medicationId: number) => {
+    // Cancel payroll reminders
+    cancelPayrollReminders: async (payrollId: number) => {
         if (Platform.OS === 'web') return;
         const notifications = await notifee.getTriggerNotifications();
 
         for (const notification of notifications) {
-            if (notification.notification.id?.startsWith(`med-${medicationId}-`)) {
+            if (notification.notification.id?.startsWith(`pay-${payrollId}-`)) {
                 await notifee.cancelNotification(notification.notification.id);
             }
         }
     },
 
-    // Schedule appointment reminder
-    scheduleAppointmentReminder: async (
-        appointmentId: number,
+    // Schedule leave reminder
+    scheduleLeaveReminder: async (
+        leaveId: number,
         title: string,
         dateTime: string
     ) => {
         if (Platform.OS === 'web') return;
-        const appointmentDate = new Date(dateTime);
+        const leaveDate = new Date(dateTime);
 
         // Schedule 1 hour before
-        const reminderTime = new Date(appointmentDate.getTime() - 60 * 60 * 1000);
+        const reminderTime = new Date(leaveDate.getTime() - 60 * 60 * 1000);
 
         if (reminderTime < new Date()) {
-            console.log('Appointment time has passed, skipping reminder');
+            console.log('Leave time has passed, skipping reminder');
             return;
         }
 
@@ -168,35 +168,35 @@ export const notificationService = {
 
         await notifee.createTriggerNotification(
             {
-                id: `appt-${appointmentId}`,
-                title: 'Upcoming Appointment',
+                id: `leave-${leaveId}`,
+                title: 'Upcoming Leave',
                 body: `${title} in 1 hour`,
                 android: {
-                    channelId: 'appointments',
+                    channelId: 'leaves',
                     pressAction: {
                         id: 'default',
                         launchActivity: 'default',
                     },
                 },
                 data: {
-                    type: 'appointment',
-                    appointmentId: appointmentId.toString(),
+                    type: 'leave',
+                    leaveId: leaveId.toString(),
                 },
             },
             trigger
         );
     },
 
-    // Cancel appointment reminder
-    cancelAppointmentReminder: async (appointmentId: number) => {
+    // Cancel leave reminder
+    cancelLeaveReminder: async (leaveId: number) => {
         if (Platform.OS === 'web') return;
-        await notifee.cancelNotification(`appt-${appointmentId}`);
+        await notifee.cancelNotification(`leave-${leaveId}`);
     },
 
-    // Schedule prescription expiry reminder
-    schedulePrescriptionExpiryReminder: async (
-        prescriptionId: number,
-        medicationName: string,
+    // Schedule illness expiry reminder
+    scheduleIllnessExpiryReminder: async (
+        illnessId: number,
+        payrollName: string,
         expiryDate: string
     ) => {
         if (Platform.OS === 'web') return;
@@ -222,29 +222,29 @@ export const notificationService = {
 
         await notifee.createTriggerNotification(
             {
-                id: `rx-${prescriptionId}`,
-                title: 'Prescription Expiring Soon',
-                body: `Your prescription for ${medicationName} expires on ${expiry.toLocaleDateString()}`,
+                id: `ill-${illnessId}`,
+                title: 'Illness Record Expiring Soon',
+                body: `Illness record for ${payrollName} expires on ${expiry.toLocaleDateString()}`,
                 android: {
-                    channelId: 'medications',
+                    channelId: 'payroll', // Reuse payroll channel? Or create 'illnesses' channel? Using payroll for now
                     pressAction: {
                         id: 'default',
                         launchActivity: 'default',
                     },
                 },
                 data: {
-                    type: 'prescription',
-                    prescriptionId: prescriptionId.toString(),
+                    type: 'illness',
+                    illnessId: illnessId.toString(), // Updated Key
                 },
             },
             trigger
         );
     },
 
-    // Cancel prescription reminder
-    cancelPrescriptionReminder: async (prescriptionId: number) => {
+    // Cancel illness reminder
+    cancelIllnessReminder: async (illnessId: number) => {
         if (Platform.OS === 'web') return;
-        await notifee.cancelNotification(`rx-${prescriptionId}`);
+        await notifee.cancelNotification(`ill-${illnessId}`);
     },
 
     // Handle notification press (called from App.tsx)

@@ -29,7 +29,7 @@ export const AnalyticsScreen = () => {
     labels: string[];
     data: number[];
   } | null>(null);
-  const [appointmentsChart, setAppointmentsChart] = useState<{
+  const [leavesChart, setLeavesChart] = useState<{
     labels: string[];
     data: number[];
   } | null>(null);
@@ -43,21 +43,21 @@ export const AnalyticsScreen = () => {
 
   const loadAnalytics = async () => {
     try {
-      const [data, adherence, appointments] = await Promise.all([
+      const [data, adherence, leaves] = await Promise.all([
         analyticsService.getAnalytics(),
-        analyticsService.getMedicationAdherence(),
-        analyticsService.getUpcomingAppointmentsChart(),
+        analyticsService.getPayrollAdherence(),
+        analyticsService.getUpcomingLeavesChart(),
       ]);
 
       setAnalytics(data);
       setAdherenceChart(adherence);
-      setAppointmentsChart(appointments);
+      setLeavesChart(leaves);
 
       // Log analytics view event
       googleAnalytics.logEvent('view_analytics_dashboard', {
-        total_medications: data.totalMedications,
-        upcoming_appointments: data.upcomingAppointments,
-        adherence_rate: data.medicationAdherence,
+        total_payroll: data.totalPayroll,
+        upcoming_leaves: data.upcomingLeaves,
+        adherence_rate: data.payrollAdherence,
       });
     } catch (error) {
       console.error('Error loading analytics:', error);
@@ -97,40 +97,40 @@ export const AnalyticsScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>{t('analytics.healthAnalytics')}</Text>
+        <Text style={styles.title}>{t('analytics.hrAnalytics')}</Text>
 
         {/* Summary Cards */}
         <View style={styles.cardsRow}>
           <View style={[styles.card, styles.cardBlue]}>
-            <Text style={styles.cardNumber}>{analytics.totalMedications}</Text>
-            <Text style={styles.cardLabel}>{t('analytics.medications')}</Text>
+            <Text style={styles.cardNumber}>{analytics.totalPayroll}</Text>
+            <Text style={styles.cardLabel}>{t('analytics.payroll')}</Text>
           </View>
 
           <View style={[styles.card, styles.cardGreen]}>
             <Text style={styles.cardNumber}>
-              {analytics.upcomingAppointments}
+              {analytics.upcomingLeaves}
             </Text>
-            <Text style={styles.cardLabel}>{t('analytics.appointments')}</Text>
+            <Text style={styles.cardLabel}>{t('analytics.leaves')}</Text>
           </View>
         </View>
 
         <View style={styles.cardsRow}>
           <View style={[styles.card, styles.cardOrange]}>
             <Text style={styles.cardNumber}>
-              {analytics.expiringPrescriptions}
+              {analytics.expiringIllness}
             </Text>
-            <Text style={styles.cardLabel}>{t('analytics.expiringSoon')}</Text>
+            <Text style={styles.cardLabel}>{t('analytics.illnessExpiring')}</Text>
           </View>
 
           <View style={[styles.card, styles.cardPurple]}>
             <Text style={styles.cardNumber}>
-              {analytics.medicationAdherence}%
+              {analytics.payrollAdherence}%
             </Text>
             <Text style={styles.cardLabel}>{t('analytics.adherence')}</Text>
           </View>
         </View>
 
-        {/* Medication Adherence Chart */}
+        {/* Payroll Adherence Chart */}
         {adherenceChart && adherenceChart.data.length > 0 && (
           <View style={styles.chartSection}>
             <Text style={styles.chartTitle}>
@@ -154,16 +154,16 @@ export const AnalyticsScreen = () => {
           </View>
         )}
 
-        {/* Upcoming Appointments Chart */}
-        {appointmentsChart && appointmentsChart.data.some(val => val > 0) && (
+        {/* Upcoming Leaves Chart */}
+        {leavesChart && leavesChart.data.some(val => val > 0) && (
           <View style={styles.chartSection}>
             <Text style={styles.chartTitle}>
-              {t('analytics.upcomingAppointmentsChart')}
+              {t('analytics.upcomingLeavesChart')}
             </Text>
             <BarChart
               data={{
-                labels: appointmentsChart.labels,
-                datasets: [{ data: appointmentsChart.data }],
+                labels: leavesChart.labels,
+                datasets: [{ data: leavesChart.data }],
               }}
               width={chartWidth}
               height={220}
@@ -171,7 +171,7 @@ export const AnalyticsScreen = () => {
               yAxisSuffix=""
               chartConfig={{
                 ...chartConfig,
-                color: (opacity = 1) => `rgba(52, 199, 89, ${opacity})`, // Keep green for success/appointments
+                color: (opacity = 1) => `rgba(52, 199, 89, ${opacity})`, // Keep green for success/leaves
               }}
               style={styles.chart}
               showValuesOnTopOfBars
@@ -180,40 +180,40 @@ export const AnalyticsScreen = () => {
           </View>
         )}
 
-        {/* Health Insights */}
+        {/* HR Insights */}
         <View style={styles.insightsSection}>
           <Text style={styles.sectionTitle}>
-            {t('analytics.healthInsights')}
+            {t('analytics.hrInsights')}
           </Text>
 
-          {analytics.medicationAdherence >= 90 && (
+          {analytics.payrollAdherence >= 90 && (
             <View style={[styles.insightCard, styles.insightGood]}>
               <Text style={styles.insightEmoji}>✅</Text>
               <Text style={styles.insightText}>
                 {t('analytics.excellentAdherence', {
-                  adherence: analytics.medicationAdherence,
+                  adherence: analytics.payrollAdherence,
                 })}
               </Text>
             </View>
           )}
 
-          {analytics.expiringPrescriptions > 0 && (
+          {analytics.expiringIllness > 0 && (
             <View style={[styles.insightCard, styles.insightWarning]}>
               <Text style={styles.insightEmoji}>⚠️</Text>
               <Text style={styles.insightText}>
-                {t('analytics.prescriptionsExpiring', {
-                  count: analytics.expiringPrescriptions,
+                {t('analytics.illnessesExpiring', {
+                  count: analytics.expiringIllness,
                 })}
               </Text>
             </View>
           )}
 
-          {analytics.upcomingAppointments > 0 && (
+          {analytics.upcomingLeaves > 0 && (
             <View style={[styles.insightCard, styles.insightInfo]}>
               <Text style={styles.insightEmoji}>📅</Text>
               <Text style={styles.insightText}>
-                {t('analytics.upcomingAppointmentsInsight', {
-                  count: analytics.upcomingAppointments,
+                {t('analytics.upcomingLeavesInsight', {
+                  count: analytics.upcomingLeaves,
                 })}
               </Text>
             </View>
