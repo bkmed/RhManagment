@@ -38,6 +38,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [giftVouchers, setGiftVouchers] = useState('');
   const [bonusAmount, setBonusAmount] = useState('');
   const [bonusType, setBonusType] = useState('none');
+  const [department, setDepartment] = useState('');
+  const [location, setLocation] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
@@ -93,6 +95,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         setGiftVouchers(item.giftVouchers || '');
         setBonusAmount(item.bonusAmount || '');
         setBonusType(item.bonusType || 'none');
+        setDepartment(item.department || '');
+        setLocation(item.location || '');
       }
     } catch (error) {
       Alert.alert(t('common.error'), t('payroll.loadError'));
@@ -132,6 +136,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         giftVouchers: giftVouchers.trim() || undefined,
         bonusAmount: bonusAmount.trim() || undefined,
         bonusType,
+        department,
+        location,
       };
 
       let id: number;
@@ -208,6 +214,30 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                   keyboardType="numeric"
                 />
                 {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.service')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={department}
+                  onChangeText={setDepartment}
+                  placeholder={t('common.service')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.local')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={location}
+                  onChangeText={setLocation}
+                  placeholder={t('common.local')}
+                  placeholderTextColor={theme.colors.subText}
+                />
               </View>
             </View>
 

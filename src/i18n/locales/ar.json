@@ -1,6 +1,8 @@
 {
     "common": {
         "save": "حفظ",
+        "service": "المصلحة",
+        "local": "المقر",
         "cancel": "إلغاء",
         "delete": "حذف",
         "edit": "تعديل",
@@ -15,6 +17,9 @@
         "done": "تم",
         "close": "إغلاق",
         "select": "تحديد...",
+        "selectType": "نوع اليوم",
+        "holiday": "عطلة رسمية",
+        "weekend": "عطلة نهاية الأسبوع",
         "selectDate": "تحديد التاريخ",
         "selectTime": "تحديد الوقت",
         "yes": "نعم",
@@ -73,7 +78,9 @@
         "remote": "عن بعد",
         "office": "مكتب",
         "status": "الحالة",
-        "updated": "تم تحديث الحالة"
+        "updated": "تم تحديث الحالة",
+        "onLeave": "في إجازة",
+        "selectStatus": "تغيير الحالة"
     },
     "leavePolicy": {
         "remaining": "الأيام المتبقية",
@@ -239,9 +246,9 @@
         "notesPlaceholder": "ملاحظات إضافية...",
         "saveButton": "حفظ الموظف",
         "updateButton": "تحديث الموظف",
-        "deleteButton": "حذف الموظف",
-        "deleteConfirmTitle": "حذف الموظف",
-        "deleteConfirmMessage": "هل أنت متأكد من حذف هذا الموظف؟ لا يمكن التراجع عن هذا الإجراء.",
+        "deleteButton": "Supprimer l'employé",
+        "deleteConfirmTitle": "Supprimer l'employé",
+        "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cet employé ?",
         "employee": "م.",
         "notFound": "الموظف غير موجود",
         "loadError": "فشل تحميل التفاصيل",
@@ -249,7 +256,7 @@
         "noLeaves": "لا توجد إجازات مجدولة",
         "addLeave": "إضافة إجازة",
         "addIllness": "إضافة سجل مرضي",
-        "notes": "ملاحظات"
+        "notes": "Notes"
     },
     "analytics": {
         "title": "التحليلات",
@@ -276,7 +283,7 @@
         "settings": "الإعدادات",
         "language": "اللغة",
         "appearance": "المظهر",
-        "darkMode": "الوضع الداكن",
+        "darkMode": "الوضعية الداكنة",
         "notifications": "الإشعارات",
         "permissions": "الأذونات",
         "camera": "الكاميرا / المستندات",
@@ -439,5 +446,21 @@
         "ar": "العربية",
         "de": "Deutsch",
         "es": "Español"
+    },
+    "payslip": {
+        "title": "قسيمة الراتب",
+        "companyHeader": "تفاصيل الشركة",
+        "employeeHeader": "معلومات الموظف",
+        "earnings": "المستحقات",
+        "deductions": "الاستقطاعات",
+        "grossPay": "إجمالي الراتب",
+        "netPay": "صافي الراتب",
+        "period": "فترة الراتب",
+        "description": "الوصف",
+        "amount": "المبلغ",
+        "companyName": "RH Management Pro",
+        "companyAddress": "123 شارع الأعمال، دبي، الإمارات",
+        "totalEarnings": "إجمالي المداخيل",
+        "totalDeductions": "إجمالي الاقتطاعات"
     }
 }

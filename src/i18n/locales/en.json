@@ -1,6 +1,8 @@
 {
   "common": {
     "save": "Save",
+    "service": "Service",
+    "local": "Local",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
@@ -18,6 +20,9 @@
     "selectDate": "Select Date",
     "selectTime": "Select Time",
     "timePlaceholder": "HH:MM",
+    "selectType": "Day Type",
+    "holiday": "Public Holiday",
+    "weekend": "Weekend",
     "yes": "Yes",
     "no": "No",
     "ok": "OK",
@@ -73,7 +78,9 @@
     "remote": "Remote",
     "office": "Office",
     "status": "Status",
-    "updated": "Status updated"
+    "updated": "Status updated",
+    "onLeave": "On Leave",
+    "selectStatus": "Change Status"
   },
   "leavePolicy": {
     "remaining": "Remaining Days",
@@ -438,5 +445,21 @@
     "ar": "العربية",
     "de": "Deutsch",
     "es": "Español"
+  },
+  "payslip": {
+    "title": "Pay Slip",
+    "companyHeader": "Company Details",
+    "employeeHeader": "Employee Information",
+    "earnings": "Earnings",
+    "deductions": "Deductions",
+    "grossPay": "Gross Pay",
+    "netPay": "Net Pay",
+    "period": "Pay Period",
+    "description": "Description",
+    "amount": "Amount",
+    "companyName": "RH Management Pro",
+    "companyAddress": "123 Business Street, Tech City, World",
+    "totalEarnings": "Total Earnings",
+    "totalDeductions": "Total Deductions"
   }
 }

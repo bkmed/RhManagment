@@ -38,6 +38,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [type, setType] = useState<'leave' | 'permission'>('leave');
   const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>('pending');
+  const [department, setDepartment] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
@@ -71,6 +72,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         setReminderEnabled(!!leave.reminderEnabled);
         setType(leave.type || 'leave');
         setStatus(leave.status || 'pending');
+        setDepartment(leave.department || '');
       }
     } catch (error) {
       Alert.alert(t('common.error'), t('leaves.loadError'));
@@ -103,6 +105,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         reminderEnabled,
         type,
         status,
+        department,
       };
 
       let id: number;
@@ -188,15 +191,28 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
               />
             </View>
 
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>{t('leaves.location')}</Text>
-              <TextInput
-                style={styles.input}
-                value={location}
-                onChangeText={setLocation}
-                placeholder={t('leaves.locationPlaceholder')}
-                placeholderTextColor={theme.colors.subText}
-              />
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.service')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={department}
+                  onChangeText={setDepartment}
+                  placeholder={t('common.service')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.local')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={location}
+                  onChangeText={setLocation}
+                  placeholder={t('common.local')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
             </View>
           </View>
 
@@ -291,7 +307,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { backgroundColor: theme.colors.background, flex: 1 },
+    container: { backgroundColor: theme.colors.background },
     content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
     formContainer: {
       flex: 1,

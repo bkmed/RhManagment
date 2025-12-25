@@ -102,4 +102,10 @@ export const leavesDb = {
     const leaves = getAllLeaves();
     return leaves.filter(l => l.status === 'pending');
   },
+
+  // Get approved leaves for an employee
+  getApprovedByEmployeeId: async (employeeId: number): Promise<Leave[]> => {
+    const leaves = getAllLeaves();
+    return leaves.filter(l => l.employeeId === employeeId && l.status === 'approved');
+  },
 };

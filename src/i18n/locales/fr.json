@@ -1,6 +1,8 @@
 {
     "common": {
         "save": "Enregistrer",
+        "service": "Service",
+        "local": "Local",
         "cancel": "Annuler",
         "delete": "Supprimer",
         "edit": "Modifier",
@@ -20,6 +22,9 @@
         "yes": "Oui",
         "no": "Non",
         "ok": "OK",
+        "selectType": "Type de jour",
+        "holiday": "Jour Férié",
+        "weekend": "Weekend",
         "required": "Ce champ est obligatoire",
         "invalidEmail": "Adresse e-mail invalide",
         "invalidPhone": "Numéro de téléphone invalide",
@@ -73,7 +78,9 @@
         "remote": "Télétravail",
         "office": "Bureau",
         "status": "Statut",
-        "updated": "Statut mis à jour"
+        "updated": "Statut mis à jour",
+        "onLeave": "En Congé",
+        "selectStatus": "Changer le statut"
     },
     "leavePolicy": {
         "remaining": "Jours restants",
@@ -438,5 +445,21 @@
         "ar": "العربية",
         "de": "Deutsch",
         "es": "Español"
+    },
+    "payslip": {
+        "title": "Fiche de Paie",
+        "companyHeader": "Détails de l'Entreprise",
+        "employeeHeader": "Informations de l'Employé",
+        "earnings": "Gains / Rémunérations",
+        "deductions": "Déductions / Cotisations",
+        "grossPay": "Salaire Brut",
+        "netPay": "Salaire Net",
+        "period": "Période de Paie",
+        "description": "Désignation",
+        "amount": "Montant",
+        "companyName": "RH Management Pro",
+        "companyAddress": "123 Rue de l'Entreprise, Paris, France",
+        "totalEarnings": "Total Revenus",
+        "totalDeductions": "Total Retenues"
     }
 }

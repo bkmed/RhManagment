@@ -32,9 +32,13 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
+  const [department, setDepartment] = useState('');
+  const [location, setLocation] = useState('');
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
   const [role, setRole] = useState<UserRole>('employee');
   const [loading, setLoading] = useState(false);
+  const [vacationDays, setVacationDays] = useState('25');
+  const [country, setCountry] = useState('France');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -55,6 +59,10 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         setNotes(employee.notes || '');
         setPhotoUri(employee.photoUri || undefined);
         setRole((employee.role as UserRole) || 'employee');
+        setDepartment(employee.department || '');
+        setLocation(employee.location || '');
+        setVacationDays(String(employee.vacationDaysPerYear || 25));
+        setCountry(employee.country || 'France');
       }
     } catch (error) {
       Alert.alert(t('common.error'), t('employees.loadError'));
@@ -94,6 +102,12 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         notes,
         photoUri,
         role,
+        department,
+        location,
+        vacationDaysPerYear: parseInt(vacationDays) || 25,
+        remainingVacationDays: parseInt(vacationDays) || 25,
+        statePaidLeaves: 0,
+        country,
       };
 
       if (employeeId) {
@@ -245,6 +259,30 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                     placeholder={t('signUp.roleLabel')}
                   />
                 )}
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.service')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={department}
+                  onChangeText={setDepartment}
+                  placeholder={t('common.service')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.local')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={location}
+                  onChangeText={setLocation}
+                  placeholder={t('common.local')}
+                  placeholderTextColor={theme.colors.subText}
+                />
               </View>
             </View>
 

@@ -35,6 +35,8 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
   const [photoUri, setPhotoUri] = useState('');
   const [notes, setNotes] = useState('');
+  const [department, setDepartment] = useState('');
+  const [location, setLocation] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
@@ -65,6 +67,8 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
         setExpiryDate(illness.expiryDate ? new Date(illness.expiryDate) : null);
         setPhotoUri(illness.photoUri || '');
         setNotes(illness.notes || '');
+        setDepartment(illness.department || '');
+        setLocation(illness.location || '');
       }
     } catch (error) {
       Alert.alert(t('common.error'), t('illnesses.loadError'));
@@ -131,6 +135,8 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
         expiryDate: expiryDate ? expiryDate.toISOString().split('T')[0] : undefined,
         photoUri: photoUri || undefined,
         notes: notes.trim() || undefined,
+        department,
+        location,
       };
 
       let id: number;
@@ -199,6 +205,30 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
                   value={employeeName}
                   onChangeText={setEmployeeName}
                   placeholder={t('illnesses.employeePlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.service')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={department}
+                  onChangeText={setDepartment}
+                  placeholder={t('common.service')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.local')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={location}
+                  onChangeText={setLocation}
+                  placeholder={t('common.local')}
                   placeholderTextColor={theme.colors.subText}
                 />
               </View>

@@ -16,6 +16,8 @@ export interface Payroll {
   bonusType?: string; // '13th_month', 'performance', 'none'
   createdAt: string;
   updatedAt: string;
+  department?: string; // Service
+  location?: string;   // Local
 }
 
 export interface PayrollHistory {
@@ -31,7 +33,7 @@ export interface Leave {
   title: string;
   employeeName?: string;
   employeeId?: number;
-  location?: string;
+  location?: string; // Local
   dateTime: string; // ISO datetime string
   startDate?: string; // ISO date string
   endDate?: string; // ISO date string
@@ -41,6 +43,7 @@ export interface Leave {
   type: 'leave' | 'permission';
   createdAt: string;
   updatedAt: string;
+  department?: string; // Service
 }
 
 export interface RemoteWork {
@@ -64,6 +67,8 @@ export interface Illness {
   notes?: string;
   createdAt: string;
   updatedAt: string;
+  department?: string; // Service
+  location?: string;   // Local
 }
 
 export interface IllnessHistory {
@@ -80,10 +85,10 @@ export interface Employee {
   position?: string;
   phone?: string;
   email?: string;
-  address?: string;
+  address?: string; // Also used for Location sometimes, but we'll add explicit location
   photoUri?: string;
   notes?: string;
-  department?: string;
+  department?: string; // Service
   role?: string; // 'admin' | 'employee' | 'rh' | 'chef_dequipe'
   teamId?: string;
   vacationDaysPerYear: number;
@@ -92,4 +97,5 @@ export interface Employee {
   country: string;
   createdAt: string;
   updatedAt: string;
+  location?: string; // Local
 }
