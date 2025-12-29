@@ -192,27 +192,28 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         await notificationService.cancelLeaveReminder(id);
       }
 
-      // Show Success Notification
-      await notificationService.showAlert(
-        t('common.success'),
-        isEdit ? t('leaves.updateSuccess') : t('leaves.successMessage')
+      // Show Success Pulse
+      showToast(
+        isEdit ? t('leaves.updateSuccess') : t('leaves.successMessage'),
+        'success'
       );
 
-      // Navigation Logic
-      if (Platform.OS === 'web') {
-        if (initialEmployeeId) {
-          // Go back to employee details if we came from there
-          setActiveTab('Employees', 'EmployeeDetails', { employeeId: initialEmployeeId });
+      // Navigation Logic with a small delay to allow toast/state to settle
+      setTimeout(() => {
+        if (Platform.OS === 'web') {
+          if (initialEmployeeId) {
+            setActiveTab('Employees', 'EmployeeDetails', { employeeId: initialEmployeeId });
+          } else {
+            setActiveTab('Leaves', '', {});
+          }
         } else {
-          setActiveTab('Leaves', '', {});
+          if (navigation && navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            navigation.navigate('Leaves' as any);
+          }
         }
-      } else {
-        if (navigation && navigation.canGoBack()) {
-          navigation.goBack();
-        } else {
-          navigation.navigate('Leaves');
-        }
-      }
+      }, 100);
     } catch (error) {
       console.error('Error saving leave:', error);
       notificationService.showAlert(t('common.error'), t('leaves.saveError'));

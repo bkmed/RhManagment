@@ -41,7 +41,7 @@ export const illnessesDb = {
   // Get all illnesses
   getAll: async (): Promise<Illness[]> => {
     const illnesses = selectAllIllnesses(store.getState());
-    return illnesses.sort(
+    return [...illnesses].sort(
       (a, b) =>
         new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime(),
     );

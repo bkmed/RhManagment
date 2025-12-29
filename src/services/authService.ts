@@ -23,7 +23,8 @@ export interface User {
 
 export const authService = {
     // Login
-    login: async (email: string, password: string): Promise<User> => {
+    login: async (emailInput: string, password: string): Promise<User> => {
+        const email = emailInput.trim().toLowerCase();
         // Simulate API delay
         await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
 
@@ -31,7 +32,7 @@ export const authService = {
         const demoAccounts: { [key: string]: { password: string; user: User } } = {
             'admin@demo.com': { password: 'admin123', user: { id: 'demo-admin', name: 'Demo Admin', email: 'admin@demo.com', role: 'admin', vacationDaysPerYear: 30, remainingVacationDays: 20, statePaidLeaves: 25, country: 'France', hiringDate: '2018-01-15' } },
             'hr@demo.com': { password: 'hr123', user: { id: 'demo-hr', name: 'Demo HR', email: 'hr@demo.com', role: 'rh', vacationDaysPerYear: 28, remainingVacationDays: 15, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2019-03-10' } },
-            'manager@demo.com': { password: 'manager123', user: { id: 'demo-manager', name: 'Demo Manager', email: 'manager@demo.com', role: 'chef_dequipe', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 10, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2020-06-01' } },
+            'chef@demo.com': { password: 'chef123', user: { id: 'demo-manager', name: 'Demo Manager', email: 'chef@demo.com', role: 'chef_dequipe', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 10, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2020-06-01' } },
             'employee@demo.com': { password: 'employee123', user: { id: 'demo-emp', name: 'Demo Employee', email: 'employee@demo.com', role: 'employee', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 25, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2021-09-20' } },
         };
 

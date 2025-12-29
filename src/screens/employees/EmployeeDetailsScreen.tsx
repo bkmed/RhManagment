@@ -24,6 +24,14 @@ import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'approved': return '#4CAF50';
+    case 'declined': return '#F44336';
+    default: return '#FF9800';
+  }
+};
+
 export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -142,12 +150,17 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
     <View style={styles.leaveCard}>
       <View style={styles.leaveHeader}>
         <Text style={styles.leaveTitle}>{item.title}</Text>
-        <Text style={styles.leaveDate}>
-          {formatDate(item.dateTime)}
-          {' '}
-          {formatDateTime(item.dateTime)}
-        </Text>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
+          <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+            {t(`leaveStatus.${item.status}`)}
+          </Text>
+        </View>
       </View>
+      <Text style={styles.leaveDate}>
+        {formatDate(item.dateTime)}
+        {' '}
+        {formatDateTime(item.dateTime)}
+      </Text>
       {item.location && (
         <Text style={styles.leaveDetail}>📍 {item.location}</Text>
       )}
@@ -445,6 +458,17 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.caption,
       color: theme.colors.primary,
       fontWeight: '600',
+      marginTop: 4,
+    },
+    statusBadge: {
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 4,
+    },
+    statusText: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
     },
     leaveDetail: {
       ...theme.textVariants.caption,

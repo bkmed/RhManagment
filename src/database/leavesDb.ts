@@ -13,7 +13,7 @@ export const leavesDb = {
   // Get all leaves
   getAll: async (): Promise<Leave[]> => {
     const leaves = selectAllLeaves(store.getState());
-    return leaves.sort(
+    return [...leaves].sort(
       (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
     );
   },

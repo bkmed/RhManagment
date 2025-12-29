@@ -38,7 +38,7 @@ export const selectAllLeaves = (state: { leaves: LeavesState }) => state.leaves.
 export const selectUpcomingLeaves = (state: { leaves: LeavesState }) => {
     const now = new Date().toISOString();
     return state.leaves.items
-        .filter((l) => l.dateTime >= now)
+        .filter((l) => l.status === 'pending' || l.dateTime >= now)
         .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
 };
 

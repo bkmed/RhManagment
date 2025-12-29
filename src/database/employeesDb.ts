@@ -12,7 +12,7 @@ export const employeesDb = {
   // Get all employees
   getAll: async (): Promise<Employee[]> => {
     const employees = selectAllEmployees(store.getState());
-    return employees.sort((a, b) => a.name.localeCompare(b.name));
+    return [...employees].sort((a, b) => a.name.localeCompare(b.name));
   },
 
   // Get employee by ID
