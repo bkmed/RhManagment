@@ -22,6 +22,7 @@ import { illnessesDb } from '../database/illnessesDb';
 import { permissionsService } from '../services/permissions';
 import { useTheme } from '../context/ThemeContext';
 import { Theme } from '../theme';
+import { formatDate } from '../utils/dateUtils';
 
 import { WebNavigationContext } from '../navigation/WebNavigationContext';
 
@@ -127,30 +128,36 @@ export const HomeScreen = () => {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.greeting}>{t('home.greeting')}</Text>
-          <Text style={styles.appName}>{t('home.appName')}</Text>
+          <Text style={styles.userName}>{user?.name}</Text>
           <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
         </View>
 
         {/* Quick Stats */}
         <View style={styles.statsContainer}>
           <TouchableOpacity
-            style={[styles.statCard, styles.statCardBlue]}
+            style={[styles.statCard, styles.statCardPrimary]}
             onPress={() => navigateToTab('Payroll')}
           >
-            <Text style={styles.statNumber}>{summary.payroll}</Text>
-            <Text style={styles.statLabel}>{t('home.activePayroll')}</Text>
+            <View style={styles.statIconWrapper}>
+              <Text style={styles.statIcon}>💰</Text>
+            </View>
+            <View style={styles.statInfo}>
+              <Text style={styles.statNumber}>{summary.payroll}</Text>
+              <Text style={styles.statLabel}>{t('home.activePayroll')}</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.statCard, styles.statCardGreen]}
+            style={[styles.statCard, styles.statCardSuccess]}
             onPress={() => navigateToTab('Leaves')}
           >
-            <Text style={styles.statNumber}>
-              {summary.upcomingLeaves}
-            </Text>
-            <Text style={styles.statLabel}>
-              {t('home.upcomingLeaves')}
-            </Text>
+            <View style={styles.statIconWrapper}>
+              <Text style={styles.statIcon}>📅</Text>
+            </View>
+            <View style={styles.statInfo}>
+              <Text style={styles.statNumber}>{summary.upcomingLeaves}</Text>
+              <Text style={styles.statLabel}>{t('home.upcomingLeaves')}</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -158,7 +165,9 @@ export const HomeScreen = () => {
         <View style={styles.balanceCard}>
           <View style={styles.balanceHeader}>
             <Text style={styles.balanceTitle}>{t('leavePolicy.title')}</Text>
-            <Text style={styles.balanceManaged}>{t('leavePolicy.managedBy')}</Text>
+            <View style={styles.managedBadge}>
+              <Text style={styles.balanceManaged}>{t('leavePolicy.managedBy')}</Text>
+            </View>
           </View>
 
           <View style={styles.balanceGrid}>
@@ -180,40 +189,34 @@ export const HomeScreen = () => {
             </View>
           </View>
 
-          {user?.country && (
-            <View style={styles.countryRow}>
-              <Text style={styles.countryLabel}>{t('leavePolicy.country')}: </Text>
-              <Text style={styles.countryValue}>{user.country}</Text>
-            </View>
-          )}
-
           {user?.hiringDate && (
-            <>
-              <View style={styles.balanceDivider} />
-              <View style={styles.countryRow}>
-                <Text style={styles.countryLabel}>{t('home.hiringDate')}: </Text>
-                <Text style={styles.countryValue}>{new Date(user.hiringDate).toLocaleDateString()}</Text>
+            <View style={styles.senioritySection}>
+              <View style={styles.seniorityRow}>
+                <View style={styles.seniorityItem}>
+                  <Text style={styles.countryLabel}>{t('home.hiringDate')}</Text>
+                  <Text style={styles.countryValue}>{formatDate(user.hiringDate)}</Text>
+                </View>
+                <View style={[styles.seniorityItem, { alignItems: 'flex-end' }]}>
+                  <Text style={styles.countryLabel}>{t('home.seniority')}</Text>
+                  <Text style={styles.countryValue}>
+                    {(() => {
+                      const start = new Date(user.hiringDate);
+                      const now = new Date();
+                      let years = now.getFullYear() - start.getFullYear();
+                      let months = now.getMonth() - start.getMonth();
+                      if (months < 0) {
+                        years--;
+                        months += 12;
+                      }
+                      const parts = [];
+                      if (years > 0) parts.push(`${years} ${years > 1 ? t('common.yearsUnit') : t('common.yearUnit')}`);
+                      if (months > 0) parts.push(`${months} ${months > 1 ? t('common.monthsUnit') : t('common.monthUnit')}`);
+                      return parts.join(', ') || `0 ${t('common.monthUnit')}`;
+                    })()}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.countryRow}>
-                <Text style={styles.countryLabel}>{t('home.seniority')}: </Text>
-                <Text style={styles.countryValue}>
-                  {(() => {
-                    const start = new Date(user.hiringDate);
-                    const now = new Date();
-                    let years = now.getFullYear() - start.getFullYear();
-                    let months = now.getMonth() - start.getMonth();
-                    if (months < 0) {
-                      years--;
-                      months += 12;
-                    }
-                    const parts = [];
-                    if (years > 0) parts.push(`${years} ${years > 1 ? t('common.yearsUnit') : t('common.yearUnit')}`);
-                    if (months > 0) parts.push(`${months} ${months > 1 ? t('common.monthsUnit') : t('common.monthUnit')}`);
-                    return parts.join(', ') || `0 ${t('common.monthUnit')}`;
-                  })()}
-                </Text>
-              </View>
-            </>
+            </View>
           )}
         </View>
 
@@ -333,53 +336,71 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.background,
     },
     header: {
-      marginBottom: 30,
-      alignItems: 'center',
+      marginBottom: 32,
+      paddingTop: 20,
     },
     greeting: {
       ...theme.textVariants.body,
       color: theme.colors.subText,
       marginBottom: 4,
+      fontWeight: '500',
     },
-    appName: {
-      fontSize: 32,
-      fontWeight: 'bold',
+    userName: {
+      ...theme.textVariants.header,
       color: theme.colors.text,
-      marginBottom: 8,
+      marginBottom: 4,
     },
     subtitle: {
       ...theme.textVariants.caption,
       color: theme.colors.subText,
+      fontSize: 14,
     },
     statsContainer: {
       flexDirection: 'row',
-      gap: 12,
-      marginBottom: 20,
+      gap: 16,
+      marginBottom: 24,
     },
     statCard: {
       flex: 1,
       padding: theme.spacing.m,
-      borderRadius: theme.spacing.m,
+      borderRadius: 16,
+      flexDirection: 'row',
       alignItems: 'center',
       ...theme.shadows.medium,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.1)',
     },
-    statCardBlue: {
+    statCardPrimary: {
       backgroundColor: theme.colors.primary,
     },
-    statCardGreen: {
+    statCardSuccess: {
       backgroundColor: theme.colors.success,
     },
+    statIconWrapper: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: 'rgba(255,255,255,0.2)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    statIcon: {
+      fontSize: 20,
+    },
+    statInfo: {
+      flex: 1,
+    },
     statNumber: {
-      fontSize: 36,
+      fontSize: 24,
       fontWeight: 'bold',
       color: '#FFF',
-      marginBottom: 4,
     },
     statLabel: {
-      fontSize: 13,
+      fontSize: 12,
       color: '#FFF',
-      textAlign: 'center',
       opacity: 0.9,
+      fontWeight: '500',
     },
     alertCard: {
       flexDirection: 'row',
@@ -387,9 +408,10 @@ const createStyles = (theme: Theme) =>
       borderLeftWidth: 4,
       borderLeftColor: theme.colors.warning,
       padding: theme.spacing.m,
-      borderRadius: theme.spacing.m,
-      marginBottom: theme.spacing.m,
+      borderRadius: 12,
+      marginBottom: 20,
       alignItems: 'center',
+      ...theme.shadows.small,
     },
     alertIcon: {
       fontSize: 24,
@@ -401,37 +423,41 @@ const createStyles = (theme: Theme) =>
     alertTitle: {
       ...theme.textVariants.subheader,
       color: theme.colors.text,
+      fontSize: 16,
       marginBottom: 2,
     },
     alertMessage: {
-      ...theme.textVariants.body,
+      ...theme.textVariants.caption,
       color: theme.colors.subText,
+      fontSize: 13,
     },
     sectionTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
+      ...theme.textVariants.subheader,
       color: theme.colors.text,
-      marginBottom: theme.spacing.m,
-      marginTop: 10,
+      marginBottom: 16,
+      marginTop: 8,
     },
     actionButton: {
       flexDirection: 'row',
       backgroundColor: theme.colors.surface,
       padding: theme.spacing.m,
-      borderRadius: theme.spacing.m,
-      marginBottom: theme.spacing.m,
+      borderRadius: 16,
+      marginBottom: 12,
       alignItems: 'center',
       ...theme.shadows.small,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
     },
     actionIcon: {
-      fontSize: 28,
+      fontSize: 24,
       marginRight: theme.spacing.m,
     },
     actionContent: {
       flex: 1,
     },
     actionTitle: {
-      ...theme.textVariants.subheader,
+      ...theme.textVariants.body,
+      fontWeight: '600',
       color: theme.colors.text,
       marginBottom: 2,
     },
@@ -440,56 +466,65 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.subText,
     },
     actionArrow: {
-      fontSize: 24,
+      fontSize: 20,
       color: theme.colors.primary,
+      opacity: 0.5,
     },
     tipCard: {
       flexDirection: 'row',
       backgroundColor: theme.colors.primaryBackground,
       padding: theme.spacing.m,
-      borderRadius: theme.spacing.m,
-      marginTop: theme.spacing.m,
+      borderRadius: 12,
+      marginTop: 20,
       alignItems: 'center',
     },
     tipIcon: {
-      fontSize: 20,
+      fontSize: 18,
       marginRight: 12,
     },
     tipText: {
       flex: 1,
-      ...theme.textVariants.body,
+      ...theme.textVariants.caption,
       color: theme.colors.primary,
-      lineHeight: 20,
+      fontWeight: '500',
     },
     balanceCard: {
       backgroundColor: theme.colors.surface,
-      borderRadius: theme.spacing.m,
+      borderRadius: 20,
       padding: theme.spacing.l,
-      marginBottom: theme.spacing.l,
+      marginBottom: 24,
       ...theme.shadows.medium,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
     },
     balanceHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'baseline',
-      marginBottom: theme.spacing.m,
-      flexWrap: 'wrap',
+      alignItems: 'center',
+      marginBottom: 20,
     },
     balanceTitle: {
       ...theme.textVariants.subheader,
       color: theme.colors.text,
-      fontSize: 18,
+    },
+    managedBadge: {
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 8,
     },
     balanceManaged: {
       ...theme.textVariants.caption,
       color: theme.colors.subText,
-      fontStyle: 'italic',
+      fontSize: 10,
+      fontWeight: '600',
+      textTransform: 'uppercase',
     },
     balanceGrid: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-around',
-      paddingVertical: theme.spacing.s,
+      marginBottom: 20,
     },
     balanceItem: {
       alignItems: 'center',
@@ -502,29 +537,34 @@ const createStyles = (theme: Theme) =>
     },
     balanceValue: {
       ...theme.textVariants.header,
-      fontSize: 24,
-      color: theme.colors.text,
+      fontSize: 22,
     },
     balanceDivider: {
       width: 1,
-      height: '60%',
+      height: 30,
       backgroundColor: theme.colors.border,
     },
-    countryRow: {
-      flexDirection: 'row',
-      marginTop: theme.spacing.m,
-      paddingTop: theme.spacing.s,
+    senioritySection: {
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
-      justifyContent: 'center',
+      paddingTop: 16,
+    },
+    seniorityRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    seniorityItem: {
+      flex: 1,
     },
     countryLabel: {
       ...theme.textVariants.caption,
       color: theme.colors.subText,
+      marginBottom: 2,
     },
     countryValue: {
-      ...theme.textVariants.caption,
+      ...theme.textVariants.body,
+      fontWeight: '600',
       color: theme.colors.text,
-      fontWeight: 'bold',
+      fontSize: 14,
     },
   });

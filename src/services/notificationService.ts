@@ -309,5 +309,27 @@ export const notificationService = {
                 leaveId: leaveId.toString(),
             },
         });
+    },
+
+    // Show a general alert as a local notification
+    showAlert: async (title: string, body: string) => {
+        if (Platform.OS === 'web') {
+            // For web, use alert as fallback or console
+            alert(`${title}: ${body}`);
+            return;
+        }
+
+        await notifee.displayNotification({
+            title,
+            body,
+            android: {
+                channelId: 'leaves', // Using leaves channel for general alerts
+                importance: AndroidImportance.HIGH,
+                pressAction: {
+                    id: 'default',
+                    launchActivity: 'default',
+                },
+            },
+        });
     }
 };

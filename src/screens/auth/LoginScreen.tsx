@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
+import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -56,7 +57,7 @@ export const LoginScreen = ({ navigation }: any) => {
       const user = await authService.login(email, password);
       await signIn(user);
     } catch (error: any) {
-      Alert.alert(
+      notificationService.showAlert(
         t('login.errorTitle'),
         error.message || t('login.errorLoginFailed'),
       );

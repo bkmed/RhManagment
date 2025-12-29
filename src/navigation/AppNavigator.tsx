@@ -38,6 +38,7 @@ import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
 import { RemoteCalendarScreen } from '../screens/remote/RemoteCalendarScreen';
 import { AddClaimScreen } from '../screens/claims/AddClaimScreen';
 import { ClaimsListScreen } from '../screens/claims/ClaimsListScreen';
+import { ClaimDetailsScreen } from '../screens/claims/ClaimDetailsScreen';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 enableScreens();
@@ -175,6 +176,11 @@ const ClaimsStack = () => {
         component={AddClaimScreen}
         options={{ title: t('claims.newClaim') }}
       />
+      <Stack.Screen
+        name="ClaimDetails"
+        component={ClaimDetailsScreen}
+        options={{ title: t('claims.details') }}
+      />
     </Stack.Navigator>
   );
 };
@@ -298,6 +304,7 @@ const WebNavigator = () => {
         return <EmployeesStack />;
       case 'Claims':
         if (subScreen === 'AddClaim') return <AddClaimScreen route={mockRoute} />;
+        if (subScreen === 'ClaimDetails') return <ClaimDetailsScreen route={mockRoute} />;
         return <ClaimsStack />;
       case 'Profile':
         return <ProfileStack />;

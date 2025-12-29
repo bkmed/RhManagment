@@ -7,11 +7,14 @@ import {
     ScrollView,
     TouchableOpacity,
     Platform,
+    Image,
     Switch,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { claimsDb } from '../../database/claimsDb';
+import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
@@ -22,7 +25,8 @@ import { Dropdown } from '../../components/Dropdown';
 
 export const AddClaimScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
-  const { showToast } = useToast();
+    const { showToast } = useToast();
+    const { showModal } = useModal();
     const { t } = useTranslation();
     const { user } = useAuth();
     const styles = useMemo(() => createStyles(theme), [theme]);
@@ -30,15 +34,62 @@ export const AddClaimScreen = ({ navigation }: any) => {
     const [type, setType] = useState<ClaimType>('material');
     const [description, setDescription] = useState('');
     const [isUrgent, setIsUrgent] = useState(false);
+    const [photoUri, setPhotoUri] = useState('');
     const [loading, setLoading] = useState(false);
 
 
 
     const { setActiveTab } = useContext(WebNavigationContext);
 
+    const handleTakePhoto = async () => {
+        if (Platform.OS === 'web') {
+            const input = (window as any).document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e: any) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event: any) => setPhotoUri(event.target.result);
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+            return;
+        }
+
+        showModal({
+            title: t('illnesses.addPhoto'),
+            message: t('illnesses.chooseOption'),
+            buttons: [
+                {
+                    text: t('illnesses.takePhoto'),
+                    onPress: () => {
+                        launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
+                            if (response.assets && response.assets[0]?.uri) {
+                                setPhotoUri(response.assets[0].uri);
+                            }
+                        });
+                    },
+                },
+                {
+                    text: t('illnesses.chooseFromLibrary'),
+                    onPress: () => {
+                        launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
+                            if (response.assets && response.assets[0]?.uri) {
+                                setPhotoUri(response.assets[0].uri);
+                            }
+                        });
+                    },
+                },
+                { text: t('common.cancel'), style: 'cancel' },
+            ],
+        });
+    };
+
     const handleSave = async () => {
         if (!description.trim()) {
-            Alert.alert(t('common.error'), t('common.required'));
+            notificationService.showAlert(t('common.error'), t('common.required'));
             return;
         }
 
@@ -50,18 +101,21 @@ export const AddClaimScreen = ({ navigation }: any) => {
                 description: description.trim(),
                 isUrgent,
                 status: 'pending' as const,
+                photoUri: photoUri || undefined,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             };
 
             await claimsDb.add(claimData);
 
-            Alert.alert(t('common.success'), t('claims.successMessage'), [
-                { text: 'OK', onPress: () => goBack() }
-            ]);
+            showModal({
+                title: t('common.success'),
+                message: t('claims.successMessage'),
+                buttons: [{ text: 'OK', onPress: () => goBack() }]
+            });
         } catch (error) {
             console.error('Error saving claim:', error);
-            Alert.alert(t('common.error'), t('claims.saveError'));
+            notificationService.showAlert(t('common.error'), t('claims.saveError'));
         } finally {
             setLoading(false);
         }
@@ -124,6 +178,26 @@ export const AddClaimScreen = ({ navigation }: any) => {
                                 }}
                                 thumbColor={theme.colors.surface}
                             />
+                        </View>
+
+                        <View style={styles.photoSection}>
+                            <Text style={styles.label}>{t('illnesses.addPhoto')}</Text>
+                            <TouchableOpacity style={styles.photoButton} onPress={handleTakePhoto}>
+                                {photoUri ? (
+                                    <View style={styles.photoWrapper}>
+                                        <Image source={{ uri: photoUri }} style={styles.photo} />
+                                        <View style={styles.changePhotoOverlay}>
+                                            <Text style={styles.changePhotoText}>{t('profile.changePhoto')}</Text>
+                                        </View>
+                                    </View>
+                                ) : (
+                                    <View style={styles.photoPlaceholder}>
+                                        <Text style={styles.photoPlaceholderText}>
+                                            {t('illnesses.photoButton')}
+                                        </Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
                         </View>
                     </View>
 
@@ -210,5 +284,55 @@ const createStyles = (theme: Theme) =>
         saveButtonText: {
             ...theme.textVariants.button,
             color: theme.colors.surface,
+        },
+        photoSection: {
+            marginTop: theme.spacing.l,
+            paddingTop: theme.spacing.m,
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.border,
+        },
+        photoButton: {
+            alignItems: 'center',
+            marginTop: theme.spacing.s,
+        },
+        photoWrapper: {
+            width: '100%',
+            height: 200,
+            borderRadius: theme.spacing.s,
+            overflow: 'hidden',
+        },
+        photo: {
+            width: '100%',
+            height: '100%',
+        },
+        changePhotoOverlay: {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            padding: 8,
+            alignItems: 'center',
+        },
+        changePhotoText: {
+            color: '#FFF',
+            fontSize: 12,
+            fontWeight: '600',
+        },
+        photoPlaceholder: {
+            width: '100%',
+            height: 120,
+            borderRadius: theme.spacing.s,
+            backgroundColor: theme.colors.background,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderWidth: 2,
+            borderColor: theme.colors.border,
+            borderStyle: 'dashed',
+        },
+        photoPlaceholderText: {
+            ...theme.textVariants.body,
+            color: theme.colors.subText,
+            textAlign: 'center',
         },
     });

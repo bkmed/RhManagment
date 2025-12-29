@@ -1,6 +1,7 @@
-import { Platform, Linking, Alert } from 'react-native';
+import { Platform, Linking } from 'react-native';
 import { PERMISSIONS, request, check, RESULTS, openSettings } from 'react-native-permissions';
 import notifee, { AuthorizationStatus } from '@notifee/react-native';
+import { notificationService } from './notificationService';
 
 // Declare web-only globals
 declare global {
@@ -111,9 +112,9 @@ class PermissionsService {
         if (Platform.OS === 'web') {
             // Web: Use Permissions API with fallback to Notification API
             try {
-                // @ts-ignore
-                if (navigator.permissions && navigator.permissions.query) {
-                    const result = await navigator.permissions.query({ name: 'notifications' });
+                const nav = typeof window !== 'undefined' && (window as any).navigator;
+                if (nav?.permissions?.query) {
+                    const result = await nav.permissions.query({ name: 'notifications' });
                     return this.mapWebPermissionState(result.state);
                 }
             } catch (error) {
@@ -236,10 +237,9 @@ class PermissionsService {
 
     async openAppSettings(): Promise<void> {
         if (Platform.OS === 'web') {
-            Alert.alert(
+            notificationService.showAlert(
                 'Permissions',
-                'Please check your browser settings to manage permissions.',
-                [{ text: 'OK' }]
+                'Please check your browser settings to manage permissions.'
             );
             return;
         }

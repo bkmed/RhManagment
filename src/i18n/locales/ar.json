@@ -4,6 +4,7 @@
         "save": "حفظ",
         "service": "المصلحة",
         "local": "المقر",
+        "urgent": "عاجل",
         "cancel": "إلغاء",
         "sendEmail": "إرسال بريد إلكتروني",
         "notifyHr": "إخطار الموارد البشرية",
@@ -51,8 +52,7 @@
         "deleteTitle": "حذف العنصر",
         "deleteMessage": "هل أنت متأكد من حذف هذا العنصر؟",
         "viewHistory": "عرض السجل",
-        "historyUnavailable": "تتبع السجل غير متاح بعد",
-        "validate": "تأكيد"
+        "historyUnavailable": "تتبع السجل غير متاح بعد"
     },
     "navigation": {
         "home": "الرئيسية",
@@ -64,7 +64,8 @@
         "history": "السجل",
         "profile": "الملف الشخصي",
         "personalInfo": "معلومات شخصية",
-        "employmentDetails": "تفاصيل التوظيف"
+        "employmentDetails": "تفاصيل التوظيف",
+        "claims": "المطالبات"
     },
     "roles": {
         "admin": "مدير",
@@ -178,7 +179,13 @@
         "statusPending": "قيد الانتظار",
         "statusProcessed": "تمت المعالجة",
         "statusRejected": "مرفوضة",
-        "empty": "لم يتم العثور على مطالبات"
+        "empty": "لم يتم العثور على مطالبات",
+        "details": "تفاصيل المطالبة",
+        "process": "معالجة",
+        "reject": "رفض",
+        "statusUpdated": "تم تحديث حالة المطالبة",
+        "updateError": "خطأ في تحديث المطالبة",
+        "loadError": "خطأ في تحميل المطالبة"
     },
     "leaves": {
         "title": "الإجازات",
@@ -211,7 +218,9 @@
         "decline": "رفض",
         "statusUpdated_approved": "تمت الموافقة على طلب الإجازة",
         "statusUpdated_declined": "تم رفض طلب الإجازة",
-        "approvals": "الموافقات المعلقة"
+        "approvals": "الموافقات المعلقة",
+        "successMessage": "تم تقديم طلب الإجازة بنجاح",
+        "updateSuccess": "تم تحديث طلب الإجازة بنجاح"
     },
     "illnesses": {
         "title": "المرض / الفوترة",
@@ -341,7 +350,8 @@
         "edit": "تعديل الملف الشخصي",
         "save": "حفظ التغييرات",
         "changePhoto": "تغيير الصورة",
-        "updatedSuccessfully": "تم تحديث الملف الشخصي بنجاح"
+        "updatedSuccessfully": "تم تحديث الملف الشخصي بنجاح",
+        "validate": "تأكيد"
     },
     "permissions": {
         "camera": "إذن الكاميرا",

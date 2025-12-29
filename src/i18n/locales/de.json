@@ -4,6 +4,7 @@
         "save": "Speichern",
         "service": "Abteilung",
         "local": "Standort",
+        "urgent": "Dringend",
         "cancel": "Abbrechen",
         "sendEmail": "E-Mail senden",
         "notifyHr": "HR benachrichtigen",
@@ -48,8 +49,7 @@
         "deleteTitle": "Element löschen",
         "deleteMessage": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
         "viewHistory": "Verlauf anzeigen",
-        "historyUnavailable": "Verlaufsverfolgung noch nicht verfügbar",
-        "validate": "Bestätigen"
+        "historyUnavailable": "Verlaufsverfolgung noch nicht verfügbar"
     },
     "navigation": {
         "home": "Startseite",
@@ -162,6 +162,28 @@
         "year": "Jahr",
         "hoursWorked": "Arbeitsstunden"
     },
+    "claims": {
+        "newClaim": "Neue Reklamation",
+        "type": "Typ",
+        "typeMaterial": "Material",
+        "typeAccount": "Konto / Zugriff",
+        "typeOther": "Andere",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Beschreiben Sie Ihr Problem oder Ihre Anfrage...",
+        "urgentNote": "Als dringend markieren",
+        "saveError": "Fehler beim Speichern der Reklamation",
+        "successMessage": "Reklamation erfolgreich eingereicht",
+        "statusPending": "Ausstehend",
+        "statusProcessed": "Bearbeitet",
+        "statusRejected": "Abgelehnt",
+        "empty": "Keine Reklamationen gefunden",
+        "details": "Reklamationsdetails",
+        "process": "Bearbeiten",
+        "reject": "Ablehnen",
+        "statusUpdated": "Status der Reklamation aktualisiert",
+        "updateError": "Fehler beim Aktualisieren der Reklamation",
+        "loadError": "Fehler beim Laden der Reklamation"
+    },
     "leaves": {
         "title": "Abwesenheiten",
         "leaveTitle": "Titel",
@@ -193,7 +215,9 @@
         "decline": "Ablehnen",
         "statusUpdated_approved": "Urlaubsantrag genehmigt",
         "statusUpdated_declined": "Urlaubsantrag abgelehnt",
-        "approvals": "Ausstehende Genehmigungen"
+        "approvals": "Ausstehende Genehmigungen",
+        "successMessage": "Urlaubsantrag erfolgreich eingereicht",
+        "updateSuccess": "Urlaubsantrag erfolgreich aktualisiert"
     },
     "illnesses": {
         "title": "Krankheit / Abrechnung",
@@ -323,7 +347,8 @@
         "edit": "Profil bearbeiten",
         "save": "Änderungen speichern",
         "changePhoto": "Foto ändern",
-        "updatedSuccessfully": "Profil erfolgreich aktualisiert"
+        "updatedSuccessfully": "Profil erfolgreich aktualisiert",
+        "validate": "Bestätigen"
     },
     "permissions": {
         "camera": "Kamera-Berechtigung",

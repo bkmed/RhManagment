@@ -4,6 +4,7 @@
         "save": "Guardar",
         "service": "Servicio",
         "local": "Local",
+        "urgent": "Urgente",
         "cancel": "Cancelar",
         "sendEmail": "Enviar correo",
         "notifyHr": "Notificar a RRHH",
@@ -48,8 +49,7 @@
         "deleteTitle": "Eliminar elemento",
         "deleteMessage": "¿Está seguro de que desea eliminar este elemento?",
         "viewHistory": "Ver historial",
-        "historyUnavailable": "El seguimiento del historial aún no está disponible",
-        "validate": "Validar"
+        "historyUnavailable": "El seguimiento del historial aún no está disponible"
     },
     "navigation": {
         "home": "Inicio",
@@ -176,7 +176,13 @@
         "statusPending": "Pendiente",
         "statusProcessed": "Procesada",
         "statusRejected": "Rechazada",
-        "empty": "No se encontraron reclamaciones"
+        "empty": "No se encontraron reclamaciones",
+        "details": "Detalles de la Reclamación",
+        "process": "Procesar",
+        "reject": "Rechazar",
+        "statusUpdated": "Estado de la reclamación actualizado",
+        "updateError": "Error al actualizar la reclamación",
+        "loadError": "Error al cargar la reclamación"
     },
     "leaves": {
         "title": "Vacaciones",
@@ -209,7 +215,9 @@
         "decline": "Rechazar",
         "statusUpdated_approved": "Solicitud de vacaciones aprobada",
         "statusUpdated_declined": "Solicitud de vacaciones rechazada",
-        "approvals": "Aprobaciones pendientes"
+        "approvals": "Aprobaciones pendientes",
+        "successMessage": "Solicitud de vacaciones enviada con éxito",
+        "updateSuccess": "Solicitud de vacaciones actualizada con éxito"
     },
     "illnesses": {
         "title": "Enfermedad / Facturación",
@@ -339,7 +347,8 @@
         "edit": "Editar Perfil",
         "save": "Guardar Cambios",
         "changePhoto": "Cambiar Foto",
-        "updatedSuccessfully": "Perfil actualizado con éxito"
+        "updatedSuccessfully": "Perfil actualizado con éxito",
+        "validate": "Validar"
     },
     "permissions": {
         "camera": "Permiso de cámara",

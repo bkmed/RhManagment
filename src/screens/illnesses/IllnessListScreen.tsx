@@ -14,6 +14,8 @@ import { Illness } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
+import { formatDate } from '../../utils/dateUtils';
+import { notificationService } from '../../services/notificationService';
 
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -43,7 +45,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
       setIllnesses(data);
     } catch (error) {
       console.error('Error loading illnesses:', error);
-      Alert.alert(t('common.error'), t('illnesses.loadError'));
+      notificationService.showAlert(t('common.error'), t('illnesses.loadError'));
     } finally {
       setLoading(false);
     }
@@ -104,7 +106,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
 
           <Text style={styles.date}>
             {t('illnesses.issued')}:
-            {new Date(item.issueDate).toLocaleDateString()}
+            {formatDate(item.issueDate)}
           </Text>
 
           {item.expiryDate && (
@@ -112,7 +114,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
               style={[styles.expiry, expiryWarning && styles.expiryWarning]}
             >
               {t('illnesses.expires')}:
-              {new Date(item.expiryDate).toLocaleDateString()}
+              {formatDate(item.expiryDate)}
               {expiryWarning && ' ⚠️'}
             </Text>
           )}

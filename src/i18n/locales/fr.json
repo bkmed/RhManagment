@@ -5,7 +5,6 @@
         "local": "Local",
         "urgent": "Urgent",
         "cancel": "Annuler",
-        "submit": "Soumettre",
         "sendEmail": "Envoyer un email",
         "notifyHr": "Notifier les RH",
         "save": "Enregistrer",
@@ -53,8 +52,7 @@
         "deleteTitle": "Supprimer l'élément",
         "deleteMessage": "Êtes-vous sûr de vouloir supprimer cet élément ?",
         "viewHistory": "Voir l'historique",
-        "historyUnavailable": "Le suivi de l'historique n'est pas encore disponible",
-        "validate": "Valider"
+        "historyUnavailable": "Le suivi de l'historique n'est pas encore disponible"
     },
     "navigation": {
         "home": "Accueil",
@@ -181,7 +179,13 @@
         "statusPending": "En attente",
         "statusProcessed": "Traitée",
         "statusRejected": "Rejetée",
-        "empty": "Aucune réclamation trouvée"
+        "empty": "Aucune réclamation trouvée",
+        "details": "Détails de la Réclamation",
+        "process": "Traiter",
+        "reject": "Rejeter",
+        "statusUpdated": "Réclamation mise à jour",
+        "updateError": "Erreur lors de la mise à jour",
+        "loadError": "Erreur lors du chargement"
     },
     "leaves": {
         "title": "Congés",
@@ -214,7 +218,9 @@
         "decline": "Refuser",
         "statusUpdated_approved": "Demande de congé approuvée",
         "statusUpdated_declined": "Demande de congé refusée",
-        "approvals": "Approbations en attente"
+        "approvals": "Approbations en attente",
+        "successMessage": "Demande de congé soumise avec succès",
+        "updateSuccess": "Demande de congé mise à jour avec succès"
     },
     "illnesses": {
         "title": "Maladies / Facturation",
@@ -344,7 +350,8 @@
         "edit": "Modifier le Profil",
         "save": "Enregistrer les Modifications",
         "changePhoto": "Changer la Photo",
-        "updatedSuccessfully": "Profil mis à jour avec succès"
+        "updatedSuccessfully": "Profil mis à jour avec succès",
+        "validate": "Valider"
     },
     "permissions": {
         "camera": "Autorisation de la caméra",

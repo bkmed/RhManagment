@@ -14,6 +14,7 @@ import { Claim } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { formatDate } from '../../utils/dateUtils';
 
 export const ClaimsListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -78,7 +79,10 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   };
 
   const renderItem = ({ item }: { item: Claim }) => (
-    <View style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('ClaimDetails', { claimId: item.id })}
+    >
       <View style={styles.cardHeader}>
         <View style={styles.typeTag}>
           <Text style={styles.typeText}>
@@ -111,7 +115,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
 
       <View style={styles.footer}>
         <Text style={styles.date}>
-          {new Date(item.createdAt).toLocaleDateString()}
+          {formatDate(item.createdAt)}
         </Text>
         {item.isUrgent && (
           <View style={styles.urgentTag}>
@@ -130,17 +134,17 @@ export const ClaimsListScreen = ({ navigation }: any) => {
               style={[styles.actionBtn, styles.approveBtn]}
               onPress={() => handleUpdateStatus(item.id!, 'processed')}
             >
-              <Text style={styles.actionBtnText}>Process</Text>
+              <Text style={styles.actionBtnText}>{t('claims.process')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionBtn, styles.rejectBtn]}
               onPress={() => handleUpdateStatus(item.id!, 'rejected')}
             >
-              <Text style={styles.actionBtnText}>Reject</Text>
+              <Text style={styles.actionBtnText}>{t('claims.reject')}</Text>
             </TouchableOpacity>
           </View>
         )}
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -189,42 +193,49 @@ const createStyles = (theme: Theme) =>
     },
     card: {
       backgroundColor: theme.colors.surface,
-      borderRadius: theme.spacing.s,
+      borderRadius: 16,
       padding: theme.spacing.m,
       marginBottom: theme.spacing.m,
       ...theme.shadows.small,
       borderLeftWidth: 4,
       borderLeftColor: theme.colors.primary,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
     },
     cardHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: theme.spacing.s,
+      alignItems: 'center',
+      marginBottom: theme.spacing.m,
     },
     typeTag: {
       backgroundColor: theme.colors.background,
-      paddingHorizontal: 8,
+      paddingHorizontal: 10,
       paddingVertical: 4,
-      borderRadius: 4,
+      borderRadius: 8,
     },
     typeText: {
       ...theme.textVariants.caption,
-      fontWeight: '600',
+      fontWeight: '700',
       color: theme.colors.text,
+      fontSize: 11,
+      textTransform: 'uppercase',
     },
     statusTag: {
-      paddingHorizontal: 8,
+      paddingHorizontal: 10,
       paddingVertical: 4,
-      borderRadius: 4,
+      borderRadius: 8,
     },
     statusText: {
-      ...theme.textVariants.caption,
+      fontSize: 11,
       fontWeight: 'bold',
+      textTransform: 'uppercase',
     },
     description: {
       ...theme.textVariants.body,
       color: theme.colors.text,
       marginBottom: theme.spacing.m,
+      lineHeight: 20,
     },
     footer: {
       flexDirection: 'row',
@@ -232,20 +243,21 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       borderTopWidth: 1,
       borderTopColor: theme.colors.border,
-      paddingTop: theme.spacing.s,
+      paddingTop: theme.spacing.m,
     },
     date: {
       ...theme.textVariants.caption,
       color: theme.colors.subText,
+      fontWeight: '500',
     },
     urgentTag: {
       backgroundColor: theme.colors.error,
-      paddingHorizontal: 6,
-      paddingVertical: 2,
-      borderRadius: 2,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
     },
     urgentText: {
-      fontSize: 10,
+      fontSize: 9,
       fontWeight: 'bold',
       color: '#FFF',
     },

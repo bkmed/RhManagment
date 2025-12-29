@@ -1,20 +1,20 @@
 export const palette = {
-  primary: '#4A90E2',
-  secondary: '#50E3C2',
-  accent: '#F5A623',
-  error: '#E74C3C',
-  success: '#2ECC71',
-  warning: '#F1C40F',
+  primary: '#0052CC', // Deeper, more professional blue
+  secondary: '#00A3BF', // Sophisticated teal
+  accent: '#FF8B00', // Clearer orange
+  error: '#DE350B', // Slightly more subtle red
+  success: '#36B37E', // More professional green
+  warning: '#FFAB00', // Better yellow
   white: '#FFFFFF',
   black: '#000000',
-  gray100: '#F8F9FA',
-  gray200: '#E1E4E8',
-  gray300: '#D1D5DB',
-  gray500: '#7F8C8D',
-  gray800: '#333333',
-  gray900: '#1A1A1A',
-  darkSurface: '#2C2C2E',
-  darkBackground: '#1C1C1E',
+  gray100: '#F4F5F7', // Lighter background
+  gray200: '#EBECF0',
+  gray300: '#DFE1E6',
+  gray500: '#7A869A', // Better contrast for subtext
+  gray800: '#172B4D', // Deep navy for titles
+  gray900: '#091E42', // Near black navy
+  darkSurface: '#1D1D1F',
+  darkBackground: '#121212',
 };
 
 const spacing = {
@@ -28,18 +28,25 @@ const spacing = {
 
 const shadows = {
   small: {
-    shadowColor: '#000',
+    shadowColor: '#091E42',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 3,
     elevation: 2,
   },
   medium: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#091E42',
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowRadius: 12,
     elevation: 4,
+  },
+  large: {
+    shadowColor: '#091E42',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
   },
 };
 
@@ -47,22 +54,29 @@ const textVariants = {
   header: {
     fontSize: 28,
     fontWeight: '700' as '700',
-    letterSpacing: 0.5,
+    letterSpacing: -0.5,
+    lineHeight: 34,
   },
   subheader: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600' as '600',
+    letterSpacing: -0.3,
+    lineHeight: 24,
   },
   body: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 15,
+    lineHeight: 22,
+    letterSpacing: -0.1,
   },
   caption: {
     fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0,
   },
   button: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600' as '600',
+    letterSpacing: 0.2,
   },
 };
 
@@ -74,15 +88,15 @@ export const lightTheme = {
     accent: palette.accent,
     background: palette.gray100,
     surface: palette.white,
-    text: palette.gray800,
+    text: palette.gray900,
     subText: palette.gray500,
     border: palette.gray200,
     error: palette.error,
     success: palette.success,
     warning: palette.warning,
-    warningBackground: '#FFF3CD',
-    primaryBackground: '#E3F2FD',
-    successBackground: '#D4EDDA',
+    warningBackground: '#FFFAE6',
+    primaryBackground: '#DEEBFF',
+    successBackground: '#E3FCEF',
     card: palette.white,
     notification: palette.error,
   },
@@ -90,7 +104,7 @@ export const lightTheme = {
   shadows,
   textVariants: {
     ...textVariants,
-    header: { ...textVariants.header, color: palette.gray800 },
+    header: { ...textVariants.header, color: palette.gray900 },
     subheader: { ...textVariants.subheader, color: palette.gray800 },
     body: { ...textVariants.body, color: palette.gray800 },
     caption: { ...textVariants.caption, color: palette.gray500 },
@@ -101,20 +115,20 @@ export const lightTheme = {
 export const darkTheme = {
   dark: true,
   colors: {
-    primary: palette.primary,
+    primary: '#4C9AFF', // Lighter blue for dark mode accessibility
     secondary: palette.secondary,
     accent: palette.accent,
     background: palette.darkBackground,
     surface: palette.darkSurface,
-    text: palette.white,
-    subText: palette.gray300,
-    border: palette.gray500,
+    text: '#E3E3E3',
+    subText: '#A5ADBA',
+    border: '#334454',
     error: palette.error,
     success: palette.success,
     warning: palette.warning,
-    warningBackground: '#4A4434',
-    primaryBackground: '#1E3A5F',
-    successBackground: '#1E3D2F',
+    warningBackground: '#2D2200',
+    primaryBackground: '#0747A6',
+    successBackground: '#006644',
     card: palette.darkSurface,
     notification: palette.error,
   },
@@ -122,10 +136,10 @@ export const darkTheme = {
   shadows,
   textVariants: {
     ...textVariants,
-    header: { ...textVariants.header, color: palette.gray100 },
-    subheader: { ...textVariants.subheader, color: palette.gray100 },
-    body: { ...textVariants.body, color: palette.gray100 },
-    caption: { ...textVariants.caption, color: palette.gray300 },
+    header: { ...textVariants.header, color: '#FFFFFF' },
+    subheader: { ...textVariants.subheader, color: '#E3E3E3' },
+    body: { ...textVariants.body, color: '#E3E3E3' },
+    caption: { ...textVariants.caption, color: '#A5ADBA' },
     button: { ...textVariants.button, color: palette.white },
   },
 };

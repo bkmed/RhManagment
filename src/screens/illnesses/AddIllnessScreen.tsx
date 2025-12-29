@@ -25,6 +25,7 @@ import { DateTimePickerField } from '../../components/DateTimePickerField';
 export const AddIllnessScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { showToast } = useToast();
+  const { showModal } = useModal();
   const { t } = useTranslation();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -80,7 +81,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
         setLocation(illness.location || '');
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('illnesses.loadError'));
+      notificationService.showAlert(t('common.error'), t('illnesses.loadError'));
     }
   };
 
@@ -101,29 +102,33 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
       return;
     }
 
-    Alert.alert(t('illnesses.addPhoto'), t('illnesses.chooseOption'), [
-      {
-        text: t('illnesses.takePhoto'),
-        onPress: () => {
-          launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
-            if (response.assets && response.assets[0]?.uri) {
-              setPhotoUri(response.assets[0].uri);
-            }
-          });
+    showModal({
+      title: t('illnesses.addPhoto'),
+      message: t('illnesses.chooseOption'),
+      buttons: [
+        {
+          text: t('illnesses.takePhoto'),
+          onPress: () => {
+            launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
+              if (response.assets && response.assets[0]?.uri) {
+                setPhotoUri(response.assets[0].uri);
+              }
+            });
+          },
         },
-      },
-      {
-        text: t('illnesses.chooseFromLibrary'),
-        onPress: () => {
-          launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
-            if (response.assets && response.assets[0]?.uri) {
-              setPhotoUri(response.assets[0].uri);
-            }
-          });
+        {
+          text: t('illnesses.chooseFromLibrary'),
+          onPress: () => {
+            launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
+              if (response.assets && response.assets[0]?.uri) {
+                setPhotoUri(response.assets[0].uri);
+              }
+            });
+          },
         },
-      },
-      { text: t('common.cancel'), style: 'cancel' },
-    ]);
+        { text: t('common.cancel'), style: 'cancel' },
+      ],
+    });
   };
 
   const handleSave = async () => {
@@ -175,7 +180,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
       }
     } catch (error) {
       console.error('Error saving illness:', error);
-      Alert.alert(t('common.error'), t('illnesses.saveError'));
+      notificationService.showAlert(t('common.error'), t('illnesses.saveError'));
     } finally {
       setLoading(false);
     }

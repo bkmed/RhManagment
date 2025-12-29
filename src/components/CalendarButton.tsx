@@ -1,6 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { notificationService } from '../services/notificationService';
 import { calendarService } from '../services/calendarService';
 import { permissionsService } from '../services/permissions';
 import { useTheme } from '../context/ThemeContext';
@@ -34,10 +35,9 @@ export const CalendarButton: React.FC<CalendarButtonProps> = ({
       const permission = await permissionsService.checkCalendarPermission();
 
       if (permission !== 'granted') {
-        Alert.alert(
+        notificationService.showAlert(
           t('common.error'),
-          t('leaves.calendarPermissionRequired'),
-          [{ text: t('common.ok') }],
+          t('leaves.calendarPermissionRequired')
         );
         return;
       }
@@ -52,15 +52,15 @@ export const CalendarButton: React.FC<CalendarButtonProps> = ({
       });
 
       if (success) {
-        Alert.alert(t('common.success'), t('leaves.addedToCalendar'));
+        notificationService.showAlert(t('common.success'), t('leaves.addedToCalendar'));
         onSuccess?.();
       } else {
-        Alert.alert(t('common.error'), t('leaves.calendarError'));
+        notificationService.showAlert(t('common.error'), t('leaves.calendarError'));
         onError?.();
       }
     } catch (error) {
       console.error('Error adding to calendar:', error);
-      Alert.alert(t('common.error'), t('leaves.calendarError'));
+      notificationService.showAlert(t('common.error'), t('leaves.calendarError'));
       onError?.();
     }
   };

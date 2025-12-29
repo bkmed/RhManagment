@@ -13,6 +13,7 @@ import { Employee } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
+import { notificationService } from '../../services/notificationService';
 
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -42,7 +43,7 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       setEmployees(data);
     } catch (error) {
       console.error('Error loading employees:', error);
-      Alert.alert(t('common.error'), t('employees.loadError'));
+      notificationService.showAlert(t('common.error'), t('employees.loadError'));
     } finally {
       setLoading(false);
     }

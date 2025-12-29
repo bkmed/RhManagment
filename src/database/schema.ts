@@ -7,6 +7,7 @@ export interface Claim {
   description: string;
   isUrgent: boolean;
   status: 'pending' | 'processed' | 'rejected';
+  photoUri?: string;
   createdAt: string;
   updatedAt: string;
 }

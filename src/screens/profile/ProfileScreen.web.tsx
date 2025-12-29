@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { storageService } from '../../services/storage';
+import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -75,7 +76,7 @@ export const ProfileScreen = ({ navigation }: any) => {
       storageService.setString('user-language', langCode);
       setCurrentLanguage(langCode);
     } catch (error) {
-      Alert.alert(t('common.error'), t('profile.languageChangeError'));
+      notificationService.showAlert(t('common.error'), t('profile.languageChangeError'));
     }
   };
 
@@ -96,7 +97,7 @@ export const ProfileScreen = ({ navigation }: any) => {
 
   const handleSaveProfile = async () => {
     if (!name.trim() || !email.trim()) {
-      Alert.alert(t('common.error'), t('signUp.errorEmptyFields'));
+      notificationService.showAlert(t('common.error'), t('signUp.errorEmptyFields'));
       return;
     }
 
@@ -108,9 +109,9 @@ export const ProfileScreen = ({ navigation }: any) => {
         photoUri,
       });
       setIsEditing(false);
-      Alert.alert(t('common.success'), t('profile.updatedSuccessfully'));
+      notificationService.showAlert(t('common.success'), t('profile.updatedSuccessfully'));
     } catch (error) {
-      Alert.alert(t('common.error'), t('common.loadFailed'));
+      notificationService.showAlert(t('common.error'), t('common.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -120,7 +121,7 @@ export const ProfileScreen = ({ navigation }: any) => {
     try {
       await signOut(navigation);
     } catch (error) {
-      Alert.alert(t('common.error'), t('profile.logoutError'));
+      notificationService.showAlert(t('common.error'), t('profile.logoutError'));
     }
   };
 

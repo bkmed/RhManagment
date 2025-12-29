@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
+import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -65,7 +66,7 @@ export const SignUpScreen = ({ navigation }: any) => {
       const user = await authService.register(name, email, password);
       await signUp(user);
     } catch (error: any) {
-      Alert.alert(
+      notificationService.showAlert(
         t('signUp.errorTitle'),
         error.message || t('signUp.errorRegistrationFailed'),
       );

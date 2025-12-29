@@ -104,7 +104,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         setHoursWorked(item.hoursWorked ? item.hoursWorked.toString() : '');
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('payroll.loadError'));
+      notificationService.showAlert(t('common.error'), t('payroll.loadError'));
     }
   };
 
@@ -168,7 +168,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
       }
     } catch (error) {
       console.error('Error saving payroll:', error);
-      Alert.alert(t('common.error'), t('payroll.saveError'));
+      notificationService.showAlert(t('common.error'), t('payroll.saveError'));
     } finally {
       setLoading(false);
     }

@@ -25,6 +25,7 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
   const { illnessId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { showModal } = useModal();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [illness, setIllness] = useState<Illness | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,17 +49,17 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
       const data = await illnessesDb.getById(illnessId);
       setIllness(data);
     } catch (error) {
-      Alert.alert(t('common.errorTitle'), t('common.loadFailed'));
+      notificationService.showAlert(t('common.errorTitle'), t('common.loadFailed'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      t('common.deleteTitle'),
-      t('common.deleteMessage'),
-      [
+    showModal({
+      title: t('common.deleteTitle'),
+      message: t('common.deleteMessage'),
+      buttons: [
         { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('common.delete'),
@@ -69,12 +70,12 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
               await notificationService.cancelIllnessReminder(illnessId);
               navigateBack();
             } catch (error) {
-              Alert.alert(t('common.errorTitle'), t('common.deleteFailed'));
+              notificationService.showAlert(t('common.errorTitle'), t('common.deleteFailed'));
             }
           },
         },
       ],
-    );
+    });
   };
 
   const handleEdit = () => {

@@ -1,4 +1,5 @@
-import { Linking, Platform, Alert } from 'react-native';
+import { Linking, Platform } from 'react-native';
+import { notificationService } from './notificationService';
 
 export const emailService = {
     /**
@@ -16,7 +17,7 @@ export const emailService = {
             } else {
                 console.warn('Cannot handle mailto URL');
                 if (Platform.OS !== 'web') {
-                    Alert.alert(
+                    notificationService.showAlert(
                         'Error',
                         'No email client found. Please configure an email account on your device.'
                     );

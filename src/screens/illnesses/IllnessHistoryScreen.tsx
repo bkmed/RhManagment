@@ -10,6 +10,7 @@ import { IllnessHistory } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
+import { formatDate, formatDateTime } from '../../utils/dateUtils';
 
 export const IllnessHistoryScreen = ({ route }: any) => {
     const { illnessId } = route.params;
@@ -38,14 +39,14 @@ export const IllnessHistoryScreen = ({ route }: any) => {
         <View style={styles.card}>
             <View style={styles.row}>
                 <Text style={styles.date}>
-                    {new Date(item.date).toLocaleDateString()}
+                    {formatDate(item.date)}
                 </Text>
-                <View style={[styles.badge, styles[`badge${item.action}` as keyof typeof styles]]}>
+                <View style={[styles.badge, styles[`badge${item.action}` as keyof typeof styles] as any]}>
                     <Text style={styles.badgeText}>{t(`illnesses.history.${item.action}`)}</Text>
                 </View>
             </View>
             <Text style={styles.time}>
-                {new Date(item.date).toLocaleTimeString()}
+                {formatDateTime(item.date)}
             </Text>
             {item.notes && <Text style={styles.notes}>{item.notes}</Text>}
         </View>
@@ -78,34 +79,40 @@ const createStyles = (theme: Theme) =>
         listContent: {
             padding: theme.spacing.m,
             flexGrow: 1,
+            maxWidth: 600,
+            width: '100%',
+            alignSelf: 'center',
         },
         card: {
             backgroundColor: theme.colors.surface,
-            borderRadius: theme.spacing.m,
+            borderRadius: 16,
             padding: theme.spacing.m,
             marginBottom: theme.spacing.m,
             ...theme.shadows.small,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
         },
         row: {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: theme.spacing.xs,
+            marginBottom: theme.spacing.s,
         },
         date: {
             ...theme.textVariants.body,
-            fontWeight: '600',
+            fontWeight: '700',
             color: theme.colors.text,
         },
         time: {
             ...theme.textVariants.caption,
             color: theme.colors.subText,
-            marginBottom: theme.spacing.xs,
+            marginBottom: theme.spacing.s,
+            fontWeight: '500',
         },
         badge: {
-            paddingHorizontal: theme.spacing.s,
-            paddingVertical: theme.spacing.xs,
-            borderRadius: theme.spacing.l,
+            paddingHorizontal: 12,
+            paddingVertical: 4,
+            borderRadius: 8,
             backgroundColor: theme.colors.primary,
         },
         badgecreated: {
@@ -118,15 +125,20 @@ const createStyles = (theme: Theme) =>
             backgroundColor: theme.colors.warning,
         },
         badgeText: {
-            ...theme.textVariants.caption,
-            color: theme.colors.surface,
-            fontWeight: '600',
             fontSize: 10,
+            color: '#FFF',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
         },
         notes: {
             ...theme.textVariants.caption,
-            color: theme.colors.subText,
-            marginTop: theme.spacing.xs,
+            color: theme.colors.text,
+            marginTop: theme.spacing.s,
+            paddingTop: theme.spacing.s,
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.border,
+            fontStyle: 'italic',
         },
         emptyContainer: {
             flex: 1,

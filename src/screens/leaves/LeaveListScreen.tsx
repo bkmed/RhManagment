@@ -13,6 +13,7 @@ import { Leave } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
+import { formatDate } from '../../utils/dateUtils';
 
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -79,8 +80,8 @@ export const LeaveListScreen = ({ navigation }: any) => {
   };
 
   const renderLeave = ({ item }: { item: Leave }) => {
-    const { dateStr, timeStr } = formatDateTime(item.startDate || item.dateTime);
-    const end = item.endDate ? formatDateTime(item.endDate).dateStr : null;
+    const startStr = formatDate(item.startDate || item.dateTime);
+    const endStr = item.endDate ? formatDate(item.endDate) : null;
 
     return (
       <TouchableOpacity
@@ -90,10 +91,9 @@ export const LeaveListScreen = ({ navigation }: any) => {
         }
       >
         <View style={styles.dateColumn}>
-          <Text style={styles.dateText}>{dateStr}</Text>
-          {end && end !== dateStr && <Text style={styles.rangeDivider}>to</Text>}
-          {end && end !== dateStr && <Text style={styles.dateText}>{end}</Text>}
-          {!end && <Text style={styles.timeText}>{timeStr}</Text>}
+          <Text style={styles.dateText}>{startStr}</Text>
+          {endStr && endStr !== startStr && <Text style={styles.rangeDivider}>to</Text>}
+          {endStr && endStr !== startStr && <Text style={styles.dateText}>{endStr}</Text>}
         </View>
 
         <View style={styles.detailsColumn}>

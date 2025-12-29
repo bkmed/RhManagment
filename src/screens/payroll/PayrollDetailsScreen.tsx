@@ -25,6 +25,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
   const { showToast } = useToast();
   const { payrollId } = route.params;
   const { theme } = useTheme();
+  const { showModal } = useModal();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -230,10 +231,10 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
               <TouchableOpacity
                 style={[styles.button, styles.deleteButton]}
                 onPress={() => {
-                  Alert.alert(
-                    t('common.delete'),
-                    t('payrollDetails.deleteConfirmMessage'),
-                    [
+                  showModal({
+                    title: t('common.delete'),
+                    message: t('payrollDetails.deleteConfirmMessage'),
+                    buttons: [
                       { text: t('common.cancel'), style: 'cancel' },
                       {
                         text: t('common.delete'),
@@ -244,7 +245,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
                         }
                       }
                     ]
-                  );
+                  });
                 }}
               >
                 <Text style={styles.buttonText}>{t('common.delete')}</Text>

@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
+import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
+import { formatDate } from '../../utils/dateUtils';
 import { Leave } from '../../database/schema';
 
 export const LeaveApprovalListScreen = ({ navigation }: any) => {
@@ -30,7 +32,7 @@ export const LeaveApprovalListScreen = ({ navigation }: any) => {
             const leaves = await leavesDb.getPending();
             setPendingLeaves(leaves);
         } catch (error) {
-            Alert.alert(t('common.error'), t('leaves.loadError'));
+            notificationService.showAlert(t('common.error'), t('leaves.loadError'));
         } finally {
             setLoading(false);
         }
@@ -58,20 +60,20 @@ export const LeaveApprovalListScreen = ({ navigation }: any) => {
                     });
                 }
             }
-            Alert.alert(t('common.success'), t('leaveStatus.approved'));
+            notificationService.showAlert(t('common.success'), t('leaveStatus.approved'));
             loadPendingLeaves();
         } catch (error) {
-            Alert.alert(t('common.error'), t('common.saveError'));
+            notificationService.showAlert(t('common.error'), t('common.saveError'));
         }
     };
 
     const handleDecline = async (id: number) => {
         try {
             await leavesDb.update(id, { status: 'declined' });
-            Alert.alert(t('common.success'), t('leaveStatus.declined'));
+            notificationService.showAlert(t('common.success'), t('leaveStatus.declined'));
             loadPendingLeaves();
         } catch (error) {
-            Alert.alert(t('common.error'), t('common.saveError'));
+            notificationService.showAlert(t('common.error'), t('common.saveError'));
         }
     };
 
@@ -82,7 +84,7 @@ export const LeaveApprovalListScreen = ({ navigation }: any) => {
                 <Text style={styles.cardBadge}>{t(`leaveTypes.${item.type}`)}</Text>
             </View>
             <Text style={styles.cardSubtitle}>{item.employeeName}</Text>
-            <Text style={styles.cardDate}>{new Date(item.dateTime).toLocaleDateString()}</Text>
+            <Text style={styles.cardDate}>{formatDate(item.dateTime)}</Text>
             {item.notes && <Text style={styles.cardNotes}>{item.notes}</Text>}
 
             <View style={styles.actions}>

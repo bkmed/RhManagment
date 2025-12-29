@@ -12,6 +12,7 @@ import {
   TextInput,
 } from 'react-native';
 import { storageService } from '../../services/storage';
+import { notificationService } from '../../services/notificationService';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { authService } from '../../services/authService';
@@ -38,6 +39,7 @@ const LANGUAGES = [
 export const ProfileScreen = ({ navigation }: any) => {
   const { theme, isDark, toggleTheme } = useTheme();
   const { showToast } = useToast();
+  const { showModal } = useModal();
   const { t, i18n } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -92,15 +94,14 @@ export const ProfileScreen = ({ navigation }: any) => {
       if (I18nManager.isRTL !== shouldBeRTL) {
         I18nManager.forceRTL(shouldBeRTL);
         if (Platform.OS !== 'web') {
-          Alert.alert(
+          notificationService.showAlert(
             t('profile.restartRequired'),
-            t('profile.restartRequiredMessage'),
-            [{ text: t('common.ok') }],
+            t('profile.restartRequiredMessage')
           );
         }
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('profile.languageChangeError'));
+      notificationService.showAlert(t('common.error'), t('profile.languageChangeError'));
     }
   };
 
@@ -109,48 +110,51 @@ export const ProfileScreen = ({ navigation }: any) => {
     setCameraPermission(status);
 
     if (status !== 'granted') {
-      Alert.alert(
-        t('profile.permissionDenied'),
-        t('profile.permissionBlockedMessage'),
-        [
+      showModal({
+        title: t('profile.permissionDenied'),
+        message: t('profile.permissionBlockedMessage'),
+        buttons: [
           { text: t('common.cancel'), style: 'cancel' },
           {
             text: t('profile.openSettings'),
             onPress: () => permissionsService.openAppSettings(),
           },
         ],
-      );
+      });
       return;
     }
 
-    Alert.alert(t('profile.changePhoto'), '', [
-      {
-        text: t('illnesses.takePhoto'),
-        onPress: () => {
-          launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
-            if (response.assets && response.assets[0]?.uri) {
-              setPhotoUri(response.assets[0].uri);
-            }
-          });
+    showModal({
+      title: t('profile.changePhoto'),
+      buttons: [
+        {
+          text: t('illnesses.takePhoto'),
+          onPress: () => {
+            launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
+              if (response.assets && response.assets[0]?.uri) {
+                setPhotoUri(response.assets[0].uri);
+              }
+            });
+          },
         },
-      },
-      {
-        text: t('illnesses.chooseFromLibrary'),
-        onPress: () => {
-          launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
-            if (response.assets && response.assets[0]?.uri) {
-              setPhotoUri(response.assets[0].uri);
-            }
-          });
+        {
+          text: t('illnesses.chooseFromLibrary'),
+          onPress: () => {
+            launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
+              if (response.assets && response.assets[0]?.uri) {
+                setPhotoUri(response.assets[0].uri);
+              }
+            });
+          },
         },
-      },
-      { text: t('common.cancel'), style: 'cancel' },
-    ]);
+        { text: t('common.cancel'), style: 'cancel' },
+      ],
+    });
   };
 
   const handleSaveProfile = async () => {
     if (!name.trim() || !email.trim()) {
-      Alert.alert(t('common.error'), t('signUp.errorEmptyFields'));
+      notificationService.showAlert(t('common.error'), t('signUp.errorEmptyFields'));
       return;
     }
 
@@ -162,9 +166,9 @@ export const ProfileScreen = ({ navigation }: any) => {
         photoUri,
       });
       setIsEditing(false);
-      Alert.alert(t('common.success'), t('profile.updatedSuccessfully'));
+      notificationService.showAlert(t('common.success'), t('profile.updatedSuccessfully'));
     } catch (error) {
-      Alert.alert(t('common.error'), t('common.loadFailed'));
+      notificationService.showAlert(t('common.error'), t('common.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -178,10 +182,14 @@ export const ProfileScreen = ({ navigation }: any) => {
     const status = await permissionsService.requestCameraPermission();
     setCameraPermission(status);
     if (status === 'blocked') {
-      Alert.alert(t('profile.permissionBlocked'), t('profile.permissionBlockedMessage'), [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
-      ]);
+      showModal({
+        title: t('profile.permissionBlocked'),
+        message: t('profile.permissionBlockedMessage'),
+        buttons: [
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
+        ],
+      });
     }
   };
 
@@ -193,10 +201,14 @@ export const ProfileScreen = ({ navigation }: any) => {
     const status = await permissionsService.requestNotificationPermission();
     setNotificationPermission(status);
     if (status === 'blocked') {
-      Alert.alert(t('profile.permissionBlocked'), t('profile.permissionBlockedMessage'), [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
-      ]);
+      showModal({
+        title: t('profile.permissionBlocked'),
+        message: t('profile.permissionBlockedMessage'),
+        buttons: [
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
+        ],
+      });
     }
   };
 
@@ -208,10 +220,14 @@ export const ProfileScreen = ({ navigation }: any) => {
     const status = await permissionsService.requestCalendarPermission();
     setCalendarPermission(status);
     if (status === 'blocked') {
-      Alert.alert(t('profile.permissionBlocked'), t('profile.permissionBlockedMessage'), [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
-      ]);
+      showModal({
+        title: t('profile.permissionBlocked'),
+        message: t('profile.permissionBlockedMessage'),
+        buttons: [
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
+        ],
+      });
     }
   };
 
@@ -219,7 +235,7 @@ export const ProfileScreen = ({ navigation }: any) => {
     try {
       await signOut(navigation);
     } catch (error) {
-      Alert.alert(t('common.error'), t('profile.logoutError'));
+      notificationService.showAlert(t('common.error'), t('profile.logoutError'));
     }
   };
 

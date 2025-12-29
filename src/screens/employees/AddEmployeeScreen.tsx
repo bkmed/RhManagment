@@ -12,6 +12,7 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { employeesDb } from '../../database';
+import { notificationService } from '../../services/notificationService';
 import { Theme } from '../../theme';
 import { ROLES, UserRole } from '../../services/authService';
 import { Dropdown } from '../../components/Dropdown';
@@ -26,6 +27,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { user: currentUser } = useAuth();
+  const { showToast } = useToast();
+  const { showModal } = useModal();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   /* Removed require */
@@ -35,6 +38,14 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const employeeId = route.params?.id || route.params?.employeeId;
 
   const [name, setName] = useState('');
+
+  const navigateBack = () => {
+    if (Platform.OS === 'web') {
+      setActiveTab('Employees');
+    } else {
+      navigation.goBack();
+    }
+  };
   const [position, setPosition] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -92,7 +103,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const handleTakePhoto = async () => {
     const status = await permissionsService.requestCameraPermission();
     if (status !== 'granted') {
-      Alert.alert(t('profile.permissionDenied'), t('profile.permissionBlockedMessage'));
+      notificationService.showAlert(t('profile.permissionDenied'), t('profile.permissionBlockedMessage'));
       return;
     }
 
@@ -143,29 +154,28 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      t('common.delete'),
-      t('employees.deleteConfirm'),
-      [
+    showModal({
+      title: t('common.delete'),
+      message: t('employees.deleteConfirm'),
+      buttons: [
         { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
-              await employeesDb.delete(employeeId);
-              if (Platform.OS === 'web') {
-                setActiveTab('Employees');
-              } else {
-                navigation?.goBack();
+              if (employeeId) {
+                await employeesDb.delete(employeeId);
+                showToast(t('employees.deletedSuccessfully'), 'success');
+                navigateBack();
               }
             } catch (error) {
-              showToast(t('employees.deleteError'));
+              showToast(t('common.error'), 'info');
             }
           },
         },
       ],
-    );
+    });
   };
 
   const departmentOptions = [

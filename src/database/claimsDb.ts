@@ -77,6 +77,11 @@ export const claimsDb = {
         }
     },
 
+    getById: async (id: number): Promise<Claim | null> => {
+        const items = selectAllClaims(store.getState());
+        return items.find(c => c.id === id) || null;
+    },
+
     delete: async (id: number): Promise<void> => {
         store.dispatch(deleteClaimAction(id));
     },

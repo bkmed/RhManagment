@@ -11,7 +11,9 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { employeesDb } from '../../database/employeesDb';
 import { leavesDb } from '../../database/leavesDb';
+import { notificationService } from '../../services/notificationService';
 import { Employee, Leave } from '../../database/schema';
+import { formatDate, formatDateTime } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
@@ -26,6 +28,7 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { employeeId } = route.params;
+  const { showModal } = useModal();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -85,14 +88,14 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
       if (employeeData) {
         setEmployee(employeeData);
       } else {
-        Alert.alert(t('common.error'), t('employees.notFound'));
+        notificationService.showAlert(t('common.error'), t('employees.notFound'));
         navigationBack();
       }
 
       setLeaves(leavesData);
     } catch (error) {
       console.error('Error loading employee details:', error);
-      Alert.alert(t('common.error'), t('employees.loadError'));
+      notificationService.showAlert(t('common.error'), t('employees.loadError'));
     } finally {
       setLoading(false);
     }
@@ -113,10 +116,10 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      t('employees.deleteConfirmTitle'),
-      t('employees.deleteConfirmMessage'),
-      [
+    showModal({
+      title: t('employees.deleteConfirmTitle'),
+      message: t('employees.deleteConfirmMessage'),
+      buttons: [
         { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('common.delete'),
@@ -124,15 +127,15 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
           onPress: async () => {
             try {
               await employeesDb.delete(employeeId);
+              showToast(t('employees.deletedSuccessfully'), 'success');
               navigationBack();
             } catch (error) {
-              console.error('Error deleting employee:', error);
-              Alert.alert(t('common.error'), t('employees.deleteError'));
+              showToast(t('common.error'), 'info');
             }
           },
         },
       ],
-    );
+    });
   };
 
   const renderLeave = ({ item }: { item: Leave }) => (
@@ -140,12 +143,9 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
       <View style={styles.leaveHeader}>
         <Text style={styles.leaveTitle}>{item.title}</Text>
         <Text style={styles.leaveDate}>
-          {new Date(item.dateTime).toLocaleDateString()}
+          {formatDate(item.dateTime)}
           {' '}
-          {new Date(item.dateTime).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
+          {formatDateTime(item.dateTime)}
         </Text>
       </View>
       {item.location && (

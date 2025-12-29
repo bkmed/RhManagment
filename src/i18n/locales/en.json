@@ -179,7 +179,13 @@
     "statusPending": "Pending",
     "statusProcessed": "Processed",
     "statusRejected": "Rejected",
-    "empty": "No claims found"
+    "empty": "No claims found",
+    "details": "Claim Details",
+    "process": "Process",
+    "reject": "Reject",
+    "statusUpdated": "Claim status updated",
+    "updateError": "Error updating claim",
+    "loadError": "Error loading claim"
   },
   "leaves": {
     "title": "Leaves",
@@ -212,7 +218,9 @@
     "decline": "Decline",
     "statusUpdated_approved": "Leave request approved",
     "statusUpdated_declined": "Leave request declined",
-    "approvals": "Pending Approvals"
+    "approvals": "Pending Approvals",
+    "successMessage": "Leave request submitted successfully",
+    "updateSuccess": "Leave request updated successfully"
   },
   "illnesses": {
     "title": "Illness / Invoicing",

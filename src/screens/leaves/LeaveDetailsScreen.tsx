@@ -14,6 +14,7 @@ import { Leave } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
+import { formatDate, formatDateTime } from '../../utils/dateUtils';
 
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -23,6 +24,7 @@ import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 export const LeaveDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { showModal } = useModal();
   const { leaveId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -77,35 +79,38 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
         user?.name || 'HR Manager'
       );
 
-      Alert.alert(t('common.success'), t(`leaves.statusUpdated_${newStatus}`));
+      setLeave({ ...leave, status: newStatus });
+      notificationService.showAlert(t('common.success'), t(`leaves.statusUpdated_${newStatus}`));
     } catch (error) {
-      Alert.alert(t('common.error'), t('leaves.updateError'));
+      notificationService.showAlert(t('common.error'), t('leaves.updateError'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      t('leaveDetails.deleteConfirmTitle'),
-      t('leaveDetails.deleteConfirmMessage'),
-      [
+    showModal({
+      title: t('leaveDetails.deleteConfirmTitle'),
+      message: t('leaveDetails.deleteConfirmMessage'),
+      buttons: [
         { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('common.delete'),
           style: 'destructive',
-          onPress: async () => {
-            try {
-              await leavesDb.delete(leaveId);
-              await notificationService.cancelLeaveReminder(leaveId);
-              navigateBack();
-            } catch (error) {
-              showToast(t('leaveDetails.errorDeleteFailed'), 'info');
-            }
-          },
+          onPress: () => handleConfirmDelete(),
         },
       ],
-    );
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await leavesDb.delete(leaveId);
+      await notificationService.cancelLeaveReminder(leaveId);
+      navigateBack();
+    } catch (error) {
+      showToast(t('leaveDetails.errorDeleteFailed'), 'info');
+    }
   };
 
   const handleEdit = () => {
@@ -124,34 +129,22 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
     );
   }
 
-  const formatDateTime = (dateStr?: string) => {
-    const date = dateStr ? new Date(dateStr) : new Date(leave.dateTime);
-    const d = date.toLocaleDateString(undefined, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-    const tStr = date.toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-    return { d, tStr };
-  };
-
-  const start = formatDateTime(leave.startDate);
-  const end = leave.endDate ? formatDateTime(leave.endDate) : null;
+  const start = formatDate(leave.startDate || leave.dateTime);
+  const end = leave.endDate ? formatDate(leave.endDate) : null;
+  const startFull = formatDateTime(leave.startDate || leave.dateTime);
+  const endFull = leave.endDate ? formatDateTime(leave.endDate) : null;
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.section}>
           <Text style={styles.title}>{leave.title}</Text>
+          <Text style={styles.typeLabel}>{t(`leaveTypes.${leave.type}`)}</Text>
           <Text style={styles.dateTime}>
-            {start.d} {!end && `at ${start.tStr}`}
+            {startFull}
           </Text>
-          {end && end.d !== start.d && (
-            <Text style={styles.dateTime}>to {end.d}</Text>
+          {endFull && endFull !== startFull && (
+            <Text style={styles.dateTime}>to {endFull}</Text>
           )}
           <View style={[styles.statusBadge, { backgroundColor: getStatusColor(leave.status) + '20' }]}>
             <Text style={[styles.statusText, { color: getStatusColor(leave.status) }]}>
@@ -160,43 +153,57 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
           </View>
         </View>
 
-        {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && leave.status === 'pending' && (
-          <View style={styles.approvalActions}>
-            <TouchableOpacity
-              style={[styles.button, styles.approveButton]}
-              onPress={() => handleStatusChange('approved')}
-            >
-              <Text style={styles.buttonText}>{t('leaves.approve')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.declineButton]}
-              onPress={() => handleStatusChange('declined')}
-            >
-              <Text style={styles.buttonText}>{t('leaves.decline')}</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {
+          (user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && leave.status === 'pending' && (
+            <View style={styles.approvalActions}>
+              <TouchableOpacity
+                style={[styles.button, styles.approveButton]}
+                onPress={() => handleStatusChange('approved')}
+              >
+                <Text style={styles.buttonText}>{t('leaves.approve')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.declineButton]}
+                onPress={() => handleStatusChange('declined')}
+              >
+                <Text style={styles.buttonText}>{t('leaves.decline')}</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        }
 
-        {leave.employeeName && (
-          <View style={styles.section}>
-            <Text style={styles.label}>{t('leaveDetails.employeeLabel')}</Text>
-            <Text style={styles.value}>{leave.employeeName}</Text>
-          </View>
-        )}
+        {
+          leave.employeeName && (
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('leaveDetails.employeeLabel')}</Text>
+              <Text style={styles.value}>{leave.employeeName}</Text>
+              {leave.department && (
+                <View style={{ marginTop: 8 }}>
+                  <Text style={styles.label}>{t('common.service')}</Text>
+                  <Text style={styles.value}>{leave.department}</Text>
+                </View>
+              )}
+            </View>
+          )
+        }
 
-        {leave.location && (
-          <View style={styles.section}>
-            <Text style={styles.label}>{t('leaveDetails.locationLabel')}</Text>
-            <Text style={styles.value}>{leave.location}</Text>
-          </View>
-        )}
+        {
+          leave.location && (
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('leaveDetails.locationLabel')}</Text>
+              <Text style={styles.value}>{leave.location}</Text>
+            </View>
+          )
+        }
 
-        {leave.notes && (
-          <View style={styles.section}>
-            <Text style={styles.label}>{t('leaveDetails.notesLabel')}</Text>
-            <Text style={styles.value}>{leave.notes}</Text>
-          </View>
-        )}
+        {
+          leave.notes && (
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('leaveDetails.notesLabel')}</Text>
+              <Text style={styles.value}>{leave.notes}</Text>
+            </View>
+          )
+        }
 
         <View style={styles.section}>
           <Text style={styles.label}>{t('leaveDetails.reminderLabel')}</Text>
@@ -205,27 +212,29 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
           </Text>
         </View>
 
-        {(user?.role === 'admin' || user?.role === 'rh' || (user?.role === 'employee' && leave.employeeId === user.employeeId)) && (
-          <>
-            <TouchableOpacity
-              style={[styles.button, styles.editButton]}
-              onPress={handleEdit}
-            >
-              <Text style={styles.buttonText}>{t('leaveDetails.editButton')}</Text>
-            </TouchableOpacity>
-
-            {(user?.role === 'admin' || user?.role === 'rh') && (
+        {
+          (user?.role === 'admin' || user?.role === 'rh' || (user?.role === 'employee' && leave.employeeId === user.employeeId)) && (
+            <>
               <TouchableOpacity
-                style={[styles.button, styles.deleteButton]}
-                onPress={handleDelete}
+                style={[styles.button, styles.editButton]}
+                onPress={handleEdit}
               >
-                <Text style={styles.buttonText}>{t('leaveDetails.deleteButton')}</Text>
+                <Text style={styles.buttonText}>{t('leaveDetails.editButton')}</Text>
               </TouchableOpacity>
-            )}
-          </>
-        )}
-      </ScrollView>
-    </View>
+
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <TouchableOpacity
+                  style={[styles.button, styles.deleteButton]}
+                  onPress={handleDelete}
+                >
+                  <Text style={styles.buttonText}>{t('leaveDetails.deleteButton')}</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )
+        }
+      </ScrollView >
+    </View >
   );
 };
 
@@ -252,6 +261,13 @@ const createStyles = (theme: Theme) =>
     dateTime: {
       ...theme.textVariants.subheader,
       color: theme.colors.primary,
+      marginTop: 4,
+    },
+    typeLabel: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
     },
     label: {
       ...theme.textVariants.caption,

@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
+import { notificationService } from '../../services/notificationService';
 import { Theme } from '../../theme';
 import { isValidEmail } from '../../utils/validation';
 import { AuthLayout } from '../../components/auth/AuthLayout';
@@ -34,11 +35,11 @@ export const ForgotPasswordScreen = ({ navigation }: any) => {
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      Alert.alert(
+      notificationService.showAlert(
         t('forgotPassword.successTitle'),
         t('forgotPassword.successMessage'),
-        [{ text: 'OK', onPress: () => navigation.goBack() }],
       );
+      navigation.goBack();
     }, 1500);
   };
 

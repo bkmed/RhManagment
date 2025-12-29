@@ -38,6 +38,7 @@
     "@reduxjs/toolkit": "2.11.0",
     "@types/i18next": "12.1.0",
     "add-to-calendar-button-react": "2.13.3",
+    "date-fns": "4.1.0",
     "firebase": "12.6.0",
     "i18next": "25.6.3",
     "lodash": "4.17.21",

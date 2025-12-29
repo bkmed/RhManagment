@@ -72,7 +72,6 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   };
 
 
-
   const { setActiveTab } = useContext(WebNavigationContext);
 
   useEffect(() => {
@@ -99,7 +98,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         setDepartment(leave.department || '');
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('leaves.loadError'));
+      notificationService.showAlert(t('common.error'), t('leaves.loadError'));
     }
   };
 
@@ -148,8 +147,8 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
     try {
       const leaveData = {
         title: title.trim(),
-        employeeName: (user?.role === 'employee' ? user.name : employeeName).trim() || undefined,
-        employeeId: user?.role === 'employee' ? user.employeeId : initialEmployeeId,
+        employeeName: (user?.role === 'employee' ? (user?.name || '') : employeeName).trim() || undefined,
+        employeeId: (user?.role === 'employee' ? user?.employeeId : (initialEmployeeId || user?.employeeId)) || 0,
         location: location.trim() || undefined,
         dateTime: type === 'permission' ? permissionStart!.toISOString() : startDate!.toISOString(),
         startDate: type === 'permission' ? permissionStart!.toISOString() : startDate!.toISOString(),
@@ -172,16 +171,14 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         await notificationService.notifyNewLeaveRequest(id, employeeName, t(`leaveTypes.${type}`));
 
         if (sendEmail) {
-          // Open Email Draft for HR
-          await emailService.sendLeaveRequestEmail(
-            employeeName,
+          // Open Email Draft for HR - Don't await to avoid blocking UI
+          emailService.sendLeaveRequestEmail(
+            employeeName || user?.name || '',
             t(`leaveTypes.${type}`),
-            startDate!.toLocaleDateString(),
-            endDate!.toLocaleDateString(),
+            startDate?.toLocaleDateString() || new Date().toLocaleDateString(),
+            endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
             notes || ''
-          );
-        } else {
-          // Just notify via app service (already handled above)
+          ).catch(err => console.error('Email error:', err));
         }
       }
 
@@ -195,20 +192,30 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         await notificationService.cancelLeaveReminder(id);
       }
 
+      // Show Success Notification
+      await notificationService.showAlert(
+        t('common.success'),
+        isEdit ? t('leaves.updateSuccess') : t('leaves.successMessage')
+      );
+
       // Navigation Logic
       if (Platform.OS === 'web') {
-        // Explicitly reset subScreen to empty to return to list
-        if (initialEmployeeName) {
-          setActiveTab('Employees', '', {});
+        if (initialEmployeeId) {
+          // Go back to employee details if we came from there
+          setActiveTab('Employees', 'EmployeeDetails', { employeeId: initialEmployeeId });
         } else {
           setActiveTab('Leaves', '', {});
         }
       } else {
-        navigation.goBack();
+        if (navigation && navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          navigation.navigate('Leaves');
+        }
       }
     } catch (error) {
       console.error('Error saving leave:', error);
-      Alert.alert(t('common.error'), t('leaves.saveError'));
+      notificationService.showAlert(t('common.error'), t('leaves.saveError'));
     } finally {
       setLoading(false);
     }
@@ -446,8 +453,8 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
             {loading ? t('common.loading') : isEdit ? t('leaves.update') : t('leaves.save')}
           </Text>
         </TouchableOpacity>
-      </ScrollView >
-    </View >
+      </ScrollView>
+    </View>
   );
 };
 

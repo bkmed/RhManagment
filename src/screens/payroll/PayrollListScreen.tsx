@@ -14,6 +14,7 @@ import { PayrollCard } from '../../components/PayrollCard';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
+import { notificationService } from '../../services/notificationService';
 
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -45,7 +46,7 @@ export const PayrollListScreen = ({ navigation }: any) => {
       setPayrollItems(data);
     } catch (error) {
       console.error('Error loading payroll items:', error);
-      Alert.alert(t('common.error'), t('payroll.loadError'));
+      notificationService.showAlert(t('common.error'), t('payroll.loadError'));
     } finally {
       setLoading(false);
     }

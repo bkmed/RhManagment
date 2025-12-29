@@ -13,12 +13,14 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { remoteDb } from '../../database/remoteDb';
+import { notificationService } from '../../services/notificationService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { holidaysService } from '../../services/holidaysService';
 import { leavesDb } from '../../database/leavesDb';
+import { formatDate } from '../../utils/dateUtils';
 
 export const RemoteCalendarScreen = () => {
   const { theme } = useTheme();
@@ -58,7 +60,7 @@ export const RemoteCalendarScreen = () => {
       setRemoteDays(mappedRemote);
       setApprovedLeaves(leavesData);
     } catch (error) {
-      Alert.alert(t('common.error'), t('common.loadFailed'));
+      notificationService.showAlert(t('common.error'), t('common.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -67,7 +69,7 @@ export const RemoteCalendarScreen = () => {
   const updateStatus = async (status: 'remote' | 'office' | 'none') => {
     try {
       if (!user?.employeeId) {
-        Alert.alert(t('common.error'), t('employees.notFound'));
+        notificationService.showAlert(t('common.error'), t('employees.notFound'));
         return;
       }
 
@@ -92,7 +94,7 @@ export const RemoteCalendarScreen = () => {
       }
     } catch (error) {
       console.error('Error updating remote status:', error);
-      Alert.alert(t('common.error'), t('common.saveError'));
+      notificationService.showAlert(t('common.error'), t('common.saveError'));
     } finally {
       setModalVisible(false);
       setSelectedDay(null);
@@ -118,12 +120,12 @@ export const RemoteCalendarScreen = () => {
 
   const onDayPress = (dateStr: string) => {
     if (isDayOnLeave(dateStr)) {
-      Alert.alert(t('remote.onLeave'), getLeaveTitle(dateStr));
+      notificationService.showAlert(t('remote.onLeave'), getLeaveTitle(dateStr));
       return;
     }
     const holiday = holidaysService.getHolidayOnDate(dateStr, user?.country || 'France');
     if (holiday) {
-      Alert.alert(t('common.holiday'), holiday.name[t('languages.en') === 'English' ? 'en' : 'fr']);
+      notificationService.showAlert(t('common.holiday'), holiday.name[t('languages.en') === 'English' ? 'en' : 'fr']);
       return;
     }
     setSelectedDay(dateStr);
