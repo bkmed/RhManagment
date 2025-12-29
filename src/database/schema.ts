@@ -96,24 +96,45 @@ export interface IllnessHistory {
   notes?: string;
 }
 
+export interface Company {
+  id: number;
+  name: string;
+  logo?: string;
+  address?: string;
+  email?: string;
+  phone?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Team {
+  id: number;
+  name: string;
+  managerId?: number; // Employee ID of the manager
+  department: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Employee {
   id?: number;
   name: string;
   position?: string;
   phone?: string;
   email?: string;
-  address?: string; // Also used for Location sometimes, but we'll add explicit location
+  address?: string;
   photoUri?: string;
   notes?: string;
-  department?: string; // Service
-  role?: string; // 'admin' | 'employee' | 'rh' | 'chef_dequipe'
-  teamId?: string;
+  department?: string;
+  role?: string;
+  teamId?: number;
+  companyId?: number;
   vacationDaysPerYear: number;
   remainingVacationDays: number;
   statePaidLeaves: number;
   country: string;
   createdAt: string;
   updatedAt: string;
-  location?: string; // Local
-  hiringDate?: string; // Date d'embauche
+  location?: string;
+  hiringDate?: string;
 }

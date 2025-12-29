@@ -39,6 +39,8 @@ import { RemoteCalendarScreen } from '../screens/remote/RemoteCalendarScreen';
 import { AddClaimScreen } from '../screens/claims/AddClaimScreen';
 import { ClaimsListScreen } from '../screens/claims/ClaimsListScreen';
 import { ClaimDetailsScreen } from '../screens/claims/ClaimDetailsScreen';
+import { CompanyListScreen } from '../screens/companies/CompanyListScreen';
+import { TeamListScreen } from '../screens/teams/TeamListScreen';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 enableScreens();
@@ -228,6 +230,20 @@ const DrawerNavigator = () => {
       {user?.role !== 'employee' && (
         <Drawer.Screen name="Employees" component={EmployeesStack} />
       )}
+      {user?.role === 'admin' && (
+        <>
+          <Drawer.Screen
+            name="Companies"
+            component={CompanyListScreen}
+            options={{ title: t('navigation.companies') }}
+          />
+          <Drawer.Screen
+            name="Teams"
+            component={TeamListScreen}
+            options={{ title: t('navigation.teams') }}
+          />
+        </>
+      )}
       <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
       <Drawer.Screen name="Claims" component={ClaimsStack} options={{ title: t('navigation.claims') }} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
@@ -306,6 +322,10 @@ const WebNavigator = () => {
         if (subScreen === 'AddClaim') return <AddClaimScreen route={mockRoute} />;
         if (subScreen === 'ClaimDetails') return <ClaimDetailsScreen route={mockRoute} />;
         return <ClaimsStack />;
+      case 'Companies':
+        return <CompanyListScreen />;
+      case 'Teams':
+        return <TeamListScreen />;
       case 'Profile':
         return <ProfileStack />;
       default:
@@ -341,6 +361,12 @@ const WebNavigator = () => {
     // Employees: Only for admin, rh, chef_dequipe
     if (user?.role !== 'employee') {
       items.push(['Employees', t('navigation.employees')]);
+    }
+
+    // Companies & Teams: Only for admin
+    if (user?.role === 'admin') {
+      items.push(['Companies', t('navigation.companies')]);
+      items.push(['Teams', t('navigation.teams')]);
     }
 
     items.push(['Profile', t('navigation.profile')]);

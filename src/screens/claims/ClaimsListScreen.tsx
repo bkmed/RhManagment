@@ -6,11 +6,15 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { claimsDb } from '../../database/claimsDb';
-import { Claim } from '../../database/schema';
+import { employeesDb } from '../../database/employeesDb';
+import { companiesDb } from '../../database/companiesDb';
+import { teamsDb } from '../../database/teamsDb';
+import { Claim, Employee, Company, Team } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
@@ -23,31 +27,86 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [claims, setClaims] = useState<Claim[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadClaims = async () => {
+  const loadData = async () => {
     try {
-      let data: Claim[] = [];
-      if (user?.role === 'admin' || user?.role === 'rh') {
-        data = await claimsDb.getAll();
-      } else if (user?.employeeId) {
-        data = await claimsDb.getByEmployeeId(user.employeeId);
+      const [claimsData, employeesData, companiesData, teamsData] = await Promise.all([
+        claimsDb.getAll(),
+        employeesDb.getAll(),
+        companiesDb.getAll(),
+        teamsDb.getAll(),
+      ]);
+
+      let filteredClaims = claimsData;
+      if (user?.role === 'employee' && user?.employeeId) {
+        filteredClaims = claimsData.filter(c => c.employeeId === user.employeeId);
       }
+
       // Sort by urgency and date
-      data.sort((a, b) => {
+      filteredClaims.sort((a, b) => {
         if (a.isUrgent && !b.isUrgent) return -1;
         if (!a.isUrgent && b.isUrgent) return 1;
         return (
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       });
-      setClaims(data);
+
+      setClaims(filteredClaims);
+      setEmployees(employeesData);
+      setCompanies(companiesData);
+      setTeams(teamsData);
     } catch (error) {
-      console.error('Error loading claims:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const groupedData = useMemo(() => {
+    if (user?.role !== 'admin' && user?.role !== 'rh') {
+      return [{ type: 'direct', items: claims }];
+    }
+
+    const companiesMap = new Map<number | string, any>();
+
+    claims.forEach(claim => {
+      const employee = employees.find(e => e.id === claim.employeeId);
+      const companyId = employee?.companyId || 'other';
+      const teamId = employee?.teamId || 'other';
+
+      if (!companiesMap.has(companyId)) {
+        const company = companies.find(c => c.id === companyId);
+        companiesMap.set(companyId, {
+          id: companyId,
+          name: company?.name || 'Autres Entreprises',
+          teams: new Map(),
+        });
+      }
+
+      const companyGroup = companiesMap.get(companyId);
+      if (!companyGroup.teams.has(teamId)) {
+        const team = teams.find(t => t.id === teamId);
+        const manager = employees.find(e => e.id === team?.managerId);
+        companyGroup.teams.set(teamId, {
+          id: teamId,
+          name: team?.name || 'Sans Équipe',
+          managerName: manager?.name || 'N/A',
+          items: [],
+        });
+      }
+
+      companyGroup.teams.get(teamId).items.push(claim);
+    });
+
+    return Array.from(companiesMap.values()).map(c => ({
+      ...c,
+      teams: Array.from(c.teams.values()),
+    }));
+  }, [claims, user?.role, employees, companies, teams]);
 
   const handleUpdateStatus = async (
     id: number,
@@ -55,7 +114,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   ) => {
     try {
       await claimsDb.update(id, { status });
-      loadClaims(); // Reload list
+      loadData(); // Reload list
     } catch (error) {
       console.error('Failed to update status', error);
     }
@@ -63,7 +122,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      loadClaims();
+      loadData();
     }, [user]),
   );
 
@@ -78,8 +137,9 @@ export const ClaimsListScreen = ({ navigation }: any) => {
     }
   };
 
-  const renderItem = ({ item }: { item: Claim }) => (
+  const renderClaim = (item: Claim) => (
     <TouchableOpacity
+      key={item.id}
       style={styles.card}
       onPress={() => navigation.navigate('ClaimDetails', { claimId: item.id })}
     >
@@ -156,17 +216,39 @@ export const ClaimsListScreen = ({ navigation }: any) => {
           style={{ marginTop: 20 }}
         />
       ) : (
-        <FlatList
-          data={claims}
-          renderItem={renderItem}
-          keyExtractor={item => item.id?.toString() || ''}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
+        <ScrollView contentContainerStyle={styles.listContent}>
+          {groupedData.length === 0 && (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>{t('claims.empty')}</Text>
             </View>
-          }
-        />
+          )}
+
+          {groupedData.map((companyGroup: any) => (
+            <View key={companyGroup.id} style={styles.companySection}>
+              {companyGroup.name !== 'direct' && (
+                <View style={styles.companyHeader}>
+                  <Text style={styles.companyName}>{companyGroup.name}</Text>
+                </View>
+              )}
+
+              {(companyGroup.teams || []).map((teamGroup: any) => (
+                <View key={teamGroup.id} style={styles.teamSection}>
+                  {teamGroup.name && (
+                    <View style={styles.teamHeader}>
+                      <View style={styles.teamInfo}>
+                        <Text style={styles.teamName}>{teamGroup.name}</Text>
+                        <Text style={styles.teamManager}>Chef: {teamGroup.managerName}</Text>
+                      </View>
+                    </View>
+                  )}
+                  {teamGroup.items.map((claim: Claim) => renderClaim(claim))}
+                </View>
+              ))}
+
+              {companyGroup.type === 'direct' && companyGroup.items.map((claim: Claim) => renderClaim(claim))}
+            </View>
+          ))}
+        </ScrollView>
       )}
 
       {/* Add Claim FAB */}
@@ -307,5 +389,46 @@ const createStyles = (theme: Theme) =>
       fontSize: 32,
       color: '#FFF',
       marginTop: -2,
+    },
+    companySection: {
+      marginBottom: theme.spacing.l,
+    },
+    companyHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: theme.spacing.s,
+      borderBottomWidth: 2,
+      borderBottomColor: theme.colors.primary,
+      marginBottom: theme.spacing.m,
+    },
+    companyName: {
+      ...theme.textVariants.header,
+      color: theme.colors.primary,
+      fontSize: 20,
+    },
+    teamSection: {
+      marginLeft: theme.spacing.m,
+      marginBottom: theme.spacing.m,
+    },
+    teamHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: theme.spacing.s,
+      backgroundColor: theme.colors.background,
+      padding: theme.spacing.s,
+      borderRadius: theme.spacing.s,
+    },
+    teamInfo: {
+      flex: 1,
+    },
+    teamName: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.text,
+      fontSize: 16,
+    },
+    teamManager: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      fontStyle: 'italic',
     },
   });

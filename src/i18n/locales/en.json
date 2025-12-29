@@ -65,7 +65,9 @@
     "profile": "Profile",
     "personalInfo": "Personal Information",
     "employmentDetails": "Employment Details",
-    "claims": "Claims"
+    "claims": "Claims",
+    "companies": "Companies",
+    "teams": "Teams"
   },
   "roles": {
     "admin": "Administrator",

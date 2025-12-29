@@ -5,16 +5,19 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
-import { Leave } from '../../database/schema';
+import { employeesDb } from '../../database/employeesDb';
+import { companiesDb } from '../../database/companiesDb';
+import { teamsDb } from '../../database/teamsDb';
+import { Leave, Employee, Company, Team } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 import { formatDate } from '../../utils/dateUtils';
-
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -24,25 +27,34 @@ export const LeaveListScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
   const [leaves, setLeaves] = useState<Leave[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const loadLeaves = async () => {
+  const loadData = async () => {
     try {
-      let data = await leavesDb.getUpcoming();
+      const [leavesData, employeesData, companiesData, teamsData] = await Promise.all([
+        leavesDb.getUpcoming(),
+        employeesDb.getAll(),
+        companiesDb.getAll(),
+        teamsDb.getAll(),
+      ]);
 
-      // Role-based filtering
+      let filteredLeaves = leavesData;
       if (user?.role === 'employee' && user?.employeeId) {
-        data = data.filter(leave => leave.employeeId === user.employeeId);
-      } else if (user?.role === 'chef_dequipe' && user?.department) {
-        // Chef sees leaves for their department
-        // Logic depends on data availability
+        filteredLeaves = leavesData.filter(leave => leave.employeeId === user.employeeId);
       }
 
-      setLeaves(data);
+      setLeaves(filteredLeaves);
+      setEmployees(employeesData);
+      setCompanies(companiesData);
+      setTeams(teamsData);
     } catch (error) {
-      console.error('Error loading leaves:', error);
+      console.error('Error loading data:', error);
       showToast(t('leaves.loadError'), 'error');
     } finally {
       setLoading(false);
@@ -51,44 +63,71 @@ export const LeaveListScreen = ({ navigation }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      loadLeaves();
+      loadData();
     }, []),
   );
 
-  const filteredLeaves = useMemo(() => {
-    if (!searchQuery) return leaves;
+  const groupedData = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
-    return leaves.filter(
+    const filtered = leaves.filter(
       leave =>
         leave.title.toLowerCase().includes(lowerQuery) ||
         (leave.employeeName && leave.employeeName.toLowerCase().includes(lowerQuery)),
     );
-  }, [leaves, searchQuery]);
 
-  const formatDateTime = (dateTimeString: string) => {
-    const date = new Date(dateTimeString);
-    const dateStr = date.toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-    const timeStr = date.toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-    return { dateStr, timeStr };
-  };
+    if (user?.role !== 'admin' && user?.role !== 'rh') {
+      return [{ type: 'direct', items: filtered }];
+    }
 
-  const renderLeave = ({ item }: { item: Leave }) => {
+    // Grouping logic for Admin
+    const groups: any[] = [];
+    const companiesMap = new Map<number | string, any>();
+
+    filtered.forEach(leave => {
+      const employee = employees.find(e => e.id === leave.employeeId);
+      const companyId = employee?.companyId || 'other';
+      const teamId = employee?.teamId || 'other';
+
+      if (!companiesMap.has(companyId)) {
+        const company = companies.find(c => c.id === companyId);
+        companiesMap.set(companyId, {
+          id: companyId,
+          name: company?.name || 'Autres Entreprises',
+          teams: new Map(),
+        });
+      }
+
+      const companyGroup = companiesMap.get(companyId);
+      if (!companyGroup.teams.has(teamId)) {
+        const team = teams.find(t => t.id === teamId);
+        const manager = employees.find(e => e.id === team?.managerId);
+        companyGroup.teams.set(teamId, {
+          id: teamId,
+          name: team?.name || 'Sans Équipe',
+          managerName: manager?.name || 'N/A',
+          items: [],
+        });
+      }
+
+      companyGroup.teams.get(teamId).items.push(leave);
+    });
+
+    // Convert Map to Array
+    return Array.from(companiesMap.values()).map(c => ({
+      ...c,
+      teams: Array.from(c.teams.values()),
+    }));
+  }, [leaves, searchQuery, user?.role, employees, companies, teams]);
+
+  const renderLeave = (item: Leave) => {
     const startStr = formatDate(item.startDate || item.dateTime);
     const endStr = item.endDate ? formatDate(item.endDate) : null;
 
     return (
       <TouchableOpacity
+        key={item.id}
         style={styles.card}
-        onPress={() =>
-          navigation.navigate('LeaveDetails', { leaveId: item.id })
-        }
+        onPress={() => navigation.navigate('LeaveDetails', { leaveId: item.id })}
       >
         <View style={styles.dateColumn}>
           <Text style={styles.dateText}>{startStr}</Text>
@@ -101,9 +140,6 @@ export const LeaveListScreen = ({ navigation }: any) => {
           {item.employeeName && (
             <Text style={styles.employee}>{item.employeeName}</Text>
           )}
-          {item.location && (
-            <Text style={styles.location}>📍 {item.location}</Text>
-          )}
           <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
             <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
               {t(`leaveStatus.${item.status}`)}
@@ -113,13 +149,6 @@ export const LeaveListScreen = ({ navigation }: any) => {
       </TouchableOpacity>
     );
   };
-
-  const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{t('leaves.noLeaves')}</Text>
-      <Text style={styles.emptySubText}>{t('leaves.addFirst')}</Text>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -139,13 +168,40 @@ export const LeaveListScreen = ({ navigation }: any) => {
           <Text style={styles.approvalLinkText}>🔔 {t('leaves.approvals')}</Text>
         </TouchableOpacity>
       )}
-      <FlatList
-        data={filteredLeaves}
-        renderItem={renderLeave}
-        keyExtractor={item => item.id?.toString() || ''}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={!loading ? renderEmpty : null}
-      />
+
+      <ScrollView contentContainerStyle={styles.listContent}>
+        {groupedData.length === 0 && !loading && (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>{t('leaves.noLeaves')}</Text>
+          </View>
+        )}
+
+        {groupedData.map((companyGroup: any) => (
+          <View key={companyGroup.id} style={styles.companySection}>
+            {companyGroup.name !== 'direct' && (
+              <View style={styles.companyHeader}>
+                <Text style={styles.companyName}>{companyGroup.name}</Text>
+              </View>
+            )}
+
+            {(companyGroup.teams || []).map((teamGroup: any) => (
+              <View key={teamGroup.id} style={styles.teamSection}>
+                {teamGroup.name && (
+                  <View style={styles.teamHeader}>
+                    <View style={styles.teamInfo}>
+                      <Text style={styles.teamName}>{teamGroup.name}</Text>
+                      <Text style={styles.teamManager}>Chef: {teamGroup.managerName}</Text>
+                    </View>
+                  </View>
+                )}
+                {teamGroup.items.map((leave: Leave) => renderLeave(leave))}
+              </View>
+            ))}
+
+            {companyGroup.type === 'direct' && companyGroup.items.map((leave: Leave) => renderLeave(leave))}
+          </View>
+        ))}
+      </ScrollView>
 
       <TouchableOpacity
         style={styles.fab}
@@ -284,6 +340,47 @@ const createStyles = (theme: Theme) =>
     approvalLinkText: {
       color: theme.colors.primary,
       fontWeight: 'bold',
+    },
+    companySection: {
+      marginBottom: theme.spacing.l,
+    },
+    companyHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: theme.spacing.s,
+      borderBottomWidth: 2,
+      borderBottomColor: theme.colors.primary,
+      marginBottom: theme.spacing.m,
+    },
+    companyName: {
+      ...theme.textVariants.header,
+      color: theme.colors.primary,
+      fontSize: 20,
+    },
+    teamSection: {
+      marginLeft: theme.spacing.m,
+      marginBottom: theme.spacing.m,
+    },
+    teamHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: theme.spacing.s,
+      backgroundColor: theme.colors.background,
+      padding: theme.spacing.s,
+      borderRadius: theme.spacing.s,
+    },
+    teamInfo: {
+      flex: 1,
+    },
+    teamName: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.text,
+      fontSize: 16,
+    },
+    teamManager: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      fontStyle: 'italic',
     },
   });
 
