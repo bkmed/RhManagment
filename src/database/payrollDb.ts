@@ -22,7 +22,8 @@ const saveAllHistory = (history: PayrollHistory[]): void => {
 export const payrollDb = {
   // Get all payroll items
   getAll: async (): Promise<Payroll[]> => {
-    return selectAllPayroll(store.getState());
+    const items = selectAllPayroll(store.getState());
+    return [...items];
   },
 
   // Get payroll item by ID

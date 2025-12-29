@@ -20,6 +20,11 @@ import claimsReducer from './slices/claimsSlice';
 import illnessesReducer from './slices/illnessesSlice';
 import companiesReducer from './slices/companiesSlice';
 import teamsReducer from './slices/teamsSlice';
+import goalsReducer from './slices/goalsSlice';
+import performanceReducer from './slices/performanceSlice';
+import announcementsReducer from './slices/announcementsSlice';
+import notificationsReducer from './slices/notificationsSlice';
+import messagesReducer from './slices/messagesSlice';
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -30,12 +35,17 @@ const rootReducer = combineReducers({
     illnesses: illnessesReducer,
     companies: companiesReducer,
     teams: teamsReducer,
+    goals: goalsReducer,
+    performance: performanceReducer,
+    announcements: announcementsReducer,
+    notifications: notificationsReducer,
+    messages: messagesReducer,
 });
 
 const persistConfig = {
     key: 'root',
     storage: reduxStorage,
-    whitelist: ['auth', 'leaves', 'employees', 'payroll', 'claims', 'illnesses', 'companies', 'teams'], // add slices here to persist
+    whitelist: ['auth', 'leaves', 'employees', 'payroll', 'claims', 'illnesses', 'companies', 'teams', 'goals', 'performance', 'announcements', 'notifications', 'messages'], // add slices here to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

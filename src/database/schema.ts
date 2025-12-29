@@ -116,25 +116,99 @@ export interface Team {
   updatedAt: string;
 }
 
+export interface EmergencyContact {
+  name: string;
+  phone: string;
+  relationship: string;
+}
+
+export interface SocialLinks {
+  linkedin?: string;
+  skype?: string;
+  twitter?: string;
+  website?: string;
+}
+
+export interface JobHistoryItem {
+  company: string;
+  role: string;
+  period: string; // e.g. "2020 - 2022"
+  description?: string;
+}
+
+export interface PerformanceReview {
+  id?: number;
+  employeeId: number;
+  reviewerId: number;
+  period: string; // e.g. "Q1 2024"
+  score: number; // 1-5
+  comments: string;
+  date: string;
+  createdAt: string;
+}
+
+export interface Goal {
+  id?: number;
+  employeeId: number;
+  title: string;
+  description: string;
+  deadline: string;
+  progress: number; // 0-100
+  status: 'todo' | 'in_progress' | 'completed' | 'cancelled';
+  createdAt: string;
+}
+
+export interface Announcement {
+  id?: number;
+  title: string;
+  content: string;
+  authorId: number;
+  date: string;
+  targetDepartment?: string; // Optional: specific department or 'all'
+  createdAt: string;
+  category: 'news' | 'event' | 'alert';
+}
+
+export interface ChatMessage {
+  id: string;
+  text: string;
+  senderId: string;
+  receiverId: string; // Could be 'all' for company-wide chat or common team ID
+  createdAt: string;
+}
+
 export interface Employee {
   id?: number;
   name: string;
+  firstName?: string;
+  lastName?: string;
   position?: string;
   phone?: string;
   email?: string;
   address?: string;
+  city?: string;
+  country: string;
+  age?: number;
+  gender?: 'male' | 'female' | 'other';
   photoUri?: string;
   notes?: string;
   department?: string;
-  role?: string;
+  role?: string; // 'admin' | 'rh' | 'manager' | 'employee'
   teamId?: number;
   companyId?: number;
   vacationDaysPerYear: number;
   remainingVacationDays: number;
   statePaidLeaves: number;
-  country: string;
+  hiringDate?: string;
+
+  // Extended Details
+  emergencyContact?: EmergencyContact;
+  socialLinks?: SocialLinks;
+  jobHistory?: JobHistoryItem[];
+  careerGoals?: string;
+  skills?: string[];
+
   createdAt: string;
   updatedAt: string;
   location?: string;
-  hiringDate?: string;
 }

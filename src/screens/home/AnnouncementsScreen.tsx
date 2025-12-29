@@ -1,0 +1,377 @@
+import React, { useState, useMemo } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+    Modal,
+    TextInput,
+    Platform,
+    ScrollView,
+} from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import {
+    selectAllAnnouncements,
+    addAnnouncement,
+    deleteAnnouncement
+} from '../../store/slices/announcementsSlice';
+import { Announcement } from '../../database/schema';
+import { formatDate } from '../../utils/dateUtils';
+import { RootState } from '../../store';
+
+export const AnnouncementsScreen = () => {
+    const { t } = useTranslation();
+    const { theme } = useTheme();
+    const { user } = useAuth();
+    const dispatch = useDispatch();
+    const announcements = useSelector(selectAllAnnouncements);
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [newTitle, setNewTitle] = useState('');
+    const [newContent, setNewContent] = useState('');
+    const [newCategory, setNewCategory] = useState<'news' | 'event' | 'alert'>('news');
+
+    const isAdmin = user?.role === 'admin' || user?.role === 'rh';
+
+    const handleCreateAnnouncement = () => {
+        if (!newTitle.trim() || !newContent.trim()) return;
+
+        const announcement: Announcement = {
+            id: Math.random().toString(36).substr(2, 9),
+            title: newTitle,
+            content: newContent,
+            category: newCategory,
+            authorId: user?.id || '',
+            authorName: user?.name || 'Admin',
+            createdAt: new Date().toISOString(),
+            companyId: user?.companyId,
+        };
+
+        dispatch(addAnnouncement(announcement));
+        setModalVisible(false);
+        setNewTitle('');
+        setNewContent('');
+        setNewCategory('news');
+    };
+
+    const getCategoryIcon = (category: string) => {
+        switch (category) {
+            case 'event': return '📅';
+            case 'alert': return '⚠️';
+            default: return '📢';
+        }
+    };
+
+    const renderItem = ({ item }: { item: Announcement }) => (
+        <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+            <View style={styles.cardHeader}>
+                <View style={[styles.categoryBadge, { backgroundColor: `${theme.colors.primary}15` }]}>
+                    <Text style={styles.categoryIcon}>{getCategoryIcon(item.category)}</Text>
+                    <Text style={[styles.categoryText, { color: theme.colors.primary }]}>
+                        {item.category.toUpperCase()}
+                    </Text>
+                </View>
+                <Text style={[styles.dateText, { color: theme.colors.subText }]}>
+                    {formatDate(item.createdAt)}
+                </Text>
+            </View>
+
+            <Text style={[styles.title, { color: theme.colors.text }]}>{item.title}</Text>
+            <Text style={[styles.content, { color: theme.colors.text, opacity: 0.8 }]}>{item.content}</Text>
+
+            <View style={styles.cardFooter}>
+                <Text style={[styles.author, { color: theme.colors.subText }]}>
+                    {t('payroll.issuedBy')}: {item.authorName}
+                </Text>
+                {isAdmin && (
+                    <TouchableOpacity
+                        onPress={() => dispatch(deleteAnnouncement(item.id))}
+                        style={styles.deleteButton}
+                    >
+                        <Text style={{ color: theme.colors.error, fontSize: 12, fontWeight: '600' }}>
+                            {t('common.delete')}
+                        </Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+        </View>
+    );
+
+    return (
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <FlatList
+                data={[...announcements].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={styles.listContent}
+                ListEmptyComponent={
+                    <View style={styles.emptyContainer}>
+                        <Text style={[styles.emptyText, { color: theme.colors.subText }]}>
+                            {t('announcements.noAnnouncements')}
+                        </Text>
+                    </View>
+                }
+            />
+
+            {isAdmin && (
+                <TouchableOpacity
+                    style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+                    onPress={() => setModalVisible(true)}
+                >
+                    <Text style={styles.fabIcon}>+</Text>
+                </TouchableOpacity>
+            )}
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContainer, { backgroundColor: theme.colors.surface }]}>
+                        <Text style={[styles.modalTitle, { color: theme.colors.text }]}>
+                            {t('announcements.addAnnouncement')}
+                        </Text>
+
+                        <ScrollView>
+                            <Text style={[styles.label, { color: theme.colors.text }]}>{t('payroll.name')}</Text>
+                            <TextInput
+                                style={[styles.input, { borderColor: theme.colors.border, color: theme.colors.text }]}
+                                value={newTitle}
+                                onChangeText={setNewTitle}
+                                placeholder={t('announcements.placeholder')}
+                                placeholderTextColor={theme.colors.subText}
+                            />
+
+                            <Text style={[styles.label, { color: theme.colors.text }]}>{t('claims.description')}</Text>
+                            <TextInput
+                                style={[styles.input, styles.textArea, { borderColor: theme.colors.border, color: theme.colors.text }]}
+                                value={newContent}
+                                onChangeText={setNewContent}
+                                multiline
+                                numberOfLines={4}
+                                placeholder={t('announcements.placeholder')}
+                                placeholderTextColor={theme.colors.subText}
+                            />
+
+                            <Text style={[styles.label, { color: theme.colors.text }]}>{t('claims.type')}</Text>
+                            <View style={styles.categoryToggle}>
+                                {(['news', 'event', 'alert'] as const).map((cat) => (
+                                    <TouchableOpacity
+                                        key={cat}
+                                        onPress={() => setNewCategory(cat)}
+                                        style={[
+                                            styles.categoryOption,
+                                            { borderColor: theme.colors.border },
+                                            newCategory === cat && { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary }
+                                        ]}
+                                    >
+                                        <Text style={[
+                                            styles.categoryOptionText,
+                                            { color: theme.colors.text },
+                                            newCategory === cat && { color: '#FFF' }
+                                        ]}>
+                                            {cat.toUpperCase()}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </ScrollView>
+
+                        <View style={styles.modalFooter}>
+                            <TouchableOpacity
+                                style={[styles.modalButton, { backgroundColor: theme.colors.border }]}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Text style={{ color: theme.colors.text }}>{t('common.cancel')}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
+                                onPress={handleCreateAnnouncement}
+                            >
+                                <Text style={{ color: '#FFF', fontWeight: 'bold' }}>{t('announcements.publish')}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    listContent: {
+        padding: 16,
+        paddingBottom: 100,
+    },
+    card: {
+        padding: 16,
+        borderRadius: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 3,
+            },
+            web: {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            },
+        }),
+    },
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    categoryBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+        gap: 6,
+    },
+    categoryIcon: {
+        fontSize: 14,
+    },
+    categoryText: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        letterSpacing: 0.5,
+    },
+    dateText: {
+        fontSize: 12,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    content: {
+        fontSize: 14,
+        lineHeight: 20,
+        marginBottom: 16,
+    },
+    cardFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(0,0,0,0.05)',
+        paddingTop: 12,
+    },
+    author: {
+        fontSize: 12,
+        fontStyle: 'italic',
+    },
+    deleteButton: {
+        padding: 4,
+    },
+    fab: {
+        position: 'absolute',
+        bottom: 24,
+        right: 24,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+    },
+    fabIcon: {
+        fontSize: 32,
+        color: '#FFF',
+        lineHeight: 36,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    modalContainer: {
+        width: '100%',
+        maxWidth: 500,
+        borderRadius: 24,
+        padding: 24,
+        maxHeight: '80%',
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: '600',
+        marginBottom: 8,
+        marginTop: 16,
+    },
+    input: {
+        borderWidth: 1,
+        borderRadius: 12,
+        padding: 12,
+        fontSize: 16,
+    },
+    textArea: {
+        height: 120,
+        textAlignVertical: 'top',
+    },
+    categoryToggle: {
+        flexDirection: 'row',
+        gap: 8,
+        marginTop: 8,
+    },
+    categoryOption: {
+        flex: 1,
+        padding: 10,
+        borderRadius: 10,
+        borderWidth: 1,
+        alignItems: 'center',
+    },
+    categoryOptionText: {
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    modalFooter: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 12,
+        marginTop: 24,
+    },
+    modalButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 12,
+        minWidth: 100,
+        alignItems: 'center',
+    },
+    emptyContainer: {
+        height: 300,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyText: {
+        fontSize: 16,
+    },
+});

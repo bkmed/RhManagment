@@ -1,4 +1,4 @@
-import React, { useState, useMemo, createContext } from 'react';
+import React, { useState, useMemo, createContext, useRef } from 'react';
 import {
   Platform,
   View,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   useWindowDimensions,
+  ScrollView,
 } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
@@ -41,6 +42,15 @@ import { ClaimsListScreen } from '../screens/claims/ClaimsListScreen';
 import { ClaimDetailsScreen } from '../screens/claims/ClaimDetailsScreen';
 import { CompanyListScreen } from '../screens/companies/CompanyListScreen';
 import { TeamListScreen } from '../screens/teams/TeamListScreen';
+import { TeamVacationsScreen } from '../screens/teams/TeamVacationsScreen';
+import { CareerHubScreen } from '../screens/profile/CareerHubScreen';
+import { PerformanceReviewScreen } from '../screens/analytics/PerformanceReviewScreen';
+import { OrgChartScreen } from '../screens/companies/OrgChartScreen';
+import { AnnouncementsScreen } from '../screens/home/AnnouncementsScreen';
+import { ChatScreen } from '../screens/home/ChatScreen';
+import { NotificationBell } from '../components/common/NotificationBell';
+import { SearchOverlay } from '../components/common/SearchOverlay';
+import { ChatBot } from '../components/common/ChatBot';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 enableScreens();
@@ -108,6 +118,11 @@ const LeavesStack = () => {
         component={LeaveDetailsScreen}
         options={{ title: t('leaves.details') }}
       />
+      <Stack.Screen
+        name="TeamVacations"
+        component={TeamVacationsScreen}
+        options={{ title: t('navigation.teams') }}
+      />
     </Stack.Navigator>
   );
 };
@@ -163,6 +178,24 @@ const EmployeesStack = () => {
   );
 };
 
+const AnalyticsStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="AnalyticsMain"
+        component={AnalyticsScreen}
+        options={{ title: t('navigation.analytics') }}
+      />
+      <Stack.Screen
+        name="PerformanceReview"
+        component={PerformanceReviewScreen}
+        options={{ title: t('performance.title') || 'Évaluations' }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 
 const ClaimsStack = () => {
   const { t } = useTranslation();
@@ -187,15 +220,51 @@ const ClaimsStack = () => {
   );
 };
 
-const ProfileStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Profile" component={ProfileScreen} />
-  </Stack.Navigator>
-);
+const CompanyStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="CompanyList"
+        component={CompanyListScreen}
+        options={{ title: t('navigation.companies') }}
+      />
+      <Stack.Screen
+        name="OrgChart"
+        component={OrgChartScreen}
+        options={{ title: t('navigation.orgChart') }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const ProfileStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProfileMain" component={ProfileScreen} />
+      <Stack.Screen
+        name="CareerHub"
+        component={CareerHubScreen}
+        options={{ headerShown: true, title: t('navigation.careerHub') }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 const HomeStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen
+      name="Announcements"
+      component={AnnouncementsScreen}
+      options={{ headerShown: true, title: 'News' }}
+    />
+    <Stack.Screen
+      name="Chat"
+      component={ChatScreen}
+      options={{ headerShown: true, title: 'Chat' }}
+    />
   </Stack.Navigator>
 );
 
@@ -214,39 +283,106 @@ const TabNavigator = () => (
 // ======= Drawer (Mobile) =======
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigator = () => {
+const CustomDrawerContent = (props: any) => {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const { t } = useTranslation();
+  const { state, navigation } = props;
+
+  const items = useMemo(() => {
+    const baseItems = [
+      { name: 'Main', label: t('navigation.home'), icon: '🏠' },
+    ];
+
+    baseItems.push({ name: 'Remote', label: t('remote.title'), icon: '📅' });
+    baseItems.push({ name: 'Claims', label: t('navigation.claims'), icon: '📝' });
+
+    if (user?.role !== 'employee') {
+      baseItems.push({ name: 'Analytics', label: t('navigation.analytics'), icon: '📊' });
+      baseItems.push({ name: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' });
+      baseItems.push({ name: 'Employees', label: t('navigation.employees'), icon: '👥' });
+    }
+
+    if (user?.role === 'admin') {
+      baseItems.push({ name: 'Companies', label: t('navigation.companies'), icon: '🏢' });
+      baseItems.push({ name: 'Teams', label: t('navigation.teams'), icon: '🤝' });
+    }
+
+    baseItems.push({ name: 'Profile', label: t('navigation.profile'), icon: '👤' });
+    baseItems.push({ name: 'Announcements', label: t('navigation.announcements'), icon: '📢' });
+    baseItems.push({ name: 'Chat', label: t('navigation.chat'), icon: '💬' });
+    return baseItems;
+  }, [t, user?.role]);
 
   return (
-    <Drawer.Navigator screenOptions={{ headerShown: false }}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.surface }}>
+      <View style={{
+        padding: 24,
+        paddingTop: 60,
+        backgroundColor: theme.colors.primary,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        marginBottom: 12,
+        ...theme.shadows.medium
+      }}>
+        <Image
+          source={require('../../public/logo.png')}
+          style={{ width: 60, height: 60, tintColor: '#FFF', marginBottom: 16 }}
+          resizeMode="contain"
+        />
+        <Text style={{ color: '#FFF', fontSize: 20, fontWeight: 'bold' }}>{user?.name}</Text>
+        <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14 }}>{t(`roles.${user?.role}`)}</Text>
+      </View>
+
+      {items.map((item) => {
+        const isFocused = state.routes[state.index].name === item.name;
+
+        return (
+          <TouchableOpacity
+            key={item.name}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: 16,
+              marginHorizontal: 12,
+              marginVertical: 4,
+              borderRadius: 12,
+              backgroundColor: isFocused ? `${theme.colors.primary}15` : 'transparent',
+            }}
+            onPress={() => navigation.navigate(item.name)}
+          >
+            <Text style={{ fontSize: 20, marginRight: 16 }}>{item.icon}</Text>
+            <Text style={{
+              fontSize: 16,
+              fontWeight: isFocused ? '700' : '500',
+              color: isFocused ? theme.colors.primary : theme.colors.text
+            }}>
+              {item.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+};
+
+const DrawerNavigator = () => {
+  return (
+    <Drawer.Navigator
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={{ headerShown: false }}
+    >
       <Drawer.Screen name="Main" component={TabNavigator} />
-      {user?.role !== 'employee' && (
-        <Drawer.Screen name="Analytics" component={AnalyticsScreen} />
-      )}
-      {user?.role !== 'employee' && (
-        <Drawer.Screen name="Illnesses" component={IllnessesStack} />
-      )}
-      {user?.role !== 'employee' && (
-        <Drawer.Screen name="Employees" component={EmployeesStack} />
-      )}
-      {user?.role === 'admin' && (
-        <>
-          <Drawer.Screen
-            name="Companies"
-            component={CompanyListScreen}
-            options={{ title: t('navigation.companies') }}
-          />
-          <Drawer.Screen
-            name="Teams"
-            component={TeamListScreen}
-            options={{ title: t('navigation.teams') }}
-          />
-        </>
-      )}
+      <Drawer.Screen name="Analytics" component={AnalyticsStack} />
+      <Drawer.Screen name="Illnesses" component={IllnessesStack} />
+      <Drawer.Screen name="Employees" component={EmployeesStack} />
+      <Drawer.Screen name="Companies" component={CompanyStack} />
+      <Drawer.Screen name="Teams" component={TeamListScreen} />
       <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
-      <Drawer.Screen name="Claims" component={ClaimsStack} options={{ title: t('navigation.claims') }} />
+      <Drawer.Screen name="Claims" component={ClaimsStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
+      <Drawer.Screen name="Announcements" component={AnnouncementsScreen} />
+      <Drawer.Screen name="Chat" component={ChatScreen} />
     </Drawer.Navigator>
   );
 };
@@ -263,6 +399,8 @@ const WebNavigator = () => {
   const [subScreen, setSubScreen] = useState('');
   const [screenParams, setScreenParams] = useState<any>({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const scrollViewRef = useRef<any>(null);
 
   const contextValue = useMemo(
     () => ({
@@ -279,6 +417,16 @@ const WebNavigator = () => {
     [activeTab, subScreen, screenParams],
   );
 
+  const handleSearchSelect = (result: any) => {
+    setIsSearchVisible(false);
+    if (result.type === 'employee') {
+      contextValue.setActiveTab('Employees', 'EmployeeDetails', { id: Number(result.id) });
+    } else if (result.type === 'team') {
+      contextValue.setActiveTab('Teams');
+    } else if (result.type === 'announcement') {
+      setActiveTab('Announcements');
+    }
+  };
   const getActiveComponent = () => {
     // Create a mock route object for web screens
     const mockRoute = { params: screenParams };
@@ -299,11 +447,15 @@ const WebNavigator = () => {
           return <LeaveDetailsScreen route={mockRoute} />;
         if (subScreen === 'LeaveApprovalList')
           return <LeaveApprovalListScreen />;
+        if (subScreen === 'TeamVacations')
+          return <TeamVacationsScreen />;
         return <LeavesStack />;
       case 'Remote':
         return <RemoteCalendarScreen />;
       case 'Analytics':
-        return <AnalyticsScreen />;
+        if (subScreen === 'PerformanceReview')
+          return <PerformanceReviewScreen />;
+        return <AnalyticsStack />;
       case 'Illnesses':
         if (subScreen === 'AddIllness')
           return <AddIllnessScreen route={mockRoute} />;
@@ -323,10 +475,18 @@ const WebNavigator = () => {
         if (subScreen === 'ClaimDetails') return <ClaimDetailsScreen route={mockRoute} />;
         return <ClaimsStack />;
       case 'Companies':
-        return <CompanyListScreen />;
+        if (subScreen === 'OrgChart')
+          return <OrgChartScreen />;
+        return <CompanyStack />;
       case 'Teams':
         return <TeamListScreen />;
+      case 'Announcements':
+        return <AnnouncementsScreen />;
+      case 'Chat':
+        return <ChatScreen />;
       case 'Profile':
+        if (subScreen === 'CareerHub')
+          return <CareerHubScreen />;
         return <ProfileStack />;
       default:
         return <HomeStack />;
@@ -334,130 +494,184 @@ const WebNavigator = () => {
   };
 
   const navItems = useMemo(() => {
-    const items = [['Home', t('navigation.home')]];
+    const items = [{ key: 'Home', label: t('navigation.home'), icon: '🏠' }];
 
-    // Payroll visible to all
-    items.push(['Payroll', t('navigation.payroll')]);
+    items.push({ key: 'Payroll', label: t('navigation.payroll'), icon: '💰' });
+    items.push({ key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' });
+    items.push({ key: 'Remote', label: t('remote.title'), icon: '📅' });
+    items.push({ key: 'Claims', label: t('navigation.claims'), icon: '📝' });
+    items.push({ key: 'Announcements', label: t('navigation.announcements'), icon: '📢' });
+    items.push({ key: 'Chat', label: t('navigation.chat'), icon: '💬' });
 
-    // Leaves visible to all
-    items.push(['Leaves', t('navigation.leaves')]);
-
-    // Remote visible to all
-    items.push(['Remote', t('remote.title')]);
-
-    // Claims visible to all
-    items.push(['Claims', t('navigation.claims')]);
-
-    // Analytics: Not for employees
     if (user?.role !== 'employee') {
-      items.push(['Analytics', t('navigation.analytics')]);
+      items.push({ key: 'Analytics', label: t('navigation.analytics'), icon: '📊' });
+      items.push({ key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' });
+      items.push({ key: 'Employees', label: t('navigation.employees'), icon: '👥' });
     }
 
-    // Illnesses: Not for employees
-    if (user?.role !== 'employee') {
-      items.push(['Illnesses', t('navigation.illnesses')]);
-    }
-
-    // Employees: Only for admin, rh, chef_dequipe
-    if (user?.role !== 'employee') {
-      items.push(['Employees', t('navigation.employees')]);
-    }
-
-    // Companies & Teams: Only for admin
     if (user?.role === 'admin') {
-      items.push(['Companies', t('navigation.companies')]);
-      items.push(['Teams', t('navigation.teams')]);
+      items.push({ key: 'Companies', label: t('navigation.companies'), icon: '🏢' });
+      items.push({ key: 'Teams', label: t('navigation.teams'), icon: '🤝' });
     }
 
-    items.push(['Profile', t('navigation.profile')]);
-
+    items.push({ key: 'Profile', label: t('navigation.profile'), icon: '👤' });
     return items;
   }, [t, user?.role]);
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
-      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        {/* Navbar */}
-        <View
-          style={[
-            webStyles.navbar,
+      <View style={[
+        { flex: 1, backgroundColor: theme.colors.background },
+        !isMobile && { flexDirection: 'row' }
+      ] as any}>
+
+        {/* Desktop Sidebar OR Mobile Header */}
+        {!isMobile ? (
+          <View style={[
+            webStyles.sidebar,
             {
               backgroundColor: theme.colors.surface,
-              borderBottomColor: theme.colors.border,
-              borderBottomWidth: 1,
-            },
-          ]}
-        >
-          <View style={webStyles.leftContainer}>
+              borderRightColor: theme.colors.border,
+              borderRightWidth: 1,
+            }
+          ]}>
             {/* Brand */}
+            <TouchableOpacity
+              style={webStyles.sidebarBrand}
+              onPress={() => setActiveTab('Home')}
+            >
+              <Image
+                source={require('../../public/logo.png')}
+                style={webStyles.sidebarLogo as any}
+                resizeMode="contain"
+              />
+              <Text style={[webStyles.sidebarTitle, { color: theme.colors.text }]}>
+                {t('home.appName')}
+              </Text>
+            </TouchableOpacity>
+
+            <View style={{ padding: 16, gap: 12 }}>
+              <TouchableOpacity
+                style={[webStyles.sidebarNavItem, { backgroundColor: `${theme.colors.primary}10` }]}
+                onPress={() => setIsSearchVisible(true)}
+              >
+                <Text style={webStyles.navIcon}>🔍</Text>
+                <Text style={[webStyles.navLabel, { color: theme.colors.primary }]}>{t('common.search')}</Text>
+              </TouchableOpacity>
+              <NotificationBell />
+            </View>
+
+            {/* Profile Section */}
+            <View style={webStyles.sidebarProfile}>
+              <View style={[webStyles.profileAvatar, { backgroundColor: theme.colors.primary }]}>
+                <Text style={webStyles.avatarText}>{user?.name?.charAt(0)}</Text>
+              </View>
+              <View style={webStyles.profileInfo}>
+                <Text style={[webStyles.profileName, { color: theme.colors.text }]}>{user?.name}</Text>
+                <Text style={[webStyles.profileRole, { color: theme.colors.subText }]}>{t(`roles.${user?.role}`)}</Text>
+              </View>
+            </View>
+
+            {/* Nav Items */}
+            <ScrollView style={webStyles.sidebarNav}>
+              {navItems.map((item) => {
+                const isActive = activeTab === item.key;
+                return (
+                  <TouchableOpacity
+                    key={item.key}
+                    onPress={() => {
+                      setActiveTab(item.key);
+                      setSubScreen('');
+                    }}
+                    style={[
+                      webStyles.sidebarNavItem,
+                      isActive && {
+                        backgroundColor: `${theme.colors.primary}10`,
+                        borderRightWidth: 3,
+                        borderRightColor: theme.colors.primary,
+                      }
+                    ]}
+                  >
+                    <Text style={webStyles.navIcon}>{item.icon}</Text>
+                    <Text
+                      style={[
+                        webStyles.navLabel,
+                        {
+                          color: isActive ? theme.colors.primary : theme.colors.text,
+                          fontWeight: isActive ? '700' : '500',
+                        },
+                      ]}
+                    >
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        ) : (
+          /* Mobile Header */
+          <View
+            style={[
+              webStyles.mobileHeader,
+              {
+                backgroundColor: theme.colors.surface,
+                borderBottomColor: theme.colors.border,
+                borderBottomWidth: 1,
+              },
+            ]}
+          >
             <TouchableOpacity
               style={webStyles.brandContainer}
               onPress={() => setActiveTab('Home')}
             >
               <Image
                 source={require('../../public/logo.png')}
-                style={webStyles.logo}
+                style={webStyles.logo as any}
                 resizeMode="contain"
               />
-              <Text style={[webStyles.title, { color: theme.colors.text }]}>
-                {t('home.appName')}
-              </Text>
             </TouchableOpacity>
 
-            {/* Back Button (Desktop: visible, Mobile: only if subScreen) */}
-            {subScreen && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingRight: 16 }}>
+              <TouchableOpacity onPress={() => setIsSearchVisible(true)}>
+                <Text style={{ fontSize: 20 }}>🔍</Text>
+              </TouchableOpacity>
+              <NotificationBell />
+              <TouchableOpacity
+                style={webStyles.hamburgerButton}
+                onPress={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <Text style={[webStyles.hamburgerText, { color: theme.colors.text }]}>
+                  ☰
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {/* Main Content Area */}
+        <View style={{ flex: 1 }}>
+          {/* Back button for sub-screens (Internal) */}
+          {subScreen && (
+            <View style={[webStyles.subHeader, { backgroundColor: theme.colors.surface, borderBottomWidth: 1, borderBottomColor: theme.colors.border }]}>
               <TouchableOpacity
                 style={webStyles.backButton}
                 onPress={() => setSubScreen('')}
               >
-                <Text style={webStyles.backButtonText}>
+                <Text style={[webStyles.backButtonText, { color: theme.colors.primary }]}>
                   ← {t('common.back')}
                 </Text>
               </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Desktop Navigation */}
-          {!isMobile && (
-            <View style={webStyles.navButtons}>
-              {navItems.map(([key, label]) => (
-                <TouchableOpacity
-                  key={key as string}
-                  onPress={() => setActiveTab(key as string)}
-                  style={webStyles.navButton}
-                >
-                  <Text
-                    style={[
-                      webStyles.navButtonText,
-                      {
-                        color:
-                          activeTab === key
-                            ? theme.colors.primary
-                            : theme.colors.subText,
-                      },
-                      activeTab === key && webStyles.activeNavButton,
-                    ]}
-                  >
-                    {label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
             </View>
           )}
 
-          {/* Mobile Menu Button */}
-          {isMobile && (
-            <TouchableOpacity
-              style={webStyles.hamburgerButton}
-              onPress={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Text
-                style={[webStyles.hamburgerText, { color: theme.colors.text }]}
-              >
-                ☰
-              </Text>
-            </TouchableOpacity>
-          )}
+          <ScrollView
+            ref={scrollViewRef}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ padding: isMobile ? 12 : 32 }}
+          >
+            {getActiveComponent()}
+          </ScrollView>
         </View>
 
         {/* Mobile Menu Overlay */}
@@ -492,28 +706,49 @@ const WebNavigator = () => {
                   ✕
                 </Text>
               </TouchableOpacity>
-              {navItems.map(([key, label]) => (
+
+              <View style={{ marginBottom: 20, alignItems: 'center' }}>
+                <Image
+                  source={require('../../public/logo.png')}
+                  style={{ width: 50, height: 50, marginBottom: 10 }}
+                  resizeMode="contain"
+                />
+                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{user?.name}</Text>
+              </View>
+
+              {navItems.map((item) => (
                 <TouchableOpacity
-                  key={key as string}
+                  key={item.key}
                   onPress={() => {
-                    setActiveTab(key as string);
+                    setActiveTab(item.key);
                     setIsMenuOpen(false);
                   }}
-                  style={webStyles.mobileMenuItem}
+                  style={[
+                    webStyles.mobileMenuItem,
+                    activeTab === item.key && {
+                      backgroundColor: `${theme.colors.primary}10`,
+                      borderRadius: 8,
+                      paddingLeft: 10,
+                    }
+                  ]}
                 >
-                  <Text
-                    style={[
-                      webStyles.mobileMenuItemText,
-                      {
-                        color:
-                          activeTab === key
-                            ? theme.colors.primary
-                            : theme.colors.text,
-                      },
-                    ]}
-                  >
-                    {label}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                    <Text style={{ fontSize: 22 }}>{item.icon}</Text>
+                    <Text
+                      style={[
+                        webStyles.mobileMenuItemText,
+                        {
+                          color:
+                            activeTab === item.key
+                              ? theme.colors.primary
+                              : theme.colors.text,
+                          fontWeight: activeTab === item.key ? '700' : '400',
+                        },
+                      ]}
+                    >
+                      {item.label}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               ))}
             </View>
@@ -523,10 +758,12 @@ const WebNavigator = () => {
             />
           </View>
         )}
-
-        {/* Content */}
-        <View style={{ flex: 1 }}>{getActiveComponent()}</View>
       </View>
+      <SearchOverlay
+        visible={isSearchVisible}
+        onClose={() => setIsSearchVisible(false)}
+        onSelect={handleSearchSelect}
+      />
     </WebNavigationContext.Provider>
   );
 };
@@ -572,48 +809,106 @@ const AppContent = () => {
       ) : (
         <DrawerNavigator />
       )}
+      <ChatBot />
     </>
   );
 };
 
 // ======= Web Styles =======
 const webStyles = StyleSheet.create({
-  navbar: {
-    height: 60,
+  sidebar: {
+    width: 260,
+    height: '100vh' as any,
+    position: 'sticky' as any,
+    top: 0,
+    paddingVertical: 24,
+    ...Platform.select({
+      web: {
+        boxShadow: '4px 0 10px rgba(0,0,0,0.05)',
+      }
+    })
+  },
+  sidebarBrand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    marginBottom: 40,
+    gap: 12,
+  },
+  sidebarLogo: {
+    width: 40,
+    height: 40,
+  },
+  sidebarTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  sidebarProfile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 32,
+    gap: 12,
+  },
+  profileAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  profileRole: {
+    fontSize: 12,
+  },
+  sidebarNav: {
+    flex: 1,
+  },
+  sidebarNavItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    marginBottom: 4,
+    gap: 16,
+  },
+  navIcon: {
+    fontSize: 20,
+  },
+  navLabel: {
+    fontSize: 15,
+  },
+  mobileHeader: {
+    height: 64,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    elevation: 3,
-    zIndex: 10,
+    zIndex: 100,
   },
-  leftContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  subHeader: {
+    height: 56,
+    paddingHorizontal: 24,
+    justifyContent: 'center',
   },
   brandContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   logo: {
-    width: 40,
-    height: 40,
-  },
-  title: { fontSize: 20, fontWeight: 'bold' },
-  navButtons: { flexDirection: 'row', gap: 20 },
-  navButton: { paddingVertical: 8, paddingHorizontal: 16 },
-  navButtonText: { fontSize: 16 },
-  activeNavButton: { fontWeight: '600' },
-  backButton: {
-    marginLeft: 20,
-    padding: 8,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-  },
-  backButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
+    width: 32,
+    height: 32,
   },
   hamburgerButton: {
     padding: 8,
@@ -621,29 +916,24 @@ const webStyles = StyleSheet.create({
   hamburgerText: {
     fontSize: 24,
   },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
   mobileMenuOverlay: {
     position: 'absolute',
-    top: 60,
+    top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 20,
-    flexDirection: 'row',
   },
   mobileMenu: {
-    width: 250,
-    height: '100%',
-    backgroundColor: '#FFFFFF', // Default light, overridden by theme
-    padding: 20,
-    zIndex: 1001, // Ensure it sits above everything
-    ...Platform.select({
-      web: {
-        boxShadow: '2px 0 5px rgba(0,0,0,0.2)',
-      },
-      default: {
-        elevation: 5,
-      },
-    }),
+    width: 280,
+    padding: 24,
   },
   closeButton: {
     alignSelf: 'flex-end',
@@ -651,15 +941,15 @@ const webStyles = StyleSheet.create({
     marginBottom: 10,
   },
   closeButtonText: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
   },
   mobileMenuItem: {
-    paddingVertical: 15,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginVertical: 4,
   },
   mobileMenuItemText: {
-    fontSize: 18,
+    fontSize: 17,
   },
 });

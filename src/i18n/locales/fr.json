@@ -52,7 +52,16 @@
         "deleteTitle": "Supprimer l'élément",
         "deleteMessage": "Êtes-vous sûr de vouloir supprimer cet élément ?",
         "viewHistory": "Voir l'historique",
-        "historyUnavailable": "Le suivi de l'historique n'est pas encore disponible"
+        "historyUnavailable": "Le suivi de l'historique n'est pas encore disponible",
+        "goal": "Objectif",
+        "myGoals": "Mes Objectifs",
+        "todo": "À faire",
+        "in_progress": "En cours",
+        "completed": "Terminé",
+        "deadline": "Échéance",
+        "progress": "Progression",
+        "total": "Total",
+        "searchPlaceholderGlobal": "Rechercher employés, équipes, news..."
     },
     "navigation": {
         "home": "Accueil",
@@ -67,7 +76,12 @@
         "employmentDetails": "Détails d'Emploi",
         "claims": "Réclamations",
         "companies": "Entreprises",
-        "teams": "Équipes"
+        "teams": "Équipes",
+        "careerHub": "Espace Carrière",
+        "orgChart": "Organigramme",
+        "announcements": "Annonces",
+        "notifications": "Notifications",
+        "chat": "Chat"
     },
     "roles": {
         "admin": "Administrateur",
@@ -119,7 +133,8 @@
         "tip": "Conseil : Activez les notifications pour ne jamais manquer vos rappels de paie !",
         "statePaidLeaves": "Congés payés État",
         "hiringDate": "Date d'embauche",
-        "seniority": "Ancienneté"
+        "seniority": "Ancienneté",
+        "careerGoalsSubtitle": "Gérez vos objectifs professionnels"
     },
     "payroll": {
         "title": "Paie",
@@ -299,7 +314,29 @@
         "noLeaves": "Aucun congé planifié",
         "addLeave": "Ajouter un congé",
         "addIllness": "Ajouter un dossier de maladie",
-        "notes": "Notes"
+        "notes": "Notes",
+        "firstName": "Prénom",
+        "lastName": "Nom de famille",
+        "age": "Âge",
+        "gender": "Genre",
+        "genderMale": "Homme",
+        "genderFemale": "Femme",
+        "genderOther": "Autre",
+        "hiringDate": "Date d'embauche",
+        "emergencyContact": "Contact d'urgence",
+        "emergencyName": "Nom du contact",
+        "emergencyPhone": "Téléphone du contact",
+        "emergencyRelationship": "Lien de parenté",
+        "socialLinks": "Liens Sociaux",
+        "linkedin": "LinkedIn",
+        "skype": "Skype",
+        "website": "Site Web",
+        "skills": "Compétences / Expertise",
+        "jobHistory": "Parcours Professionnel",
+        "company": "Entreprise",
+        "role": "Poste",
+        "period": "Période",
+        "description": "Description"
     },
     "analytics": {
         "title": "Analytiques",
@@ -320,6 +357,32 @@
         "illnessesExpiring_plural": "{{count}} dossiers de maladie expirent bientôt. Pensez à les traiter.",
         "upcomingLeavesInsight": "Vous avez {{count}} congé à venir. Préparez les remplacements !",
         "upcomingLeavesInsight_plural": "Vous avez {{count}} congés à venir. Préparez les remplacements !"
+    },
+    "performance": {
+        "title": "Suivi de Performance",
+        "goals": "Objectifs Professionnels",
+        "reviews": "Évaluations de Performance",
+        "noGoals": "Aucun objectif trouvé",
+        "noReviews": "Aucune évaluation trouvée"
+    },
+    "announcements": {
+        "title": "Annonces de l'Entreprise",
+        "noAnnouncements": "Aucune annonce trouvée",
+        "addAnnouncement": "Nouvelle Annonce",
+        "publish": "Publier",
+        "placeholder": "Quoi de neuf dans l'entreprise ?"
+    },
+    "notifications": {
+        "title": "Notifications",
+        "noNotifications": "Aucune notification pour le moment",
+        "unread": "Non lu",
+        "markAllAsRead": "Tout marquer comme lu"
+    },
+    "chat": {
+        "title": "Messagerie",
+        "noMessages": "Aucun message pour le moment",
+        "typeMessage": "Tapez un message...",
+        "send": "Envoyer"
     },
     "profile": {
         "title": "Profil",

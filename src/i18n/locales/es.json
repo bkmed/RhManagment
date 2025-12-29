@@ -49,7 +49,16 @@
         "deleteTitle": "Eliminar elemento",
         "deleteMessage": "¿Está seguro de que desea eliminar este elemento?",
         "viewHistory": "Ver historial",
-        "historyUnavailable": "El seguimiento del historial aún no está disponible"
+        "historyUnavailable": "El seguimiento del historial aún no está disponible",
+        "goal": "Objetivo",
+        "myGoals": "Mis Objetivos",
+        "todo": "Por hacer",
+        "in_progress": "En progreso",
+        "completed": "Completado",
+        "deadline": "Fecha límite",
+        "progress": "Progreso",
+        "total": "Total",
+        "searchPlaceholderGlobal": "Buscar empleados, equipos, noticias..."
     },
     "navigation": {
         "home": "Inicio",
@@ -64,7 +73,12 @@
         "employmentDetails": "Detalles de Empleo",
         "claims": "Reclamaciones",
         "companies": "Empresas",
-        "teams": "Equipos"
+        "teams": "Equipos",
+        "careerHub": "Centro de Carrera",
+        "orgChart": "Organigrama",
+        "announcements": "Anuncios",
+        "notifications": "Notificaciones",
+        "chat": "Chat"
     },
     "roles": {
         "admin": "Administrador",
@@ -116,7 +130,8 @@
         "tip": "Consejo: ¡Active las notificaciones para no perder nunca sus recordatorios de nómina!",
         "statePaidLeaves": "Vacaciones pagadas por el estado",
         "hiringDate": "Fecha de inicio",
-        "seniority": "Antigüedad"
+        "seniority": "Antigüedad",
+        "careerGoalsSubtitle": "Gestione sus objetivos profesionales"
     },
     "payroll": {
         "title": "Nómina",
@@ -317,6 +332,32 @@
         "illnessesExpiring_plural": "{{count}} casos de enfermedad que expiran pronto. Considere procesarlos.",
         "upcomingLeavesInsight": "Tiene {{count}} próxima vacación. ¡Prepárese para la cobertura!",
         "upcomingLeavesInsight_plural": "Tiene {{count}} próximas vacaciones. ¡Prepárese para la cobertura!"
+    },
+    "performance": {
+        "title": "Seguimiento de Rendimiento",
+        "goals": "Objetivos Profesionales",
+        "reviews": "Revisiones de Rendimiento",
+        "noGoals": "No se encontraron objetivos",
+        "noReviews": "No se encontraron revisiones"
+    },
+    "announcements": {
+        "title": "Anuncios de la Empresa",
+        "noAnnouncements": "No se encontraron anuncios",
+        "addAnnouncement": "Nuevo Anuncio",
+        "publish": "Publicar",
+        "placeholder": "¿Qué hay de nuevo en la empresa?"
+    },
+    "notifications": {
+        "title": "Notificaciones",
+        "noNotifications": "No hay notificaciones aún",
+        "unread": "Sin leer",
+        "markAllAsRead": "Marcar todo como leído"
+    },
+    "chat": {
+        "title": "Mensajería",
+        "noMessages": "No hay mensajes aún",
+        "typeMessage": "Escribe un mensaje...",
+        "send": "Enviar"
     },
     "profile": {
         "title": "Perfil",

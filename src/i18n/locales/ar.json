@@ -52,7 +52,16 @@
         "deleteTitle": "حذف العنصر",
         "deleteMessage": "هل أنت متأكد من حذف هذا العنصر؟",
         "viewHistory": "عرض السجل",
-        "historyUnavailable": "تتبع السجل غير متاح بعد"
+        "historyUnavailable": "تتبع السجل غير متاح بعد",
+        "goal": "هدف",
+        "myGoals": "أهدافي",
+        "todo": "للقيام به",
+        "in_progress": "قيد التنفيذ",
+        "completed": "مكتمل",
+        "deadline": "الموعد النهائي",
+        "progress": "التقدم",
+        "total": "المجموع",
+        "searchPlaceholderGlobal": "بحث عن الموظفين، الفرق، الأخبار..."
     },
     "navigation": {
         "home": "الرئيسية",
@@ -67,7 +76,12 @@
         "employmentDetails": "تفاصيل التوظيف",
         "claims": "المطالبات",
         "companies": "الشركات",
-        "teams": "الفرق"
+        "teams": "الفرق",
+        "careerHub": "مركز التطوير المهني",
+        "orgChart": "الهيكل التنظيمي",
+        "announcements": "الإعلانات",
+        "notifications": "التنبيهات",
+        "chat": "المحادثة"
     },
     "roles": {
         "admin": "مدير",
@@ -119,7 +133,8 @@
         "tip": "نصيحة: قم بتفعيل الإشعارات حتى لا تفوت تذكيرات الرواتب الخاصة بك !",
         "statePaidLeaves": "إجازات مدفوعة من الدولة",
         "hiringDate": "تاريخ التوظيف",
-        "seniority": "الأقدمية"
+        "seniority": "الأقدمية",
+        "careerGoalsSubtitle": "إدارة أهدافك المهنية"
     },
     "payroll": {
         "title": "الرواتب",
@@ -320,6 +335,32 @@
         "illnessesExpiring_plural": "{{count}} حالات مرضية تنتهي قريباً. فكر في المعالجة.",
         "upcomingLeavesInsight": "لديك {{count}} إجازة قادمة. استعد للتغطية!",
         "upcomingLeavesInsight_plural": "لديك {{count}} إجازات قادمة. استعد للتغطية!"
+    },
+    "performance": {
+        "title": "تتبع الأداء",
+        "goals": "الأهداف المهنية",
+        "reviews": "تقييمات الأداء",
+        "noGoals": "لم يتم العثور على أهداف",
+        "noReviews": "لم يتم العثور على تقييمات"
+    },
+    "announcements": {
+        "title": "إعلانات الشركة",
+        "noAnnouncements": "لم يتم العثور على إعلانات",
+        "addAnnouncement": "إعلان جديد",
+        "publish": "نشر",
+        "placeholder": "ما الجديد في الشركة؟"
+    },
+    "notifications": {
+        "title": "التنبيهات",
+        "noNotifications": "لا توجد تنبيهات بعد",
+        "unread": "غير مقروء",
+        "markAllAsRead": "تحديد الكل كمقروء"
+    },
+    "chat": {
+        "title": "المراسلة",
+        "noMessages": "لا توجد رسائل بعد",
+        "typeMessage": "اكتب رسالة...",
+        "send": "إرسال"
     },
     "profile": {
         "title": "الملف الشخصي",

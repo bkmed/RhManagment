@@ -49,7 +49,16 @@
         "deleteTitle": "Element löschen",
         "deleteMessage": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
         "viewHistory": "Verlauf anzeigen",
-        "historyUnavailable": "Verlaufsverfolgung noch nicht verfügbar"
+        "historyUnavailable": "Verlaufsverfolgung noch nicht verfügbar",
+        "goal": "Ziel",
+        "myGoals": "Meine Ziele",
+        "todo": "Zu erledigen",
+        "in_progress": "In Bearbeitung",
+        "completed": "Abgeschlossen",
+        "deadline": "Frist",
+        "progress": "Fortschritt",
+        "total": "Gesamt",
+        "searchPlaceholderGlobal": "Mitarbeiter, Teams, News suchen..."
     },
     "navigation": {
         "home": "Startseite",
@@ -62,7 +71,14 @@
         "profile": "Profil",
         "personalInfo": "Persönliche Informationen",
         "employmentDetails": "Beschäftigungsdetails",
-        "claims": "Reklamationen"
+        "claims": "Reklamationen",
+        "companies": "Unternehmen",
+        "teams": "Teams",
+        "careerHub": "Karrierezentrum",
+        "orgChart": "Organigramm",
+        "announcements": "Ankündigungen",
+        "notifications": "Benachrichtigungen",
+        "chat": "Chat"
     },
     "roles": {
         "admin": "Administrator",
@@ -114,7 +130,8 @@
         "tip": "Tipp: Aktivieren Sie Benachrichtigungen, um keine Gehaltserinnerungen zu verpassen!",
         "statePaidLeaves": "Staatlich bezahlter Urlaub",
         "hiringDate": "Eintrittsdatum",
-        "seniority": "Betriebszugehörigkeit"
+        "seniority": "Betriebszugehörigkeit",
+        "careerGoalsSubtitle": "Verwalten Sie Ihre beruflichen Ziele"
     },
     "payroll": {
         "title": "Gehaltsabrechnung",
@@ -315,6 +332,32 @@
         "illnessesExpiring_plural": "{{count}} Krankheitsfälle laufen bald ab. Bitte bearbeiten.",
         "upcomingLeavesInsight": "Sie haben {{count}} anstehende Abwesenheit. Bitte planen Sie Ersatz!",
         "upcomingLeavesInsight_plural": "Sie haben {{count}} anstehende Abwesenheiten. Bitte planen Sie Ersatz!"
+    },
+    "performance": {
+        "title": "Leistungsverfolgung",
+        "goals": "Berufliche Ziele",
+        "reviews": "Leistungsbeurteilungen",
+        "noGoals": "Keine Ziele gefunden",
+        "noReviews": "Keine Beurteilungen gefunden"
+    },
+    "announcements": {
+        "title": "Unternehmensankündigungen",
+        "noAnnouncements": "Keine Ankündigungen gefunden",
+        "addAnnouncement": "Neue Ankündigung",
+        "publish": "Veröffentlichen",
+        "placeholder": "Was gibt es Neues im Unternehmen?"
+    },
+    "notifications": {
+        "title": "Benachrichtigungen",
+        "noNotifications": "Noch keine Benachrichtigungen",
+        "unread": "Ungelesen",
+        "markAllAsRead": "Alle als gelesen markieren"
+    },
+    "chat": {
+        "title": "Nachrichten",
+        "noMessages": "Noch keine Nachrichten",
+        "typeMessage": "Nachricht eingeben...",
+        "send": "Senden"
     },
     "profile": {
         "title": "Profil",

@@ -124,6 +124,27 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
           <Text style={styles.managementIcon}>🚀</Text>
           <Text style={styles.managementText}>Équipes</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.managementCard}
+          onPress={() => navigateToTab('Leaves', 'TeamVacations')}
+        >
+          <Text style={styles.managementIcon}>🏖️</Text>
+          <Text style={styles.managementText}>{t('navigation.teams')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.managementCard}
+          onPress={() => navigateToTab('Analytics', 'PerformanceReview')}
+        >
+          <Text style={styles.managementIcon}>📈</Text>
+          <Text style={styles.managementText}>{t('performance.title') || 'Performance'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.managementCard}
+          onPress={() => navigateToTab('Companies', 'OrgChart')}
+        >
+          <Text style={styles.managementIcon}>📊</Text>
+          <Text style={styles.managementText}>{t('navigation.orgChart') || 'Organigramme'}</Text>
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.sectionTitle}>Activité Récente</Text>
@@ -248,6 +269,42 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
         <View style={styles.actionContent}>
           <Text style={styles.actionTitle}>{t('home.scheduleLeave')}</Text>
           <Text style={styles.actionSubtitle}>{t('home.scheduleLeaveSubtitle')}</Text>
+        </View>
+        <Text style={styles.actionArrow}>›</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => navigateToTab('Leaves', 'TeamVacations')}
+      >
+        <Text style={styles.actionIcon}>🤝</Text>
+        <View style={styles.actionContent}>
+          <Text style={styles.actionTitle}>{t('navigation.teams')}</Text>
+          <Text style={styles.actionSubtitle}>Voir les congés de mon équipe</Text>
+        </View>
+        <Text style={styles.actionArrow}>›</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => navigateToTab('Profile', 'CareerHub')}
+      >
+        <Text style={styles.actionIcon}>🚀</Text>
+        <View style={styles.actionContent}>
+          <Text style={styles.actionTitle}>{t('navigation.careerHub')}</Text>
+          <Text style={styles.actionSubtitle}>Gérez vos objectifs et votre carrière</Text>
+        </View>
+        <Text style={styles.actionArrow}>›</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.actionButton}
+        onPress={() => navigateToTab('Companies', 'OrgChart')}
+      >
+        <Text style={styles.actionIcon}>📊</Text>
+        <View style={styles.actionContent}>
+          <Text style={styles.actionTitle}>{t('navigation.orgChart') || 'Organigramme'}</Text>
+          <Text style={styles.actionSubtitle}>Voir la structure de l'entreprise</Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
       </TouchableOpacity>

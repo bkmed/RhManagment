@@ -59,6 +59,20 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [vacationDays, setVacationDays] = useState('25');
   const [country, setCountry] = useState('France');
   const [hiringDate, setHiringDate] = useState<Date | null>(new Date());
+
+  // Extended fields
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState<'male' | 'female' | 'other'>('male');
+  const [emergencyName, setEmergencyName] = useState('');
+  const [emergencyPhone, setEmergencyPhone] = useState('');
+  const [emergencyRelationship, setEmergencyRelationship] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [skype, setSkype] = useState('');
+  const [website, setWebsite] = useState('');
+  const [skills, setSkills] = useState('');
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -86,6 +100,23 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         if (employee.hiringDate) {
           setHiringDate(new Date(employee.hiringDate));
         }
+
+        // Load extended fields
+        setFirstName(employee.firstName || '');
+        setLastName(employee.lastName || '');
+        setAge(employee.age ? String(employee.age) : '');
+        setGender(employee.gender || 'male');
+        if (employee.emergencyContact) {
+          setEmergencyName(employee.emergencyContact.name);
+          setEmergencyPhone(employee.emergencyContact.phone);
+          setEmergencyRelationship(employee.emergencyContact.relationship);
+        }
+        if (employee.socialLinks) {
+          setLinkedin(employee.socialLinks.linkedin || '');
+          setSkype(employee.socialLinks.skype || '');
+          setWebsite(employee.socialLinks.website || '');
+        }
+        setSkills(employee.skills?.join(', ') || '');
       }
     } catch (error) {
       showToast(t('employees.loadError'));
@@ -132,6 +163,23 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         statePaidLeaves: 0,
         country,
         hiringDate: hiringDate ? hiringDate.toISOString() : undefined,
+
+        // Extended fields
+        firstName,
+        lastName,
+        age: parseInt(age) || undefined,
+        gender,
+        emergencyContact: emergencyName ? {
+          name: emergencyName,
+          phone: emergencyPhone,
+          relationship: emergencyRelationship
+        } : undefined,
+        socialLinks: (linkedin || skype || website) ? {
+          linkedin,
+          skype,
+          website
+        } : undefined,
+        skills: skills ? skills.split(',').map(s => s.trim()).filter(s => s) : undefined,
       };
 
       if (employeeId) {
@@ -204,33 +252,70 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               )}
             </TouchableOpacity>
 
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>{t('employees.name')} *</Text>
+              <TextInput
+                style={[styles.input, errors.name && styles.inputError]}
+                value={name}
+                onChangeText={setName}
+                placeholder={t('employees.namePlaceholder')}
+                placeholderTextColor={theme.colors.subText}
+              />
+              {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+            </View>
+
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('employees.name')} *</Text>
+                <Text style={styles.label}>{t('employees.firstName')}</Text>
                 <TextInput
-                  style={[styles.input, errors.name && styles.inputError]}
-                  value={name}
+                  style={styles.input}
+                  value={firstName}
                   onChangeText={text => {
-                    setName(text);
-                    if (errors.name) setErrors({ ...errors, name: '' });
+                    setFirstName(text);
+                    if (!name && text && lastName) setName(`${text} ${lastName}`);
                   }}
-                  placeholder={t('employees.namePlaceholder')}
+                  placeholder={t('employees.firstName')}
                   placeholderTextColor={theme.colors.subText}
                 />
-                {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
               </View>
-
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('employees.phone')}</Text>
+                <Text style={styles.label}>{t('employees.lastName')}</Text>
                 <TextInput
-                  style={[styles.input, errors.phone && styles.inputError]}
-                  value={phone}
-                  onChangeText={setPhone}
-                  placeholder={t('employees.phonePlaceholder')}
+                  style={styles.input}
+                  value={lastName}
+                  onChangeText={text => {
+                    setLastName(text);
+                    if (!name && firstName && text) setName(`${firstName} ${text}`);
+                  }}
+                  placeholder={t('employees.lastName')}
                   placeholderTextColor={theme.colors.subText}
-                  keyboardType="phone-pad"
                 />
-                {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('employees.age')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={age}
+                  onChangeText={setAge}
+                  placeholder="25"
+                  keyboardType="numeric"
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('employees.gender')}
+                  data={[
+                    { label: t('employees.genderMale'), value: 'male' },
+                    { label: t('employees.genderFemale'), value: 'female' },
+                    { label: t('employees.genderOther'), value: 'other' },
+                  ]}
+                  value={gender}
+                  onSelect={(val) => setGender(val as any)}
+                />
               </View>
             </View>
 
@@ -251,34 +336,95 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 />
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
               </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('employees.phone')}</Text>
+                <TextInput
+                  style={[styles.input, errors.phone && styles.inputError]}
+                  value={phone}
+                  onChangeText={setPhone}
+                  placeholder={t('employees.phonePlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                  keyboardType="phone-pad"
+                />
+              </View>
+            </View>
 
-              <View style={styles.responsiveRow}>
-                <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>{t('employees.address')}</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={address}
-                    onChangeText={setAddress}
-                    placeholder={t('employees.addressPlaceholder')}
-                    placeholderTextColor={theme.colors.subText}
-                  />
-                </View>
-
-                <View style={styles.fieldContainer}>
-                  <DateTimePickerField
-                    label={t('employees.hiringDate')}
-                    value={hiringDate}
-                    onChange={setHiringDate}
-                    mode="date"
-                  />
-                </View>
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('employees.address')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={address}
+                  onChangeText={setAddress}
+                  placeholder={t('employees.addressPlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <DateTimePickerField
+                  label={t('employees.hiringDate')}
+                  value={hiringDate}
+                  onChange={setHiringDate}
+                  mode="date"
+                />
               </View>
             </View>
           </View>
 
-          {/* Section: Employment Details */}
+          {/* Section: Emergency Contact */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('employees.emergencyContact')}</Text>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>{t('employees.emergencyName')}</Text>
+              <TextInput
+                style={styles.input}
+                value={emergencyName}
+                onChangeText={setEmergencyName}
+                placeholder={t('employees.emergencyName')}
+                placeholderTextColor={theme.colors.subText}
+              />
+            </View>
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('employees.emergencyPhone')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={emergencyPhone}
+                  onChangeText={setEmergencyPhone}
+                  placeholder={t('employees.emergencyPhone')}
+                  placeholderTextColor={theme.colors.subText}
+                  keyboardType="phone-pad"
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('employees.emergencyRelationship')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={emergencyRelationship}
+                  onChangeText={setEmergencyRelationship}
+                  placeholder={t('employees.emergencyRelationship')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Section: Social & Skills */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('navigation.employmentDetails')}</Text>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('employees.linkedin')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={linkedin}
+                  onChangeText={setLinkedin}
+                  placeholder="https://linkedin.com/in/..."
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+            </View>
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
@@ -328,6 +474,17 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               </View>
             </View>
 
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>{t('employees.skills')}</Text>
+              <TextInput
+                style={styles.input}
+                value={skills}
+                onChangeText={setSkills}
+                placeholder="React, Node.js, HR Management"
+                placeholderTextColor={theme.colors.subText}
+              />
+            </View>
+
             <Text style={styles.label}>{t('employees.notes')}</Text>
             <TextInput
               style={[styles.input, styles.notesInput]}
@@ -336,7 +493,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               placeholder={t('employees.notesPlaceholder')}
               placeholderTextColor={theme.colors.subText}
               multiline
-              numberOfLines={4}
+              numberOfLines={3}
             />
           </View>
         </View>

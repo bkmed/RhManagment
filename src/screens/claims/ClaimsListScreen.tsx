@@ -55,7 +55,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
         );
       });
 
-      setClaims(filteredClaims);
+      setClaims([...filteredClaims]);
       setEmployees(employeesData);
       setCompanies(companiesData);
       setTeams(teamsData);

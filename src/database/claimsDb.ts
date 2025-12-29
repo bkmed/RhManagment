@@ -23,7 +23,8 @@ if (selectAllClaims(store.getState()).length === 0 || selectAllClaims(store.getS
 
 export const claimsDb = {
     getAll: async (): Promise<Claim[]> => {
-        return selectAllClaims(store.getState());
+        const items = selectAllClaims(store.getState());
+        return [...items];
     },
 
     getByEmployeeId: async (employeeId: number): Promise<Claim[]> => {

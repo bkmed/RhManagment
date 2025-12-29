@@ -227,40 +227,109 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
           <View style={styles.divider} />
 
           <View style={styles.detailsSection}>
-            {employee.phone && (
-              <View style={styles.detailRow}>
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
                 <Text style={styles.detailLabel}>{t('employees.phone')}</Text>
-                <Text style={styles.detailValue}>{employee.phone}</Text>
+                <Text style={styles.detailValue}>{employee.phone || '-'}</Text>
               </View>
-            )}
-            {employee.email && (
-              <View style={styles.detailRow}>
+              <View style={styles.fieldContainer}>
                 <Text style={styles.detailLabel}>{t('employees.email')}</Text>
-                <Text style={styles.detailValue}>{employee.email}</Text>
+                <Text style={styles.detailValue}>{employee.email || '-'}</Text>
               </View>
-            )}
-            {employee.address && (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>{t('employees.address')}</Text>
-                <Text style={styles.detailValue}>{employee.address}</Text>
-              </View>
-            )}
-            {employee.notes && (
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>{t('employees.notes')}</Text>
-                <Text style={styles.detailValue}>{employee.notes}</Text>
-              </View>
-            )}
-            <View style={styles.divider} />
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>{t('leavePolicy.perYear')}</Text>
-              <Text style={styles.detailValue}>{employee.vacationDaysPerYear}</Text>
             </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.detailLabel}>{t('employees.age')}</Text>
+                <Text style={styles.detailValue}>{employee.age || '-'}</Text>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.detailLabel}>{t('employees.gender')}</Text>
+                <Text style={styles.detailValue}>{employee.gender ? t(`employees.gender${employee.gender.charAt(0).toUpperCase() + employee.gender.slice(1)}`) : '-'}</Text>
+              </View>
+            </View>
+
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>{t('leavePolicy.remaining')}</Text>
-              <Text style={[styles.detailValue, { color: theme.colors.primary, fontWeight: 'bold' }]}>
-                {employee.remainingVacationDays}
-              </Text>
+              <Text style={styles.detailLabel}>{t('employees.address')}</Text>
+              <Text style={styles.detailValue}>{employee.address || '-'}</Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            {/* Emergency Contact Section */}
+            <Text style={styles.subSectionTitle}>{t('employees.emergencyContact')}</Text>
+            {employee.emergencyContact ? (
+              <View style={styles.infoBox}>
+                <View style={styles.responsiveRow}>
+                  <View style={styles.fieldContainer}>
+                    <Text style={styles.detailLabel}>{t('employees.emergencyName')}</Text>
+                    <Text style={styles.detailValue}>{employee.emergencyContact.name}</Text>
+                  </View>
+                  <View style={styles.fieldContainer}>
+                    <Text style={styles.detailLabel}>{t('employees.emergencyPhone')}</Text>
+                    <Text style={styles.detailValue}>{employee.emergencyContact.phone}</Text>
+                  </View>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>{t('employees.emergencyRelationship')}</Text>
+                  <Text style={styles.detailValue}>{employee.emergencyContact.relationship}</Text>
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.emptyTextSmall}>{t('common.noData')}</Text>
+            )}
+
+            <View style={styles.divider} />
+
+            {/* Skills & History Section */}
+            <Text style={styles.subSectionTitle}>{t('employees.linkedin')}</Text>
+            {employee.socialLinks?.linkedin ? (
+              <Text style={[styles.detailValue, { color: theme.colors.primary }]}>{employee.socialLinks.linkedin}</Text>
+            ) : (
+              <Text style={styles.emptyTextSmall}>{t('common.noData')}</Text>
+            )}
+
+            <View style={styles.divider} />
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.detailLabel}>{t('employees.hiringDate')}</Text>
+                <Text style={styles.detailValue}>{employee.hiringDate ? formatDate(employee.hiringDate) : '-'}</Text>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.detailLabel}>{t('common.service')}</Text>
+                <Text style={styles.detailValue}>{employee.department || '-'}</Text>
+              </View>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{t('employees.skills')}</Text>
+              {employee.skills && employee.skills.length > 0 ? (
+                <View style={styles.skillsContainer}>
+                  {employee.skills.map((skill, index) => (
+                    <View key={index} style={styles.skillBadge}>
+                      <Text style={styles.skillText}>{skill}</Text>
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <Text style={styles.detailValue}>-</Text>
+              )}
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.detailLabel}>{t('leavePolicy.perYear')}</Text>
+                <Text style={styles.detailValue}>{employee.vacationDaysPerYear}</Text>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.detailLabel}>{t('leavePolicy.remaining')}</Text>
+                <Text style={[styles.detailValue, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+                  {employee.remainingVacationDays}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -408,6 +477,49 @@ const createStyles = (theme: Theme) =>
     detailValue: {
       ...theme.textVariants.body,
       color: theme.colors.text,
+    },
+    responsiveRow: {
+      flexDirection: 'row',
+      gap: theme.spacing.m,
+      marginBottom: theme.spacing.m,
+    },
+    fieldContainer: {
+      flex: 1,
+    },
+    subSectionTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.s,
+    },
+    infoBox: {
+      backgroundColor: theme.colors.background,
+      padding: theme.spacing.m,
+      borderRadius: theme.spacing.s,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    emptyTextSmall: {
+      fontSize: 12,
+      color: theme.colors.subText,
+      fontStyle: 'italic',
+    },
+    skillsContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing.s,
+      marginTop: theme.spacing.xs,
+    },
+    skillBadge: {
+      backgroundColor: theme.colors.primary + '15',
+      paddingHorizontal: theme.spacing.s,
+      paddingVertical: 4,
+      borderRadius: theme.spacing.s,
+    },
+    skillText: {
+      fontSize: 12,
+      color: theme.colors.primary,
+      fontWeight: '600',
     },
     sectionHeader: {
       flexDirection: 'row',

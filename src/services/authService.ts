@@ -19,6 +19,24 @@ export interface User {
     statePaidLeaves?: number;
     country?: string;
     hiringDate?: string;
+    firstName?: string;
+    lastName?: string;
+    age?: number;
+    gender?: 'male' | 'female' | 'other';
+    emergencyContact?: {
+        name: string;
+        phone: string;
+        relationship: string;
+    };
+    socialLinks?: {
+        linkedin?: string;
+        skype?: string;
+        twitter?: string;
+        website?: string;
+    };
+    skills?: string[];
+    teamId?: number;
+    companyId?: number;
 }
 
 export const authService = {
@@ -32,8 +50,8 @@ export const authService = {
         const demoAccounts: { [key: string]: { password: string; user: User } } = {
             'admin@demo.com': { password: 'admin123', user: { id: 'demo-admin', name: 'Demo Admin', email: 'admin@demo.com', role: 'admin', vacationDaysPerYear: 30, remainingVacationDays: 20, statePaidLeaves: 25, country: 'France', hiringDate: '2018-01-15' } },
             'hr@demo.com': { password: 'hr123', user: { id: 'demo-hr', name: 'Demo HR', email: 'hr@demo.com', role: 'rh', vacationDaysPerYear: 28, remainingVacationDays: 15, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2019-03-10' } },
-            'chef@demo.com': { password: 'chef123', user: { id: 'demo-manager', name: 'Demo Manager', email: 'chef@demo.com', role: 'chef_dequipe', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 10, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2020-06-01' } },
-            'employee@demo.com': { password: 'employee123', user: { id: 'demo-emp', name: 'Demo Employee', email: 'employee@demo.com', role: 'employee', department: 'IT', vacationDaysPerYear: 25, remainingVacationDays: 25, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2021-09-20' } },
+            'chef@demo.com': { password: 'chef123', user: { id: 'demo-manager', name: 'Demo Manager', email: 'chef@demo.com', role: 'chef_dequipe', department: 'IT', teamId: 1, vacationDaysPerYear: 25, remainingVacationDays: 10, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2020-06-01' } },
+            'employee@demo.com': { password: 'employee123', user: { id: 'demo-emp', name: 'Demo Employee', email: 'employee@demo.com', role: 'employee', department: 'IT', teamId: 1, vacationDaysPerYear: 25, remainingVacationDays: 25, statePaidLeaves: 30, country: 'Tunisia', hiringDate: '2021-09-20' } },
         };
 
         if (demoAccounts[email] && demoAccounts[email].password === password) {

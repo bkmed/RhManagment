@@ -50,6 +50,19 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [photoUri, setPhotoUri] = useState(user?.photoUri || '');
   const [loading, setLoading] = useState(false);
 
+  // Extended fields
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [age, setAge] = useState(user?.age ? String(user.age) : '');
+  const [gender, setGender] = useState<'male' | 'female' | 'other'>(user?.gender || 'male');
+  const [emergencyName, setEmergencyName] = useState(user?.emergencyContact?.name || '');
+  const [emergencyPhone, setEmergencyPhone] = useState(user?.emergencyContact?.phone || '');
+  const [emergencyRelationship, setEmergencyRelationship] = useState(user?.emergencyContact?.relationship || '');
+  const [linkedin, setLinkedin] = useState(user?.socialLinks?.linkedin || '');
+  const [skype, setSkype] = useState(user?.socialLinks?.skype || '');
+  const [website, setWebsite] = useState(user?.socialLinks?.website || '');
+  const [skills, setSkills] = useState(user?.skills?.join(', ') || '');
+
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
   const [cameraPermission, setCameraPermission] =
     useState<PermissionStatus>('unavailable');
@@ -73,6 +86,19 @@ export const ProfileScreen = ({ navigation }: any) => {
     setName(user?.name || '');
     setEmail(user?.email || '');
     setPhotoUri(user?.photoUri || '');
+
+    // Load extended fields
+    setFirstName(user?.firstName || '');
+    setLastName(user?.lastName || '');
+    setAge(user?.age ? String(user.age) : '');
+    setGender(user?.gender || 'male');
+    setEmergencyName(user?.emergencyContact?.name || '');
+    setEmergencyPhone(user?.emergencyContact?.phone || '');
+    setEmergencyRelationship(user?.emergencyContact?.relationship || '');
+    setLinkedin(user?.socialLinks?.linkedin || '');
+    setSkype(user?.socialLinks?.skype || '');
+    setWebsite(user?.socialLinks?.website || '');
+    setSkills(user?.skills?.join(', ') || '');
   }, [user]);
 
   const checkPermissions = async () => {
@@ -164,6 +190,21 @@ export const ProfileScreen = ({ navigation }: any) => {
         name: name.trim(),
         email: email.trim(),
         photoUri,
+        firstName,
+        lastName,
+        age: parseInt(age) || undefined,
+        gender,
+        emergencyContact: emergencyName ? {
+          name: emergencyName,
+          phone: emergencyPhone,
+          relationship: emergencyRelationship
+        } : undefined,
+        socialLinks: (linkedin || skype || website) ? {
+          linkedin,
+          skype,
+          website
+        } : undefined,
+        skills: skills ? skills.split(',').map(s => s.trim()).filter(s => s) : undefined,
       });
       setIsEditing(false);
       notificationService.showAlert(t('common.success'), t('profile.updatedSuccessfully'));
@@ -316,6 +357,96 @@ export const ProfileScreen = ({ navigation }: any) => {
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
+
+              <View style={styles.responsiveRow}>
+                <View style={[styles.fieldContainer, { marginRight: theme.spacing.m }]}>
+                  <AuthInput
+                    label={t('employees.firstName')}
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    placeholder={t('employees.firstName')}
+                  />
+                </View>
+                <View style={styles.fieldContainer}>
+                  <AuthInput
+                    label={t('employees.lastName')}
+                    value={lastName}
+                    onChangeText={setLastName}
+                    placeholder={t('employees.lastName')}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.responsiveRow}>
+                <View style={[styles.fieldContainer, { marginRight: theme.spacing.m }]}>
+                  <AuthInput
+                    label={t('employees.age')}
+                    value={age}
+                    onChangeText={setAge}
+                    placeholder="25"
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={styles.fieldContainer}>
+                  <Dropdown
+                    label={t('employees.gender')}
+                    data={[
+                      { label: t('employees.genderMale'), value: 'male' },
+                      { label: t('employees.genderFemale'), value: 'female' },
+                      { label: t('employees.genderOther'), value: 'other' },
+                    ]}
+                    value={gender}
+                    onSelect={(val) => setGender(val as any)}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.divider} />
+
+              <Text style={styles.subSectionTitle}>{t('employees.emergencyContact')}</Text>
+              <AuthInput
+                label={t('employees.emergencyName')}
+                value={emergencyName}
+                onChangeText={setEmergencyName}
+                placeholder={t('employees.emergencyName')}
+              />
+              <View style={styles.responsiveRow}>
+                <View style={[styles.fieldContainer, { marginRight: theme.spacing.m }]}>
+                  <AuthInput
+                    label={t('employees.emergencyPhone')}
+                    value={emergencyPhone}
+                    onChangeText={setEmergencyPhone}
+                    placeholder={t('employees.emergencyPhone')}
+                    keyboardType="phone-pad"
+                  />
+                </View>
+                <View style={styles.fieldContainer}>
+                  <AuthInput
+                    label={t('employees.emergencyRelationship')}
+                    value={emergencyRelationship}
+                    onChangeText={setEmergencyRelationship}
+                    placeholder={t('employees.emergencyRelationship')}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.divider} />
+
+              <Text style={styles.subSectionTitle}>{t('employees.socialLinks')}</Text>
+              <AuthInput
+                label={t('employees.linkedin')}
+                value={linkedin}
+                onChangeText={setLinkedin}
+                placeholder="https://linkedin.com/in/..."
+              />
+
+              <AuthInput
+                label={t('employees.skills')}
+                value={skills}
+                onChangeText={setSkills}
+                placeholder="React, Node.js, HR"
+              />
+
               <View style={styles.editActions}>
                 <TouchableOpacity
                   style={[styles.actionButton, styles.cancelButton]}
@@ -542,4 +673,18 @@ const createStyles = (theme: Theme) =>
       borderColor: theme.colors.error,
     },
     logoutText: { ...theme.textVariants.button, color: theme.colors.error },
+    responsiveRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    fieldContainer: {
+      flex: 1,
+    },
+    subSectionTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.s,
+      marginTop: theme.spacing.s,
+    },
   });
