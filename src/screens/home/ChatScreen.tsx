@@ -8,8 +8,8 @@ import {
     TouchableOpacity,
     KeyboardAvoidingView,
     Platform,
-    SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
@@ -51,7 +51,7 @@ export const ChatScreen = () => {
             ]}>
                 {!isMe && (
                     <Text style={[styles.senderName, { color: theme.colors.subText }]}>
-                        {item.senderId === 'admin' ? 'System' : `Employee ${item.senderId}`}
+                        {item.senderId === 'admin' ? 'System' : `Employee ${item.senderId} `}
                     </Text>
                 )}
                 <View style={[

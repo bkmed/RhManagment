@@ -7,10 +7,10 @@ import {
   ScrollView,
   ActivityIndicator,
   Modal,
-  SafeAreaView,
   Pressable,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { remoteDb } from '../../database/remoteDb';
 import { notificationService } from '../../services/notificationService';
@@ -21,6 +21,7 @@ import { Theme } from '../../theme';
 import { holidaysService } from '../../services/holidaysService';
 import { leavesDb } from '../../database/leavesDb';
 import { formatDate } from '../../utils/dateUtils';
+import { SearchOverlay } from '../../components/common/SearchOverlay';
 
 export const RemoteCalendarScreen = () => {
   const { theme } = useTheme();
@@ -36,20 +37,31 @@ export const RemoteCalendarScreen = () => {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
+  // New state for viewing other employees
+  const [viewMode, setViewMode] = useState<'mine' | 'other'>('mine');
+  const [selectedEmployee, setSelectedEmployee] = useState<{ id: number; name: string } | null>(null);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+
   useEffect(() => {
     loadData();
-  }, [user]);
+  }, [user, viewMode, selectedEmployee]);
 
   const loadData = async () => {
     try {
-      if (!user?.employeeId) {
+      setLoading(true);
+      // Determine whose data to fetch
+      const employeeId = viewMode === 'mine' ? user?.employeeId : selectedEmployee?.id;
+
+      if (!employeeId) {
         setLoading(false);
+        setRemoteDays({});
+        setApprovedLeaves([]);
         return;
       }
 
       const [remoteData, leavesData] = await Promise.all([
-        remoteDb.getByEmployeeId(user.employeeId),
-        leavesDb.getApprovedByEmployeeId(user.employeeId),
+        remoteDb.getByEmployeeId(employeeId),
+        leavesDb.getApprovedByEmployeeId(employeeId),
       ]);
 
       const mappedRemote = remoteData.reduce((acc: any, curr) => {
@@ -67,6 +79,9 @@ export const RemoteCalendarScreen = () => {
   };
 
   const updateStatus = async (status: 'remote' | 'office' | 'none') => {
+    // Only allow updating own status
+    if (viewMode === 'other') return;
+
     try {
       if (!user?.employeeId) {
         notificationService.showAlert(t('common.error'), t('employees.notFound'));
@@ -119,6 +134,14 @@ export const RemoteCalendarScreen = () => {
   };
 
   const onDayPress = (dateStr: string) => {
+    // Read-only logic for 'other' mode
+    if (viewMode === 'other') {
+      if (isDayOnLeave(dateStr)) {
+        notificationService.showAlert(t('remote.onLeave'), getLeaveTitle(dateStr));
+      }
+      return;
+    }
+
     if (isDayOnLeave(dateStr)) {
       notificationService.showAlert(t('remote.onLeave'), getLeaveTitle(dateStr));
       return;
@@ -140,6 +163,13 @@ export const RemoteCalendarScreen = () => {
 
   const goToToday = () => {
     setCurrentMonth(new Date());
+  };
+
+  const handleSearchSelect = (result: any) => {
+    if (result.type === 'employee') {
+      setSelectedEmployee({ id: Number(result.id), name: result.title });
+      setIsSearchVisible(false);
+    }
   };
 
   const renderCalendar = () => {
@@ -171,6 +201,7 @@ export const RemoteCalendarScreen = () => {
             isToday && styles.todayCell,
           ]}
           onPress={() => onDayPress(dateStr)}
+          disabled={viewMode === 'other' && !status && !onLeave} // Disable taps on empty days in 'other' mode
         >
           <Text style={[
             styles.dayText,
@@ -215,12 +246,52 @@ export const RemoteCalendarScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <ScrollView contentContainerStyle={styles.container}>
-        {!user?.employeeId && (
+
+        {/* Toggle View Mode */}
+        <View style={styles.toggleContainer}>
+          <TouchableOpacity
+            style={[styles.toggleButton, viewMode === 'mine' && styles.toggleButtonActive]}
+            onPress={() => setViewMode('mine')}
+          >
+            <Text style={[styles.toggleText, viewMode === 'mine' && styles.toggleTextActive]}>
+              {t('remote.myPlanning') || 'My Planning'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.toggleButton, viewMode === 'other' && styles.toggleButtonActive]}
+            onPress={() => setViewMode('other')}
+          >
+            <Text style={[styles.toggleText, viewMode === 'other' && styles.toggleTextActive]}>
+              {t('remote.employeePlanning') || 'Employee Planning'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Employee Search Selection */}
+        {viewMode === 'other' && (
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={() => setIsSearchVisible(true)}
+          >
+            <Text style={styles.searchText}>
+              {selectedEmployee ? `👤 ${selectedEmployee.name}` : `🔍 ${t('common.search') || 'Search Employee'}`}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {(viewMode === 'mine' && !user?.employeeId) && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
               ℹ️ {t('employees.notFound')} - {t('profile.professionalProfile')} required
             </Text>
           </View>
+        )}
+
+        {/* Calendar Header with Name if 'other' */}
+        {viewMode === 'other' && selectedEmployee && (
+          <Text style={styles.viewingText}>
+            {t('common.viewing') || 'Viewing'}: {selectedEmployee.name}
+          </Text>
         )}
 
         {/* Month Navigation Header */}
@@ -317,6 +388,12 @@ export const RemoteCalendarScreen = () => {
           </View>
         </Modal>
       </ScrollView>
+
+      <SearchOverlay
+        visible={isSearchVisible}
+        onClose={() => setIsSearchVisible(false)}
+        onSelect={handleSearchSelect}
+      />
     </SafeAreaView>
   );
 };
@@ -329,6 +406,52 @@ const createStyles = (theme: Theme) =>
       paddingBottom: theme.spacing.xl,
     },
     centered: { flex: 1, marginTop: 100 },
+    toggleContainer: {
+      flexDirection: 'row',
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.spacing.s,
+      padding: 4,
+      marginBottom: theme.spacing.m,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    toggleButton: {
+      flex: 1,
+      paddingVertical: 8,
+      alignItems: 'center',
+      borderRadius: theme.spacing.xs,
+    },
+    toggleButtonActive: {
+      backgroundColor: theme.colors.primary,
+    },
+    toggleText: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      fontWeight: '600',
+    },
+    toggleTextActive: {
+      color: theme.colors.surface,
+    },
+    searchButton: {
+      backgroundColor: theme.colors.surface,
+      padding: theme.spacing.m,
+      borderRadius: theme.spacing.s,
+      marginBottom: theme.spacing.m,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      alignItems: 'center',
+    },
+    searchText: {
+      fontSize: 16,
+      color: theme.colors.text,
+    },
+    viewingText: {
+      ...theme.textVariants.caption,
+      color: theme.colors.primary,
+      textAlign: 'center',
+      marginBottom: theme.spacing.s,
+      fontWeight: 'bold',
+    },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',

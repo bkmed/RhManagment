@@ -102,7 +102,7 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
         />
       </View>
 
-      <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
+      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('home.quickActions')}</Text>
       <View style={styles.managementButtons}>
         <TouchableOpacity
           style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
@@ -283,7 +283,7 @@ const EmployeeDashboard = ({
         )}
       </View>
 
-      <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
+      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('home.quickActions')}</Text>
       <TouchableOpacity
         style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
         onPress={() => navigateToTab('Claims', 'AddClaim')}

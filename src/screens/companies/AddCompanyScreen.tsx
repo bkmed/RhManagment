@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { companiesDb } from '../../database/companiesDb';
+import { notificationService } from '../../services/notificationService';
 import { Theme } from '../../theme';
 import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext'; // Ensure consistency if needed, though mostly for delete
@@ -53,9 +54,10 @@ export const AddCompanyScreen = ({ navigation }: any) => {
             });
             showToast(t('common.success'), 'success');
             navigation.goBack();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving company:', error);
-            showToast(t('common.saveError'), 'error'); // Ensure key exists or use fallback
+            const errorMessage = error?.message || t('common.saveError');
+            notificationService.showAlert(t('common.error'), errorMessage);
         }
     };
 

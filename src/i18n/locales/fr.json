@@ -11,6 +11,9 @@
     "notifyHr": "Notifier les RH",
     "edit": "Modifier",
     "add": "Ajouter",
+    "assistant": "Assistant RH",
+    "askAnything": "Demandez-moi n'importe quoi...",
+    "online": "En ligne",
     "search": "Rechercher",
     "loading": "Chargement...",
     "error": "Erreur",
@@ -54,6 +57,8 @@
     "goal": "Objectif",
     "myGoals": "Mes Objectifs",
     "todo": "À faire",
+    "viewing": "Affichage",
+    "saveError": "Échec de l'enregistrement",
     "in_progress": "En cours",
     "completed": "Terminé",
     "deadline": "Échéance",
@@ -156,7 +161,9 @@
     "status": "Statut",
     "updated": "Statut mis à jour",
     "onLeave": "En Congé",
-    "selectStatus": "Changer le statut"
+    "selectStatus": "Changer le statut",
+    "myPlanning": "Mon planning",
+    "employeePlanning": "Planning employé"
   },
   "leavePolicy": {
     "title": "Mon Solde de Congés",
@@ -172,7 +179,8 @@
     "activePayroll": "Éléments de paie actifs",
     "upcomingLeaves": "Congés à venir",
     "illnessAlert": "Alerte de maladie",
-    "illnessesExpiring": "{{count}} dossier de maladie expire bientôt",
+    "illnessExpiring": "Maladie expirant",
+    "illnessesExpiring": "{{count}} cas de maladie expirant bientot",
     "illnessesExpiring_plural": "{{count}} dossiers de maladie expirent bientôt",
     "quickActions": "Actions rapides",
     "addPayroll": "Ajouter un élément de paie",
@@ -450,10 +458,18 @@
     "markAllAsRead": "Tout marquer comme lu"
   },
   "chat": {
-    "title": "Messagerie",
+    "chat": "Messagerie",
     "noMessages": "Aucun message pour le moment",
     "typeMessage": "Tapez un message...",
     "send": "Envoyer"
+  },
+  "sections": {
+    "general": "Général",
+    "management": "Gestion",
+    "organization": "Organisation",
+    "analytics": "Analytique",
+    "communication": "Communication",
+    "personal": "Personnel"
   },
   "profile": {
     "title": "Profil",
@@ -655,5 +671,26 @@
     "companyAddress": "123 Rue de l'Entreprise, Paris, France",
     "totalEarnings": "Total Revenus",
     "totalDeductions": "Total Retenues"
+  },
+  "chatBot": {
+    "greeting": "Bonjour {{name}}! Je suis votre Assistant RH Pro. Comment puis-je vous aider?",
+    "help": "Je suis là pour vous aider. Questionnez-moi sur votre paie, vos congés ou votre équipe!",
+    "fallback": "Je ne suis pas sûr. Essayez 'Où est ma paie?' ou 'Mon équipe'.",
+    "payroll": "Vous pouvez voir vos éléments de paie et votre historique dans la section Paie.",
+    "payrollAction": "Aller à la Paie",
+    "leave": "Il vous reste {{days}} jours de congé. Voulez-vous demander un congé?",
+    "leaveAction": "Demander un Congé",
+    "team": "Vous êtes dans l'équipe {{team}} (Dépt: {{dept}}).",
+    "teamUnknown": "Je ne trouve pas votre équipe, vérifiez votre profil.",
+    "teamAction": "Voir Mon Équipe",
+    "profileAction": "Aller au Profil",
+    "claim": "Besoin de déposer une réclamation ou note de frais? Allez dans la section Réclamations.",
+    "claimAction": "Déposer Réclamation",
+    "profile": "Vous pouvez mettre à jour vos infos dans votre Profil.",
+    "employees": "Il y a actuellement {{count}} employés. Consultez l'annuaire!",
+    "employeesAction": "Voir Annuaire",
+    "adminStats": "Rapport Admin: {{employees}} Employés, {{teams}} Équipes.",
+    "pendingApprovals": "Vous avez {{count}} demandes en attente d'approbation.",
+    "pendingApprovalsAction": "Revoir Approbations"
   }
 }

@@ -35,6 +35,7 @@ import { AnalyticsScreen } from '../screens/analytics/AnalyticsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { ManageServicesScreen } from '../screens/profile/ManageServicesScreen';
 import { ManageDepartmentsScreen } from '../screens/profile/ManageDepartmentsScreen';
+import { MyTeamScreen } from '../screens/teams/MyTeamScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
@@ -52,6 +53,7 @@ import { PerformanceReviewScreen } from '../screens/analytics/PerformanceReviewS
 import { OrgChartScreen } from '../screens/companies/OrgChartScreen';
 import { AnnouncementsScreen } from '../screens/home/AnnouncementsScreen';
 import { ChatScreen } from '../screens/home/ChatScreen';
+import { CompanyChatScreen } from '../screens/chat/CompanyChatScreen';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { SearchOverlay } from '../components/common/SearchOverlay';
 import { ChatBot } from '../components/common/ChatBot';
@@ -285,6 +287,11 @@ const ProfileStack = () => {
         component={ManageDepartmentsScreen}
         options={{ headerShown: true, title: t('organization.manageDepartments') }}
       />
+      <Stack.Screen
+        name="MyTeam"
+        component={MyTeamScreen}
+        options={{ headerShown: true, title: t('teams.myTeam') || 'My Team' }}
+      />
     </Stack.Navigator>
   );
 };
@@ -299,8 +306,8 @@ const HomeStack = () => (
     />
     <Stack.Screen
       name="Chat"
-      component={ChatScreen}
-      options={{ headerShown: true, title: 'Chat' }}
+      component={CompanyChatScreen}
+      options={{ headerShown: false }} // Header is inside screen now
     />
   </Stack.Navigator>
 );
@@ -314,42 +321,92 @@ const TabNavigator = () => (
     <Tab.Screen name="PayrollTab" component={PayrollStack} />
     <Tab.Screen name="LeavesTab" component={LeavesStack} />
     <Tab.Screen name="ClaimsTab" component={ClaimsStack} options={{ title: 'Claims' }} />
+    <Tab.Screen name="ChatTab" component={CompanyChatScreen} options={{ title: 'Chat' }} />
   </Tab.Navigator>
 );
 
 // ======= Drawer (Mobile) =======
 const Drawer = createDrawerNavigator();
 
+// ======= Custom Hook for Sectioned Navigation =======
+const useNavigationSections = () => {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+
+  return useMemo(() => {
+    const sections = [
+      {
+        title: t('sections.general'),
+        items: [{ key: 'Home', label: t('navigation.home'), icon: '🏠' }]
+      },
+      {
+        title: t('sections.management'),
+        items: [
+          { key: 'Payroll', label: t('navigation.payroll'), icon: '💰' },
+          { key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' },
+          { key: 'Claims', label: t('navigation.claims'), icon: '📝' },
+          { key: 'Remote', label: t('remote.title'), icon: '📅' }
+        ]
+      },
+    ];
+
+    const organizationItems = [];
+    if (user?.role !== 'employee') {
+      organizationItems.push({ key: 'Employees', label: t('navigation.employees'), icon: '👥' });
+    }
+    if (user?.role === 'admin') {
+      organizationItems.push({ key: 'Companies', label: t('navigation.companies'), icon: '🏢' });
+      organizationItems.push({ key: 'Teams', label: t('navigation.teams'), icon: '🤝' });
+    }
+
+    if (organizationItems.length > 0) {
+      sections.push({
+        title: t('sections.organization'),
+        items: organizationItems
+      });
+    }
+
+    if (user?.role !== 'employee') {
+      sections.push({
+        title: t('sections.analytics'),
+        items: [
+          { key: 'Analytics', label: t('navigation.analytics'), icon: '📊' },
+          { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' }
+        ]
+      });
+    }
+
+    sections.push({
+      title: t('sections.communication'),
+      items: [
+        { key: 'Announcements', label: t('navigation.announcements'), icon: '📢' },
+        { key: 'Chat', label: t('navigation.chat'), icon: '💬' }
+      ]
+    });
+
+    sections.push({
+      title: t('sections.personal'),
+      items: [{ key: 'Profile', label: t('navigation.profile'), icon: '👤' }]
+    });
+
+    return sections;
+  }, [t, user?.role]);
+};
+
 const CustomDrawerContent = (props: any) => {
   const { user } = useAuth();
   const { theme, themeMode } = useTheme();
   const { t } = useTranslation();
   const { state, navigation } = props;
+  const sections = useNavigationSections();
+  const [collapsedSections, setCollapsedSections] = useState<{ [key: string]: boolean }>({});
 
-  const items = useMemo(() => {
-    const baseItems = [
-      { name: 'Main', label: t('navigation.home'), icon: '🏠' },
-    ];
-
-    baseItems.push({ name: 'Remote', label: t('remote.title'), icon: '📅' });
-    baseItems.push({ name: 'Claims', label: t('navigation.claims'), icon: '📝' });
-
-    if (user?.role !== 'employee') {
-      baseItems.push({ name: 'Analytics', label: t('navigation.analytics'), icon: '📊' });
-      baseItems.push({ name: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' });
-      baseItems.push({ name: 'Employees', label: t('navigation.employees'), icon: '👥' });
-    }
-
-    if (user?.role === 'admin') {
-      baseItems.push({ name: 'Companies', label: t('navigation.companies'), icon: '🏢' });
-      baseItems.push({ name: 'Teams', label: t('navigation.teams'), icon: '🤝' });
-    }
-
-    baseItems.push({ name: 'Profile', label: t('navigation.profile'), icon: '👤' });
-    baseItems.push({ name: 'Announcements', label: t('navigation.announcements'), icon: '📢' });
-    baseItems.push({ name: 'Chat', label: t('navigation.chat'), icon: '💬' });
-    return baseItems;
-  }, [t, user?.role]);
+  const toggleSection = (title: string) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }));
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.surface }}>
@@ -376,38 +433,61 @@ const CustomDrawerContent = (props: any) => {
       </View>
 
       <ScrollView style={{ flex: 1 }}>
-        {items.map((item) => {
-          const isFocused = state.routes[state.index].name === item.name;
-
-          return (
+        {sections.map((section, index) => (
+          <View key={section.title} style={{ marginBottom: 16 }}>
             <TouchableOpacity
-              key={item.name}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 16,
-                marginHorizontal: 12,
-                marginVertical: 4,
-                borderRadius: 12,
-                backgroundColor: isFocused ? `${theme.colors.primary}15` : 'transparent',
-                ...(isFocused && themeMode === 'premium' && {
-                  borderWidth: 1,
-                  borderColor: theme.colors.primary,
-                })
-              }}
-              onPress={() => navigation.navigate(item.name)}
+              onPress={() => toggleSection(section.title)}
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 16 }}
             >
-              <Text style={{ fontSize: 20, marginRight: 16 }}>{item.icon}</Text>
               <Text style={{
-                fontSize: 16,
-                fontWeight: isFocused ? '700' : '500',
-                color: isFocused ? theme.colors.primary : theme.colors.text
+                marginLeft: 16,
+                marginTop: 8,
+                marginBottom: 4,
+                color: theme.colors.subText,
+                fontWeight: '600',
+                fontSize: 12,
+                textTransform: 'uppercase'
               }}>
-                {item.label}
+                {section.title}
+              </Text>
+              <Text style={{ color: theme.colors.subText, fontSize: 12 }}>
+                {collapsedSections[section.title] ? '▼' : '▲'}
               </Text>
             </TouchableOpacity>
-          );
-        })}
+
+            {!collapsedSections[section.title] && section.items.map((item) => {
+              const isFocused = state.routes[state.index].name === item.key;
+              return (
+                <TouchableOpacity
+                  key={item.key}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: 12,
+                    marginHorizontal: 12,
+                    marginVertical: 2,
+                    borderRadius: 12,
+                    backgroundColor: isFocused ? `${theme.colors.primary}15` : 'transparent',
+                    ...(isFocused && themeMode === 'premium' && {
+                      borderWidth: 1,
+                      borderColor: theme.colors.primary,
+                    })
+                  }}
+                  onPress={() => navigation.navigate(item.key)}
+                >
+                  <Text style={{ fontSize: 20, marginRight: 16 }}>{item.icon}</Text>
+                  <Text style={{
+                    fontSize: 14,
+                    fontWeight: isFocused ? '700' : '500',
+                    color: isFocused ? theme.colors.primary : theme.colors.text
+                  }}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
@@ -429,7 +509,11 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Claims" component={ClaimsStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
       <Drawer.Screen name="Announcements" component={AnnouncementsScreen} />
-      <Drawer.Screen name="Chat" component={ChatScreen} />
+      <Drawer.Screen name="Chat" component={CompanyChatScreen} />
+      {/* Map other screens if needed, ensuring names match keys */}
+      <Drawer.Screen name="Home" component={HomeStack} />
+      <Drawer.Screen name="Payroll" component={PayrollStack} />
+      <Drawer.Screen name="Leaves" component={LeavesStack} />
     </Drawer.Navigator>
   );
 };
@@ -447,6 +531,7 @@ const WebNavigator = () => {
   const [screenParams, setScreenParams] = useState<any>({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState<{ [key: string]: boolean }>({});
   const scrollViewRef = useRef<any>(null);
 
   const contextValue = useMemo(
@@ -534,7 +619,7 @@ const WebNavigator = () => {
       case 'Announcements':
         return <AnnouncementsScreen />;
       case 'Chat':
-        return <ChatScreen />;
+        return <CompanyChatScreen />;
       case 'Profile':
         if (subScreen === 'CareerHub')
           return <CareerHubScreen />;
@@ -542,36 +627,15 @@ const WebNavigator = () => {
           return <ManageServicesScreen />;
         if (subScreen === 'ManageDepartments')
           return <ManageDepartmentsScreen />;
+        if (subScreen === 'MyTeam')
+          return <MyTeamScreen />;
         return <ProfileStack />;
       default:
         return <HomeStack />;
     }
   };
 
-  const navItems = useMemo(() => {
-    const items = [{ key: 'Home', label: t('navigation.home'), icon: '🏠' }];
-
-    items.push({ key: 'Payroll', label: t('navigation.payroll'), icon: '💰' });
-    items.push({ key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' });
-    items.push({ key: 'Remote', label: t('remote.title'), icon: '📅' });
-    items.push({ key: 'Claims', label: t('navigation.claims'), icon: '📝' });
-    items.push({ key: 'Announcements', label: t('navigation.announcements'), icon: '📢' });
-    items.push({ key: 'Chat', label: t('navigation.chat'), icon: '💬' });
-
-    if (user?.role !== 'employee') {
-      items.push({ key: 'Analytics', label: t('navigation.analytics'), icon: '📊' });
-      items.push({ key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' });
-      items.push({ key: 'Employees', label: t('navigation.employees'), icon: '👥' });
-    }
-
-    if (user?.role === 'admin') {
-      items.push({ key: 'Companies', label: t('navigation.companies'), icon: '🏢' });
-      items.push({ key: 'Teams', label: t('navigation.teams'), icon: '🤝' });
-    }
-
-    items.push({ key: 'Profile', label: t('navigation.profile'), icon: '👤' });
-    return items;
-  }, [t, user?.role]);
+  const sections = useNavigationSections();
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
@@ -627,41 +691,73 @@ const WebNavigator = () => {
               </View>
             </View>
 
-            {/* Nav Items */}
+            {/* Nav Items with Sections */}
             <ScrollView style={webStyles.sidebarNav}>
-              {navItems.map((item) => {
-                const isActive = activeTab === item.key;
-                return (
+              {sections.map(section => (
+                <View key={section.title} style={{ marginBottom: 12 }}>
                   <TouchableOpacity
-                    key={item.key}
                     onPress={() => {
-                      setActiveTab(item.key);
-                      setSubScreen('');
+                      setCollapsedSections(prev => ({
+                        ...prev,
+                        [section.title]: !prev[section.title]
+                      }));
                     }}
-                    style={[
-                      webStyles.sidebarNavItem,
-                      isActive && {
-                        backgroundColor: `${theme.colors.primary}10`,
-                        borderRightWidth: 3,
-                        borderRightColor: theme.colors.primary,
-                      }
-                    ]}
+                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 24 }}
                   >
-                    <Text style={webStyles.navIcon}>{item.icon}</Text>
-                    <Text
+                    <Text style={{
+                      paddingLeft: 24,
+                      marginBottom: 8,
+                      marginTop: 8,
+                      color: theme.colors.subText,
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase'
+                    }}>
+                      {section.title}
+                    </Text>
+                    <Text style={{ color: theme.colors.subText, fontSize: 12 }}>
+                      {collapsedSections[section.title] ? '▼' : '▲'}
+                    </Text>
+                  </TouchableOpacity>
+                  {!collapsedSections[section.title] && section.items.map((item) => (
+                    <TouchableOpacity
+                      key={item.key}
+                      onPress={() => setActiveTab(item.key)}
                       style={[
-                        webStyles.navLabel,
-                        {
-                          color: isActive ? theme.colors.primary : theme.colors.text,
-                          fontWeight: isActive ? '700' : '500',
+                        webStyles.sidebarNavItem,
+                        activeTab === item.key && {
+                          backgroundColor: `${theme.colors.primary}10`,
+                          borderRightWidth: 3,
+                          borderRightColor: theme.colors.primary,
                         },
                       ]}
                     >
-                      {item.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+                      <Text
+                        style={[
+                          webStyles.navIcon,
+                          activeTab === item.key && { color: theme.colors.primary },
+                        ]}
+                      >
+                        {item.icon}
+                      </Text>
+                      <Text
+                        style={[
+                          webStyles.navLabel,
+                          {
+                            color:
+                              activeTab === item.key
+                                ? theme.colors.primary
+                                : theme.colors.text,
+                            fontWeight: activeTab === item.key ? '700' : '500',
+                          },
+                        ]}
+                      >
+                        {item.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ))}
             </ScrollView>
           </View>
         ) : (
@@ -771,55 +867,75 @@ const WebNavigator = () => {
                 <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{user?.name}</Text>
               </View>
 
-              {navItems.map((item) => (
-                <TouchableOpacity
-                  key={item.key}
-                  onPress={() => {
-                    setActiveTab(item.key);
-                    setIsMenuOpen(false);
-                  }}
-                  style={[
-                    webStyles.mobileMenuItem,
-                    activeTab === item.key && {
-                      backgroundColor: `${theme.colors.primary}10`,
-                      borderRadius: 8,
-                      paddingLeft: 10,
-                    }
-                  ]}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <Text style={{ fontSize: 22 }}>{item.icon}</Text>
-                    <Text
-                      style={[
-                        webStyles.mobileMenuItemText,
-                        {
-                          color:
-                            activeTab === item.key
-                              ? theme.colors.primary
-                              : theme.colors.text,
-                          fontWeight: activeTab === item.key ? '700' : '400',
-                        },
-                      ]}
+              <ScrollView style={{ flex: 1 }}>
+                {sections.map(section => (
+                  <View key={section.title} style={{ marginBottom: 16 }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setCollapsedSections(prev => ({
+                          ...prev,
+                          [section.title]: !prev[section.title]
+                        }));
+                      }}
+                      style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 10 }}
                     >
-                      {item.label}
-                    </Text>
+                      <Text style={{
+                        paddingLeft: 10,
+                        marginBottom: 8,
+                        marginTop: 8,
+                        color: theme.colors.subText,
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase'
+                      }}>
+                        {section.title}
+                      </Text>
+                      <Text style={{ color: theme.colors.subText, fontSize: 12, marginRight: 10 }}>
+                        {collapsedSections[section.title] ? '▼' : '▲'}
+                      </Text>
+                    </TouchableOpacity>
+                    {!collapsedSections[section.title] && section.items.map((item) => (
+                      <TouchableOpacity
+                        key={item.key}
+                        onPress={() => {
+                          setActiveTab(item.key);
+                          setIsMenuOpen(false);
+                        }}
+                        style={[
+                          webStyles.mobileMenuItem,
+                          activeTab === item.key && {
+                            backgroundColor: `${theme.colors.primary}10`,
+                            borderRadius: 8,
+                            paddingLeft: 10,
+                          }
+                        ]}
+                      >
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                          <Text style={{ fontSize: 20 }}>{item.icon}</Text>
+                          <Text style={{
+                            fontSize: 16,
+                            color: activeTab === item.key ? theme.colors.primary : theme.colors.text,
+                            fontWeight: activeTab === item.key ? 'bold' : 'normal'
+                          }}>
+                            {item.label}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
                   </View>
-                </TouchableOpacity>
-              ))}
+                ))}
+              </ScrollView>
             </View>
-            <TouchableOpacity
-              style={{ flex: 1 }}
-              onPress={() => setIsMenuOpen(false)}
-            />
           </View>
         )}
-      </View>
+
+      </View >
       <SearchOverlay
         visible={isSearchVisible}
         onClose={() => setIsSearchVisible(false)}
         onSelect={handleSearchSelect}
       />
-    </WebNavigationContext.Provider>
+    </WebNavigationContext.Provider >
   );
 };
 

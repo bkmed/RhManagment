@@ -11,6 +11,9 @@
     "notifyHr": "Notificar a RRHH",
     "edit": "Editar",
     "add": "Añadir",
+    "assistant": "Asistente de RRHH",
+    "askAnything": "Pregúntame lo que sea...",
+    "online": "En línea",
     "search": "Buscar",
     "loading": "Cargando...",
     "error": "Error",
@@ -24,9 +27,9 @@
     "selectDate": "Seleccionar fecha",
     "selectTime": "Seleccionar hora",
     "timePlaceholder": "HH:MM",
-    "selectType": "Day Type",
-    "holiday": "Public Holiday",
-    "weekend": "Weekend",
+    "selectType": "Tipo de día",
+    "holiday": "Día festivo",
+    "weekend": "Fin de semana",
     "yes": "Sí",
     "no": "No",
     "ok": "Aceptar",
@@ -54,6 +57,8 @@
     "goal": "Objetivo",
     "myGoals": "Mis Objetivos",
     "todo": "Por hacer",
+    "viewing": "Viendo",
+    "saveError": "Error al guardar los cambios",
     "in_progress": "En progreso",
     "completed": "Completado",
     "deadline": "Fecha límite",
@@ -132,7 +137,15 @@
     "orgChart": "Organigrama",
     "announcements": "Anuncios",
     "notifications": "Notificaciones",
-    "chat": "Chat"
+    "chat": "Chat",
+    "sections": {
+      "general": "General",
+      "management": "Gestión",
+      "organization": "Organización",
+      "analytics": "Analítica",
+      "communication": "Comunicación",
+      "personal": "Personal"
+    }
   },
   "roles": {
     "admin": "Administrador",
@@ -156,7 +169,9 @@
     "status": "Estado",
     "updated": "Estado actualizado",
     "onLeave": "De vacaciones",
-    "selectStatus": "Cambiar estado"
+    "selectStatus": "Cambiar estado",
+    "myPlanning": "Mi planificación",
+    "employeePlanning": "Planificación del empleado"
   },
   "leavePolicy": {
     "title": "Mi Saldo de Vacaciones",
@@ -172,6 +187,7 @@
     "activePayroll": "Elementos de nómina activos",
     "upcomingLeaves": "Próximas vacaciones",
     "illnessAlert": "Alerta de enfermedad",
+    "illnessExpiring": "Enfermedad que expira",
     "illnessesExpiring": "{{count}} caso de enfermedad que expira pronto",
     "illnessesExpiring_plural": "{{count}} casos de enfermedad que expiran pronto",
     "quickActions": "Acciones rápidas",
@@ -655,5 +671,26 @@
     "companyAddress": "123 Calle de los Negocios, Ciudad Tech, Mundo",
     "totalEarnings": "Total ingresos",
     "totalDeductions": "Total deducciones"
+  },
+  "chatBot": {
+    "greeting": "¡Hola {{name}}! Soy tu Asistente de RRHH. ¿Cómo puedo ayudarte?",
+    "help": "Estoy aquí para ayudar. ¡Pregúntame sobre nómina, vacaciones o equipo!",
+    "fallback": "No estoy seguro. Prueba '¿Dónde está mi nómina?' o 'Mi equipo'.",
+    "payroll": "Puedes ver tus nóminas y el historial en la sección de Nómina.",
+    "payrollAction": "Ir a Nómina",
+    "leave": "Te quedan {{days}} días de vacaciones. ¿Quieres solicitar vacaciones?",
+    "leaveAction": "Solicitar Vacaciones",
+    "team": "Estás en el equipo {{team}} (Depto: {{dept}}).",
+    "teamUnknown": "No pude encontrar tu equipo, verifica tu perfil.",
+    "teamAction": "Ver Mi Equipo",
+    "profileAction": "Ir a Perfil",
+    "claim": "¿Necesitas presentar una reclamación? Puedes hacerlo en la sección Reclamaciones.",
+    "claimAction": "Presentar Reclamación",
+    "profile": "Puedes actualizar tu información en tu Perfil.",
+    "employees": "Actualmente hay {{count}} empleados. ¡Consulta el directorio!",
+    "employeesAction": "Ver Directorio",
+    "adminStats": "Reporte Admin: {{employees}} Empleados, {{teams}} Equipos.",
+    "pendingApprovals": "Tienes {{count}} solicitudes pendientes de aprobación.",
+    "pendingApprovalsAction": "Revisar Aprobaciones"
   }
 }

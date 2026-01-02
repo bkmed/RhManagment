@@ -498,7 +498,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   <View style={{ flex: 1 }}>
                     <Dropdown
                       label={t('teams.title')}
-                      data={teams.map(t => ({ label: t.name, value: String(t.id) }))}
+                      data={teams.filter(t => !companyId || t.companyId === companyId).map(t => ({ label: t.name, value: String(t.id) }))}
                       value={teamId ? String(teamId) : ''}
                       onSelect={(val) => setTeamId(Number(val))}
                       placeholder={t('teams.selectTeam')}

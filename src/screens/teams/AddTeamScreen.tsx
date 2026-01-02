@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { teamsDb } from '../../database/teamsDb';
 import { employeesDb } from '../../database/employeesDb';
+import { notificationService } from '../../services/notificationService';
 import { servicesDb } from '../../database/servicesDb';
 import { departmentsDb } from '../../database/departmentsDb';
 import { Employee, Service, Department } from '../../database/schema';
@@ -19,6 +20,8 @@ import { Theme } from '../../theme';
 import { useToast } from '../../context/ToastContext';
 import { Dropdown } from '../../components/Dropdown';
 import { MultiSelectDropdown } from '../../components/MultiSelectDropdown';
+import { useSelector } from 'react-redux';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
 
 export const AddTeamScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
@@ -28,7 +31,10 @@ export const AddTeamScreen = ({ navigation }: any) => {
 
     const [name, setName] = useState('');
     const [department, setDepartment] = useState('');
+    const [companyId, setCompanyId] = useState<number | undefined>(undefined);
     const [service, setService] = useState('');
+
+    const companies = useSelector(selectAllCompanies);
     const [managerId, setManagerId] = useState<number | undefined>(undefined);
     const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
 
@@ -85,6 +91,7 @@ export const AddTeamScreen = ({ navigation }: any) => {
                 name,
                 department,
                 service,
+                companyId,
                 managerId: managerId || 0,
             });
 
@@ -101,9 +108,10 @@ export const AddTeamScreen = ({ navigation }: any) => {
 
             showToast(t('common.success'), 'success');
             navigation.goBack();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving team:', error);
-            showToast(t('common.saveError'), 'error');
+            const errorMessage = error?.message || t('common.saveError');
+            notificationService.showAlert(t('common.error'), errorMessage);
         }
     };
 
@@ -136,6 +144,17 @@ export const AddTeamScreen = ({ navigation }: any) => {
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.card}>
                     <Text style={styles.title}>{t('teams.details') || 'Team Details'}</Text>
+
+                    {/* Company (Dropdown) */}
+                    <View style={styles.fieldContainer}>
+                        <Dropdown
+                            label={t('companies.title')}
+                            data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                            value={companyId ? String(companyId) : ''}
+                            onSelect={(val) => setCompanyId(Number(val))}
+                            placeholder={t('companies.selectCompany')}
+                        />
+                    </View>
 
                     {/* Name */}
                     <View style={styles.fieldContainer}>

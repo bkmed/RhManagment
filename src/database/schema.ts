@@ -128,6 +128,7 @@ export interface Team {
   managerId?: number; // Employee ID of the manager
   department: string;
   service?: string;
+  companyId?: number;
   createdAt: string;
   updatedAt: string;
 }

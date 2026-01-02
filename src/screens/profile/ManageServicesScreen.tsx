@@ -132,7 +132,7 @@ export const ManageServicesScreen = ({ navigation }: any) => {
 
 const createStyles = (theme: Theme) =>
     StyleSheet.create({
-        container: { flex: 1, backgroundColor: theme.colors.background, padding: theme.spacing.m },
+        container: { backgroundColor: theme.colors.background, padding: theme.spacing.m },
         inputContainer: { flexDirection: 'row', gap: theme.spacing.s, marginBottom: theme.spacing.l },
         input: {
             flex: 1,

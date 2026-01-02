@@ -5,9 +5,10 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Share,
   Platform,
-  SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { payrollDb } from '../../database/payrollDb';
 import { employeesDb } from '../../database/employeesDb';
 import { notificationService } from '../../services/notificationService';

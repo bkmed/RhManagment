@@ -8,8 +8,9 @@ import {
     StyleSheet,
     FlatList,
     Platform,
-    SafeAreaView,
+    KeyboardAvoidingView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';

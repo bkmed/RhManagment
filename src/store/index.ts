@@ -27,6 +27,8 @@ import notificationsReducer from './slices/notificationsSlice';
 import messagesReducer from './slices/messagesSlice';
 import servicesReducer from './slices/servicesSlice';
 
+import analyticsReducer from './slices/analyticsSlice';
+
 const rootReducer = combineReducers({
     auth: authReducer,
     leaves: leavesReducer,
@@ -42,12 +44,13 @@ const rootReducer = combineReducers({
     notifications: notificationsReducer,
     messages: messagesReducer,
     services: servicesReducer,
+    analytics: analyticsReducer,
 });
 
 const persistConfig = {
     key: 'root',
     storage: reduxStorage,
-    whitelist: ['auth', 'leaves', 'employees', 'payroll', 'claims', 'illnesses', 'companies', 'teams', 'goals', 'performance', 'announcements', 'notifications', 'messages', 'services'], // add slices here to persist
+    whitelist: ['auth', 'leaves', 'employees', 'payroll', 'claims', 'illnesses', 'companies', 'teams', 'goals', 'performance', 'announcements', 'notifications', 'messages', 'services', 'analytics'], // add slices here to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

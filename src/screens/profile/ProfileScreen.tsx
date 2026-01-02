@@ -502,6 +502,14 @@ export const ProfileScreen = ({ navigation }: any) => {
               onSelect={(val) => setThemeMode(val as any)}
             />
           </View>
+          <View style={styles.divider} />
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.navigate('MyTeam')}
+          >
+            <Text style={styles.menuItemText}>👥 {t('teams.myTeam') || 'My Team'}</Text>
+            <Text style={styles.menuItemArrow}>›</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Permissions Section */}
@@ -584,7 +592,9 @@ export const ProfileScreen = ({ navigation }: any) => {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { backgroundColor: theme.colors.background },
+    container: {
+      backgroundColor: theme.colors.background
+    },
     content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
     section: {
       backgroundColor: theme.colors.surface,

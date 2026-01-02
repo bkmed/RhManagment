@@ -16,6 +16,8 @@ import {
 import { googleAnalytics } from '../../services/googleAnalytics';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
+import { useSelector } from 'react-redux';
+import { selectTopQueries } from '../../store/slices/analyticsSlice';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -24,6 +26,7 @@ export const AnalyticsScreen = () => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const recentQueries = useSelector(selectTopQueries);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [adherenceChart, setAdherenceChart] = useState<{
     labels: string[];
@@ -219,8 +222,30 @@ export const AnalyticsScreen = () => {
             </View>
           )}
         </View>
-      </ScrollView>
-    </View>
+
+        {/* Recent Questions Section */}
+        {
+          recentQueries.length > 0 && (
+            <View style={styles.insightsSection}>
+              <Text style={styles.sectionTitle}>
+                {t('analytics.recentQuestions') || 'Recent Questions'}
+              </Text>
+              {recentQueries.map((query) => (
+                <View key={query.id} style={[styles.insightCard, { backgroundColor: theme.colors.surface }]}>
+                  <Text style={styles.insightEmoji}>💬</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.insightText, { fontStyle: 'italic' }]}>"{query.text}"</Text>
+                    <Text style={[styles.timestamp, { fontSize: 10, color: theme.colors.subText }]}>
+                      {new Date(query.timestamp).toLocaleString()}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )
+        }
+      </ScrollView >
+    </View >
   );
 };
 
@@ -327,5 +352,9 @@ const createStyles = (theme: Theme) =>
       fontSize: 14,
       color: theme.colors.text,
       lineHeight: 20,
+    },
+    timestamp: {
+      fontSize: 12,
+      marginTop: 4,
     },
   });

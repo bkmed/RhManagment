@@ -11,6 +11,9 @@
     "notifyHr": "إخطار الموارد البشرية",
     "edit": "تعديل",
     "add": "إضافة",
+    "assistant": "مساعد الموارد البشرية",
+    "askAnything": "اسألني أي شيء...",
+    "online": "متصل",
     "search": "بحث",
     "loading": "جاري التحميل...",
     "error": "خطأ",
@@ -54,6 +57,8 @@
     "goal": "هدف",
     "myGoals": "أهدافي",
     "todo": "للقيام به",
+    "viewing": "عرض",
+    "saveError": "فشل حفظ التغييرات",
     "in_progress": "قيد التنفيذ",
     "completed": "مكتمل",
     "deadline": "الموعد النهائي",
@@ -132,7 +137,15 @@
     "orgChart": "الهيكل التنظيمي",
     "announcements": "الإعلانات",
     "notifications": "التنبيهات",
-    "chat": "المحادثة"
+    "chat": "الدردشة"
+  },
+  "sections": {
+    "general": "عام",
+    "management": "إدارة",
+    "organization": "منظمة",
+    "analytics": "تحليلات",
+    "communication": "تواصل",
+    "personal": "شخصي"
   },
   "roles": {
     "admin": "مدير",
@@ -156,7 +169,9 @@
     "status": "الحالة",
     "updated": "تم تحديث الحالة",
     "onLeave": "في إجازة",
-    "selectStatus": "تغيير الحالة"
+    "selectStatus": "تغيير الحالة",
+    "myPlanning": "جدولي",
+    "employeePlanning": "جدول الموظف"
   },
   "leavePolicy": {
     "title": "رصيد إجازاتي",
@@ -172,6 +187,7 @@
     "activePayroll": "عناصر الرواتب النشطة",
     "upcomingLeaves": "الإجازات القادمة",
     "illnessAlert": "تنبيه حالة مرضية",
+    "illnessExpiring": "مرض ينتهي",
     "illnessesExpiring": "{{count}} حالة مرضية تنتهي قريباً",
     "illnessesExpiring_plural": "{{count}} حالات مرضية تنتهي قريباً",
     "quickActions": "إجراءات سريعة",
@@ -655,5 +671,26 @@
     "companyAddress": "123 شارع الأعمال، دبي، الإمارات",
     "totalEarnings": "إجمالي المداخيل",
     "totalDeductions": "إجمالي الاقتطاعات"
+  },
+  "chatBot": {
+    "greeting": "مرحباً {{name}}! أنا مساعد الموارد البشرية. كيف يمكنني مساعدتك؟",
+    "help": "أنا هنا للمساعدة. اسألني عن الرواتب، الإجازات، أو فريقك!",
+    "fallback": "لست متأكداً. جرب 'أين راتبي؟' أو 'فريقي'.",
+    "payroll": "يمكنك عرض تفاصيل الرواتب والسجل في قسم الرواتب.",
+    "payrollAction": "الذهاب للرواتب",
+    "leave": "لديك {{days}} أيام إجازة متبقية. هل تريد طلب إجازة؟",
+    "leaveAction": "طلب إجازة",
+    "team": "أنت في فريق {{team}} (قسم: {{dept}}).",
+    "teamUnknown": "لم أتمكن من العثور على فريقك، تحقق من ملفك الشخصي.",
+    "teamAction": "عرض فريقي",
+    "profileAction": "الذهاب للملف الشخصي",
+    "claim": "هل تحتاج لتقديم مطالبة أو مصروفات؟ يمكنك فعل ذلك في قسم المطالبات.",
+    "claimAction": "تقديم مطالبة",
+    "profile": "يمكنك تحديث معلوماتك في الملف الشخصي.",
+    "employees": "يوجد حالياً {{count}} موظف. تحقق من الدليل!",
+    "employeesAction": "عرض الدليل",
+    "adminStats": "تقرير الإدارة: {{employees}} موظف، {{teams}} فريق.",
+    "pendingApprovals": "لديك {{count}} طلبات معلقة للموافقة.",
+    "pendingApprovalsAction": "مراجعة الطلبات"
   }
 }

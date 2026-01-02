@@ -11,6 +11,9 @@
     "notifyHr": "HR benachrichtigen",
     "edit": "Bearbeiten",
     "add": "Hinzufügen",
+    "assistant": "HR-Assistent",
+    "askAnything": "Frag mich was...",
+    "online": "Online",
     "search": "Suchen",
     "loading": "Lädt...",
     "error": "Fehler",
@@ -24,9 +27,9 @@
     "selectDate": "Datum auswählen",
     "selectTime": "Zeit auswählen",
     "timePlaceholder": "SS:MM",
-    "selectType": "Day Type",
-    "holiday": "Public Holiday",
-    "weekend": "Weekend",
+    "selectType": "Tagestyp",
+    "holiday": "Feiertag",
+    "weekend": "Wochenende",
     "yes": "Ja",
     "no": "Nein",
     "ok": "OK",
@@ -54,6 +57,8 @@
     "goal": "Ziel",
     "myGoals": "Meine Ziele",
     "todo": "Zu erledigen",
+    "viewing": "Anzeige",
+    "saveError": "Änderungen konnten nicht gespeichert werden",
     "in_progress": "In Bearbeitung",
     "completed": "Abgeschlossen",
     "deadline": "Frist",
@@ -134,6 +139,14 @@
     "notifications": "Benachrichtigungen",
     "chat": "Chat"
   },
+  "sections": {
+    "general": "Allgemein",
+    "management": "Verwaltung",
+    "organization": "Organisation",
+    "analytics": "Analytik",
+    "communication": "Kommunikation",
+    "personal": "Persönlich"
+  },
   "roles": {
     "admin": "Administrator",
     "employee": "Mitarbeiter",
@@ -156,7 +169,9 @@
     "status": "Status",
     "updated": "Status aktualisiert",
     "onLeave": "Im Urlaub",
-    "selectStatus": "Status ändern"
+    "selectStatus": "Status ändern",
+    "myPlanning": "Meine Planung",
+    "employeePlanning": "Mitarbeiterplanung"
   },
   "leavePolicy": {
     "title": "Mein Urlaubssaldo",
@@ -172,6 +187,7 @@
     "activePayroll": "Aktive Gehaltsposten",
     "upcomingLeaves": "Anstehende Abwesenheiten",
     "illnessAlert": "Krankheitsmeldung",
+    "illnessExpiring": "Krankheit endet",
     "illnessesExpiring": "{{count}} Krankheitsfall läuft bald ab",
     "illnessesExpiring_plural": "{{count}} Krankheitsfälle laufen bald ab",
     "quickActions": "Schnellaktionen",
@@ -655,5 +671,26 @@
     "companyAddress": "123 Business Street, Tech City, Welt",
     "totalEarnings": "Gesamtbezüge",
     "totalDeductions": "Gesamtabzüge"
+  },
+  "chatBot": {
+    "greeting": "Hallo {{name}}! Ich bin Ihr HR-Assistent. Wie kann ich helfen?",
+    "help": "Ich bin hier, um zu helfen. Fragen Sie nach Gehalt, Urlaub oder Team!",
+    "fallback": "Das verstehe ich nicht. Versuchen Sie 'Wo ist meine Gehaltsabrechnung?'",
+    "payroll": "Sie können Ihre Gehaltsabrechnungen im Bereich Gehaltsabrechnung einsehen.",
+    "payrollAction": "Zur Gehaltsabrechnung",
+    "leave": "Sie haben noch {{days}} Urlaubstage. Möchten Sie Urlaub beantragen?",
+    "leaveAction": "Urlaub Beantragen",
+    "team": "Sie sind im Team {{team}} (Abt: {{dept}}).",
+    "teamUnknown": "Ich konnte Ihr Team nicht finden. Bitte prüfen Sie Ihr Profil.",
+    "teamAction": "Mein Team Ansehen",
+    "profileAction": "Zum Profil",
+    "claim": "Müssen Sie eine Forderung einreichen? Das geht im Bereich Forderungen.",
+    "claimAction": "Forderung Einreichen",
+    "profile": "Sie können Ihre Informationen in Ihrem Profil aktualisieren.",
+    "employees": "Es gibt derzeit {{count}} Mitarbeiter.",
+    "employeesAction": "Verzeichnis Ansehen",
+    "adminStats": "Admin-Bericht: {{employees}} Mitarbeiter, {{teams}} Teams.",
+    "pendingApprovals": "Sie haben {{count}} ausstehende Genehmigungen.",
+    "pendingApprovalsAction": "Genehmigungen Prüfen"
   }
 }
