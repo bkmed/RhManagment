@@ -129,7 +129,11 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const handleSave = async () => {
     const newErrors: { [key: string]: string } = {};
     if (!name.trim()) newErrors.name = t('common.required');
-    if (!amount.trim()) newErrors.amount = t('common.required');
+    if (!amount.trim()) {
+      newErrors.amount = t('common.required');
+    } else if (isNaN(Number(amount))) {
+      newErrors.amount = t('common.invalidAmount') || "Invalid amount";
+    }
     if (!startDate) newErrors.startDate = t('common.required');
 
     if (startDate && endDate && endDate < startDate) {
@@ -164,6 +168,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         month,
         year,
         hoursWorked: hoursWorked ? parseFloat(hoursWorked) : undefined,
+        companyId,
+        teamId,
+        employeeId: employeeId || (user?.role === 'employee' ? Number(user.id) : undefined),
       };
 
       let id: number;

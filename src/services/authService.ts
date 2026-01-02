@@ -37,6 +37,8 @@ export interface User {
     skills?: string[];
     teamId?: number;
     companyId?: number;
+    status?: 'active' | 'pending' | 'rejected';
+    birthDate?: string;
 }
 
 export const authService = {
@@ -108,7 +110,13 @@ export const authService = {
     },
 
     // Register
-    register: async (name: string, email: string, password: string, role: UserRole = 'employee'): Promise<User> => {
+    register: async (
+        name: string,
+        email: string,
+        password: string,
+        role: UserRole = 'employee',
+        additionalInfo: { country?: string; birthDate?: string } = {}
+    ): Promise<User> => {
         await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
 
         const usersJson = storageService.getString(USERS_KEY);
@@ -124,12 +132,23 @@ export const authService = {
             email,
             password,
             role,
+            country: additionalInfo.country,
+            birthDate: additionalInfo.birthDate,
+            status: 'pending', // Default status for new self-registered employees
+            createdAt: new Date().toISOString(),
         };
 
         users.push(newUser);
         storageService.setString(USERS_KEY, JSON.stringify(users));
 
-        const sessionUser: User = { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role };
+        const sessionUser: User = {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            country: newUser.country,
+            // We pass status here if User interface supports it, otherwise it's just in the DB
+        };
         storageService.setString(AUTH_KEY, JSON.stringify(sessionUser));
 
         return sessionUser;

@@ -35,8 +35,6 @@
     "yearsUnit": "years",
     "monthUnit": "month",
     "monthsUnit": "months",
-    "invalidEmail": "Invalid email address",
-    "invalidPhone": "Invalid phone number",
     "invalidDateRange": "Invalid date range",
     "searchPlaceholder": "Search...",
     "week": "Week",
@@ -80,7 +78,8 @@
   "teams": {
     "title": "Teams",
     "empty": "No teams found",
-    "selectTeam": "Select Team"
+    "selectTeam": "Select Team",
+    "supervised": "supervised"
   },
   "navigation": {
     "home": "Home",
@@ -213,7 +212,8 @@
     "baseSalary": "Base Salary",
     "month": "Payroll Month",
     "year": "Year",
-    "hoursWorked": "Hours Worked"
+    "hoursWorked": "Hours Worked",
+    "manageServices": "Manage Departments/Services"
   },
   "claims": {
     "newClaim": "New Claim",
@@ -371,7 +371,9 @@
     "period": "Period",
     "description": "Description",
     "titlePlaceholder": "e.g. Master React Native",
-    "descriptionPlaceholder": "Describe your goal..."
+    "descriptionPlaceholder": "Describe your goal...",
+    "ageInvalid": "Age must be between 18 and 62",
+    "country": "Country"
   },
   "analytics": {
     "title": "Analytics",

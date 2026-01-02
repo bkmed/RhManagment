@@ -16,6 +16,8 @@ import { Theme } from '../../theme';
 import { isValidEmail, isValidPassword } from '../../utils/validation';
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { AuthInput } from '../../components/auth/AuthInput';
+import { Dropdown } from '../../components/Dropdown';
+import { DateTimePickerField } from '../../components/DateTimePickerField';
 
 export const SignUpScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
@@ -26,19 +28,26 @@ export const SignUpScreen = ({ navigation }: any) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({ name: '', email: '', password: '' });
+  const [birthDate, setBirthDate] = useState(new Date());
+  const [country, setCountry] = useState('');
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; country?: string; birthDate?: string }>({});
   const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
     let isValid = true;
-    const newErrors = { name: '', email: '', password: '' };
+    const newErrors: any = {};
 
-    if (!name) {
+    if (!name.trim()) {
       newErrors.name = t('signUp.errorEmptyName');
       isValid = false;
     }
 
-    if (!email) {
+    if (!country) {
+      newErrors.country = t('common.required');
+      isValid = false;
+    }
+
+    if (!email.trim()) {
       newErrors.email = t('signUp.errorEmptyEmail');
       isValid = false;
     } else if (!isValidEmail(email)) {
@@ -54,6 +63,19 @@ export const SignUpScreen = ({ navigation }: any) => {
       isValid = false;
     }
 
+    // Age validation
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    if (age < 18 || age > 62) {
+      newErrors.birthDate = t('employees.ageInvalid');
+      isValid = false;
+    }
+
     setErrors(newErrors);
     return isValid;
   };
@@ -63,7 +85,12 @@ export const SignUpScreen = ({ navigation }: any) => {
 
     setLoading(true);
     try {
-      const user = await authService.register(name, email, password);
+      // Register with pending status and additional fields
+      const user = await authService.register(name, email, password, 'employee', {
+        country,
+        birthDate: birthDate.toISOString().split('T')[0]
+      });
+
       await signUp(user);
     } catch (error: any) {
       notificationService.showAlert(
@@ -87,6 +114,35 @@ export const SignUpScreen = ({ navigation }: any) => {
         placeholder={t('signUp.namePlaceholder')}
         error={errors.name}
       />
+
+      <View style={{ marginBottom: theme.spacing.m }}>
+        <DateTimePickerField
+          label={t('employees.birthDate')}
+          value={birthDate}
+          onChange={setBirthDate}
+          mode="date"
+          maximumDate={new Date()}
+          error={errors.birthDate}
+        />
+      </View>
+
+      <View style={{ marginBottom: theme.spacing.m }}>
+        <Dropdown
+          label={t('employees.country')}
+          data={[
+            { label: 'France', value: 'France' },
+            { label: 'Tunisie', value: 'Tunisia' },
+            { label: 'Allemagne', value: 'Germany' },
+            { label: 'Espagne', value: 'Spain' },
+            { label: 'UK', value: 'UK' },
+            { label: 'USA', value: 'USA' }
+          ]}
+          value={country}
+          onSelect={setCountry}
+          placeholder={t('employees.countryPlaceholder')}
+        />
+        {errors.country ? <Text style={{ color: theme.colors.error, fontSize: 12, marginTop: 4 }}>{errors.country}</Text> : null}
+      </View>
 
       <AuthInput
         label={t('signUp.emailLabel')}

@@ -35,8 +35,6 @@
     "yearsUnit": "سنوات",
     "monthUnit": "شهر",
     "monthsUnit": "أشهر",
-    "invalidEmail": "عنوان البريد الإلكتروني غير صالح",
-    "invalidPhone": "رقم الهاتف غير صالح",
     "invalidDateRange": "نطاق تاريخ غير صالح",
     "searchPlaceholder": "بحث...",
     "week": "أسبوع",
@@ -70,7 +68,9 @@
     "noData": "لا توجد بيانات متاحة",
     "validate": "تأكيد",
     "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا؟",
-    "details": "التفاصيل"
+    "details": "التفاصيل",
+    "invalidPhone": "رقم الهاتف غير صالح للدولة المحددة",
+    "invalidEmail": "عنوان البريد الإلكتروني غير صالح"
   },
   "companies": {
     "title": "Companies",
@@ -80,7 +80,8 @@
   "teams": {
     "title": "Teams",
     "empty": "No teams found",
-    "selectTeam": "Select Team"
+    "selectTeam": "Select Team",
+    "supervised": "supervised"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -213,7 +214,8 @@
     "baseSalary": "الراتب الأساسي",
     "month": "شهر الراتب",
     "year": "السنة",
-    "hoursWorked": "ساعات العمل"
+    "hoursWorked": "ساعات العمل",
+    "manageServices": "Manage Departments/Services"
   },
   "claims": {
     "newClaim": "مطالبة جديدة",
@@ -371,7 +373,9 @@
     "period": "Period",
     "description": "Description",
     "titlePlaceholder": "e.g. Master React Native",
-    "descriptionPlaceholder": "Describe your goal..."
+    "descriptionPlaceholder": "Describe your goal...",
+    "ageInvalid": "يجب أن يكون العمر بين 18 و 62 عامًا",
+    "country": "البلد"
   },
   "analytics": {
     "title": "التحليلات",

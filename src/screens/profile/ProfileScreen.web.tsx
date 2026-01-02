@@ -421,33 +421,6 @@ export const ProfileScreen = ({ navigation }: any) => {
               ))}
             </View>
 
-            {/* Leave Policy Section */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeaderRow}>
-                <Text style={styles.sectionTitle}>{t('leavePolicy.managedBy')}</Text>
-              </View>
-              <View style={styles.policyRow}>
-                <Text style={styles.policyLabel}>{t('leavePolicy.perYear')}</Text>
-                <Text style={styles.policyValue}>{user?.vacationDaysPerYear || 25}</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.policyRow}>
-                <Text style={styles.policyLabel}>{t('leavePolicy.remaining')}</Text>
-                <Text style={[styles.policyValue, { color: theme.colors.primary, fontSize: 24 }]}>
-                  {user?.remainingVacationDays ?? 25}
-                </Text>
-              </View>
-              {user?.country && (
-                <>
-                  <View style={styles.divider} />
-                  <View style={styles.policyRow}>
-                    <Text style={styles.policyLabel}>{t('leavePolicy.country')}</Text>
-                    <Text style={styles.policyValue}>{user.country}</Text>
-                  </View>
-                </>
-              )}
-            </View>
-
             {/* Admin Settings Section */}
             {(user?.role === 'admin' || user?.role === 'rh') && (
               <View style={styles.section}>

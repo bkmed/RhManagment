@@ -15,6 +15,7 @@ import { employeesDb } from '../../database';
 import { notificationService } from '../../services/notificationService';
 import { Theme } from '../../theme';
 import { ROLES, UserRole } from '../../services/authService';
+import { isValidEmail } from '../../utils/validation';
 import { Dropdown } from '../../components/Dropdown';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -22,6 +23,12 @@ import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { permissionsService } from '../../services/permissions';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
+import { useSelector } from 'react-redux';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { selectAllTeams } from '../../store/slices/teamsSlice';
+import { RootState } from '../../store';
+import { servicesDb } from '../../database/servicesDb';
+import { Service } from '../../database/schema';
 
 export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { theme } = useTheme();
@@ -31,21 +38,11 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { showModal } = useModal();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  /* Removed require */
-
   const { setActiveTab } = useContext(WebNavigationContext);
 
   const employeeId = route.params?.id || route.params?.employeeId;
 
   const [name, setName] = useState('');
-
-  const navigateBack = () => {
-    if (Platform.OS === 'web') {
-      setActiveTab('Employees');
-    } else {
-      navigation.goBack();
-    }
-  };
   const [position, setPosition] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -53,6 +50,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [notes, setNotes] = useState('');
   const [department, setDepartment] = useState('');
   const [location, setLocation] = useState('');
+  const [services, setServices] = useState<Service[]>([]);
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
   const [role, setRole] = useState<UserRole>('employee');
   const [loading, setLoading] = useState(false);
@@ -73,13 +71,29 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [website, setWebsite] = useState('');
   const [skills, setSkills] = useState('');
 
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  const [teamId, setTeamId] = useState<number | null>(null);
+
+  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const teams = useSelector((state: RootState) => selectAllTeams(state));
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (employeeId) {
-      loadEmployee();
-    }
+    const fetchData = async () => {
+      if (employeeId) {
+        await loadEmployee();
+      }
+      await loadServices();
+      setLoading(false);
+    };
+    fetchData();
   }, [employeeId]);
+
+  const loadServices = async () => {
+    const allServices = await servicesDb.getAll();
+    setServices(allServices);
+  };
 
   const loadEmployee = async () => {
     try {
@@ -100,6 +114,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         if (employee.hiringDate) {
           setHiringDate(new Date(employee.hiringDate));
         }
+        setCompanyId(employee.companyId || null);
+        setTeamId(employee.teamId || null);
 
         // Load extended fields
         setFirstName(employee.firstName || '');
@@ -123,12 +139,67 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
     }
   };
 
+
+  const validatePhone = (phone: string, country: string) => {
+    // Simple regex patterns for demonstration
+    const patterns: Record<string, RegExp> = {
+      'France': /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
+      'Tunisia': /^(?:(?:\+|00)216|0)?\s*[2459]\d{7}$/, // Starts with 216 optional, then 8 digits
+      'Germany': /^(?:(?:\+|00)49|0)\s*[1-9]\d{1,14}$/,
+      'Spain': /^(?:(?:\+|00)34|0)\s*[679]\d{8}$/,
+    };
+
+    // Default to a generous generic pattern if country not found or strictly empty
+    const pattern = patterns[country] || /^\+?\d{8,15}$/;
+    return pattern.test(phone.replace(/\s/g, ''));
+  };
+
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
+
+    // Name validation
     if (!name.trim()) newErrors.name = t('employees.nameRequired');
+
+    // Email validation
+    if (email) {
+      if (!isValidEmail(email)) {
+        newErrors.email = t('common.invalidEmail');
+      }
+    }
+
+    // Phone validation
+    if (phone) {
+      // Check if phone contains only allowed characters (digits, spaces, +, -)
+      if (!/^[\d\s\-\+]+$/.test(phone)) {
+        newErrors.phone = t('common.invalidPhone'); // "Must be a number" implicitly
+      } else if (!validatePhone(phone, country)) {
+        newErrors.phone = t('common.invalidPhone');
+      }
+    }
+
+    // Age validation
+    if (age) {
+      if (!/^\d+$/.test(age)) {
+        newErrors.age = t('employees.ageInvalid');
+      } else {
+        const ageNum = parseInt(age, 10);
+        if (ageNum < 18 || ageNum > 62) {
+          newErrors.age = t('employees.ageInvalid');
+        }
+      }
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const navigateBack = () => {
+    if (Platform.OS === 'web') {
+      setActiveTab('Employees');
+    } else {
+      navigation.goBack();
+    }
   };
 
   const handleTakePhoto = async () => {
@@ -137,8 +208,6 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
       notificationService.showAlert(t('profile.permissionDenied'), t('profile.permissionBlockedMessage'));
       return;
     }
-
-    // In a real app, we'd use react-native-image-picker here
     showToast('Camera integration would go here', 'info');
   };
 
@@ -163,6 +232,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         statePaidLeaves: 0,
         country,
         hiringDate: hiringDate ? hiringDate.toISOString() : undefined,
+        companyId: companyId || undefined,
+        teamId: teamId || undefined,
 
         // Extended fields
         firstName,
@@ -189,11 +260,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         await employeesDb.add(employeeData);
         showToast(t('employees.added'));
       }
-      if (Platform.OS === 'web') {
-        setActiveTab('Employees');
-      } else {
-        navigation?.goBack();
-      }
+      navigateBack();
     } catch (error) {
       showToast(t('employees.saveError'));
     } finally {
@@ -297,13 +364,17 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>{t('employees.age')}</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, errors.age && styles.inputError]}
                   value={age}
-                  onChangeText={setAge}
+                  onChangeText={(text) => {
+                    setAge(text);
+                    if (errors.age) setErrors({ ...errors, age: '' });
+                  }}
                   placeholder="25"
                   keyboardType="numeric"
                   placeholderTextColor={theme.colors.subText}
                 />
+                {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
               </View>
               <View style={styles.fieldContainer}>
                 <Dropdown
@@ -341,10 +412,30 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 <TextInput
                   style={[styles.input, errors.phone && styles.inputError]}
                   value={phone}
-                  onChangeText={setPhone}
+                  onChangeText={(text) => {
+                    setPhone(text);
+                    if (errors.phone) setErrors({ ...errors, phone: '' });
+                  }}
                   placeholder={t('employees.phonePlaceholder')}
                   placeholderTextColor={theme.colors.subText}
                   keyboardType="phone-pad"
+                />
+                {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('employees.country')}
+                  data={[
+                    { label: 'France', value: 'France' },
+                    { label: 'Tunisie', value: 'Tunisia' },
+                    { label: 'Allemagne', value: 'Germany' },
+                    { label: 'Espagne', value: 'Spain' },
+                  ]}
+                  value={country}
+                  onSelect={setCountry}
                 />
               </View>
             </View>
@@ -368,6 +459,140 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   mode="date"
                 />
               </View>
+            </View>
+          </View>
+
+          {/* Section: Employment Details */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('navigation.employmentDetails')}</Text>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10 }}>
+                  <View style={{ flex: 1 }}>
+                    <Dropdown
+                      label={t('companies.title')}
+                      data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                      value={companyId ? String(companyId) : ''}
+                      onSelect={(val) => setCompanyId(Number(val))}
+                      placeholder={t('companies.selectCompany')}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => {
+                      if (Platform.OS === 'web') {
+                        setActiveTab('Companies');
+                      } else {
+                        navigation.navigate('AddCompany');
+                      }
+                    }}
+                  >
+                    <Text style={styles.addButtonText}>➕</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={styles.fieldContainer}>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10 }}>
+                  <View style={{ flex: 1 }}>
+                    <Dropdown
+                      label={t('teams.title')}
+                      data={teams.map(t => ({ label: t.name, value: String(t.id) }))}
+                      value={teamId ? String(teamId) : ''}
+                      onSelect={(val) => setTeamId(Number(val))}
+                      placeholder={t('teams.selectTeam')}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => {
+                      if (Platform.OS === 'web') {
+                        setActiveTab('Teams');
+                      } else {
+                        navigation.navigate('AddTeam');
+                      }
+                    }}
+                  >
+                    <Text style={styles.addButtonText}>➕</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('employees.specialty')}
+                  data={departmentOptions}
+                  value={position}
+                  onSelect={setPosition}
+                  placeholder={t('employees.specialtyPlaceholder')}
+                />
+              </View>
+
+              <View style={styles.fieldContainer}>
+                {currentUser?.role === 'admin' && (
+                  <Dropdown
+                    label={t('signUp.roleLabel')}
+                    data={ROLES.map((r: UserRole) => ({ label: t(`roles.${r}`), value: r }))}
+                    value={role}
+                    onSelect={(val) => setRole(val as UserRole)}
+                    placeholder={t('signUp.roleLabel')}
+                  />
+                )}
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('common.service')}
+                  data={services.map(s => ({ label: s.name, value: s.name }))}
+                  value={department}
+                  onSelect={(item) => setDepartment(item.value)}
+                  placeholder={t('common.service')}
+                />
+              </View>
+
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('common.local')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={location}
+                  onChangeText={setLocation}
+                  placeholder={t('common.local')}
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Section: Social & Skills */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('employees.skills')}</Text>
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('employees.linkedin')}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={linkedin}
+                  onChangeText={setLinkedin}
+                  placeholder="https://linkedin.com/in/..."
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>{t('employees.skills')}</Text>
+              <TextInput
+                style={styles.input}
+                value={skills}
+                onChangeText={setSkills}
+                placeholder="React, Node.js, HR Management"
+                placeholderTextColor={theme.colors.subText}
+              />
             </View>
           </View>
 
@@ -408,94 +633,16 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               </View>
             </View>
           </View>
-
-          {/* Section: Social & Skills */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('navigation.employmentDetails')}</Text>
-
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('employees.linkedin')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={linkedin}
-                  onChangeText={setLinkedin}
-                  placeholder="https://linkedin.com/in/..."
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
-            </View>
-
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <Dropdown
-                  label={t('employees.specialty')}
-                  data={departmentOptions}
-                  value={position}
-                  onSelect={setPosition}
-                  placeholder={t('employees.specialtyPlaceholder')}
-                />
-              </View>
-
-              <View style={styles.fieldContainer}>
-                {currentUser?.role === 'admin' && (
-                  <Dropdown
-                    label={t('signUp.roleLabel')}
-                    data={ROLES.map((r: UserRole) => ({ label: t(`roles.${r}`), value: r }))}
-                    value={role}
-                    onSelect={(val) => setRole(val as UserRole)}
-                    placeholder={t('signUp.roleLabel')}
-                  />
-                )}
-              </View>
-            </View>
-
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.service')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={department}
-                  onChangeText={setDepartment}
-                  placeholder={t('common.service')}
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
-
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.local')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={location}
-                  onChangeText={setLocation}
-                  placeholder={t('common.local')}
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
-            </View>
-
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>{t('employees.skills')}</Text>
-              <TextInput
-                style={styles.input}
-                value={skills}
-                onChangeText={setSkills}
-                placeholder="React, Node.js, HR Management"
-                placeholderTextColor={theme.colors.subText}
-              />
-            </View>
-
-            <Text style={styles.label}>{t('employees.notes')}</Text>
-            <TextInput
-              style={[styles.input, styles.notesInput]}
-              value={notes}
-              onChangeText={setNotes}
-              placeholder={t('employees.notesPlaceholder')}
-              placeholderTextColor={theme.colors.subText}
-              multiline
-              numberOfLines={3}
-            />
-          </View>
+          <Text style={styles.label}>{t('employees.notes')}</Text>
+          <TextInput
+            style={[styles.input, styles.notesInput]}
+            value={notes}
+            onChangeText={setNotes}
+            placeholder={t('employees.notesPlaceholder')}
+            placeholderTextColor={theme.colors.subText}
+            multiline
+            numberOfLines={3}
+          />
         </View>
 
         <TouchableOpacity
@@ -626,4 +773,17 @@ const createStyles = (theme: Theme) =>
       marginTop: 4,
       marginLeft: 4,
     },
+    addButton: {
+      backgroundColor: theme.colors.primary,
+      width: 44,
+      height: 44,
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 2, // Align with input
+    },
+    addButtonText: {
+      fontSize: 20,
+      color: theme.colors.surface,
+    }
   });

@@ -3,7 +3,7 @@
     "generalInfo": "Informations Générales",
     "save": "Enregistrer",
     "service": "Service",
-    "local": "Local",
+    "local": "Lieu de travail",
     "urgent": "Urgent",
     "cancel": "Annuler",
     "delete": "Supprimer",
@@ -35,8 +35,6 @@
     "yearsUnit": "ans",
     "monthUnit": "mois",
     "monthsUnit": "mois",
-    "invalidEmail": "Adresse e-mail invalide",
-    "invalidPhone": "Numéro de téléphone invalide",
     "invalidDateRange": "Plage de dates invalide",
     "searchPlaceholder": "Rechercher...",
     "week": "Semaine",
@@ -70,7 +68,9 @@
     "noData": "Aucune donnée disponible",
     "validate": "Valider",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ceci ?",
-    "details": "Détails"
+    "details": "Détails",
+    "invalidPhone": "Numéro de téléphone invalide pour le pays sélectionné",
+    "invalidEmail": "Adresse email invalide"
   },
   "companies": {
     "title": "Entreprises",
@@ -80,7 +80,8 @@
   "teams": {
     "title": "Équipes",
     "empty": "Aucune équipe trouvée",
-    "selectTeam": "Sélectionner l'équipe"
+    "selectTeam": "Sélectionner l'équipe",
+    "supervised": "supervisé(s)"
   },
   "navigation": {
     "home": "Accueil",
@@ -213,7 +214,8 @@
     "baseSalary": "Salaire de Base",
     "month": "Mois de paie",
     "year": "Année",
-    "hoursWorked": "Heures travaillées"
+    "hoursWorked": "Heures travaillées",
+    "manageServices": "Gérer les Services"
   },
   "claims": {
     "newClaim": "Nouvelle Réclamation",
@@ -371,7 +373,9 @@
     "period": "Période",
     "description": "Description",
     "titlePlaceholder": "e.g. Master React Native",
-    "descriptionPlaceholder": "Describe your goal..."
+    "descriptionPlaceholder": "Describe your goal...",
+    "ageInvalid": "L'âge doit être compris entre 18 et 62 ans",
+    "country": "Pays"
   },
   "analytics": {
     "title": "Analytiques",

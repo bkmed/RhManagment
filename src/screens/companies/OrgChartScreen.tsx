@@ -42,6 +42,11 @@ export const OrgChartScreen = () => {
         };
     }, [employees]);
 
+    // Helper function to count supervised employees
+    const getSupervisedCount = (managerId: number) => {
+        return employees.filter((e: Employee) => e.teamId === teams.find(t => t.managerId === managerId)?.id).length;
+    };
+
     const renderNode = (emp: any, level: number = 0) => {
         return (
             <View key={emp.id} style={[styles.nodeContainer, { marginLeft: level * 20 }]}>
@@ -56,7 +61,12 @@ export const OrgChartScreen = () => {
                         </View>
                         <View style={styles.info}>
                             <Text style={styles.name}>{emp.name}</Text>
-                            <Text style={styles.position}>{emp.position || emp.role}</Text>
+                            <Text style={styles.position}>{emp.position || t(`roles.${emp.role}`)}</Text>
+                            {emp.role === 'chef_dequipe' && (
+                                <Text style={styles.supervisionCount}>
+                                    👥 {getSupervisedCount(emp.id)} {t('teams.supervised')}
+                                </Text>
+                            )}
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -175,5 +185,11 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     emptyText: {
         padding: 20,
         color: theme.colors.subText,
-    }
+    },
+    supervisionCount: {
+        fontSize: 11,
+        color: theme.colors.primary,
+        fontWeight: '600',
+        marginTop: 4,
+    },
 });

@@ -21,6 +21,12 @@ import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
+import { useSelector } from 'react-redux';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { selectAllTeams } from '../../store/slices/teamsSlice';
+import { selectAllEmployees } from '../../store/slices/employeesSlice';
+import { RootState } from '../../store';
+import { Dropdown } from '../../components/Dropdown';
 
 export const AddIllnessScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
@@ -45,6 +51,14 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
   const [location, setLocation] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
+
+  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const teams = useSelector((state: RootState) => selectAllTeams(state));
+  const employees = useSelector((state: RootState) => selectAllEmployees(state));
+
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  const [teamId, setTeamId] = useState<number | null>(null);
+  const [employeeId, setEmployeeId] = useState<number | null>(user?.role === 'employee' && user?.id ? Number(user.id) : null);
 
   // Auto-fill logic for employees
   useEffect(() => {
@@ -136,6 +150,10 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
     if (!payrollName.trim()) newErrors.payrollName = t('common.required');
     if (!issueDate) newErrors.issueDate = t('common.required');
 
+    if (issueDate && expiryDate && expiryDate < issueDate) {
+      newErrors.expiryDate = t('common.invalidDateRange');
+    }
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
@@ -151,6 +169,8 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
         notes: notes.trim() || undefined,
         department,
         location,
+        companyId,
+        teamId,
       };
 
       let id: number;
@@ -226,6 +246,41 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
               )}
             </View>
 
+            {/* Company / Team / Employee Selection */}
+            <View style={styles.responsiveRow}>
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <View style={styles.fieldContainer}>
+                  <Dropdown
+                    label={t('companies.selectCompany')}
+                    data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                    value={companyId ? String(companyId) : ''}
+                    onSelect={(val) => setCompanyId(Number(val))}
+                  />
+                </View>
+              )}
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <View style={styles.fieldContainer}>
+                  <Dropdown
+                    label={t('teams.selectTeam')}
+                    data={teams.map(t => ({ label: t.name, value: String(t.id) }))}
+                    value={teamId ? String(teamId) : ''}
+                    onSelect={(val) => setTeamId(Number(val))}
+                  />
+                </View>
+              )}
+            </View>
+
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('employees.name')}
+                  data={employees.map(e => ({ label: e.name, value: String(e.id) }))}
+                  value={employeeId ? String(employeeId) : ''}
+                  onSelect={(val) => setEmployeeId(Number(val))}
+                />
+              </View>
+            )}
+
             {user?.role !== 'employee' && (
               <View style={styles.responsiveRow}>
                 <View style={styles.fieldContainer}>
@@ -276,6 +331,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
                   onChange={setExpiryDate}
                   mode="date"
                   minimumDate={issueDate || new Date()}
+                  error={errors.expiryDate}
                 />
               </View>
             </View>

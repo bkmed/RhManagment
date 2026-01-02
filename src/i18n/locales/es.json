@@ -35,8 +35,6 @@
     "yearsUnit": "años",
     "monthUnit": "mes",
     "monthsUnit": "meses",
-    "invalidEmail": "Correo electrónico no válido",
-    "invalidPhone": "Número de teléfono no válido",
     "invalidDateRange": "Rango de fechas no válido",
     "searchPlaceholder": "Buscar...",
     "week": "Semana",
@@ -70,7 +68,9 @@
     "noData": "No hay datos disponibles",
     "validate": "Validar",
     "confirmDelete": "¿Está seguro de que desea eliminar esto?",
-    "details": "Detalles"
+    "details": "Detalles",
+    "invalidPhone": "Número de teléfono no válido para el país seleccionado",
+    "invalidEmail": "Correo electrónico no válido"
   },
   "companies": {
     "title": "Companies",
@@ -80,7 +80,8 @@
   "teams": {
     "title": "Teams",
     "empty": "No teams found",
-    "selectTeam": "Select Team"
+    "selectTeam": "Select Team",
+    "supervised": "supervised"
   },
   "navigation": {
     "home": "Inicio",
@@ -213,7 +214,8 @@
     "baseSalary": "Salario Base",
     "month": "Mes de nómina",
     "year": "Año",
-    "hoursWorked": "Horas trabajadas"
+    "hoursWorked": "Horas trabajadas",
+    "manageServices": "Manage Departments/Services"
   },
   "claims": {
     "newClaim": "Nueva Reclamación",
@@ -371,7 +373,9 @@
     "period": "Period",
     "description": "Description",
     "titlePlaceholder": "e.g. Master React Native",
-    "descriptionPlaceholder": "Describe your goal..."
+    "descriptionPlaceholder": "Describe your goal...",
+    "ageInvalid": "La edad debe estar entre 18 y 62 años",
+    "country": "País"
   },
   "analytics": {
     "title": "Analítica",

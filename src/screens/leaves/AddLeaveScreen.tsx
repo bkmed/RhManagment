@@ -22,6 +22,11 @@ import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 import { CalendarButton } from '../../components/CalendarButton';
 import { Dropdown } from '../../components/Dropdown';
+import { useSelector } from 'react-redux';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { selectAllTeams } from '../../store/slices/teamsSlice';
+import { selectAllEmployees } from '../../store/slices/employeesSlice';
+import { RootState } from '../../store';
 
 export const AddLeaveScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
@@ -48,6 +53,14 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const [department, setDepartment] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
+
+  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const teams = useSelector((state: RootState) => selectAllTeams(state));
+  const employees = useSelector((state: RootState) => selectAllEmployees(state));
+
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  const [teamId, setTeamId] = useState<number | null>(null);
+  const [employeeId, setEmployeeId] = useState<number | null>(user?.role === 'employee' && user?.id ? Number(user.id) : null);
 
   // Permission specific state
   const [permissionDate, setPermissionDate] = useState(new Date());
@@ -158,6 +171,8 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         type,
         status,
         department,
+        companyId,
+        teamId,
       };
 
       let id: number;
@@ -259,6 +274,41 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
                 </View>
               )}
             </View>
+
+            {/* Company / Team / Employee Selection */}
+            <View style={styles.responsiveRow}>
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <View style={styles.fieldContainer}>
+                  <Dropdown
+                    label={t('companies.selectCompany')}
+                    data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                    value={companyId ? String(companyId) : ''}
+                    onSelect={(val) => setCompanyId(Number(val))}
+                  />
+                </View>
+              )}
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <View style={styles.fieldContainer}>
+                  <Dropdown
+                    label={t('teams.selectTeam')}
+                    data={teams.map(t => ({ label: t.name, value: String(t.id) }))}
+                    value={teamId ? String(teamId) : ''}
+                    onSelect={(val) => setTeamId(Number(val))}
+                  />
+                </View>
+              )}
+            </View>
+
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('employees.name')}
+                  data={employees.map(e => ({ label: e.name, value: String(e.id) }))}
+                  value={employeeId ? String(employeeId) : ''}
+                  onSelect={(val) => setEmployeeId(Number(val))}
+                />
+              </View>
+            )}
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
