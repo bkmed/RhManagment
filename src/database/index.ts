@@ -7,6 +7,8 @@ export { leavesDb } from './leavesDb';
 export { illnessesDb } from './illnessesDb';
 export { remoteDb } from './remoteDb';
 export { employeesDb } from './employeesDb';
+export { servicesDb } from './servicesDb';
+export { currenciesDb } from './currenciesDb';
 
 // Export schemas
 export * from './schema';

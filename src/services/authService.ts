@@ -281,7 +281,8 @@ const seedDemoData = async () => {
     // Create Payroll
     await payrollDb.add({
         name: 'Base Salary',
-        amount: '3500',
+        amount: 3500,
+        currency: '€',
         frequency: 'Daily',
         times: JSON.stringify(['09:00']),
         startDate: new Date().toISOString(),

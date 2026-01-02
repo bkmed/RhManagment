@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
-import { payrollDb } from '../../database/payrollDb';
+import { payrollDb, employeesDb, companiesDb, teamsDb, servicesDb, currenciesDb, Currency } from '../../database';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
@@ -30,7 +30,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const payrollId = route?.params?.payrollId;
-  const isEdit = !!payrollId;
+  const [isEdit, setIsEdit] = useState(!!payrollId); // Make isEdit stateful to be updated by loadInitialData
 
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
@@ -42,6 +42,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [bonusType, setBonusType] = useState('none');
   const [department, setDepartment] = useState('');
   const [location, setLocation] = useState('');
+  const [currency, setCurrency] = useState('€'); // Default currency
+  const [availableCurrencies, setAvailableCurrencies] = useState<Currency[]>([]);
 
   // New fields
   const [month, setMonth] = useState(new Date().getMonth() + 1 + '');
@@ -63,8 +65,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [employeeId, setEmployeeId] = useState<number | null>(user?.role === 'employee' && user?.id ? Number(user.id) : null);
 
   useEffect(() => {
-    if (isEdit) loadPayroll();
-  }, [payrollId]);
+    loadInitialData();
+  }, [payrollId]); // Depend on payrollId to re-run if it changes (e.g., navigating from add to edit)
 
   useEffect(() => {
     navigation?.setOptions({
@@ -76,39 +78,53 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
   const { setActiveTab } = useContext(WebNavigationContext) as any;
 
-  const loadPayroll = async () => {
-    if (!payrollId) return;
+  const loadInitialData = async () => {
     try {
-      const item = await payrollDb.getById(payrollId);
-      if (item) {
-        setName(item.name || '');
-        setAmount(item.amount || '');
-        setFrequency(item.frequency || 'Daily');
+      // Load currencies
+      await currenciesDb.init(); // Ensure defaults exist
+      const currencies = await currenciesDb.getAll();
+      setAvailableCurrencies(currencies);
+      if (currencies.length > 0 && !payrollId) { // Use payrollId to check if it's an edit
+        setCurrency(currencies[0].symbol);
+      }
 
-        let parsedTimes: Date[] = [];
-        try {
-          const timeStrings = item.times ? JSON.parse(item.times) : ['08:00', '20:00'];
-          parsedTimes = timeStrings.map((ts: string) => {
-            const [h, m] = ts.split(':').map(Number);
-            const d = new Date();
-            d.setHours(h);
-            d.setMinutes(m);
-            return d;
-          });
-        } catch (e) {
-          parsedTimes = [new Date(new Date().setHours(8, 0)), new Date(new Date().setHours(20, 0))];
+      if (payrollId) {
+        setIsEdit(true);
+        const item = await payrollDb.getById(payrollId);
+        if (item) {
+          setName(item.name || '');
+          setAmount(item.amount ? item.amount.toString() : '');
+          setFrequency(item.frequency || 'Daily');
+
+          let parsedTimes: Date[] = [];
+          try {
+            const timeStrings = item.times ? JSON.parse(item.times) : ['08:00', '20:00'];
+            parsedTimes = timeStrings.map((ts: string) => {
+              const [h, m] = ts.split(':').map(Number);
+              const d = new Date();
+              d.setHours(h);
+              d.setMinutes(m);
+              return d;
+            });
+          } catch (e) {
+            parsedTimes = [new Date(new Date().setHours(8, 0)), new Date(new Date().setHours(20, 0))];
+          }
+          setTimes(parsedTimes);
+
+          setMealVouchers(item.mealVouchers ? item.mealVouchers.toString() : '');
+          setGiftVouchers(item.giftVouchers ? item.giftVouchers.toString() : '');
+          setBonusAmount(item.bonusAmount ? item.bonusAmount.toString() : '');
+          setBonusType(item.bonusType || 'none');
+          setDepartment(item.department || '');
+          setLocation(item.location || '');
+          setMonth(item.month || new Date().getMonth() + 1 + '');
+          setYear(item.year || new Date().getFullYear() + '');
+          setHoursWorked(item.hoursWorked ? item.hoursWorked.toString() : '');
+          setCurrency(item.currency || '€');
+          setCompanyId(item.companyId);
+          setTeamId(item.teamId);
+          setEmployeeId(item.employeeId);
         }
-        setTimes(parsedTimes);
-
-        setMealVouchers(item.mealVouchers || '');
-        setGiftVouchers(item.giftVouchers || '');
-        setBonusAmount(item.bonusAmount || '');
-        setBonusType(item.bonusType || 'none');
-        setDepartment(item.department || '');
-        setLocation(item.location || '');
-        setMonth(item.month || new Date().getMonth() + 1 + '');
-        setYear(item.year || new Date().getFullYear() + '');
-        setHoursWorked(item.hoursWorked ? item.hoursWorked.toString() : '');
       }
     } catch (error) {
       notificationService.showAlert(t('common.error'), t('payroll.loadError'));
@@ -135,15 +151,16 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
       const payrollData = {
         name: name.trim(),
-        amount: amount.trim(),
+        amount: parseFloat(amount) || 0,
+        currency,
         frequency,
         times: JSON.stringify(timeStrings),
         startDate: new Date().toISOString().split('T')[0], // Default to today
         reminderEnabled: false,
         isUrgent: false,
-        mealVouchers: mealVouchers.trim() || undefined,
-        giftVouchers: giftVouchers.trim() || undefined,
-        bonusAmount: bonusAmount.trim() || undefined,
+        mealVouchers: mealVouchers ? parseFloat(mealVouchers) : undefined,
+        giftVouchers: giftVouchers ? parseFloat(giftVouchers) : undefined,
+        bonusAmount: bonusAmount ? parseFloat(bonusAmount) : undefined,
         bonusType,
         department,
         location,
@@ -218,17 +235,32 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>{t('payroll.baseSalary')} *</Text>
-                <TextInput
-                  style={[styles.input, errors.amount && styles.inputError]}
-                  value={amount}
-                  onChangeText={text => {
-                    setAmount(text);
-                    if (errors.amount) setErrors({ ...errors, amount: '' });
-                  }}
-                  placeholder={t('payroll.amountPlaceholder')}
-                  placeholderTextColor={theme.colors.subText}
-                  keyboardType="numeric"
-                />
+                <View style={[styles.responsiveRow, { gap: theme.spacing.s }]}>
+                  <View style={{ flex: 1 }}>
+                    <TextInput
+                      style={[styles.input, errors.amount && styles.inputError]}
+                      value={amount}
+                      onChangeText={text => {
+                        setAmount(text);
+                        if (errors.amount) setErrors({ ...errors, amount: '' });
+                      }}
+                      placeholder={t('payroll.amountPlaceholder')}
+                      placeholderTextColor={theme.colors.subText}
+                      keyboardType="numeric"
+                    />
+                  </View>
+                  <View style={{ width: 100 }}>
+                    <Dropdown
+                      label={t('payroll.currency')}
+                      data={availableCurrencies.map(c => ({
+                        label: `${c.symbol} (${c.code})`,
+                        value: c.symbol,
+                      }))}
+                      value={currency}
+                      onSelect={setCurrency}
+                    />
+                  </View>
+                </View>
                 {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
               </View>
             </View>

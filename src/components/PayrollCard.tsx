@@ -57,7 +57,7 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
                 </View>
                 <View style={styles.amountContainer}>
                     <Text style={styles.amountLabel}>{t('payroll.baseSalary')}</Text>
-                    <Text style={styles.amount}>{payroll.amount}</Text>
+                    <Text style={styles.amount}>{payroll.amount} {payroll.currency || '€'}</Text>
                 </View>
             </View>
 

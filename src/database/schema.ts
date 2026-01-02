@@ -18,11 +18,20 @@ export interface Service {
   updatedAt: string;
 }
 
+export interface Currency {
+  id: number;
+  code: string; // e.g. "EUR", "USD", "TND"
+  symbol: string; // e.g. "€", "$", "DT"
+  createdAt: string;
+  updatedAt: string;
+}
+
 
 export interface Payroll {
   id?: number;
   name: string;
-  amount: string;
+  amount: number;
+  currency: string;
   frequency: string; // e.g., "Daily", "Twice a day", "Weekly"
   times: string; // JSON string of times, e.g., ["08:00", "20:00"]
   startDate: string; // ISO date string
@@ -31,9 +40,9 @@ export interface Payroll {
   reminderEnabled: boolean;
   isUrgent?: boolean;
   employeeId?: number;
-  mealVouchers?: string;
-  giftVouchers?: string;
-  bonusAmount?: string;
+  mealVouchers?: number;
+  giftVouchers?: number;
+  bonusAmount?: number;
   bonusType?: string; // '13th_month', 'performance', 'none'
   createdAt: string;
   updatedAt: string;

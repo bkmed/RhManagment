@@ -119,7 +119,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
     return (
       <View style={styles.tableRow}>
         <Text style={styles.tableCellLabel}>{label}</Text>
-        <Text style={styles.tableCellValue}>{value.toFixed(2)}</Text>
+        <Text style={styles.tableCellValue}>{value.toFixed(2)} {payroll.currency || '€'}</Text>
       </View>
     );
   };
@@ -179,7 +179,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
 
               <View style={[styles.tableRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>{t('payslip.totalEarnings')}</Text>
-                <Text style={styles.totalValue}>{totals.earnings.toFixed(2)}</Text>
+                <Text style={styles.totalValue}>{totals.earnings.toFixed(2)} {payroll.currency || '€'}</Text>
               </View>
             </View>
           </View>
@@ -193,7 +193,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
             <View style={styles.tableBody}>
               <View style={styles.tableRow}>
                 <Text style={styles.tableCellLabel}>Social Charges (22%)</Text>
-                <Text style={styles.tableCellValue}>-{totals.deductions.toFixed(2)}</Text>
+                <Text style={styles.tableCellValue}>-{totals.deductions.toFixed(2)} {payroll.currency || '€'}</Text>
               </View>
             </View>
           </View>
@@ -202,11 +202,11 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           <View style={styles.finalTotalsSection}>
             <View style={styles.finalTotalItem}>
               <Text style={styles.finalTotalLabel}>{t('payslip.grossPay')}</Text>
-              <Text style={styles.finalTotalValue}>{totals.earnings.toFixed(2)}</Text>
+              <Text style={styles.finalTotalValue}>{totals.earnings.toFixed(2)} {payroll.currency || '€'}</Text>
             </View>
             <View style={[styles.finalTotalItem, styles.netPayContainer]}>
               <Text style={[styles.finalTotalLabel, styles.netPayLabel]}>{t('payslip.netPay')}</Text>
-              <Text style={[styles.finalTotalValue, styles.netPayValue]}>{totals.net.toFixed(2)}</Text>
+              <Text style={[styles.finalTotalValue, styles.netPayValue]}>{totals.net.toFixed(2)} {payroll.currency || '€'}</Text>
             </View>
           </View>
 

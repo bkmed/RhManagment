@@ -64,7 +64,7 @@ export const PayrollListScreen = ({ navigation }: any) => {
     return payrollItems.filter(
       item =>
         item.name.toLowerCase().includes(lowerQuery) ||
-        item.amount.toLowerCase().includes(lowerQuery),
+        String(item.amount).toLowerCase().includes(lowerQuery),
     ).sort((a, b) => a.name.localeCompare(b.name));
   }, [payrollItems, searchQuery]);
 

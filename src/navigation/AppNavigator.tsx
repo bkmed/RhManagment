@@ -34,6 +34,7 @@ import { EmployeeDetailsScreen } from '../screens/employees/EmployeeDetailsScree
 import { AnalyticsScreen } from '../screens/analytics/AnalyticsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { ManageServicesScreen } from '../screens/profile/ManageServicesScreen';
+import { ManageCurrenciesScreen } from '../screens/profile/ManageCurrenciesScreen';
 import { ManageDepartmentsScreen } from '../screens/profile/ManageDepartmentsScreen';
 import { MyTeamScreen } from '../screens/teams/MyTeamScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
@@ -281,6 +282,11 @@ const ProfileStack = () => {
         name="ManageServices"
         component={ManageServicesScreen}
         options={{ headerShown: true, title: t('payroll.manageServices') }}
+      />
+      <Stack.Screen
+        name="ManageCurrencies"
+        component={ManageCurrenciesScreen}
+        options={{ headerShown: true, title: t('payroll.currency') || 'Currencies' }}
       />
       <Stack.Screen
         name="ManageDepartments"
@@ -625,6 +631,8 @@ const WebNavigator = () => {
           return <CareerHubScreen />;
         if (subScreen === 'ManageServices')
           return <ManageServicesScreen />;
+        if (subScreen === 'ManageCurrencies')
+          return <ManageCurrenciesScreen />;
         if (subScreen === 'ManageDepartments')
           return <ManageDepartmentsScreen />;
         if (subScreen === 'MyTeam')
