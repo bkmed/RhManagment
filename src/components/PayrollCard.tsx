@@ -46,11 +46,6 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
                     <View style={styles.titleColumn}>
                         <View style={styles.nameRow}>
                             <Text style={styles.name}>{payroll.name}</Text>
-                            {payroll.isUrgent && (
-                                <View style={styles.urgentBadge}>
-                                    <Text style={styles.urgentText}>{t('payroll.urgent')}</Text>
-                                </View>
-                            )}
                         </View>
                         {monthYearDisplay && (
                             <View style={styles.monthYearBadge}>

@@ -15,7 +15,6 @@ import { payrollDb } from '../../database/payrollDb';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { DateTimePickerField } from '../../components/DateTimePickerField';
 import { Dropdown } from '../../components/Dropdown';
 import { useSelector } from 'react-redux';
 import { selectAllServices } from '../../store/slices/servicesSlice';
@@ -37,11 +36,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('Daily');
   const [times, setTimes] = useState<Date[]>([new Date(new Date().setHours(8, 0, 0, 0)), new Date(new Date().setHours(20, 0, 0, 0))]);
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [notes, setNotes] = useState('');
-  const [reminderEnabled, setReminderEnabled] = useState(true);
-  const [isUrgent, setIsUrgent] = useState(false);
   const [mealVouchers, setMealVouchers] = useState('');
   const [giftVouchers, setGiftVouchers] = useState('');
   const [bonusAmount, setBonusAmount] = useState('');
@@ -106,11 +100,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         }
         setTimes(parsedTimes);
 
-        setStartDate(item.startDate ? new Date(item.startDate) : new Date());
-        setEndDate(item.endDate ? new Date(item.endDate) : null);
-        setNotes(item.notes || '');
-        setReminderEnabled(!!item.reminderEnabled);
-        setIsUrgent(!!item.isUrgent);
         setMealVouchers(item.mealVouchers || '');
         setGiftVouchers(item.giftVouchers || '');
         setBonusAmount(item.bonusAmount || '');
@@ -134,11 +123,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
     } else if (isNaN(Number(amount))) {
       newErrors.amount = t('common.invalidAmount') || "Invalid amount";
     }
-    if (!startDate) newErrors.startDate = t('common.required');
-
-    if (startDate && endDate && endDate < startDate) {
-      newErrors.endDate = t('common.invalidDateRange');
-    }
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
@@ -154,11 +138,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         amount: amount.trim(),
         frequency,
         times: JSON.stringify(timeStrings),
-        startDate: startDate!.toISOString().split('T')[0],
-        endDate: endDate ? endDate.toISOString().split('T')[0] : undefined,
-        notes: notes.trim() || undefined,
-        reminderEnabled,
-        isUrgent,
+        startDate: new Date().toISOString().split('T')[0], // Default to today
         mealVouchers: mealVouchers.trim() || undefined,
         giftVouchers: giftVouchers.trim() || undefined,
         bonusAmount: bonusAmount.trim() || undefined,
@@ -181,10 +161,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         id = await payrollDb.add(payrollData);
       }
 
-      if (reminderEnabled) {
-        const item = await payrollDb.getById(id);
-        if (item) await notificationService.schedulePayrollReminders(item);
-      }
+      /* Reminders removed */
 
       if (Platform.OS === 'web') {
         setActiveTab('Payroll');
@@ -422,67 +399,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             </View>
           </View>
 
-          <View style={styles.responsiveRow}>
-            <View style={styles.fieldContainer}>
-              <DateTimePickerField
-                label={t('payroll.startDate')}
-                value={startDate}
-                onChange={setStartDate}
-                mode="date"
-                minimumDate={new Date()}
-                required
-                error={errors.startDate}
-              />
-            </View>
-            <View style={styles.fieldContainer}>
-              <DateTimePickerField
-                label={t('payroll.endDate')}
-                value={endDate}
-                onChange={setEndDate}
-                mode="date"
-                minimumDate={startDate || new Date()}
-                error={errors.endDate}
-              />
-            </View>
-          </View>
-
-          {/* Section: Settings */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('payroll.payroll')}</Text>
-
-            <View style={styles.divider} />
-
-            <View style={styles.switchRow}>
-              <View>
-                <Text style={styles.label}>{t('payroll.enableReminders')}</Text>
-                <Text style={styles.captionText}>{t('profile.notifications')}</Text>
-              </View>
-              <Switch
-                value={reminderEnabled}
-                onValueChange={setReminderEnabled}
-                trackColor={{
-                  false: theme.colors.border,
-                  true: theme.colors.primary,
-                }}
-                thumbColor={theme.colors.surface}
-              />
-            </View>
-
-            <View style={[styles.switchRow, { marginTop: theme.spacing.m }]}>
-              <View>
-                <Text style={[styles.label, { color: theme.colors.error }]}>{t('payroll.isUrgent')}</Text>
-                <Text style={styles.captionText}>{t('employees.notes')}</Text>
-              </View>
-              <Switch
-                value={isUrgent}
-                onValueChange={setIsUrgent}
-                trackColor={{
-                  false: theme.colors.border,
-                  true: theme.colors.error,
-                }}
-                thumbColor={theme.colors.surface}
-              />
-            </View>
           </View>
         </View>
 
@@ -496,8 +412,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             {' '}{t('payroll.payroll')}
           </Text>
         </TouchableOpacity>
-      </ScrollView>
-    </View>
+      </ScrollView >
+    </View >
   );
 };
 

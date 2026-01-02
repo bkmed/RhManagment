@@ -152,8 +152,8 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
               <Text style={styles.sectionTitle}>{t('payslip.period')}</Text>
               <Text style={styles.infoValue}>
                 {payroll.month && payroll.year
-                  ? `${new Date(0, parseInt(payroll.month) - 1).toLocaleString(undefined, { month: 'long' })} ${payroll.year}`
-                  : payroll.startDate}
+                  ? `${new Date(0, (parseInt(payroll.month) || 1) - 1).toLocaleString(undefined, { month: 'long' })} ${payroll.year}`
+                  : '-'}
               </Text>
               <Text style={styles.infoLabel}>
                 {t('payroll.hoursWorked')}: {payroll.hoursWorked || '-'}
@@ -210,12 +210,6 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
             </View>
           </View>
 
-          {payroll.notes && (
-            <View style={styles.notesSection}>
-              <Text style={styles.infoLabel}>{t('payroll.notes')}</Text>
-              <Text style={styles.notesText}>{payroll.notes}</Text>
-            </View>
-          )}
         </View>
 
         {/* Action Buttons */}
@@ -255,7 +249,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 

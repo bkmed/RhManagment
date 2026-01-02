@@ -1,4 +1,3 @@
-import React, { useState, useCallback, useMemo } from 'react';
 import {
     View,
     Text,
@@ -7,6 +6,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Image,
+    Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -14,16 +14,19 @@ import { companiesDb } from '../../database/companiesDb';
 import { Company } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { useAuth } from '../../context/AuthContext';
+import { useContext, useMemo, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
-import { Platform } from 'react-native';
-import { useContext } from 'react';
+import { useModal } from '../../context/ModalContext';
+import { useToast } from '../../context/ToastContext';
 
 export const CompanyListScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
     const { t } = useTranslation();
+    const { showModal } = useModal();
+    const { showToast } = useToast();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const { setActiveTab } = useContext(WebNavigationContext);
+    const { setActiveTab } = useContext(WebNavigationContext) as any;
 
     const [companies, setCompanies] = useState<Company[]>([]);
     const [loading, setLoading] = useState(true);
@@ -45,6 +48,41 @@ export const CompanyListScreen = ({ navigation }: any) => {
         }, []),
     );
 
+    const handleEdit = (company: Company) => {
+        if (Platform.OS === 'web') {
+            setActiveTab('Companies', 'AddCompany', { id: company.id });
+        } else {
+            navigation.navigate('AddCompany', { id: company.id });
+        }
+    };
+
+    const handleDelete = (company: Company) => {
+        showModal({
+            title: t('common.deleteTitle'),
+            message: `${t('common.deleteMessage')}\n"${company.name}"`,
+            buttons: [
+                {
+                    text: t('common.cancel'),
+                    style: 'cancel',
+                },
+                {
+                    text: t('common.delete'),
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await companiesDb.delete(company.id);
+                            showToast(t('common.success'), 'success');
+                            loadCompanies();
+                        } catch (error) {
+                            console.error('Error deleting company:', error);
+                            showToast(t('common.deleteFailed'), 'error');
+                        }
+                    },
+                },
+            ],
+        });
+    };
+
     const renderItem = ({ item }: { item: Company }) => (
         <View style={styles.card}>
             <View style={styles.cardHeader}>
@@ -59,6 +97,20 @@ export const CompanyListScreen = ({ navigation }: any) => {
                     {item.phone && (
                         <Text style={styles.detailText}>📞 {item.phone}</Text>
                     )}
+                </View>
+                <View style={styles.actions}>
+                    <TouchableOpacity
+                        style={[styles.actionButton, styles.editButton]}
+                        onPress={() => handleEdit(item)}
+                    >
+                        <Text style={styles.actionText}>{t('common.edit')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.actionButton, styles.deleteButton]}
+                        onPress={() => handleDelete(item)}
+                    >
+                        <Text style={styles.actionText}>{t('common.delete')}</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
@@ -128,6 +180,26 @@ const createStyles = (theme: Theme) =>
         },
         info: {
             flex: 1,
+        },
+        actions: {
+            flexDirection: 'row',
+            gap: 8,
+        },
+        actionButton: {
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 8,
+        },
+        editButton: {
+            backgroundColor: theme.colors.primary + '20',
+        },
+        deleteButton: {
+            backgroundColor: theme.colors.error + '20',
+        },
+        actionText: {
+            ...theme.textVariants.caption,
+            fontSize: 12,
+            fontWeight: '600',
         },
         name: {
             ...theme.textVariants.subheader,

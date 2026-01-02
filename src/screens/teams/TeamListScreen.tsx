@@ -14,14 +14,15 @@ import { employeesDb } from '../../database/employeesDb';
 import { Team, Employee } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { useAuth } from '../../context/AuthContext';
-import { WebNavigationContext } from '../../navigation/WebNavigationContext';
-import { Platform } from 'react-native';
 import { useContext } from 'react';
+import { useModal } from '../../context/ModalContext';
+import { useToast } from '../../context/ToastContext';
 
 export const TeamListScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
     const { t } = useTranslation();
+    const { showModal } = useModal();
+    const { showToast } = useToast();
     const styles = useMemo(() => createStyles(theme), [theme]);
     const { setActiveTab } = useContext(WebNavigationContext);
 
@@ -50,6 +51,41 @@ export const TeamListScreen = ({ navigation }: any) => {
         }, []),
     );
 
+    const handleEdit = (team: Team) => {
+        if (Platform.OS === 'web') {
+            setActiveTab('Teams', 'AddTeam', { id: team.id });
+        } else {
+            navigation.navigate('AddTeam', { id: team.id });
+        }
+    };
+
+    const handleDelete = (team: Team) => {
+        showModal({
+            title: t('common.deleteTitle'),
+            message: `${t('common.deleteMessage')}\n"${team.name}"`,
+            buttons: [
+                {
+                    text: t('common.cancel'),
+                    style: 'cancel',
+                },
+                {
+                    text: t('common.delete'),
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await teamsDb.delete(team.id);
+                            showToast(t('common.success'), 'success');
+                            loadData();
+                        } catch (error) {
+                            console.error('Error deleting team:', error);
+                            showToast(t('common.deleteFailed'), 'error');
+                        }
+                    },
+                },
+            ],
+        });
+    };
+
     const renderItem = ({ item }: { item: Team }) => {
         const manager = employees.find(e => e.id === item.managerId);
         return (
@@ -58,6 +94,20 @@ export const TeamListScreen = ({ navigation }: any) => {
                     <Text style={styles.name}>{item.name}</Text>
                     <Text style={styles.detailText}>🏢 {t('teams.department')}: {item.department}</Text>
                     <Text style={styles.detailText}>👤 {t('teams.manager')}: {manager?.name || 'N/A'}</Text>
+                </View>
+                <View style={styles.actions}>
+                    <TouchableOpacity
+                        style={[styles.actionButton, styles.editButton]}
+                        onPress={() => handleEdit(item)}
+                    >
+                        <Text style={styles.actionText}>{t('common.edit')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.actionButton, styles.deleteButton]}
+                        onPress={() => handleDelete(item)}
+                    >
+                        <Text style={styles.actionText}>{t('common.delete')}</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
@@ -120,9 +170,32 @@ const createStyles = (theme: Theme) =>
             ...theme.shadows.small,
             borderLeftWidth: 4,
             borderLeftColor: theme.colors.primary,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
         },
         info: {
             flex: 1,
+        },
+        actions: {
+            flexDirection: 'row',
+            gap: 8,
+        },
+        actionButton: {
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 8,
+        },
+        editButton: {
+            backgroundColor: theme.colors.primary + '20',
+        },
+        deleteButton: {
+            backgroundColor: theme.colors.error + '20',
+        },
+        actionText: {
+            ...theme.textVariants.caption,
+            fontSize: 12,
+            fontWeight: '600',
         },
         name: {
             ...theme.textVariants.subheader,

@@ -22,12 +22,18 @@ import { Dropdown } from '../../components/Dropdown';
 import { MultiSelectDropdown } from '../../components/MultiSelectDropdown';
 import { useSelector } from 'react-redux';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { useContext } from 'react';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
-export const AddTeamScreen = ({ navigation }: any) => {
+export const AddTeamScreen = ({ navigation, route }: any) => {
+    const editId = route?.params?.id;
+    const isEdit = !!editId;
+
     const { theme } = useTheme();
     const { t } = useTranslation();
     const { showToast } = useToast();
     const styles = useMemo(() => createStyles(theme), [theme]);
+    const { setActiveTab } = useContext(WebNavigationContext);
 
     const [name, setName] = useState('');
     const [department, setDepartment] = useState('');
@@ -60,6 +66,23 @@ export const AddTeamScreen = ({ navigation }: any) => {
             setEmployees(emps);
             setDepartments(depts);
             setServices(servs);
+
+            if (isEdit) {
+                const team = await teamsDb.getById(editId);
+                if (team) {
+                    setName(team.name);
+                    setDepartment(team.department);
+                    setService(team.service || '');
+                    setCompanyId(team.companyId);
+                    setManagerId(team.managerId);
+
+                    // Filter employees who belong to this team to select them initially
+                    // Note: This assumes we want to pre-select current members.
+                    // In teamsDb.add/update, we update employees.teamId.
+                    const teamMembers = emps.filter(e => e.teamId === editId);
+                    setSelectedMemberIds(teamMembers.map(m => (m.id || 0).toString()));
+                }
+            }
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -86,14 +109,26 @@ export const AddTeamScreen = ({ navigation }: any) => {
         if (!validateForm()) return;
 
         try {
-            // 1. Create Team
-            const teamId = await teamsDb.add({
-                name,
-                department,
-                service,
-                companyId,
-                managerId: managerId || 0,
-            });
+            let teamId = editId;
+            if (isEdit) {
+                // 1. Update Team
+                await teamsDb.update(editId, {
+                    name,
+                    department,
+                    service,
+                    companyId,
+                    managerId: managerId || 0,
+                });
+            } else {
+                // 1. Create Team
+                teamId = await teamsDb.add({
+                    name,
+                    department,
+                    service,
+                    companyId,
+                    managerId: managerId || 0,
+                });
+            }
 
             // 2. Update Manager's teamId
             if (managerId) {
@@ -107,7 +142,11 @@ export const AddTeamScreen = ({ navigation }: any) => {
             }
 
             showToast(t('common.success'), 'success');
-            navigation.goBack();
+            if (Platform.OS === 'web') {
+                setActiveTab('Teams');
+            } else {
+                navigation.goBack();
+            }
         } catch (error: any) {
             console.error('Error saving team:', error);
             const errorMessage = error?.message || t('common.saveError');
@@ -143,7 +182,7 @@ export const AddTeamScreen = ({ navigation }: any) => {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.card}>
-                    <Text style={styles.title}>{t('teams.details') || 'Team Details'}</Text>
+                    <Text style={styles.title}>{isEdit ? t('teams.edit') || 'Edit Team' : (t('teams.details') || 'Team Details')}</Text>
 
                     {/* Company (Dropdown) */}
                     <View style={styles.fieldContainer}>

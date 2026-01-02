@@ -65,13 +65,7 @@ export const PayrollListScreen = ({ navigation }: any) => {
       item =>
         item.name.toLowerCase().includes(lowerQuery) ||
         item.amount.toLowerCase().includes(lowerQuery),
-    ).sort((a, b) => {
-      // Sort by urgency first
-      if (a.isUrgent && !b.isUrgent) return -1;
-      if (!a.isUrgent && b.isUrgent) return 1;
-      // Then by name
-      return a.name.localeCompare(b.name);
-    });
+    ).sort((a, b) => a.name.localeCompare(b.name));
   }, [payrollItems, searchQuery]);
 
   const handlePayrollPress = (payroll: Payroll) => {

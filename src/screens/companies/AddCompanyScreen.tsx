@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
 import {
     View,
     Text,
@@ -14,13 +14,18 @@ import { companiesDb } from '../../database/companiesDb';
 import { notificationService } from '../../services/notificationService';
 import { Theme } from '../../theme';
 import { useToast } from '../../context/ToastContext';
-import { useModal } from '../../context/ModalContext'; // Ensure consistency if needed, though mostly for delete
+import { useModal } from '../../context/ModalContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
-export const AddCompanyScreen = ({ navigation }: any) => {
+export const AddCompanyScreen = ({ navigation, route }: any) => {
+    const editId = route?.params?.id;
+    const isEdit = !!editId;
+
     const { theme } = useTheme();
     const { t } = useTranslation();
     const { showToast } = useToast();
     const styles = useMemo(() => createStyles(theme), [theme]);
+    const { setActiveTab } = useContext(WebNavigationContext) as any;
 
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
@@ -30,6 +35,27 @@ export const AddCompanyScreen = ({ navigation }: any) => {
 
     // Validation state
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    React.useEffect(() => {
+        if (isEdit) {
+            loadCompanyData();
+        }
+    }, [editId]);
+
+    const loadCompanyData = async () => {
+        try {
+            const company = await companiesDb.getById(editId);
+            if (company) {
+                setName(company.name);
+                setAddress(company.address || '');
+                setCountry(company.country || '');
+                setEmail(company.email || '');
+                setPhone(company.phone || '');
+            }
+        } catch (error) {
+            console.error('Error loading company data:', error);
+        }
+    };
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
@@ -44,16 +70,27 @@ export const AddCompanyScreen = ({ navigation }: any) => {
         if (!validateForm()) return;
 
         try {
-            await companiesDb.add({
+            const companyData = {
                 name,
                 address,
                 country,
                 email,
                 phone,
                 logo: '', // Optional or future enhancement
-            });
+            };
+
+            if (isEdit) {
+                await companiesDb.update(editId, companyData);
+            } else {
+                await companiesDb.add(companyData);
+            }
+
             showToast(t('common.success'), 'success');
-            navigation.goBack();
+            if (Platform.OS === 'web') {
+                setActiveTab('Companies');
+            } else {
+                navigation.goBack();
+            }
         } catch (error: any) {
             console.error('Error saving company:', error);
             const errorMessage = error?.message || t('common.saveError');
@@ -65,7 +102,7 @@ export const AddCompanyScreen = ({ navigation }: any) => {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.card}>
-                    <Text style={styles.title}>{t('companies.details') || 'Company Details'}</Text>
+                    <Text style={styles.title}>{isEdit ? t('companies.edit') || 'Edit Company' : t('companies.add') || t('companies.title')}</Text>
 
                     {/* Name */}
                     <View style={styles.fieldContainer}>
