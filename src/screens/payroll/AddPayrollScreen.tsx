@@ -17,6 +17,13 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 import { Dropdown } from '../../components/Dropdown';
+import { useSelector } from 'react-redux';
+import { selectAllServices } from '../../store/slices/servicesSlice';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { selectAllTeams } from '../../store/slices/teamsSlice';
+import { selectAllEmployees } from '../../store/slices/employeesSlice';
+import { useAuth } from '../../context/AuthContext';
+import { RootState } from '../../store';
 
 export const AddPayrollScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
@@ -49,6 +56,17 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
+
+  const services = useSelector((state: RootState) => selectAllServices(state));
+  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const teams = useSelector((state: RootState) => selectAllTeams(state));
+  const employees = useSelector((state: RootState) => selectAllEmployees(state));
+  const { user } = useAuth();
+
+  // New state for company/team/employee
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  const [teamId, setTeamId] = useState<number | null>(null);
+  const [employeeId, setEmployeeId] = useState<number | null>(user?.role === 'employee' && user?.id ? Number(user.id) : null);
 
   useEffect(() => {
     if (isEdit) loadPayroll();
@@ -194,16 +212,20 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('payroll.name')} *</Text>
-                <TextInput
-                  style={[styles.input, errors.name && styles.inputError]}
+                <Dropdown
+                  label={t('payroll.name') + ' *'}
+                  data={[
+                    { label: t('payroll.items.baseSalary'), value: 'baseSalary' },
+                    { label: t('payroll.items.mealTicket'), value: 'mealTicket' },
+                    { label: t('payroll.items.transportAllowance'), value: 'transportAllowance' },
+                    { label: t('payroll.items.performanceBonus'), value: 'performanceBonus' },
+                    { label: t('payroll.items.thirteenthMonth'), value: 'thirteenthMonth' },
+                    { label: t('payroll.items.bonus'), value: 'bonus' },
+                    { label: t('payroll.items.indemnity'), value: 'indemnity' },
+                    { label: t('payroll.items.overtime'), value: 'overtime' },
+                  ]}
                   value={name}
-                  onChangeText={text => {
-                    setName(text);
-                    if (errors.name) setErrors({ ...errors, name: '' });
-                  }}
-                  placeholder={t('payroll.namePlaceholder')}
-                  placeholderTextColor={theme.colors.subText}
+                  onSelect={setName}
                 />
                 {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
               </View>
@@ -225,15 +247,48 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               </View>
             </View>
 
+            {/* Company / Team / Employee Selection */}
+            <View style={styles.responsiveRow}>
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <View style={styles.fieldContainer}>
+                  <Dropdown
+                    label={t('companies.selectCompany')}
+                    data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                    value={companyId ? String(companyId) : ''}
+                    onSelect={(val) => setCompanyId(Number(val))}
+                  />
+                </View>
+              )}
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <View style={styles.fieldContainer}>
+                  <Dropdown
+                    label={t('teams.selectTeam')}
+                    data={teams.map(t => ({ label: t.name, value: String(t.id) }))}
+                    value={teamId ? String(teamId) : ''}
+                    onSelect={(val) => setTeamId(Number(val))}
+                  />
+                </View>
+              )}
+            </View>
+
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('employees.name')}
+                  data={employees.map(e => ({ label: e.name, value: String(e.id) }))}
+                  value={employeeId ? String(employeeId) : ''}
+                  onSelect={(val) => setEmployeeId(Number(val))}
+                />
+              </View>
+            )}
+
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.service')}</Text>
-                <TextInput
-                  style={styles.input}
+                <Dropdown
+                  label={t('common.service')}
+                  data={services.map(s => ({ label: s.name, value: s.name }))}
                   value={department}
-                  onChangeText={setDepartment}
-                  placeholder={t('common.service')}
-                  placeholderTextColor={theme.colors.subText}
+                  onSelect={setDepartment}
                 />
               </View>
 
@@ -360,104 +415,33 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             </View>
           </View>
 
-          {/* Section: Schedule */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('payroll.freqWeekly') || t('leaves.time')}</Text>
-
-            <Text style={styles.label}>{t('payroll.frequency')}</Text>
-            <View style={styles.frequencyContainer}>
-              {['Daily', 'Twice a day', 'Weekly'].map(freq => (
-                <TouchableOpacity
-                  key={freq}
-                  style={[
-                    styles.frequencyButton,
-                    frequency === freq && styles.frequencyButtonActive,
-                  ]}
-                  onPress={() => setFrequency(freq)}
-                >
-                  <Text
-                    style={[
-                      styles.frequencyText,
-                      frequency === freq && styles.frequencyTextActive,
-                    ]}
-                  >
-                    {t(`payroll.freq${freq.replace(/\s+/g, '')}`)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+          <View style={styles.responsiveRow}>
+            <View style={styles.fieldContainer}>
+              <DateTimePickerField
+                label={t('payroll.startDate')}
+                value={startDate}
+                onChange={setStartDate}
+                mode="date"
+                minimumDate={new Date()}
+                required
+                error={errors.startDate}
+              />
             </View>
-
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <DateTimePickerField
-                  label={t('payroll.startDate')}
-                  value={startDate}
-                  onChange={setStartDate}
-                  mode="date"
-                  minimumDate={new Date()}
-                  required
-                  error={errors.startDate}
-                />
-              </View>
-              <View style={styles.fieldContainer}>
-                <DateTimePickerField
-                  label={t('payroll.endDate')}
-                  value={endDate}
-                  onChange={setEndDate}
-                  mode="date"
-                  minimumDate={startDate || new Date()}
-                  error={errors.endDate}
-                />
-              </View>
+            <View style={styles.fieldContainer}>
+              <DateTimePickerField
+                label={t('payroll.endDate')}
+                value={endDate}
+                onChange={setEndDate}
+                mode="date"
+                minimumDate={startDate || new Date()}
+                error={errors.endDate}
+              />
             </View>
-
-            <View style={styles.divider} />
-
-            <Text style={styles.label}>{t('payroll.reminderTimes')}</Text>
-            <View style={styles.timesGrid}>
-              {times.map((time, index) => (
-                <View key={index} style={styles.timeRow}>
-                  <View style={{ flex: 1 }}>
-                    <DateTimePickerField
-                      label=""
-                      value={time}
-                      onChange={(d) => handleTimeChange(index, d)}
-                      mode="time"
-                      placeholder={t('common.timePlaceholder')}
-                    />
-                  </View>
-                  {times.length > 1 && (
-                    <TouchableOpacity
-                      onPress={() => handleRemoveTime(index)}
-                      style={styles.removeButton}
-                    >
-                      <Text style={styles.removeButtonText}>✕</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
-            </View>
-            <TouchableOpacity onPress={handleAddTime} style={styles.addTimeButton}>
-              <Text style={styles.addTimeButtonText}>
-                + {t('payroll.addTime')}
-              </Text>
-            </TouchableOpacity>
           </View>
 
           {/* Section: Settings */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('payroll.notes')}</Text>
-
-            <Text style={styles.label}>{t('payroll.notes')}</Text>
-            <TextInput
-              style={[styles.input, styles.notesInput]}
-              value={notes}
-              onChangeText={setNotes}
-              placeholder={t('payroll.notesPlaceholder')}
-              placeholderTextColor={theme.colors.subText}
-              multiline
-              numberOfLines={4}
-            />
+            <Text style={styles.sectionTitle}>{t('payroll.payroll')}</Text>
 
             <View style={styles.divider} />
 

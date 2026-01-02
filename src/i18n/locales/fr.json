@@ -66,7 +66,21 @@
     "na": "N/A",
     "unknown": "Unknown",
     "searchPlaceholderGlobal": "Rechercher employés, équipes, news...",
-    "datePlaceholder": "YYYY-MM-DD"
+    "datePlaceholder": "AAAA-MM-JJ",
+    "noData": "Aucune donnée disponible",
+    "validate": "Valider",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ceci ?",
+    "details": "Détails"
+  },
+  "companies": {
+    "title": "Entreprises",
+    "empty": "Aucune entreprise trouvée",
+    "selectCompany": "Sélectionner l'entreprise"
+  },
+  "teams": {
+    "title": "Équipes",
+    "empty": "Aucune équipe trouvée",
+    "selectTeam": "Sélectionner l'équipe"
   },
   "navigation": {
     "home": "Accueil",
@@ -151,17 +165,27 @@
     "edit": "Modifier l'élément de paie",
     "delete": "Supprimer l'élément de paie",
     "payroll": "Paie",
-    "name": "Nom",
-    "amount": "Montant",
+    "name": "Type de Paiement",
+    "amount": "Montant Brut",
     "frequency": "Fréquence",
     "startDate": "Date de début",
-    "endDate": "Date de fin (Optionnelle)",
-    "notes": "Notes",
+    "endDate": "Date de fin",
+    "notes": "Notes Internes",
     "enableReminders": "Activer les rappels",
     "reminderTimes": "Heures de rappel",
     "addTime": "Ajouter une heure",
     "update": "Mettre à jour",
-    "namePlaceholder": "ex: Salaire de base",
+    "namePlaceholder": "Sélectionner le type",
+    "items": {
+      "baseSalary": "Salaire de Base",
+      "mealTicket": "Ticket Restaurant",
+      "transportAllowance": "Prime de Transport",
+      "performanceBonus": "Prime de Performance",
+      "thirteenthMonth": "13ème Mois",
+      "bonus": "Prime / Bonus",
+      "indemnity": "Indemnité",
+      "overtime": "Heures Supplémentaires"
+    },
     "amountPlaceholder": "ex: 3000€",
     "notesPlaceholder": "Notes supplémentaires...",
     "freqDaily": "Quotidien",

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  TextInput,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { storageService } from '../../services/storage';
@@ -31,7 +32,7 @@ const LANGUAGES = [
 ];
 
 export const ProfileScreen = ({ navigation }: any) => {
-  const { theme, isDark, toggleTheme } = useTheme();
+  const { theme, themeMode, setThemeMode } = useTheme();
   const { showToast } = useToast();
   const { t, i18n } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
@@ -57,6 +58,7 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [skills, setSkills] = useState(user?.skills?.join(', ') || '');
 
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+  const [maxPermissionHours, setMaxPermissionHours] = useState('2');
   const [cameraPermission, setCameraPermission] =
     useState<PermissionStatus>('unavailable');
   const [notificationPermission, setNotificationPermission] =
@@ -66,7 +68,13 @@ export const ProfileScreen = ({ navigation }: any) => {
 
   useEffect(() => {
     checkPermissions();
+    loadConfig();
   }, []);
+
+  const loadConfig = async () => {
+    const savedMax = await storageService.getString('config_max_permission_hours');
+    if (savedMax) setMaxPermissionHours(savedMax);
+  };
 
   useEffect(() => {
     setName(user?.name || '');
@@ -378,16 +386,16 @@ export const ProfileScreen = ({ navigation }: any) => {
                 />
               </View>
               <View style={styles.divider} />
-              <View style={styles.row}>
-                <View>
-                  <Text style={styles.label}>{t('profile.darkMode')}</Text>
-                  <Text style={styles.captionText}>{t('profile.appearance')}</Text>
-                </View>
-                <Switch
-                  value={isDark}
-                  onValueChange={toggleTheme}
-                  trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-                  thumbColor={theme.colors.surface}
+              <View style={styles.fieldGroup}>
+                <Dropdown
+                  label={t('profile.appearance')}
+                  data={[
+                    { label: '☀️ ' + t('profile.lightMode'), value: 'light' },
+                    { label: '🌙 ' + t('profile.darkMode'), value: 'dark' },
+                    { label: '👑 ' + t('profile.premiumMode'), value: 'premium' },
+                  ]}
+                  value={themeMode}
+                  onSelect={(val) => setThemeMode(val as any)}
                 />
               </View>
             </View>
@@ -439,6 +447,38 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </>
               )}
             </View>
+
+            {/* Admin Settings Section */}
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <View style={styles.section}>
+                <View style={styles.sectionHeaderRow}>
+                  <Text style={styles.sectionTitle}>{t('permissions.settings')}</Text>
+                </View>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('permissions.maxHours')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={maxPermissionHours}
+                    onChangeText={(text) => {
+                      const hours = text.replace(/[^0-9]/g, '');
+                      setMaxPermissionHours(hours);
+                      storageService.setString('config_max_permission_hours', hours);
+                    }}
+                    keyboardType="numeric"
+                    placeholder="2"
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
+                <View style={styles.divider} />
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => navigation.navigate('ManageServices')}
+                >
+                  <Text style={styles.menuItemText}>🏢 {t('payroll.manageServices')}</Text>
+                  <Text style={styles.menuItemArrow}>›</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
 
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -573,6 +613,7 @@ const createStyles = (theme: Theme) =>
     },
     fieldContainer: {
       flex: 1,
+      marginTop: theme.spacing.m,
     },
     subSectionTitle: {
       fontSize: 16,
@@ -580,5 +621,29 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.primary,
       marginBottom: theme.spacing.s,
       marginTop: theme.spacing.s,
+    },
+    input: {
+      backgroundColor: theme.colors.background,
+      borderRadius: theme.spacing.s,
+      padding: theme.spacing.m,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      color: theme.colors.text,
+      marginTop: theme.spacing.xs,
+    },
+    menuItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: theme.spacing.m,
+    },
+    menuItemText: {
+      ...theme.textVariants.body,
+      color: theme.colors.text,
+      fontSize: 16,
+    },
+    menuItemArrow: {
+      fontSize: 20,
+      color: theme.colors.subText,
     },
   });

@@ -554,6 +554,14 @@ export const ProfileScreen = ({ navigation }: any) => {
                 placeholderTextColor={theme.colors.subText}
               />
             </View>
+            <View style={styles.divider} />
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('ManageServices')}
+            >
+              <Text style={styles.menuItemText}>🏢 {t('payroll.manageServices')}</Text>
+              <Text style={styles.menuItemArrow}>›</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -679,6 +687,21 @@ const createStyles = (theme: Theme) =>
     },
     fieldContainerFlex: {
       flex: 1,
+    },
+    menuItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: theme.spacing.m,
+    },
+    menuItemText: {
+      ...theme.textVariants.body,
+      color: theme.colors.text,
+      fontSize: 16,
+    },
+    menuItemArrow: {
+      fontSize: 20,
+      color: theme.colors.subText,
     },
     subSectionTitle: {
       fontSize: 16,

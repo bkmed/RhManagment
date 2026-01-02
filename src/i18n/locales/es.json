@@ -66,7 +66,21 @@
     "na": "N/A",
     "unknown": "Unknown",
     "searchPlaceholderGlobal": "Buscar empleados, equipos, noticias...",
-    "datePlaceholder": "YYYY-MM-DD"
+    "datePlaceholder": "AAAA-MM-DD",
+    "noData": "No hay datos disponibles",
+    "validate": "Validar",
+    "confirmDelete": "¿Está seguro de que desea eliminar esto?",
+    "details": "Detalles"
+  },
+  "companies": {
+    "title": "Companies",
+    "empty": "No companies found",
+    "selectCompany": "Select Company"
+  },
+  "teams": {
+    "title": "Teams",
+    "empty": "No teams found",
+    "selectTeam": "Select Team"
   },
   "navigation": {
     "home": "Inicio",
@@ -162,6 +176,16 @@
     "addTime": "Añadir hora",
     "update": "Actualizar",
     "namePlaceholder": "ej. Salario Base",
+    "items": {
+      "baseSalary": "Base Salary",
+      "mealTicket": "Meal Vouchers",
+      "transportAllowance": "Transport Allowance",
+      "performanceBonus": "Performance Bonus",
+      "thirteenthMonth": "13th Month Salary",
+      "bonus": "Company Bonus",
+      "indemnity": "Severance/Indemnity",
+      "overtime": "Overtime Pay"
+    },
     "amountPlaceholder": "ej. 3000 €",
     "notesPlaceholder": "Notas adicionales...",
     "freqDaily": "Diario",

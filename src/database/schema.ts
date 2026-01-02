@@ -11,6 +11,13 @@ export interface Claim {
   createdAt: string;
   updatedAt: string;
 }
+export interface Service {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 
 export interface Payroll {
   id?: number;

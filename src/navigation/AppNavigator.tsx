@@ -33,6 +33,7 @@ import { AddEmployeeScreen } from '../screens/employees/AddEmployeeScreen';
 import { EmployeeDetailsScreen } from '../screens/employees/EmployeeDetailsScreen';
 import { AnalyticsScreen } from '../screens/analytics/AnalyticsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
+import { ManageServicesScreen } from '../screens/profile/ManageServicesScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
@@ -247,6 +248,11 @@ const ProfileStack = () => {
         name="CareerHub"
         component={CareerHubScreen}
         options={{ headerShown: true, title: t('navigation.careerHub') }}
+      />
+      <Stack.Screen
+        name="ManageServices"
+        component={ManageServicesScreen}
+        options={{ headerShown: true, title: t('payroll.manageServices') }}
       />
     </Stack.Navigator>
   );

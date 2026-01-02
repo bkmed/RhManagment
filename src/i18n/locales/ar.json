@@ -66,7 +66,21 @@
     "na": "N/A",
     "unknown": "Unknown",
     "searchPlaceholderGlobal": "بحث عن الموظفين، الفرق، الأخبار...",
-    "datePlaceholder": "YYYY-MM-DD"
+    "datePlaceholder": "YYYY-MM-DD",
+    "noData": "لا توجد بيانات متاحة",
+    "validate": "تأكيد",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا؟",
+    "details": "التفاصيل"
+  },
+  "companies": {
+    "title": "Companies",
+    "empty": "No companies found",
+    "selectCompany": "Select Company"
+  },
+  "teams": {
+    "title": "Teams",
+    "empty": "No teams found",
+    "selectTeam": "Select Team"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -162,6 +176,16 @@
     "addTime": "إضافة وقت",
     "update": "تحديث",
     "namePlaceholder": "مثال: الراتب الأساسي",
+    "items": {
+      "baseSalary": "Base Salary",
+      "mealTicket": "Meal Vouchers",
+      "transportAllowance": "Transport Allowance",
+      "performanceBonus": "Performance Bonus",
+      "thirteenthMonth": "13th Month Salary",
+      "bonus": "Company Bonus",
+      "indemnity": "Severance/Indemnity",
+      "overtime": "Overtime Pay"
+    },
     "amountPlaceholder": "مثال: 3000$",
     "notesPlaceholder": "ملاحظات إضافية...",
     "freqDaily": "يومياً",

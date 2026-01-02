@@ -70,6 +70,10 @@ const App = () => {
     // Note: MMKV storage is ready to use immediately, no initialization needed
     const initialize = async () => {
       try {
+        // Initialize services
+        const { servicesDb } = await import('./src/database/servicesDb');
+        await servicesDb.init();
+
         // Migrate data first
         await migrateData();
 
