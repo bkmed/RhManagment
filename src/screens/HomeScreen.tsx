@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  useContext,
-  useCallback,
-} from 'react';
+import React, { useState, useMemo, useContext, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   View,
@@ -136,14 +131,18 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
           onPress={() => navigateToTab('Analytics', 'PerformanceReview')}
         >
           <Text style={styles.managementIcon}>📈</Text>
-          <Text style={styles.managementText}>{t('performance.title') || 'Performance'}</Text>
+          <Text style={styles.managementText}>
+            {t('performance.title') || 'Performance'}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.managementCard}
           onPress={() => navigateToTab('Companies', 'OrgChart')}
         >
           <Text style={styles.managementIcon}>📊</Text>
-          <Text style={styles.managementText}>{t('navigation.orgChart') || 'Organigramme'}</Text>
+          <Text style={styles.managementText}>
+            {t('navigation.orgChart') || 'Organigramme'}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -167,7 +166,13 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
   );
 };
 
-const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermission, handleEnableNotifications }: any) => {
+const EmployeeDashboard = ({
+  user,
+  summary,
+  navigateToTab,
+  hasNotificationPermission,
+  handleEnableNotifications,
+}: any) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
 
@@ -194,26 +199,36 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
         <View style={styles.balanceHeader}>
           <Text style={styles.balanceTitle}>{t('leavePolicy.title')}</Text>
           <View style={styles.managedBadge}>
-            <Text style={styles.balanceManaged}>{t('leavePolicy.managedBy')}</Text>
+            <Text style={styles.balanceManaged}>
+              {t('leavePolicy.managedBy')}
+            </Text>
           </View>
         </View>
 
         <View style={styles.balanceGrid}>
           <View style={styles.balanceItem}>
             <Text style={styles.balanceLabel}>{t('leavePolicy.perYear')}</Text>
-            <Text style={styles.balanceValue}>{user?.vacationDaysPerYear || 25}</Text>
+            <Text style={styles.balanceValue}>
+              {user?.vacationDaysPerYear || 25}
+            </Text>
           </View>
           <View style={styles.balanceDivider} />
           <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>{t('leavePolicy.remaining')}</Text>
-            <Text style={[styles.balanceValue, { color: theme.colors.primary }]}>
+            <Text style={styles.balanceLabel}>
+              {t('leavePolicy.remaining')}
+            </Text>
+            <Text
+              style={[styles.balanceValue, { color: theme.colors.primary }]}
+            >
               {user?.remainingVacationDays ?? 25}
             </Text>
           </View>
           <View style={styles.balanceDivider} />
           <View style={styles.balanceItem}>
             <Text style={styles.balanceLabel}>{t('home.statePaidLeaves')}</Text>
-            <Text style={styles.balanceValue}>{user?.statePaidLeaves || 0}</Text>
+            <Text style={styles.balanceValue}>
+              {user?.statePaidLeaves || 0}
+            </Text>
           </View>
         </View>
 
@@ -222,7 +237,9 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
             <View style={styles.seniorityRow}>
               <View style={styles.seniorityItem}>
                 <Text style={styles.countryLabel}>{t('home.hiringDate')}</Text>
-                <Text style={styles.countryValue}>{formatDate(user.hiringDate)}</Text>
+                <Text style={styles.countryValue}>
+                  {formatDate(user.hiringDate)}
+                </Text>
               </View>
               <View style={[styles.seniorityItem, { alignItems: 'flex-end' }]}>
                 <Text style={styles.countryLabel}>{t('home.seniority')}</Text>
@@ -237,8 +254,22 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
                       months += 12;
                     }
                     const parts = [];
-                    if (years > 0) parts.push(`${years} ${years > 1 ? t('common.yearsUnit') : t('common.yearUnit')}`);
-                    if (months > 0) parts.push(`${months} ${months > 1 ? t('common.monthsUnit') : t('common.monthUnit')}`);
+                    if (years > 0)
+                      parts.push(
+                        `${years} ${
+                          years > 1
+                            ? t('common.yearsUnit')
+                            : t('common.yearUnit')
+                        }`,
+                      );
+                    if (months > 0)
+                      parts.push(
+                        `${months} ${
+                          months > 1
+                            ? t('common.monthsUnit')
+                            : t('common.monthUnit')
+                        }`,
+                      );
                     return parts.join(', ') || `0 ${t('common.monthUnit')}`;
                   })()}
                 </Text>
@@ -256,7 +287,9 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
         <Text style={styles.actionIcon}>📝</Text>
         <View style={styles.actionContent}>
           <Text style={styles.actionTitle}>{t('claims.newClaim')}</Text>
-          <Text style={styles.actionSubtitle}>{t('claims.descriptionPlaceholder')}</Text>
+          <Text style={styles.actionSubtitle}>
+            {t('claims.descriptionPlaceholder')}
+          </Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
       </TouchableOpacity>
@@ -268,7 +301,9 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
         <Text style={styles.actionIcon}>📅</Text>
         <View style={styles.actionContent}>
           <Text style={styles.actionTitle}>{t('home.scheduleLeave')}</Text>
-          <Text style={styles.actionSubtitle}>{t('home.scheduleLeaveSubtitle')}</Text>
+          <Text style={styles.actionSubtitle}>
+            {t('home.scheduleLeaveSubtitle')}
+          </Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
       </TouchableOpacity>
@@ -280,7 +315,9 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
         <Text style={styles.actionIcon}>🤝</Text>
         <View style={styles.actionContent}>
           <Text style={styles.actionTitle}>{t('navigation.teams')}</Text>
-          <Text style={styles.actionSubtitle}>Voir les congés de mon équipe</Text>
+          <Text style={styles.actionSubtitle}>
+            Voir les congés de mon équipe
+          </Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
       </TouchableOpacity>
@@ -292,7 +329,9 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
         <Text style={styles.actionIcon}>🚀</Text>
         <View style={styles.actionContent}>
           <Text style={styles.actionTitle}>{t('navigation.careerHub')}</Text>
-          <Text style={styles.actionSubtitle}>Gérez vos objectifs et votre carrière</Text>
+          <Text style={styles.actionSubtitle}>
+            Gérez vos objectifs et votre carrière
+          </Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
       </TouchableOpacity>
@@ -303,8 +342,12 @@ const EmployeeDashboard = ({ user, summary, navigateToTab, hasNotificationPermis
       >
         <Text style={styles.actionIcon}>📊</Text>
         <View style={styles.actionContent}>
-          <Text style={styles.actionTitle}>{t('navigation.orgChart') || 'Organigramme'}</Text>
-          <Text style={styles.actionSubtitle}>Voir la structure de l'entreprise</Text>
+          <Text style={styles.actionTitle}>
+            {t('navigation.orgChart') || 'Organigramme'}
+          </Text>
+          <Text style={styles.actionSubtitle}>
+            Voir la structure de l'entreprise
+          </Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
       </TouchableOpacity>
@@ -343,18 +386,21 @@ export const HomeScreen = () => {
   });
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [hasNotificationPermission, setHasNotificationPermission] = useState(true);
+  const [hasNotificationPermission, setHasNotificationPermission] =
+    useState(true);
 
   const loadData = async () => {
     try {
       if (user?.role === 'admin' || user?.role === 'rh') {
         // Load Admin Data
-        const [employees, allLeaves, allClaims, allPayroll] = await Promise.all([
-          employeesDb.getAll(),
-          leavesDb.getAll(),
-          claimsDb.getAll(),
-          payrollDb.getAll(),
-        ]);
+        const [employees, allLeaves, allClaims, allPayroll] = await Promise.all(
+          [
+            employeesDb.getAll(),
+            leavesDb.getAll(),
+            claimsDb.getAll(),
+            payrollDb.getAll(),
+          ],
+        );
 
         const pendingLeaves = allLeaves.filter(l => l.status === 'pending');
         const pendingClaims = allClaims.filter(c => c.status === 'pending');
@@ -380,21 +426,29 @@ export const HomeScreen = () => {
             subtitle: c.description,
             date: c.createdAt,
           })),
-        ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        ].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
 
         setRecentActivity(activity);
       } else {
         // Load Employee Data
-        let [allPayroll, upcomingLeaves, expiringIllnesses] = await Promise.all([
-          payrollDb.getAll(),
-          leavesDb.getUpcoming(),
-          illnessesDb.getExpiringSoon(),
-        ]);
+        let [allPayroll, upcomingLeaves, expiringIllnesses] = await Promise.all(
+          [
+            payrollDb.getAll(),
+            leavesDb.getUpcoming(),
+            illnessesDb.getExpiringSoon(),
+          ],
+        );
 
         if (user?.employeeId) {
           allPayroll = allPayroll.filter(p => p.employeeId === user.employeeId);
-          upcomingLeaves = upcomingLeaves.filter(l => l.employeeId === user.employeeId);
-          expiringIllnesses = expiringIllnesses.filter(i => i.employeeId === user.employeeId);
+          upcomingLeaves = upcomingLeaves.filter(
+            l => l.employeeId === user.employeeId,
+          );
+          expiringIllnesses = expiringIllnesses.filter(
+            i => i.employeeId === user.employeeId,
+          );
         }
 
         setSummary({
@@ -430,17 +484,22 @@ export const HomeScreen = () => {
       setActiveTab(tab, screen);
     } else {
       const stackScreen =
-        tab === 'Payroll' ? 'PayrollTab' :
-          tab === 'Leaves' ? 'LeavesTab' :
-            tab === 'Analytics' ? 'Analytics' :
-              tab === 'Employees' ? 'Employees' :
-                tab === 'Claims' ? 'Claims' :
-                  undefined;
+        tab === 'Payroll'
+          ? 'PayrollTab'
+          : tab === 'Leaves'
+          ? 'LeavesTab'
+          : tab === 'Analytics'
+          ? 'Analytics'
+          : tab === 'Employees'
+          ? 'Employees'
+          : tab === 'Claims'
+          ? 'Claims'
+          : undefined;
 
       if (stackScreen) {
         navigation.navigate('Main', {
           screen: stackScreen,
-          params: screen ? { screen } : undefined
+          params: screen ? { screen } : undefined,
         });
       }
     }
@@ -455,13 +514,18 @@ export const HomeScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <View style={{ backgroundColor: theme.colors.background }}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.greeting}>{t('home.greeting')}</Text>
           <Text style={styles.userName}>{user?.name}</Text>
-          <Text style={styles.subtitle}>{user?.role === 'admin' ? 'Administration RH' : t('home.subtitle')}</Text>
+          <Text style={styles.subtitle}>
+            {user?.role === 'admin' ? 'Administration RH' : t('home.subtitle')}
+          </Text>
         </View>
 
         {user?.role === 'admin' || user?.role === 'rh' ? (
@@ -487,10 +551,6 @@ export const HomeScreen = () => {
 // ======= Styles =======
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FE', // Light neutral background for premium look
-  },
   content: {
     padding: 20,
     width: '100%',
@@ -534,7 +594,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -580,7 +640,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 5,
@@ -612,7 +672,7 @@ const styles = StyleSheet.create({
     padding: 24,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.05,
     shadowRadius: 15,

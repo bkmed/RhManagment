@@ -41,14 +41,14 @@ export const AnnouncementsScreen = () => {
         if (!newTitle.trim() || !newContent.trim()) return;
 
         const announcement: Announcement = {
-            id: Math.random().toString(36).substr(2, 9),
+            id: Date.now(),
             title: newTitle,
             content: newContent,
             category: newCategory,
-            authorId: user?.id || '',
+            authorId: Number(user?.id) || 0,
             authorName: user?.name || 'Admin',
             createdAt: new Date().toISOString(),
-            companyId: user?.companyId,
+            date: new Date().toISOString(),
         };
 
         dispatch(addAnnouncement(announcement));
@@ -89,7 +89,7 @@ export const AnnouncementsScreen = () => {
                 </Text>
                 {isAdmin && (
                     <TouchableOpacity
-                        onPress={() => dispatch(deleteAnnouncement(item.id))}
+                        onPress={() => item.id && dispatch(deleteAnnouncement(item.id))}
                         style={styles.deleteButton}
                     >
                         <Text style={{ color: theme.colors.error, fontSize: 12, fontWeight: '600' }}>
@@ -106,7 +106,7 @@ export const AnnouncementsScreen = () => {
             <FlatList
                 data={[...announcements].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => (item.id || 0).toString()}
                 contentContainerStyle={styles.listContent}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>

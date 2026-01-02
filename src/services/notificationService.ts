@@ -315,7 +315,11 @@ export const notificationService = {
     showAlert: async (title: string, body: string) => {
         if (Platform.OS === 'web') {
             // For web, use alert as fallback or console
-            alert(`${title}: ${body}`);
+            if (typeof window !== 'undefined') {
+                (window as any).alert(`${title}: ${body}`);
+            } else {
+                console.log(`${title}: ${body}`);
+            }
             return;
         }
 

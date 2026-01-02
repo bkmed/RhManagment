@@ -163,10 +163,12 @@ export interface Announcement {
   title: string;
   content: string;
   authorId: number;
+  authorName: string;
   date: string;
   targetDepartment?: string; // Optional: specific department or 'all'
   createdAt: string;
   category: 'news' | 'event' | 'alert';
+  companyId?: number;
 }
 
 export interface ChatMessage {

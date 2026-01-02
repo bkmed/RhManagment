@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { useAuth } from '../../context/AuthContext';
 import { Theme } from '../../theme';
-import { Employee, LeaveRequest } from '../../database/schema';
+import { Employee, Leave } from '../../database/schema';
 import { formatDate } from '../../utils/dateUtils';
 
 export const TeamVacationsScreen = ({ navigation }: any) => {
@@ -22,29 +22,29 @@ export const TeamVacationsScreen = ({ navigation }: any) => {
     const { user } = useAuth();
     const styles = useMemo(() => createStyles(theme), [theme]);
 
-    const employees = useSelector((state: RootState) => state.employees.employees);
-    const leaves = useSelector((state: RootState) => state.leaves.leaves);
-    const teams = useSelector((state: RootState) => state.teams.teams);
+    const employees = useSelector((state: RootState) => state.employees.items);
+    const leaves = useSelector((state: RootState) => state.leaves.items);
+    const teams = useSelector((state: RootState) => state.teams.items);
 
     const teamMembers = useMemo(() => {
         if (!user?.teamId) return [];
-        return employees.filter(emp => emp.teamId === user.teamId);
+        return employees.filter((emp: Employee) => emp.teamId === user.teamId);
     }, [employees, user?.teamId]);
 
     const teamName = useMemo(() => {
         if (!user?.teamId) return '';
-        return teams.find(t => t.id === user.teamId)?.name || '';
+        return teams.find((t: any) => t.id === user.teamId)?.name || '';
     }, [teams, user?.teamId]);
 
     const teamLeaves = useMemo(() => {
-        const memberIds = teamMembers.map(m => m.id);
+        const memberIds = teamMembers.map((m: Employee) => m.id);
         return leaves
-            .filter(l => memberIds.includes(l.employeeId))
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            .filter((l: Leave) => memberIds.includes(l.employeeId || 0))
+            .sort((a: Leave, b: Leave) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
     }, [leaves, teamMembers]);
 
-    const renderItem = ({ item }: { item: LeaveRequest }) => {
-        const member = teamMembers.find(m => m.id === item.employeeId);
+    const renderItem = ({ item }: { item: Leave }) => {
+        const member = teamMembers.find((m: Employee) => m.id === item.employeeId);
         const isMe = item.employeeId === user?.id;
 
         return (
@@ -58,8 +58,8 @@ export const TeamVacationsScreen = ({ navigation }: any) => {
                     </View>
                 </View>
                 <Text style={styles.leaveTitle}>{item.title}</Text>
-                <Text style={styles.leaveDate}>{formatDate(item.date)}</Text>
-                {item.reason && <Text style={styles.leaveReason}>{item.reason}</Text>}
+                <Text style={styles.leaveDate}>{formatDate(item.dateTime)}</Text>
+                {item.notes && <Text style={styles.leaveReason}>{item.notes}</Text>}
             </View>
         );
     };
@@ -76,7 +76,7 @@ export const TeamVacationsScreen = ({ navigation }: any) => {
             <FlatList
                 data={teamLeaves}
                 renderItem={renderItem}
-                keyExtractor={item => item.id}
+                keyExtractor={item => (item.id || 0).toString()}
                 contentContainerStyle={styles.listContent}
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
@@ -99,7 +99,6 @@ const getStatusColor = (status: string, theme: Theme) => {
 const createStyles = (theme: Theme) =>
     StyleSheet.create({
         container: {
-            flex: 1,
             backgroundColor: theme.colors.background,
         },
         header: {

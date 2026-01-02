@@ -359,7 +359,7 @@ export const ProfileScreen = ({ navigation }: any) => {
               />
 
               <View style={styles.responsiveRow}>
-                <View style={[styles.fieldContainer, { marginRight: theme.spacing.m }]}>
+                <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
                   <AuthInput
                     label={t('employees.firstName')}
                     value={firstName}
@@ -367,7 +367,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                     placeholder={t('employees.firstName')}
                   />
                 </View>
-                <View style={styles.fieldContainer}>
+                <View style={styles.fieldContainerFlex}>
                   <AuthInput
                     label={t('employees.lastName')}
                     value={lastName}
@@ -378,7 +378,7 @@ export const ProfileScreen = ({ navigation }: any) => {
               </View>
 
               <View style={styles.responsiveRow}>
-                <View style={[styles.fieldContainer, { marginRight: theme.spacing.m }]}>
+                <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
                   <AuthInput
                     label={t('employees.age')}
                     value={age}
@@ -387,7 +387,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                     keyboardType="numeric"
                   />
                 </View>
-                <View style={styles.fieldContainer}>
+                <View style={styles.fieldContainerFlex}>
                   <Dropdown
                     label={t('employees.gender')}
                     data={[
@@ -411,7 +411,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                 placeholder={t('employees.emergencyName')}
               />
               <View style={styles.responsiveRow}>
-                <View style={[styles.fieldContainer, { marginRight: theme.spacing.m }]}>
+                <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
                   <AuthInput
                     label={t('employees.emergencyPhone')}
                     value={emergencyPhone}
@@ -420,7 +420,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                     keyboardType="phone-pad"
                   />
                 </View>
-                <View style={styles.fieldContainer}>
+                <View style={styles.fieldContainerFlex}>
                   <AuthInput
                     label={t('employees.emergencyRelationship')}
                     value={emergencyRelationship}
@@ -677,7 +677,7 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
     },
-    fieldContainer: {
+    fieldContainerFlex: {
       flex: 1,
     },
     subSectionTitle: {

@@ -241,7 +241,6 @@ const getStatusColor = (status: string, theme: Theme) => {
 const createStyles = (theme: Theme) =>
     StyleSheet.create({
         container: {
-            flex: 1,
             backgroundColor: theme.colors.background,
         },
         scrollContent: {

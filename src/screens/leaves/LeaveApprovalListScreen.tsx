@@ -131,7 +131,7 @@ export const LeaveApprovalListScreen = ({ navigation }: any) => {
 
 const createStyles = (theme: Theme) =>
     StyleSheet.create({
-        container: { backgroundColor: theme.colors.background, flex: 1 },
+        container: { backgroundColor: theme.colors.background },
         centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: theme.spacing.xl },
         listContent: { padding: theme.spacing.m },
         card: {

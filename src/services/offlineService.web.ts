@@ -5,9 +5,12 @@
 import { useState, useEffect } from 'react';
 
 export const useNetworkStatus = () => {
-    const [isConnected, setIsConnected] = useState<boolean>(
-        typeof navigator !== 'undefined' ? navigator.onLine : true
-    );
+    const [isConnected, setIsConnected] = useState<boolean>(() => {
+        if (typeof window !== 'undefined' && (window as any).navigator) {
+            return (window as any).navigator.onLine;
+        }
+        return true;
+    });
 
     useEffect(() => {
         if (typeof window === 'undefined') {
@@ -17,12 +20,13 @@ export const useNetworkStatus = () => {
         const handleOnline = () => setIsConnected(true);
         const handleOffline = () => setIsConnected(false);
 
-        window.addEventListener('online', handleOnline);
-        window.addEventListener('offline', handleOffline);
+        const win = window as any;
+        win.addEventListener('online', handleOnline);
+        win.addEventListener('offline', handleOffline);
 
         return () => {
-            window.removeEventListener('online', handleOnline);
-            window.removeEventListener('offline', handleOffline);
+            win.removeEventListener('online', handleOnline);
+            win.removeEventListener('offline', handleOffline);
         };
     }, []);
 
@@ -35,7 +39,10 @@ export const useNetworkStatus = () => {
 
 // Check network status once
 export const checkNetworkStatus = async () => {
-    const isConnected = typeof navigator !== 'undefined' ? navigator.onLine : true;
+    let isConnected = true;
+    if (typeof window !== 'undefined' && (window as any).navigator) {
+        isConnected = (window as any).navigator.onLine;
+    }
     return {
         isConnected,
         isInternetReachable: isConnected,
