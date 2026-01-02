@@ -33,7 +33,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
     const { t } = useTranslation();
     const { showToast } = useToast();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const { setActiveTab } = useContext(WebNavigationContext);
+    const { setActiveTab } = useContext(WebNavigationContext) as any;
 
     const [name, setName] = useState('');
     const [department, setDepartment] = useState('');

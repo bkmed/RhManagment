@@ -74,7 +74,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
   /* Removed require */
 
-  const { setActiveTab } = useContext(WebNavigationContext);
+  const { setActiveTab } = useContext(WebNavigationContext) as any;
 
   const loadPayroll = async () => {
     if (!payrollId) return;
@@ -139,6 +139,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         frequency,
         times: JSON.stringify(timeStrings),
         startDate: new Date().toISOString().split('T')[0], // Default to today
+        reminderEnabled: false,
+        isUrgent: false,
         mealVouchers: mealVouchers.trim() || undefined,
         giftVouchers: giftVouchers.trim() || undefined,
         bonusAmount: bonusAmount.trim() || undefined,
@@ -398,8 +400,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               </View>
             </View>
           </View>
-
-          </View>
         </View>
 
         <TouchableOpacity
@@ -412,8 +412,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             {' '}{t('payroll.payroll')}
           </Text>
         </TouchableOpacity>
-      </ScrollView >
-    </View >
+      </ScrollView>
+    </View>
   );
 };
 

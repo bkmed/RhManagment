@@ -6,9 +6,11 @@ import {
     FlatList,
     TouchableOpacity,
     ActivityIndicator,
+    Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { teamsDb } from '../../database/teamsDb';
 import { employeesDb } from '../../database/employeesDb';
 import { Team, Employee } from '../../database/schema';
@@ -24,7 +26,7 @@ export const TeamListScreen = ({ navigation }: any) => {
     const { showModal } = useModal();
     const { showToast } = useToast();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const { setActiveTab } = useContext(WebNavigationContext);
+    const { setActiveTab } = useContext(WebNavigationContext) as any;
 
     const [teams, setTeams] = useState<Team[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
