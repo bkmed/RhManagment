@@ -34,6 +34,7 @@ import { EmployeeDetailsScreen } from '../screens/employees/EmployeeDetailsScree
 import { AnalyticsScreen } from '../screens/analytics/AnalyticsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { ManageServicesScreen } from '../screens/profile/ManageServicesScreen';
+import { ManageDepartmentsScreen } from '../screens/profile/ManageDepartmentsScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
@@ -42,7 +43,9 @@ import { AddClaimScreen } from '../screens/claims/AddClaimScreen';
 import { ClaimsListScreen } from '../screens/claims/ClaimsListScreen';
 import { ClaimDetailsScreen } from '../screens/claims/ClaimDetailsScreen';
 import { CompanyListScreen } from '../screens/companies/CompanyListScreen';
+import { AddCompanyScreen } from '../screens/companies/AddCompanyScreen';
 import { TeamListScreen } from '../screens/teams/TeamListScreen';
+import { AddTeamScreen } from '../screens/teams/AddTeamScreen';
 import { TeamVacationsScreen } from '../screens/teams/TeamVacationsScreen';
 import { CareerHubScreen } from '../screens/profile/CareerHubScreen';
 import { PerformanceReviewScreen } from '../screens/analytics/PerformanceReviewScreen';
@@ -231,9 +234,32 @@ const CompanyStack = () => {
         options={{ title: t('navigation.companies') }}
       />
       <Stack.Screen
+        name="AddCompany"
+        component={AddCompanyScreen}
+        options={{ title: t('common.add') + ' ' + t('companies.title') }}
+      />
+      <Stack.Screen
         name="OrgChart"
         component={OrgChartScreen}
         options={{ title: t('navigation.orgChart') }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const TeamStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="TeamList"
+        component={TeamListScreen}
+        options={{ title: t('navigation.teams') }}
+      />
+      <Stack.Screen
+        name="AddTeam"
+        component={AddTeamScreen}
+        options={{ title: t('common.add') + ' ' + t('teams.title') }}
       />
     </Stack.Navigator>
   );
@@ -253,6 +279,11 @@ const ProfileStack = () => {
         name="ManageServices"
         component={ManageServicesScreen}
         options={{ headerShown: true, title: t('payroll.manageServices') }}
+      />
+      <Stack.Screen
+        name="ManageDepartments"
+        component={ManageDepartmentsScreen}
+        options={{ headerShown: true, title: t('organization.manageDepartments') }}
       />
     </Stack.Navigator>
   );
@@ -393,7 +424,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Illnesses" component={IllnessesStack} />
       <Drawer.Screen name="Employees" component={EmployeesStack} />
       <Drawer.Screen name="Companies" component={CompanyStack} />
-      <Drawer.Screen name="Teams" component={TeamListScreen} />
+      <Drawer.Screen name="Teams" component={TeamStack} />
       <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
       <Drawer.Screen name="Claims" component={ClaimsStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
@@ -491,10 +522,14 @@ const WebNavigator = () => {
         if (subScreen === 'ClaimDetails') return <ClaimDetailsScreen route={mockRoute} />;
         return <ClaimsStack />;
       case 'Companies':
+        if (subScreen === 'AddCompany')
+          return <AddCompanyScreen route={mockRoute} />;
         if (subScreen === 'OrgChart')
           return <OrgChartScreen />;
         return <CompanyStack />;
       case 'Teams':
+        if (subScreen === 'AddTeam')
+          return <AddTeamScreen route={mockRoute} />;
         return <TeamListScreen />;
       case 'Announcements':
         return <AnnouncementsScreen />;
@@ -503,6 +538,10 @@ const WebNavigator = () => {
       case 'Profile':
         if (subScreen === 'CareerHub')
           return <CareerHubScreen />;
+        if (subScreen === 'ManageServices')
+          return <ManageServicesScreen />;
+        if (subScreen === 'ManageDepartments')
+          return <ManageDepartmentsScreen />;
         return <ProfileStack />;
       default:
         return <HomeStack />;

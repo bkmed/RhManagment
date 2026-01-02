@@ -109,7 +109,15 @@ export interface Company {
   logo?: string;
   address?: string;
   email?: string;
+  country?: string;
   phone?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Department {
+  id: number;
+  name: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -119,6 +127,7 @@ export interface Team {
   name: string;
   managerId?: number; // Employee ID of the manager
   department: string;
+  service?: string;
   createdAt: string;
   updatedAt: string;
 }

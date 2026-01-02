@@ -70,18 +70,49 @@
     "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا؟",
     "details": "التفاصيل",
     "invalidPhone": "رقم الهاتف غير صالح للدولة المحددة",
-    "invalidEmail": "عنوان البريد الإلكتروني غير صالح"
+    "invalidEmail": "عنوان البريد الإلكتروني غير صالح",
+    "selectCountry": "اختر البلد",
+    "selectService": "اختر الخدمة",
+    "department": "القسم",
+    "selectDepartment": "اختر القسم",
+    "organization": {
+      "manageDepartments": "إدارة الأقسام"
+    }
   },
   "companies": {
-    "title": "Companies",
-    "empty": "No companies found",
-    "selectCompany": "Select Company"
+    "title": "الشركات",
+    "empty": "لا توجد شركات",
+    "selectCompany": "اختر الشركة",
+    "details": "تفاصيل الشركة",
+    "name": "اسم الشركة",
+    "namePlaceholder": "مثال: شركة النخبة",
+    "address": "العنوان",
+    "addressPlaceholder": "مثال: 123 شارع الأعمال",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "مثال: contact@company.com",
+    "country": "البلد",
+    "countryPlaceholder": "مثال: تونس",
+    "phone": "الهاتف",
+    "phonePlaceholder": "مثال: +123456789"
   },
   "teams": {
-    "title": "Teams",
-    "empty": "No teams found",
-    "selectTeam": "Select Team",
-    "supervised": "supervised"
+    "title": "الفرق",
+    "empty": "لا توجد فرق",
+    "selectTeam": "اختر الفريق",
+    "supervised": "مشرف عليه",
+    "details": "تفاصيل الفريق",
+    "name": "اسم الفريق",
+    "namePlaceholder": "مثال: الهندسة",
+    "department": "القسم",
+    "departmentPlaceholder": "مثال: تكنولوجيا المعلومات",
+    "teamLeader": "قائد الفريق",
+    "selectTeamLeader": "اختر قائد الفريق",
+    "members": "أعضاء الفريق",
+    "selectMembers": "اختر الأعضاء",
+    "validation": {
+      "minMembers": "اختر عضوين على الأقل",
+      "maxMembers": "الحد الأقصى 10 أعضاء"
+    }
   },
   "navigation": {
     "home": "الرئيسية",

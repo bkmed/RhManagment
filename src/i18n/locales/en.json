@@ -68,18 +68,50 @@
     "noData": "No data available",
     "validate": "Validate",
     "confirmDelete": "Are you sure you want to delete this?",
-    "details": "Details"
+    "details": "Details",
+    "selectCountry": "Select Country",
+    "service": "Service",
+    "selectService": "Select Service",
+    "department": "Department",
+    "selectDepartment": "Select Department",
+    "organization": {
+      "manageDepartments": "Manage Departments"
+    }
   },
   "companies": {
     "title": "Companies",
     "empty": "No companies found",
-    "selectCompany": "Select Company"
+    "selectCompany": "Select Company",
+    "details": "Company Details",
+    "name": "Company Name",
+    "namePlaceholder": "e.g. Acme Corp",
+    "address": "Address",
+    "addressPlaceholder": "e.g. 123 Business St",
+    "email": "Email",
+    "emailPlaceholder": "e.g. contact@acme.com",
+    "country": "Country",
+    "countryPlaceholder": "e.g. USA",
+    "phone": "Phone",
+    "phonePlaceholder": "e.g. +1 234 567 890"
   },
   "teams": {
     "title": "Teams",
     "empty": "No teams found",
     "selectTeam": "Select Team",
-    "supervised": "supervised"
+    "supervised": "supervised",
+    "details": "Team Details",
+    "name": "Team Name",
+    "namePlaceholder": "e.g. Engineering",
+    "department": "Department",
+    "departmentPlaceholder": "e.g. IT",
+    "teamLeader": "Team Leader",
+    "selectTeamLeader": "Select Team Leader",
+    "members": "Team Members",
+    "selectMembers": "Select Members",
+    "validation": {
+      "minMembers": "Select at least 2 members",
+      "maxMembers": "Max 10 members allowed"
+    }
   },
   "navigation": {
     "home": "Home",

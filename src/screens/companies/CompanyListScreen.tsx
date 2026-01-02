@@ -15,11 +15,15 @@ import { Company } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+import { Platform } from 'react-native';
+import { useContext } from 'react';
 
 export const CompanyListScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
+    const { setActiveTab } = useContext(WebNavigationContext);
 
     const [companies, setCompanies] = useState<Company[]>([]);
     const [loading, setLoading] = useState(true);
@@ -85,8 +89,11 @@ export const CompanyListScreen = ({ navigation }: any) => {
             <TouchableOpacity
                 style={styles.fab}
                 onPress={() => {
-                    // AddCompanyScreen not yet implemented, but we can add a simple console log or alert
-                    console.log('Add Company pressed');
+                    if (Platform.OS === 'web') {
+                        setActiveTab('Companies', 'AddCompany');
+                    } else {
+                        navigation.navigate('AddCompany');
+                    }
                 }}
             >
                 <Text style={styles.fabText}>+</Text>

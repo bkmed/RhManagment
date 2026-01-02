@@ -562,6 +562,14 @@ export const ProfileScreen = ({ navigation }: any) => {
               <Text style={styles.menuItemText}>🏢 {t('payroll.manageServices')}</Text>
               <Text style={styles.menuItemArrow}>›</Text>
             </TouchableOpacity>
+            <View style={styles.divider} />
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('ManageDepartments')}
+            >
+              <Text style={styles.menuItemText}>🏢 {t('organization.manageDepartments')}</Text>
+              <Text style={styles.menuItemArrow}>›</Text>
+            </TouchableOpacity>
           </View>
         )}
 

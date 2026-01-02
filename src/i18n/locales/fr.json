@@ -70,18 +70,49 @@
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ceci ?",
     "details": "Détails",
     "invalidPhone": "Numéro de téléphone invalide pour le pays sélectionné",
-    "invalidEmail": "Adresse email invalide"
+    "invalidEmail": "Adresse email invalide",
+    "selectCountry": "Sélectionner le pays",
+    "selectService": "Sélectionner le service",
+    "department": "Département",
+    "selectDepartment": "Sélectionner le département",
+    "organization": {
+      "manageDepartments": "Gérer les départements"
+    }
   },
   "companies": {
     "title": "Entreprises",
     "empty": "Aucune entreprise trouvée",
-    "selectCompany": "Sélectionner l'entreprise"
+    "selectCompany": "Sélectionner l'entreprise",
+    "details": "Détails de l'entreprise",
+    "name": "Nom de l'entreprise",
+    "namePlaceholder": "ex: Acme Corp",
+    "address": "Adresse",
+    "addressPlaceholder": "ex: 123 Rue des Affaires",
+    "email": "Email",
+    "emailPlaceholder": "ex: contact@acme.com",
+    "country": "Pays",
+    "countryPlaceholder": "ex: France",
+    "phone": "Téléphone",
+    "phonePlaceholder": "ex: +33 1 23 45 67 89"
   },
   "teams": {
     "title": "Équipes",
     "empty": "Aucune équipe trouvée",
     "selectTeam": "Sélectionner l'équipe",
-    "supervised": "supervisé(s)"
+    "supervised": "supervisé(s)",
+    "details": "Détails de l'équipe",
+    "name": "Nom de l'équipe",
+    "namePlaceholder": "ex: Ingénierie",
+    "department": "Département",
+    "departmentPlaceholder": "ex: IT",
+    "teamLeader": "Chef d'équipe",
+    "selectTeamLeader": "Sélectionner un chef d'équipe",
+    "members": "Membres de l'équipe",
+    "selectMembers": "Sélectionner les membres",
+    "validation": {
+      "minMembers": "Sélectionnez au moins 2 membres",
+      "maxMembers": "Max 10 membres autorisés"
+    }
   },
   "navigation": {
     "home": "Accueil",

@@ -15,11 +15,15 @@ import { Team, Employee } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+import { Platform } from 'react-native';
+import { useContext } from 'react';
 
 export const TeamListScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
+    const { setActiveTab } = useContext(WebNavigationContext);
 
     const [teams, setTeams] = useState<Team[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -84,7 +88,11 @@ export const TeamListScreen = ({ navigation }: any) => {
             <TouchableOpacity
                 style={styles.fab}
                 onPress={() => {
-                    console.log('Add Team pressed');
+                    if (Platform.OS === 'web') {
+                        setActiveTab('Teams', 'AddTeam');
+                    } else {
+                        navigation.navigate('AddTeam');
+                    }
                 }}
             >
                 <Text style={styles.fabText}>+</Text>
