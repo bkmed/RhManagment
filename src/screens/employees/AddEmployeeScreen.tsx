@@ -550,7 +550,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   label={t('common.service')}
                   data={services.map(s => ({ label: s.name, value: s.name }))}
                   value={department}
-                  onSelect={(item) => setDepartment(item.value)}
+                  onSelect={(val) => setDepartment(String(val))}
                   placeholder={t('common.service')}
                 />
               </View>

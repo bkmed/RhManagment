@@ -319,6 +319,7 @@
     "edit": "Edit Employee",
     "details": "Employee Details",
     "name": "Name",
+    "nameRequired": "Name is required",
     "specialty": "Position / Department",
     "phone": "Phone",
     "email": "Email",

@@ -375,6 +375,7 @@
     "titlePlaceholder": "e.g. Master React Native",
     "descriptionPlaceholder": "Describe your goal...",
     "ageInvalid": "Das Alter muss zwischen 18 und 62 Jahre alt sein",
+    "nameRequired": "Name ist erforderlich",
     "country": "Land"
   },
   "analytics": {

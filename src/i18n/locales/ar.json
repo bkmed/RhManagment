@@ -375,6 +375,7 @@
     "titlePlaceholder": "e.g. Master React Native",
     "descriptionPlaceholder": "Describe your goal...",
     "ageInvalid": "يجب أن يكون العمر بين 18 و 62 عامًا",
+    "nameRequired": "الاسم مطلوب",
     "country": "البلد"
   },
   "analytics": {

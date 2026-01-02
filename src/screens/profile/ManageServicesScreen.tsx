@@ -6,9 +6,10 @@ import {
     TextInput,
     TouchableOpacity,
     ScrollView,
-    Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useModal } from '../../context/ModalContext';
+import { useToast } from '../../context/ToastContext';
 import { useTheme } from '../../context/ThemeContext';
 import { servicesDb } from '../../database/servicesDb';
 import { Service } from '../../database/schema';
@@ -17,6 +18,8 @@ import { Theme } from '../../theme';
 export const ManageServicesScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
     const { t } = useTranslation();
+    const { showModal } = useModal();
+    const { showToast } = useToast();
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [services, setServices] = useState<Service[]>([]);
@@ -49,21 +52,26 @@ export const ManageServicesScreen = ({ navigation }: any) => {
     };
 
     const handleDelete = (id: number) => {
-        Alert.alert(
-            t('common.confirm'),
-            t('common.confirmDelete'),
-            [
+        showModal({
+            title: t('common.confirm'),
+            message: t('common.confirmDelete'),
+            buttons: [
                 { text: t('common.cancel'), style: 'cancel' },
                 {
                     text: t('common.delete'),
                     style: 'destructive',
                     onPress: async () => {
-                        await servicesDb.delete(id);
-                        loadServices();
+                        try {
+                            await servicesDb.delete(id);
+                            loadServices();
+                            showToast(t('common.success'), 'success');
+                        } catch (error) {
+                            showToast(t('common.error'), 'error');
+                        }
                     }
                 },
             ]
-        );
+        });
     };
 
     return (
