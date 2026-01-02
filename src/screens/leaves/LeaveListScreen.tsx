@@ -103,8 +103,8 @@ export const LeaveListScreen = ({ navigation }: any) => {
         const manager = employees.find(e => e.id === team?.managerId);
         companyGroup.teams.set(teamId, {
           id: teamId,
-          name: team?.name || 'Sans Équipe',
-          managerName: manager?.name || 'N/A',
+          name: team?.name || t('common.noTeam'),
+          managerName: manager?.name || t('common.na'),
           items: [],
         });
       }
@@ -131,7 +131,7 @@ export const LeaveListScreen = ({ navigation }: any) => {
       >
         <View style={styles.dateColumn}>
           <Text style={styles.dateText}>{startStr}</Text>
-          {endStr && endStr !== startStr && <Text style={styles.rangeDivider}>to</Text>}
+          {endStr && endStr !== startStr && <Text style={styles.rangeDivider}>{t('common.to')}</Text>}
           {endStr && endStr !== startStr && <Text style={styles.dateText}>{endStr}</Text>}
         </View>
 
@@ -140,8 +140,8 @@ export const LeaveListScreen = ({ navigation }: any) => {
           {item.employeeName && (
             <Text style={styles.employee}>{item.employeeName}</Text>
           )}
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
-            <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status, theme) + '20' }]}>
+            <Text style={[styles.statusText, { color: getStatusColor(item.status, theme) }]}>
               {t(`leaveStatus.${item.status}`)}
             </Text>
           </View>
@@ -190,7 +190,7 @@ export const LeaveListScreen = ({ navigation }: any) => {
                   <View style={styles.teamHeader}>
                     <View style={styles.teamInfo}>
                       <Text style={styles.teamName}>{teamGroup.name}</Text>
-                      <Text style={styles.teamManager}>Chef: {teamGroup.managerName}</Text>
+                      <Text style={styles.teamManager}>{t('roles.chef_dequipe')}: {teamGroup.managerName}</Text>
                     </View>
                   </View>
                 )}
@@ -311,7 +311,7 @@ const createStyles = (theme: Theme) =>
     } as any,
     fabText: {
       fontSize: 32,
-      color: theme.colors.surface,
+      color: theme.colors.background,
       fontWeight: '300',
       marginTop: -2,
     },
@@ -384,10 +384,10 @@ const createStyles = (theme: Theme) =>
     },
   });
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: string, theme: Theme) => {
   switch (status) {
-    case 'approved': return '#4CAF50';
-    case 'declined': return '#F44336';
-    default: return '#FF9800';
+    case 'approved': return theme.colors.success;
+    case 'declined': return theme.colors.error;
+    default: return theme.colors.warning;
   }
 };

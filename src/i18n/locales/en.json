@@ -61,7 +61,12 @@
     "deadline": "Deadline",
     "progress": "Progress",
     "total": "Total",
-    "searchPlaceholderGlobal": "Search employees, teams, news..."
+    "to": "to",
+    "noTeam": "No Team",
+    "na": "N/A",
+    "unknown": "Unknown",
+    "searchPlaceholderGlobal": "Search employees, teams, news...",
+    "datePlaceholder": "YYYY-MM-DD"
   },
   "navigation": {
     "home": "Home",
@@ -134,7 +139,11 @@
     "statePaidLeaves": "State Paid Leaves",
     "hiringDate": "Start Date",
     "seniority": "Seniority",
-    "careerGoalsSubtitle": "Manage your professional goals"
+    "careerGoalsSubtitle": "Manage your professional goals",
+    "companies": "Companies",
+    "teams": "Teams",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity"
   },
   "payroll": {
     "title": "Payroll",
@@ -336,7 +345,9 @@
     "company": "Company",
     "role": "Role",
     "period": "Period",
-    "description": "Description"
+    "description": "Description",
+    "titlePlaceholder": "e.g. Master React Native",
+    "descriptionPlaceholder": "Describe your goal..."
   },
   "analytics": {
     "title": "Analytics",
@@ -390,6 +401,8 @@
     "language": "Language",
     "appearance": "Appearance",
     "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "premiumMode": "Premium Mode",
     "notifications": "Notifications",
     "permissions": "Permissions",
     "camera": "Camera / Documents",
@@ -416,7 +429,9 @@
     "save": "Save Changes",
     "changePhoto": "Change Photo",
     "updatedSuccessfully": "Profile updated successfully",
-    "validate": "Validate"
+    "validate": "Validate",
+    "linkedinPlaceholder": "https://linkedin.com/in/...",
+    "skillsPlaceholder": "React, Node.js, HR"
   },
   "permissions": {
     "settings": "Permission Settings",
@@ -458,7 +473,12 @@
     "errorEmptyPassword": "Password is required",
     "errorLoginFailed": "Login failed",
     "tipTitle": "Demo Account",
-    "tipMessage": "Use 'test@test.com' / 'test' to log in."
+    "tipMessage": "Use 'test@test.com' / 'test' to log in.",
+    "role": "Role",
+    "admin": "Admin",
+    "hr": "HR",
+    "team": "Team",
+    "user": "User"
   },
   "signUp": {
     "title": "Create Account",

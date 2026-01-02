@@ -1,51 +1,59 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-import { lightTheme, darkTheme, Theme } from '../theme';
+import { lightTheme, darkTheme, premiumTheme, Theme } from '../theme';
 import { storageService } from '../services/storage';
 
 const THEME_KEY = 'user_theme_preference';
+export type ThemeMode = 'light' | 'dark' | 'premium';
 
 type ThemeContextType = {
   theme: Theme;
-  isDark: boolean;
-  toggleTheme: () => void;
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
+  toggleTheme: () => void; // Keeps toggle for simple use cases
 };
 
 const ThemeContext = createContext<ThemeContextType>({
   theme: lightTheme,
-  isDark: false,
-  toggleTheme: () => {},
+  themeMode: 'light',
+  setThemeMode: () => { },
+  toggleTheme: () => { },
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const systemScheme = useColorScheme();
-  const [isDark, setIsDark] = useState(systemScheme === 'dark');
+  const [themeMode, setThemeModeState] = useState<ThemeMode>('light');
 
   useEffect(() => {
     loadThemePreference();
   }, []);
 
   const loadThemePreference = async () => {
-    const savedTheme = storageService.getString(THEME_KEY);
-    if (savedTheme) {
-      setIsDark(savedTheme === 'dark');
+    const savedTheme = (await storageService.getString(THEME_KEY)) as ThemeMode;
+    if (savedTheme && ['light', 'dark', 'premium'].includes(savedTheme)) {
+      setThemeModeState(savedTheme);
     } else {
-      setIsDark(systemScheme === 'dark');
+      setThemeModeState(systemScheme === 'dark' ? 'dark' : 'light');
     }
   };
 
-  const toggleTheme = () => {
-    const newMode = !isDark;
-    setIsDark(newMode);
-    storageService.setString(THEME_KEY, newMode ? 'dark' : 'light');
+  const setThemeMode = (mode: ThemeMode) => {
+    setThemeModeState(mode);
+    storageService.setString(THEME_KEY, mode);
   };
 
-  const theme = isDark ? darkTheme : lightTheme;
+  const toggleTheme = () => {
+    const modes: ThemeMode[] = ['light', 'dark', 'premium'];
+    const nextIndex = (modes.indexOf(themeMode) + 1) % modes.length;
+    setThemeMode(modes[nextIndex]);
+  };
+
+  const theme = themeMode === 'premium' ? premiumTheme : (themeMode === 'dark' ? darkTheme : lightTheme);
 
   return (
-    <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, themeMode, setThemeMode, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

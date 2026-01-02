@@ -144,5 +144,46 @@ export const darkTheme = {
   },
 };
 
+export const premiumTheme = {
+  dark: true,
+  colors: {
+    primary: '#D4AF37', // Gold
+    secondary: '#C0C0C0', // Silver
+    accent: '#FFD700', // Bright Gold
+    background: '#0B0D17', // Deep Space Navy
+    surface: '#161B22', // Darker Galaxy
+    text: '#F0E68C', // Khaki/Light Gold text
+    subText: '#8B8682', // Muted stone
+    border: '#30363D', // Subtle gold-tinted border
+    error: palette.error,
+    success: palette.success,
+    warning: palette.warning,
+    warningBackground: '#2D2200',
+    primaryBackground: '#3D3004', // Dark Gold Background
+    successBackground: '#006644',
+    card: '#1C2128',
+    notification: '#D4AF37',
+  },
+  spacing,
+  shadows: {
+    ...shadows,
+    medium: {
+      shadowColor: '#D4AF37',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 10,
+      elevation: 5,
+    },
+  },
+  textVariants: {
+    ...textVariants,
+    header: { ...textVariants.header, color: '#D4AF37', letterSpacing: 1 },
+    subheader: { ...textVariants.subheader, color: '#F0E68C' },
+    body: { ...textVariants.body, color: '#F0E68C' },
+    caption: { ...textVariants.caption, color: '#8B8682' },
+    button: { ...textVariants.button, color: '#0B0D17' },
+  },
+};
+
 export type Theme = typeof lightTheme;
 export const theme = lightTheme; // Default export for backward compatibility during refactor

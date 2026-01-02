@@ -37,7 +37,7 @@ const LANGUAGES = [
 ];
 
 export const ProfileScreen = ({ navigation }: any) => {
-  const { theme, isDark, toggleTheme } = useTheme();
+  const { theme, themeMode, setThemeMode } = useTheme();
   const { showToast } = useToast();
   const { showModal } = useModal();
   const { t, i18n } = useTranslation();
@@ -490,16 +490,16 @@ export const ProfileScreen = ({ navigation }: any) => {
             />
           </View>
           <View style={styles.divider} />
-          <View style={styles.row}>
-            <View>
-              <Text style={styles.label}>{t('profile.darkMode')}</Text>
-              <Text style={styles.captionText}>{t('profile.appearance')}</Text>
-            </View>
-            <Switch
-              value={isDark}
-              onValueChange={toggleTheme}
-              trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-              thumbColor={theme.colors.surface}
+          <View style={styles.fieldGroup}>
+            <Dropdown
+              label={t('profile.appearance')}
+              data={[
+                { label: '☀️ ' + t('profile.lightMode'), value: 'light' },
+                { label: '🌙 ' + t('profile.darkMode'), value: 'dark' },
+                { label: '👑 ' + t('profile.premiumMode'), value: 'premium' },
+              ]}
+              value={themeMode}
+              onSelect={(val) => setThemeMode(val as any)}
             />
           </View>
         </View>

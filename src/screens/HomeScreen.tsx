@@ -27,33 +27,39 @@ import { Employee, Leave, Claim } from '../database/schema';
 
 // ======= Helper Components =======
 
-const StatCard = ({ title, value, icon, color, onPress }: any) => (
-  <TouchableOpacity
-    style={[styles.statCard, { backgroundColor: color }]}
-    onPress={onPress}
-  >
-    <View style={styles.statIconWrapper}>
-      <Text style={styles.statIcon}>{icon}</Text>
-    </View>
-    <View style={styles.statInfo}>
-      <Text style={styles.statNumber}>{value}</Text>
-      <Text style={styles.statLabel}>{title}</Text>
-    </View>
-  </TouchableOpacity>
-);
+const StatCard = ({ title, value, icon, color, onPress }: any) => {
+  const { theme } = useTheme();
+  return (
+    <TouchableOpacity
+      style={[styles.statCard, { backgroundColor: color, shadowColor: theme.shadows.medium.shadowColor }]}
+      onPress={onPress}
+    >
+      <View style={styles.statIconWrapper}>
+        <Text style={styles.statIcon}>{icon}</Text>
+      </View>
+      <View style={styles.statInfo}>
+        <Text style={styles.statNumber}>{value}</Text>
+        <Text style={styles.statLabel}>{title}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
-const ActivityItem = ({ icon, title, subtitle, time }: any) => (
-  <View style={styles.activityItem}>
-    <View style={styles.activityIconWrapper}>
-      <Text style={styles.activityIcon}>{icon}</Text>
+const ActivityItem = ({ icon, title, subtitle, time }: any) => {
+  const { theme } = useTheme();
+  return (
+    <View style={[styles.activityItem, { borderBottomColor: theme.colors.border }]}>
+      <View style={[styles.activityIconWrapper, { backgroundColor: theme.colors.primary + '15' }]}>
+        <Text style={styles.activityIcon}>{icon}</Text>
+      </View>
+      <View style={styles.activityContent}>
+        <Text style={[styles.activityTitle, { color: theme.colors.text }]}>{title}</Text>
+        <Text style={[styles.activitySubtitle, { color: theme.colors.subText }]}>{subtitle}</Text>
+        <Text style={[styles.activityTime, { color: theme.colors.subText }]}>{time}</Text>
+      </View>
     </View>
-    <View style={styles.activityContent}>
-      <Text style={styles.activityTitle}>{title}</Text>
-      <Text style={styles.activitySubtitle}>{subtitle}</Text>
-      <Text style={styles.activityTime}>{time}</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 // ======= Role Dashboards =======
 
@@ -99,55 +105,55 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
       <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
       <View style={styles.managementButtons}>
         <TouchableOpacity
-          style={styles.managementCard}
+          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
           onPress={() => navigateToTab('Employees', 'AddEmployee')}
         >
           <Text style={styles.managementIcon}>➕</Text>
-          <Text style={styles.managementText}>{t('employees.add')}</Text>
+          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('employees.add')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.managementCard}
+          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
           onPress={() => navigateToTab('Companies')}
         >
           <Text style={styles.managementIcon}>🏢</Text>
-          <Text style={styles.managementText}>Entreprises</Text>
+          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('home.companies')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.managementCard}
+          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
           onPress={() => navigateToTab('Teams')}
         >
           <Text style={styles.managementIcon}>🚀</Text>
-          <Text style={styles.managementText}>Équipes</Text>
+          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('home.teams')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.managementCard}
+          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
           onPress={() => navigateToTab('Leaves', 'TeamVacations')}
         >
           <Text style={styles.managementIcon}>🏖️</Text>
-          <Text style={styles.managementText}>{t('navigation.teams')}</Text>
+          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('navigation.teams')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.managementCard}
+          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
           onPress={() => navigateToTab('Analytics', 'PerformanceReview')}
         >
           <Text style={styles.managementIcon}>📈</Text>
-          <Text style={styles.managementText}>
+          <Text style={[styles.managementText, { color: theme.colors.text }]}>
             {t('performance.title') || 'Performance'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.managementCard}
+          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
           onPress={() => navigateToTab('Companies', 'OrgChart')}
         >
           <Text style={styles.managementIcon}>📊</Text>
-          <Text style={styles.managementText}>
+          <Text style={[styles.managementText, { color: theme.colors.text }]}>
             {t('navigation.orgChart') || 'Organigramme'}
           </Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>Activité Récente</Text>
-      <View style={styles.activityCard}>
+      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('home.recentActivity')}</Text>
+      <View style={[styles.activityCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
         {recentActivity.length > 0 ? (
           recentActivity.map((activity: any, index: number) => (
             <ActivityItem
@@ -159,7 +165,7 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
             />
           ))
         ) : (
-          <Text style={styles.emptyText}>Aucune activité récente</Text>
+          <Text style={[styles.emptyText, { color: theme.colors.subText }]}>{t('home.noRecentActivity')}</Text>
         )}
       </View>
     </View>
@@ -195,11 +201,11 @@ const EmployeeDashboard = ({
         />
       </View>
 
-      <View style={styles.balanceCard}>
+      <View style={[styles.balanceCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.medium.shadowColor }]}>
         <View style={styles.balanceHeader}>
-          <Text style={styles.balanceTitle}>{t('leavePolicy.title')}</Text>
-          <View style={styles.managedBadge}>
-            <Text style={styles.balanceManaged}>
+          <Text style={[styles.balanceTitle, { color: theme.colors.text }]}>{t('leavePolicy.title')}</Text>
+          <View style={[styles.managedBadge, { backgroundColor: theme.colors.primary + '15' }]}>
+            <Text style={[styles.balanceManaged, { color: theme.colors.primary }]}>
               {t('leavePolicy.managedBy')}
             </Text>
           </View>
@@ -207,14 +213,14 @@ const EmployeeDashboard = ({
 
         <View style={styles.balanceGrid}>
           <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>{t('leavePolicy.perYear')}</Text>
-            <Text style={styles.balanceValue}>
+            <Text style={[styles.balanceLabel, { color: theme.colors.subText }]}>{t('leavePolicy.perYear')}</Text>
+            <Text style={[styles.balanceValue, { color: theme.colors.text }]}>
               {user?.vacationDaysPerYear || 25}
             </Text>
           </View>
-          <View style={styles.balanceDivider} />
+          <View style={[styles.balanceDivider, { backgroundColor: theme.colors.border }]} />
           <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>
+            <Text style={[styles.balanceLabel, { color: theme.colors.subText }]}>
               {t('leavePolicy.remaining')}
             </Text>
             <Text
@@ -223,10 +229,10 @@ const EmployeeDashboard = ({
               {user?.remainingVacationDays ?? 25}
             </Text>
           </View>
-          <View style={styles.balanceDivider} />
+          <View style={[styles.balanceDivider, { backgroundColor: theme.colors.border }]} />
           <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>{t('home.statePaidLeaves')}</Text>
-            <Text style={styles.balanceValue}>
+            <Text style={[styles.balanceLabel, { color: theme.colors.subText }]}>{t('home.statePaidLeaves')}</Text>
+            <Text style={[styles.balanceValue, { color: theme.colors.text }]}>
               {user?.statePaidLeaves || 0}
             </Text>
           </View>
@@ -256,18 +262,16 @@ const EmployeeDashboard = ({
                     const parts = [];
                     if (years > 0)
                       parts.push(
-                        `${years} ${
-                          years > 1
-                            ? t('common.yearsUnit')
-                            : t('common.yearUnit')
+                        `${years} ${years > 1
+                          ? t('common.yearsUnit')
+                          : t('common.yearUnit')
                         }`,
                       );
                     if (months > 0)
                       parts.push(
-                        `${months} ${
-                          months > 1
-                            ? t('common.monthsUnit')
-                            : t('common.monthUnit')
+                        `${months} ${months > 1
+                          ? t('common.monthsUnit')
+                          : t('common.monthUnit')
                         }`,
                       );
                     return parts.join(', ') || `0 ${t('common.monthUnit')}`;
@@ -281,13 +285,13 @@ const EmployeeDashboard = ({
 
       <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
       <TouchableOpacity
-        style={styles.actionButton}
+        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
         onPress={() => navigateToTab('Claims', 'AddClaim')}
       >
         <Text style={styles.actionIcon}>📝</Text>
         <View style={styles.actionContent}>
-          <Text style={styles.actionTitle}>{t('claims.newClaim')}</Text>
-          <Text style={styles.actionSubtitle}>
+          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('claims.newClaim')}</Text>
+          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
             {t('claims.descriptionPlaceholder')}
           </Text>
         </View>
@@ -295,13 +299,13 @@ const EmployeeDashboard = ({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.actionButton}
+        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
         onPress={() => navigateToTab('Leaves', 'AddLeave')}
       >
         <Text style={styles.actionIcon}>📅</Text>
         <View style={styles.actionContent}>
-          <Text style={styles.actionTitle}>{t('home.scheduleLeave')}</Text>
-          <Text style={styles.actionSubtitle}>
+          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('home.scheduleLeave')}</Text>
+          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
             {t('home.scheduleLeaveSubtitle')}
           </Text>
         </View>
@@ -309,13 +313,13 @@ const EmployeeDashboard = ({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.actionButton}
+        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
         onPress={() => navigateToTab('Leaves', 'TeamVacations')}
       >
         <Text style={styles.actionIcon}>🤝</Text>
         <View style={styles.actionContent}>
-          <Text style={styles.actionTitle}>{t('navigation.teams')}</Text>
-          <Text style={styles.actionSubtitle}>
+          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('navigation.teams')}</Text>
+          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
             Voir les congés de mon équipe
           </Text>
         </View>
@@ -323,13 +327,13 @@ const EmployeeDashboard = ({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.actionButton}
+        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
         onPress={() => navigateToTab('Profile', 'CareerHub')}
       >
         <Text style={styles.actionIcon}>🚀</Text>
         <View style={styles.actionContent}>
-          <Text style={styles.actionTitle}>{t('navigation.careerHub')}</Text>
-          <Text style={styles.actionSubtitle}>
+          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('navigation.careerHub')}</Text>
+          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
             Gérez vos objectifs et votre carrière
           </Text>
         </View>
@@ -337,15 +341,15 @@ const EmployeeDashboard = ({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.actionButton}
+        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
         onPress={() => navigateToTab('Companies', 'OrgChart')}
       >
         <Text style={styles.actionIcon}>📊</Text>
         <View style={styles.actionContent}>
-          <Text style={styles.actionTitle}>
+          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>
             {t('navigation.orgChart') || 'Organigramme'}
           </Text>
-          <Text style={styles.actionSubtitle}>
+          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
             Voir la structure de l'entreprise
           </Text>
         </View>
@@ -416,13 +420,13 @@ export const HomeScreen = () => {
         const activity = [
           ...pendingLeaves.slice(0, 3).map(l => ({
             icon: '📅',
-            title: `Demande de congé: ${l.employeeName || 'Inconnu'}`,
+            title: `${t('leaves.approvals')}: ${l.employeeName || t('common.unknown')}`,
             subtitle: l.title,
             date: l.createdAt,
           })),
           ...pendingClaims.slice(0, 3).map(c => ({
             icon: '📝',
-            title: `Nouvelle réclamation: ${c.type}`,
+            title: t('claims.newClaim'),
             subtitle: c.description,
             date: c.createdAt,
           })),
@@ -487,14 +491,14 @@ export const HomeScreen = () => {
         tab === 'Payroll'
           ? 'PayrollTab'
           : tab === 'Leaves'
-          ? 'LeavesTab'
-          : tab === 'Analytics'
-          ? 'Analytics'
-          : tab === 'Employees'
-          ? 'Employees'
-          : tab === 'Claims'
-          ? 'Claims'
-          : undefined;
+            ? 'LeavesTab'
+            : tab === 'Analytics'
+              ? 'Analytics'
+              : tab === 'Employees'
+                ? 'Employees'
+                : tab === 'Claims'
+                  ? 'Claims'
+                  : undefined;
 
       if (stackScreen) {
         navigation.navigate('Main', {
@@ -521,9 +525,9 @@ export const HomeScreen = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.greeting}>{t('home.greeting')}</Text>
-          <Text style={styles.userName}>{user?.name}</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.greeting, { color: theme.colors.subText }]}>{t('home.greeting')}</Text>
+          <Text style={[styles.userName, { color: theme.colors.text }]}>{user?.name}</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.subText }]}>
             {user?.role === 'admin' ? 'Administration RH' : t('home.subtitle')}
           </Text>
         </View>
@@ -568,18 +572,15 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 16,
-    color: '#64748B',
     marginBottom: 4,
   },
   userName: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#1E293B',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#94A3B8',
   },
   dashboardContainer: {
     gap: 20,
@@ -629,18 +630,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1E293B',
     marginTop: 8,
   },
   actionButton: {
     flexDirection: 'row',
-    backgroundColor: '#FFF',
     padding: 16,
     borderRadius: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 5,
@@ -656,23 +653,18 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1E293B',
   },
   actionSubtitle: {
     fontSize: 13,
-    color: '#64748B',
   },
   actionArrow: {
     fontSize: 20,
     color: '#94A3B8',
   },
   balanceCard: {
-    backgroundColor: '#FFF',
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.05,
     shadowRadius: 15,
@@ -687,7 +679,6 @@ const styles = StyleSheet.create({
   balanceTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1E293B',
   },
   managedBadge: {
     backgroundColor: '#EFF6FF',
@@ -718,7 +709,6 @@ const styles = StyleSheet.create({
   balanceValue: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#1E293B',
   },
   balanceDivider: {
     width: 1,
@@ -746,7 +736,6 @@ const styles = StyleSheet.create({
   countryValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1E293B',
   },
   tipCard: {
     flexDirection: 'row',
@@ -773,11 +762,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   managementCard: {
-    backgroundColor: '#FFF',
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     alignItems: 'center',
     flex: 1,
     minWidth: 100,
@@ -789,14 +776,11 @@ const styles = StyleSheet.create({
   managementText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#1E293B',
   },
   activityCard: {
-    backgroundColor: '#FFF',
     borderRadius: 20,
     padding: 8,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   activityItem: {
     flexDirection: 'row',

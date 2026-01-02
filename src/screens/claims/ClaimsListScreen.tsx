@@ -341,7 +341,7 @@ const createStyles = (theme: Theme) =>
     urgentText: {
       fontSize: 9,
       fontWeight: 'bold',
-      color: '#FFF',
+      color: theme.colors.background,
     },
     emptyContainer: {
       alignItems: 'center',
@@ -370,7 +370,7 @@ const createStyles = (theme: Theme) =>
     actionBtnText: {
       fontSize: 12,
       fontWeight: '600',
-      color: '#FFF',
+      color: theme.colors.background,
     },
     fab: {
       position: 'absolute',
@@ -387,7 +387,7 @@ const createStyles = (theme: Theme) =>
     },
     fabText: {
       fontSize: 32,
-      color: '#FFF',
+      color: theme.colors.background,
       marginTop: -2,
     },
     companySection: {

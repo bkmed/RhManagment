@@ -167,7 +167,7 @@ const createStyles = (theme: Theme) =>
     } as any,
     fabText: {
       fontSize: 32,
-      color: theme.colors.surface,
+      color: theme.colors.background,
       fontWeight: '300',
     },
   });

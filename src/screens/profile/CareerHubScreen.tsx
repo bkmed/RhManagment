@@ -132,7 +132,7 @@ export const CareerHubScreen = () => {
                 <View style={styles.header}>
                     <View>
                         <Text style={styles.title}>{t('navigation.careerHub')}</Text>
-                        <Text style={styles.subtitle}>{t('home.careerGoalsSubtitle') || 'Gérez vos objectifs professionnels'}</Text>
+                        <Text style={styles.subtitle}>{t('home.careerGoalsSubtitle')}</Text>
                     </View>
                     <TouchableOpacity
                         style={styles.addButton}
@@ -161,7 +161,7 @@ export const CareerHubScreen = () => {
                     </View>
                 </View>
 
-                <Text style={styles.sectionTitle}>{t('common.myGoals') || 'Mes Objectifs'}</Text>
+                <Text style={styles.sectionTitle}>{t('common.myGoals')}</Text>
                 {goals.length > 0 ? (
                     goals.map(renderGoalCard)
                 ) : (
@@ -186,7 +186,7 @@ export const CareerHubScreen = () => {
                             style={styles.input}
                             value={title}
                             onChangeText={setTitle}
-                            placeholder="e.g. Master React Native"
+                            placeholder={t('careerHub.titlePlaceholder') || 'e.g. Master React Native'}
                         />
 
                         <Text style={styles.inputLabel}>{t('common.description')}</Text>
@@ -194,7 +194,7 @@ export const CareerHubScreen = () => {
                             style={[styles.input, styles.textArea]}
                             value={description}
                             onChangeText={setDescription}
-                            placeholder="Describe your goal..."
+                            placeholder={t('careerHub.descriptionPlaceholder') || 'Describe your goal...'}
                             multiline
                             numberOfLines={4}
                         />
@@ -204,7 +204,7 @@ export const CareerHubScreen = () => {
                             style={styles.input}
                             value={deadline}
                             onChangeText={setDeadline}
-                            placeholder="YYYY-MM-DD"
+                            placeholder={t('common.datePlaceholder') || 'YYYY-MM-DD'}
                         />
 
                         <View style={styles.modalActions}>

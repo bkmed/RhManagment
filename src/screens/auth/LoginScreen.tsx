@@ -115,27 +115,27 @@ export const LoginScreen = ({ navigation }: any) => {
         <Text style={styles.tipTitle}>{t('login.tipTitle')}</Text>
         <View style={styles.demoTable}>
           <View style={styles.demoRow}>
-            <Text style={[styles.demoCell, styles.demoHeader]}>Role</Text>
-            <Text style={[styles.demoCell, styles.demoHeader]}>Email</Text>
-            <Text style={[styles.demoCell, styles.demoHeader]}>Password</Text>
+            <Text style={[styles.demoCell, styles.demoHeader]}>{t('login.role')}</Text>
+            <Text style={[styles.demoCell, styles.demoHeader]}>{t('login.emailLabel')}</Text>
+            <Text style={[styles.demoCell, styles.demoHeader]}>{t('login.passwordLabel')}</Text>
           </View>
           <View style={styles.demoRow}>
-            <Text style={styles.demoCell}>Admin</Text>
+            <Text style={styles.demoCell}>{t('login.admin')}</Text>
             <Text style={styles.demoCell}>admin@demo.com</Text>
             <Text style={styles.demoCell}>admin123</Text>
           </View>
           <View style={styles.demoRow}>
-            <Text style={styles.demoCell}>HR</Text>
+            <Text style={styles.demoCell}>{t('login.hr')}</Text>
             <Text style={styles.demoCell}>hr@demo.com</Text>
             <Text style={styles.demoCell}>hr123</Text>
           </View>
           <View style={styles.demoRow}>
-            <Text style={styles.demoCell}>Team</Text>
+            <Text style={styles.demoCell}>{t('login.team')}</Text>
             <Text style={styles.demoCell}>chef@demo.com</Text>
             <Text style={styles.demoCell}>chef123</Text>
           </View>
           <View style={styles.demoRow}>
-            <Text style={styles.demoCell}>User</Text>
+            <Text style={styles.demoCell}>{t('login.user')}</Text>
             <Text style={styles.demoCell}>employee@demo.com</Text>
             <Text style={styles.demoCell}>employee123</Text>
           </View>

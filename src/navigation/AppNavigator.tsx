@@ -285,7 +285,7 @@ const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = (props: any) => {
   const { user } = useAuth();
-  const { theme } = useTheme();
+  const { theme, themeMode } = useTheme();
   const { t } = useTranslation();
   const { state, navigation } = props;
 
@@ -323,45 +323,55 @@ const CustomDrawerContent = (props: any) => {
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
         marginBottom: 12,
-        ...theme.shadows.medium
+        ...theme.shadows.medium,
+        ...(themeMode === 'premium' && {
+          borderBottomWidth: 1,
+          borderBottomColor: '#FFD700',
+        })
       }}>
         <Image
           source={require('../../public/logo.png')}
-          style={{ width: 60, height: 60, tintColor: '#FFF', marginBottom: 16 }}
+          style={{ width: 60, height: 60, tintColor: themeMode === 'premium' ? theme.colors.background : '#FFF', marginBottom: 16 }}
           resizeMode="contain"
         />
-        <Text style={{ color: '#FFF', fontSize: 20, fontWeight: 'bold' }}>{user?.name}</Text>
-        <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14 }}>{t(`roles.${user?.role}`)}</Text>
+        <Text style={{ color: themeMode === 'premium' ? theme.colors.background : '#FFF', fontSize: 20, fontWeight: 'bold' }}>{user?.name}</Text>
+        <Text style={{ color: themeMode === 'premium' ? 'rgba(11,13,23,0.8)' : 'rgba(255,255,255,0.8)', fontSize: 14 }}>{t(`roles.${user?.role}`)}</Text>
       </View>
 
-      {items.map((item) => {
-        const isFocused = state.routes[state.index].name === item.name;
+      <ScrollView style={{ flex: 1 }}>
+        {items.map((item) => {
+          const isFocused = state.routes[state.index].name === item.name;
 
-        return (
-          <TouchableOpacity
-            key={item.name}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: 16,
-              marginHorizontal: 12,
-              marginVertical: 4,
-              borderRadius: 12,
-              backgroundColor: isFocused ? `${theme.colors.primary}15` : 'transparent',
-            }}
-            onPress={() => navigation.navigate(item.name)}
-          >
-            <Text style={{ fontSize: 20, marginRight: 16 }}>{item.icon}</Text>
-            <Text style={{
-              fontSize: 16,
-              fontWeight: isFocused ? '700' : '500',
-              color: isFocused ? theme.colors.primary : theme.colors.text
-            }}>
-              {item.label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+          return (
+            <TouchableOpacity
+              key={item.name}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 16,
+                marginHorizontal: 12,
+                marginVertical: 4,
+                borderRadius: 12,
+                backgroundColor: isFocused ? `${theme.colors.primary}15` : 'transparent',
+                ...(isFocused && themeMode === 'premium' && {
+                  borderWidth: 1,
+                  borderColor: theme.colors.primary,
+                })
+              }}
+              onPress={() => navigation.navigate(item.name)}
+            >
+              <Text style={{ fontSize: 20, marginRight: 16 }}>{item.icon}</Text>
+              <Text style={{
+                fontSize: 16,
+                fontWeight: isFocused ? '700' : '500',
+                color: isFocused ? theme.colors.primary : theme.colors.text
+              }}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
@@ -390,7 +400,7 @@ const DrawerNavigator = () => {
 // ======= Web Navigator avec subScreen =======
 const WebNavigator = () => {
   const { t } = useTranslation();
-  const { theme } = useTheme();
+  const { theme, themeMode } = useTheme();
   const { user } = useAuth();
   const { width, height } = useWindowDimensions();
   const isMobile = width < 1024;
