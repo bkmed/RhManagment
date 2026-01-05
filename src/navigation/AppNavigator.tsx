@@ -477,7 +477,8 @@ const useNavigationSections = () => {
       title: t('sections.communication'),
       items: [
         { key: 'Announcements', label: t('navigation.announcements'), icon: '📢' },
-        { key: 'Chat', label: t('navigation.chat'), icon: '💬' }
+        { key: 'Chat', label: t('navigation.chat'), icon: '💬' },
+        { key: 'Assistant', label: t('common.assistant') || 'Assistant', icon: '🤖' }
       ]
     });
 
@@ -620,6 +621,9 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Home" component={HomeStack} />
       <Drawer.Screen name="Payroll" component={PayrollStack} />
       <Drawer.Screen name="Leaves" component={LeavesStack} />
+      <Drawer.Screen name="Assistant">
+        {() => <ChatBot isScreen={true} />}
+      </Drawer.Screen>
     </Drawer.Navigator>
   );
 };
@@ -737,6 +741,8 @@ const WebNavigator = () => {
         return <AnnouncementsScreen />;
       case 'Chat':
         return <CompanyChatScreen />;
+      case 'Assistant':
+        return <ChatBot isScreen={true} />;
       case 'Language':
         return <LanguageSelectionScreen />;
       case 'CustomThemeColors':
@@ -1105,7 +1111,6 @@ const AppContent = () => {
       ) : (
         <DrawerNavigator />
       )}
-      <ChatBot />
     </>
   );
 };

@@ -38,15 +38,29 @@ interface Message {
     };
 }
 
-export const ChatBot = () => {
+export const ChatBot = ({
+    isScreen = false,
+    isOpen: externalIsOpen,
+    onClose: externalOnClose
+}: {
+    isScreen?: boolean;
+    isOpen?: boolean;
+    onClose?: () => void;
+}) => {
     const { t } = useTranslation();
     const { theme } = useTheme();
     const { user } = useAuth();
     const navigation = useNavigation<any>();
     const { setActiveTab } = useContext(WebNavigationContext) as any; // For Web Navigation
-    const styles = useMemo(() => createStyles(theme), [theme]);
+    const styles = useMemo(() => createStyles(theme, isScreen), [theme, isScreen]);
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [internalIsOpen, setInternalIsOpen] = useState(isScreen);
+    const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+    const setIsOpen = (val: boolean) => {
+        if (externalOnClose && !val) externalOnClose();
+        setInternalIsOpen(val);
+    };
+
     const [messages, setMessages] = useState<Message[]>([]);
 
     // Initial Greeting Effect
@@ -365,7 +379,7 @@ export const ChatBot = () => {
     );
 };
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, isScreen: boolean = false) =>
     StyleSheet.create({
         floatingButton: {
             position: 'absolute',

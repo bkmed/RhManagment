@@ -38,6 +38,7 @@ target 'rhmanagment' do
   )
   
   pod 'RNCalendarEvents', :path => '../node_modules/react-native-calendar-events'
+  pod 'Firebase/Crashlytics'
 
   post_install do |installer|
 

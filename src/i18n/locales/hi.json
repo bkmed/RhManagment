@@ -130,6 +130,7 @@
         "no": "नहीं",
         "noData": "कोई डेटा उपलब्ध नहीं",
         "noTeam": "कोई टीम नहीं",
+        "none": "कोई नहीं",
         "notifyHr": "मानव संसाधन को सूचित करें",
         "ok": "ठीक है",
         "online": "ऑनलाइन",
@@ -392,9 +393,7 @@
         "de": "Deutsch",
         "en": "English",
         "es": "Español",
-        "fr": "Français",
-        "zh": "中文 (简体)",
-        "hi": "हिन्दी"
+        "fr": "Français"
     },
     "leaveDetails": {
         "deleteButton": "हटाएं",
@@ -506,6 +505,7 @@
         "illnesses": "बीमारी",
         "leaves": "छुट्टियाँ",
         "notifications": "सूचनाएं",
+        "manageDevices": "डिवाइस प्रबंधन",
         "orgChart": "संगठन चार्ट",
         "params": "पैरामीटर",
         "payroll": "पेरोल",
@@ -612,6 +612,8 @@
         "employeeHeader": "कर्मचारी जानकारी",
         "grossPay": "कुल वेतन",
         "netPay": "शुद्ध वेतन",
+        "none": "कोई नहीं",
+        "otherAllowances": "अन्य भत्ते",
         "period": "वेतन अवधि",
         "title": "वेतन पर्ची",
         "totalDeductions": "कुल कटौतियां",
@@ -645,6 +647,7 @@
         "endTime": "समाप्ति समय",
         "errorDuration": "अनुमति {{hours}} घंटे से अधिक नहीं हो सकती",
         "granted": "अनुमोदित",
+        "invalidTime": "समाप्ति समय प्रारंभ समय के बाद होना चाहिए",
         "maxHours": "अधिकतम अनुमति घंटे",
         "notDetermined": "निर्धारित नहीं",
         "notifications": "सूचनाएं अनुमति",

@@ -129,7 +129,8 @@
     "next": "Weiter",
     "no": "Nein",
     "noData": "Keine Daten verfügbar",
-    "noTeam": "No Team",
+    "noTeam": "Kein Team",
+    "none": "Keiner",
     "notifyHr": "HR benachrichtigen",
     "ok": "OK",
     "online": "Online",
@@ -506,8 +507,8 @@
     "notifications": "Benachrichtigungen",
     "manageDevices": "Geräte verwalten",
     "orgChart": "Organigramm",
+    "params": "Parameter",
     "payroll": "Gehaltsabrechnung",
-    "personalInfo": "Persönliche Informationen",
     "profile": "Profil",
     "services": "Dienste",
     "settings": "Einstellungen",
@@ -611,6 +612,8 @@
     "employeeHeader": "Mitarbeiterinformationen",
     "grossPay": "Bruttogehalt",
     "netPay": "Nettogehalt",
+    "none": "Keiner",
+    "otherAllowances": "Andere Zulagen",
     "period": "Abrechnungszeitraum",
     "title": "Gehaltsabrechnung",
     "totalDeductions": "Gesamtabzüge",
@@ -709,6 +712,14 @@
     "chef_dequipe": "Teamleiter",
     "employee": "Mitarbeiter",
     "rh": "Personalwesen (HR)"
+  },
+  "sections": {
+    "analytics": "Analytik",
+    "communication": "Kommunikation",
+    "general": "Allgemein",
+    "management": "Verwaltung",
+    "organization": "Organisation",
+    "personal": "Persönlich"
   },
   "services": {
     "add": "Dienst hinzufügen",

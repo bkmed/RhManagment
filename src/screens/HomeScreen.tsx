@@ -368,19 +368,32 @@ export const HomeScreen = () => {
         });
 
         const activity = [
-          ...pendingLeaves.slice(0, 3).map(l => ({
+          ...pendingLeaves.map(l => ({
             icon: '📅',
             title: `${t('leaves.approvals')}: ${l.employeeName || t('common.unknown')}`,
             subtitle: l.title,
             date: l.createdAt,
           })),
-          ...pendingClaims.slice(0, 3).map(c => ({
+          ...pendingClaims.map(c => ({
             icon: '📝',
             title: t('claims.newClaim'),
             subtitle: c.description,
             date: c.createdAt,
           })),
-        ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          ...employees.slice(-5).map(e => ({
+            icon: '👤',
+            title: t('employees.add'),
+            subtitle: e.name,
+            date: e.createdAt || new Date().toISOString(),
+          })),
+          ...allPayroll.slice(-3).map(p => ({
+            icon: '💰',
+            title: t('navigation.payroll'),
+            subtitle: `${p.employeeId}: ${p.amount} ${p.currency || ''}`,
+            date: p.createdAt || new Date().toISOString(),
+          })),
+        ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 10);
 
         setRecentActivity(activity);
       } else {

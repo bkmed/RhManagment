@@ -50,8 +50,8 @@ export const ChatBotButton = () => {
 
             {isOpen && (
                 <ChatBot
-                //isOpen={isOpen}
-                //onClose={() => setIsOpen(false)}
+                    isOpen={isOpen}
+                    onClose={() => setIsOpen(false)}
                 />
             )}
         </>

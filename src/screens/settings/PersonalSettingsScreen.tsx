@@ -13,12 +13,22 @@ import { useTheme } from '../../context/ThemeContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { Theme } from '../../theme';
 import { Dropdown } from '../../components/Dropdown';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 export const PersonalSettingsScreen = ({ navigation }: any) => {
     const { theme, themeMode, setThemeMode, customColors, setCustomColor } = useTheme() as any;
     const { setActiveTab } = React.useContext(WebNavigationContext) as any;
     const { t, i18n } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
+
+    const handleTestCrash = () => {
+        if (Platform.OS === 'web') {
+            throw new Error('Sentry Test Crash: ' + new Date().toISOString());
+        } else {
+            crashlytics().log('Testing crashlytics');
+            crashlytics().crash();
+        }
+    };
 
 
     const themes = [
@@ -90,6 +100,19 @@ export const PersonalSettingsScreen = ({ navigation }: any) => {
                         <Text style={styles.rowText}>{t('settings.emailNotifications') || 'Email Notifications'}</Text>
                         <Switch trackColor={{ false: theme.colors.border, true: theme.colors.primary }} value={false} />
                     </View>
+                </View>
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Debug</Text>
+                <View style={styles.card}>
+                    <TouchableOpacity
+                        style={styles.row}
+                        onPress={handleTestCrash}
+                    >
+                        <Text style={[styles.rowText, { color: '#FF5630' }]}>Trigger Test Crash</Text>
+                        <Text style={styles.menuItemArrow}>›</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </ScrollView>
