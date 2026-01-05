@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useTheme } from './ThemeContext';
 import { Theme } from '../theme';
+import { modalService } from '../services/modalService';
 
 interface ModalButton {
     text: string;
@@ -47,6 +48,11 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setOptions(opts);
         setVisible(true);
     }, []);
+
+    // Connect to global service
+    React.useEffect(() => {
+        modalService.setHandler(showModal);
+    }, [showModal]);
 
     const hideModal = useCallback(() => {
         setVisible(false);

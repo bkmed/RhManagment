@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 import notifee, { TimestampTrigger, TriggerType, AndroidImportance, RepeatFrequency } from '@notifee/react-native';
 import { Payroll } from '../database/schema';
+import { modalService } from './modalService';
 
 export const notificationService = {
     // Initialize notifications
@@ -311,29 +312,8 @@ export const notificationService = {
         });
     },
 
-    // Show a general alert as a local notification
+    // Show a general alert using the custom modal
     showAlert: async (title: string, body: string) => {
-        if (Platform.OS === 'web') {
-            // For web, use alert as fallback or console
-            if (typeof window !== 'undefined') {
-                (window as any).alert(`${title}: ${body}`);
-            } else {
-                console.log(`${title}: ${body}`);
-            }
-            return;
-        }
-
-        await notifee.displayNotification({
-            title,
-            body,
-            android: {
-                channelId: 'leaves', // Using leaves channel for general alerts
-                importance: AndroidImportance.HIGH,
-                pressAction: {
-                    id: 'default',
-                    launchActivity: 'default',
-                },
-            },
-        });
+        modalService.show({ title, message: body });
     }
 };

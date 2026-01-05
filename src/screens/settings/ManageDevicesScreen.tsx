@@ -7,18 +7,22 @@ import {
     TouchableOpacity,
     Modal,
     TextInput,
-    Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
+import { useModal } from '../../context/ModalContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
+import { Dropdown } from '../../components/Dropdown';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectAllDevices, addDevice, deleteDevice } from '../../store/slices/devicesSlice';
+import { selectAllDevices, addDevice, updateDevice, deleteDevice } from '../../store/slices/devicesSlice';
+import { selectAllEmployees } from '../../store/slices/employeesSlice';
+import { selectAllDeviceTypes, addDeviceType, deleteDeviceType } from '../../store/slices/deviceTypesSlice';
 import { Device } from '../../database/schema';
 
 export const ManageDevicesScreen = () => {
     const { theme } = useTheme();
+    const { showModal } = useModal();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const styles = useMemo(() => createStyles(theme), [theme]);
@@ -26,49 +30,82 @@ export const ManageDevicesScreen = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const [deviceForm, setDeviceForm] = useState({
+    const initialFormState = {
+        id: undefined as number | undefined,
         name: '',
         type: '',
         serialNumber: '',
-        status: 'available' as Device['status']
-    });
+        status: 'available' as Device['status'],
+        condition: 'working' as Device['condition'],
+        assignedToId: undefined as number | undefined,
+        assignedTo: undefined as string | undefined,
+    };
+
+    const [deviceForm, setDeviceForm] = useState(initialFormState);
 
     const devices = useSelector(selectAllDevices);
+    const employees = useSelector(selectAllEmployees);
+    const deviceTypes = useSelector(selectAllDeviceTypes);
+
+    const [newType, setNewType] = useState('');
+    const [isTypeModalVisible, setIsTypeModalVisible] = useState(false);
 
     const filteredDevices = useMemo(() => {
-        return devices.filter(d =>
+        return devices.filter((d: Device) =>
             d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             d.serialNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (d.assignedTo && d.assignedTo.toLowerCase().includes(searchQuery.toLowerCase()))
         );
     }, [searchQuery, devices]);
 
-    const handleAddDevice = () => {
-        if (!deviceForm.name || !deviceForm.serialNumber) {
-            Alert.alert(t('common.error'), t('common.fillRequired'));
+    const handleSaveDevice = () => {
+        if (!deviceForm.name || !deviceForm.serialNumber || !deviceForm.type) {
+            showModal({ title: t('common.error'), message: t('common.fillRequired') });
             return;
         }
 
-        const newDevice: Device = {
-            id: Date.now(),
+        const deviceData: Device = {
+            id: deviceForm.id || Date.now(),
             name: deviceForm.name,
-            type: deviceForm.type || 'Other',
+            type: deviceForm.type,
             serialNumber: deviceForm.serialNumber,
             status: deviceForm.status,
+            condition: deviceForm.condition,
+            assignedToId: deviceForm.assignedToId,
+            assignedTo: deviceForm.assignedTo,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
 
-        dispatch(addDevice(newDevice));
+        if (deviceForm.id) {
+            dispatch(updateDevice(deviceData));
+        } else {
+            dispatch(addDevice(deviceData));
+        }
+
         setIsModalVisible(false);
-        setDeviceForm({ name: '', type: '', serialNumber: '', status: 'available' });
+        setDeviceForm(initialFormState);
+    };
+
+    const handleEditDevice = (device: Device) => {
+        setDeviceForm({
+            id: device.id,
+            name: device.name,
+            type: device.type,
+            serialNumber: device.serialNumber,
+            status: device.status,
+            condition: device.condition,
+            assignedToId: device.assignedToId,
+            assignedTo: device.assignedTo,
+        });
+        setIsModalVisible(true);
     };
 
     const handleDeleteDevice = (id: number) => {
-        Alert.alert(
-            t('common.deleteTitle'),
-            t('common.deleteMessage'),
-            [
+        showModal({
+            title: t('common.deleteTitle'),
+            message: t('common.deleteMessage'),
+            buttons: [
                 { text: t('common.cancel'), style: 'cancel' },
                 {
                     text: t('common.delete'),
@@ -76,7 +113,7 @@ export const ManageDevicesScreen = () => {
                     onPress: () => dispatch(deleteDevice(id))
                 }
             ]
-        );
+        });
     };
 
     const getStatusColor = (status: Device['status']) => {
@@ -89,28 +126,48 @@ export const ManageDevicesScreen = () => {
     };
 
     const renderDevice = ({ item }: { item: Device }) => (
-        <TouchableOpacity
-            style={styles.card}
-            onLongPress={() => item.id && handleDeleteDevice(item.id)}
-        >
+        <View style={styles.card}>
             <View style={styles.cardHeader}>
                 <View style={{ flex: 1 }}>
                     <Text style={styles.deviceName}>{item.name}</Text>
                     <Text style={styles.deviceType}>{item.type} • {item.serialNumber}</Text>
                 </View>
+                <View style={styles.actionsContainer}>
+                    <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={() => handleEditDevice(item)}
+                    >
+                        <Text style={[styles.actionIcon, { color: theme.colors.primary }]}>✎</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.actionButton}
+                        onPress={() => item.id && handleDeleteDevice(item.id)}
+                    >
+                        <Text style={[styles.actionIcon, { color: theme.colors.error }]}>🗑</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View style={styles.cardFooter}>
                 <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '15' }]}>
                     <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
                         {t(`common.${item.status}`) || item.status}
                     </Text>
                 </View>
+                <View style={[styles.conditionBadge, { backgroundColor: item.condition === 'faulty' ? theme.colors.error + '15' : theme.colors.success + '15' }]}>
+                    <Text style={[styles.statusText, { color: item.condition === 'faulty' ? theme.colors.error : theme.colors.success }]}>
+                        {item.condition === 'faulty' ? `🚨 ${t('devices.faulty')}` : `✅ ${t('devices.working')}`}
+                    </Text>
+                </View>
             </View>
+
             {item.assignedTo && (
                 <View style={styles.assignmentInfo}>
                     <Text style={styles.assignedToLabel}>{t('employees.assigned')}:</Text>
                     <Text style={styles.assignedToValue}>{item.assignedTo}</Text>
                 </View>
             )}
-        </TouchableOpacity>
+        </View>
     );
 
     return (
@@ -139,33 +196,83 @@ export const ManageDevicesScreen = () => {
                 visible={isModalVisible}
                 animationType="slide"
                 transparent={true}
-                onRequestClose={() => setIsModalVisible(false)}
+                onRequestClose={() => {
+                    setIsModalVisible(false);
+                    setDeviceForm(initialFormState);
+                }}
             >
                 <View style={styles.modalOverlay}>
                     <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
                         <Text style={[styles.modalTitle, { color: theme.colors.text }]}>
-                            {t('navigation.manageDevices')}
+                            {deviceForm.id ? t('common.edit') : t('common.add')} {t('navigation.manageDevices')}
                         </Text>
 
                         <TextInput
                             style={[styles.modalInput, { color: theme.colors.text, borderColor: theme.colors.border }]}
-                            placeholder="Device Name"
+                            placeholder={t('devices.deviceName')}
                             placeholderTextColor={theme.colors.subText}
                             value={deviceForm.name}
                             onChangeText={(text) => setDeviceForm({ ...deviceForm, name: text })}
                         />
 
-                        <TextInput
-                            style={[styles.modalInput, { color: theme.colors.text, borderColor: theme.colors.border }]}
-                            placeholder="Device Type (e.g. Laptop)"
-                            placeholderTextColor={theme.colors.subText}
-                            value={deviceForm.type}
-                            onChangeText={(text) => setDeviceForm({ ...deviceForm, type: text })}
+                        <Dropdown
+                            label={t('devices.assigned')}
+                            data={[
+                                { label: t('devices.unassigned'), value: '' },
+                                ...employees.map(e => ({ label: e.name, value: String(e.id) }))
+                            ]}
+                            value={deviceForm.assignedToId ? String(deviceForm.assignedToId) : ''}
+                            onSelect={(val) => {
+                                const emp = employees.find(e => String(e.id) === val);
+                                if (emp) {
+                                    setDeviceForm({
+                                        ...deviceForm,
+                                        status: 'assigned',
+                                        assignedToId: emp.id,
+                                        assignedTo: emp.name
+                                    });
+                                } else {
+                                    setDeviceForm({
+                                        ...deviceForm,
+                                        status: 'available',
+                                        assignedToId: undefined,
+                                        assignedTo: undefined
+                                    });
+                                }
+                            }}
+                            placeholder={t('devices.assignTo')}
                         />
+
+                        <Dropdown
+                            label={t('devices.condition')}
+                            data={[
+                                { label: t('devices.working'), value: 'working' },
+                                { label: t('devices.faulty'), value: 'faulty' },
+                            ]}
+                            value={deviceForm.condition}
+                            onSelect={(val) => setDeviceForm({ ...deviceForm, condition: val as any })}
+                        />
+
+                        <View style={{ marginBottom: theme.spacing.m }}>
+                            <Dropdown
+                                label={t('devices.type')}
+                                data={deviceTypes.map(t => ({ label: t, value: t }))}
+                                value={deviceForm.type}
+                                onSelect={(val) => setDeviceForm({ ...deviceForm, type: val })}
+                                placeholder={t('devices.type')}
+                            />
+
+                            <TouchableOpacity
+                                style={styles.addTypeButton}
+                                onPress={() => setIsTypeModalVisible(true)}
+                            >
+                                <Text style={styles.addTypeButtonText}>+ {t('devices.addType')}</Text>
+                            </TouchableOpacity>
+                        </View>
 
                         <TextInput
                             style={[styles.modalInput, { color: theme.colors.text, borderColor: theme.colors.border }]}
-                            placeholder="Serial Number"
+                            placeholder={t('devices.serialNumber')}
                             placeholderTextColor={theme.colors.subText}
                             value={deviceForm.serialNumber}
                             onChangeText={(text) => setDeviceForm({ ...deviceForm, serialNumber: text })}
@@ -174,16 +281,84 @@ export const ManageDevicesScreen = () => {
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
                                 style={[styles.modalButton, { backgroundColor: theme.colors.border }]}
-                                onPress={() => setIsModalVisible(false)}
+                                onPress={() => {
+                                    setIsModalVisible(false);
+                                    setDeviceForm(initialFormState);
+                                }}
                             >
                                 <Text style={{ color: theme.colors.text }}>{t('common.cancel')}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
-                                onPress={handleAddDevice}
+                                onPress={handleSaveDevice}
+                            >
+                                <Text style={{ color: theme.colors.surface }}>{deviceForm.id ? t('common.save') : t('common.add')}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                visible={isTypeModalVisible}
+                animationType="fade"
+                transparent={true}
+                onRequestClose={() => setIsTypeModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+                        <Text style={[styles.modalTitle, { color: theme.colors.text }]}>{t('devices.manageTypes')}</Text>
+                        <TextInput
+                            style={[styles.modalInput, { color: theme.colors.text, borderColor: theme.colors.border }]}
+                            placeholder={t('devices.typePlaceholder')}
+                            value={newType}
+                            onChangeText={setNewType}
+                        />
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.colors.border }]} onPress={() => setIsTypeModalVisible(false)}>
+                                <Text style={{ color: theme.colors.text }}>{t('common.cancel')}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.modalButton, { backgroundColor: theme.colors.primary }]}
+                                onPress={() => {
+                                    if (newType.trim()) {
+                                        dispatch(addDeviceType(newType.trim()));
+                                        setDeviceForm({ ...deviceForm, type: newType.trim() });
+                                        setNewType('');
+                                        setIsTypeModalVisible(false);
+                                    }
+                                }}
                             >
                                 <Text style={{ color: theme.colors.surface }}>{t('common.add')}</Text>
                             </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.typeList}>
+                            <Text style={[styles.label, { marginTop: 20 }]}>{t('devices.existingTypes')}</Text>
+                            <View style={styles.typeTags}>
+                                {deviceTypes.map(type => (
+                                    <TouchableOpacity
+                                        key={type}
+                                        style={styles.typeTag}
+                                        onLongPress={() => {
+                                            if (['Laptop', 'Mouse', 'Keyboard', 'Screen', 'Other'].includes(type)) {
+                                                showModal({ title: t('common.error'), message: t('devices.builtInTypeWarning') });
+                                                return;
+                                            }
+                                            showModal({
+                                                title: t('common.deleteTitle'),
+                                                message: `${t('common.delete')} "${type}"?`,
+                                                buttons: [
+                                                    { text: t('common.cancel'), style: "cancel" },
+                                                    { text: t('common.delete'), style: "destructive", onPress: () => dispatch(deleteDeviceType(type)) }
+                                                ]
+                                            });
+                                        }}
+                                    >
+                                        <Text style={styles.typeTagText}>{type}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -191,7 +366,10 @@ export const ManageDevicesScreen = () => {
 
             <TouchableOpacity
                 style={styles.fab}
-                onPress={() => setIsModalVisible(true)}
+                onPress={() => {
+                    setDeviceForm(initialFormState);
+                    setIsModalVisible(true);
+                }}
                 activeOpacity={0.8}
             >
                 <Text style={styles.fabText}>+</Text>
@@ -228,6 +406,17 @@ const createStyles = (theme: Theme) =>
             justifyContent: 'space-between',
             alignItems: 'flex-start',
         },
+        actionsContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        actionButton: {
+            padding: 8,
+            marginLeft: 8,
+        },
+        actionIcon: {
+            fontSize: 20,
+        },
         deviceName: {
             ...theme.textVariants.subheader,
             color: theme.colors.text,
@@ -238,6 +427,11 @@ const createStyles = (theme: Theme) =>
             color: theme.colors.subText,
             marginTop: 2,
         },
+        cardFooter: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: theme.spacing.m,
+        },
         statusBadge: {
             paddingHorizontal: 8,
             paddingVertical: 4,
@@ -247,6 +441,12 @@ const createStyles = (theme: Theme) =>
             fontSize: 12,
             fontWeight: '600',
             textTransform: 'capitalize',
+        },
+        conditionBadge: {
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 8,
+            marginLeft: 8,
         },
         assignmentInfo: {
             flexDirection: 'row',
@@ -265,6 +465,40 @@ const createStyles = (theme: Theme) =>
             fontSize: 12,
             fontWeight: '600',
             color: theme.colors.text,
+        },
+        addTypeButton: {
+            alignSelf: 'flex-end',
+            marginBottom: theme.spacing.s,
+            marginTop: 4,
+        },
+        addTypeButtonText: {
+            color: theme.colors.primary,
+            fontSize: 12,
+            fontWeight: '600',
+        },
+        typeList: {
+            marginTop: theme.spacing.m,
+        },
+        typeTags: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 8,
+            marginTop: 8,
+        },
+        typeTag: {
+            backgroundColor: theme.colors.border,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: 12,
+        },
+        typeTagText: {
+            fontSize: 12,
+            color: theme.colors.text,
+        },
+        label: {
+            fontSize: 12,
+            fontWeight: '600',
+            color: theme.colors.subText,
         },
         emptyContainer: {
             flex: 1,

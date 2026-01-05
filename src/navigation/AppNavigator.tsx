@@ -66,6 +66,7 @@ import { CompanyChatScreen } from '../screens/chat/CompanyChatScreen';
 import { LanguageSelectionScreen } from '../screens/settings/LanguageSelectionScreen';
 import { CustomThemeColorsScreen } from '../screens/settings/CustomThemeColorsScreen';
 import { ManageDevicesScreen } from '../screens/settings/ManageDevicesScreen';
+import { MyDevicesScreen } from '../screens/settings/MyDevicesScreen';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { SearchOverlay } from '../components/common/SearchOverlay';
 import { ChatBot } from '../components/common/ChatBot';
@@ -385,6 +386,11 @@ const ProfileStack = () => {
         name="MyTeam"
         component={MyTeamScreen}
         options={{ headerShown: true, title: t('teams.myTeam') || 'My Team' }}
+      />
+      <Stack.Screen
+        name="MyDevices"
+        component={MyDevicesScreen}
+        options={{ headerShown: true, title: t('devices.myMaterial') || 'My Material' }}
       />
     </Stack.Navigator>
   );

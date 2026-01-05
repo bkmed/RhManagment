@@ -91,6 +91,7 @@ export const employeesDb = {
   // Add new employee
   add: async (
     employee: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>,
+    companyName?: string,
   ): Promise<number> => {
     const now = new Date().toISOString();
     const id = Date.now();
@@ -102,7 +103,7 @@ export const employeesDb = {
       updatedAt: now,
     };
 
-    store.dispatch(addEmployeeAction(newEmployee));
+    store.dispatch(addEmployeeAction({ employee: newEmployee, companyName }));
     return id;
   },
 

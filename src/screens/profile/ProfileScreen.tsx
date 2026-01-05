@@ -32,6 +32,9 @@ import { selectPendingLeaves } from '../../store/slices/leavesSlice';
 import { selectPendingClaims } from '../../store/slices/claimsSlice';
 import { selectAllPayroll } from '../../store/slices/payrollSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
+import { selectAllDevices } from '../../store/slices/devicesSlice';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { Device } from '../../database/schema';
 
 const { width } = Dimensions.get('window');
 const isSmallScreen = width < 400;
@@ -69,10 +72,20 @@ export const ProfileScreen = ({ navigation }: any) => {
   const pendingClaims = useSelector(selectPendingClaims);
   const payrollItems = useSelector(selectAllPayroll);
   const teams = useSelector(selectAllTeams);
+  const devices = useSelector(selectAllDevices);
+  const companies = useSelector(selectAllCompanies);
+
+  const myDevicesCount = useMemo(() => {
+    return devices.filter((d: Device) => d.assignedToId === user?.id).length;
+  }, [devices, user?.id]);
 
   const userTeam = useMemo(() => {
     return teams.find(t => t.id === user?.teamId);
   }, [teams, user]);
+
+  const userCompany = useMemo(() => {
+    return companies.find(c => c.id === user?.companyId);
+  }, [companies, user]);
 
   const [cameraPermission, setCameraPermission] =
     useState<PermissionStatus>('unavailable');
@@ -222,7 +235,7 @@ export const ProfileScreen = ({ navigation }: any) => {
 
   const handleSaveProfile = async () => {
     if (!name.trim() || !email.trim()) {
-      notificationService.showAlert(t('common.error'), t('signUp.errorEmptyFields'));
+      showModal({ title: t('common.error'), message: t('signUp.errorEmptyFields') });
       return;
     }
 
@@ -250,9 +263,9 @@ export const ProfileScreen = ({ navigation }: any) => {
         skills: skills ? skills.split(',').map(s => s.trim()).filter(s => s) : undefined,
       });
       setIsEditing(false);
-      notificationService.showAlert(t('common.success'), t('profile.updatedSuccessfully'));
+      showModal({ title: t('common.success'), message: t('profile.updatedSuccessfully') });
     } catch (error) {
-      notificationService.showAlert(t('common.error'), t('common.loadFailed'));
+      showModal({ title: t('common.error'), message: t('common.loadFailed') });
     } finally {
       setLoading(false);
     }
@@ -376,7 +389,12 @@ export const ProfileScreen = ({ navigation }: any) => {
                 <Text style={styles.userName}>{user?.name}</Text>
                 <Text style={styles.userEmail}>{user?.email}</Text>
                 <View style={styles.teamContainer}>
-                  <Text style={styles.teamText}>🏢 {userTeam?.name || t('teams.noTeamAssigned')}</Text>
+                  <Text style={styles.teamText}>🏢 {userCompany?.name || t('companies.noCompanyAssigned')}</Text>
+                </View>
+                <View style={[styles.teamContainer, { marginTop: 4, backgroundColor: (userTeam ? theme.colors.secondary : theme.colors.border) + '10' }]}>
+                  <Text style={[styles.teamText, { color: userTeam ? theme.colors.secondary : theme.colors.subText }]}>
+                    👥 {userTeam?.name || t('teams.noTeamAssigned')}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -411,6 +429,12 @@ export const ProfileScreen = ({ navigation }: any) => {
                 value={payrollItems.length}
                 label={t('payroll.title')}
                 color="#4CAF50"
+              />
+              <DashboardStat
+                icon="💻"
+                value={myDevicesCount}
+                label={t('devices.myMaterial')}
+                color={theme.colors.warning}
               />
             </View>
           )}
@@ -561,6 +585,23 @@ export const ProfileScreen = ({ navigation }: any) => {
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>🎯 {t('profile.professionalProfile')}</Text>
 
+                <View style={styles.responsiveRow}>
+                  <View style={styles.fieldContainerFlex}>
+                    <Text style={styles.fieldLabel}>{t('employees.company')}</Text>
+                    <Text style={[styles.userName, { fontSize: 16, marginBottom: theme.spacing.m }]}>
+                      🏢 {userCompany?.name || t('companies.noCompanyAssigned')}
+                    </Text>
+                  </View>
+                  <View style={styles.fieldContainerFlex}>
+                    <Text style={styles.fieldLabel}>{t('teams.title')}</Text>
+                    <Text style={[styles.userName, { fontSize: 16, marginBottom: theme.spacing.m }]}>
+                      👥 {userTeam?.name || t('teams.noTeamAssigned')}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.divider} />
+
                 <Text style={styles.fieldLabel}>{t('employees.skills')}</Text>
                 <View style={styles.tagContainer}>
                   {user?.skills?.map((skill: string, index: number) => (
@@ -622,6 +663,27 @@ export const ProfileScreen = ({ navigation }: any) => {
                   </View>
                 ))}
               </View>
+
+              {/* My Material Link */}
+              <TouchableOpacity
+                style={[styles.card, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
+                onPress={() => {
+                  if (Platform.OS === 'web') {
+                    setActiveTab('Profile', 'MyDevices');
+                  } else {
+                    navigation.navigate('MyDevices');
+                  }
+                }}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 24, marginRight: theme.spacing.m }}>💻</Text>
+                  <View>
+                    <Text style={styles.cardTitle}>{t('devices.myMaterial')}</Text>
+                    <Text style={styles.emptyText}>{myDevicesCount} {t('devices.assigned')}</Text>
+                  </View>
+                </View>
+                <Text style={{ fontSize: 20, color: theme.colors.subText }}>›</Text>
+              </TouchableOpacity>
             </>
           )}
 

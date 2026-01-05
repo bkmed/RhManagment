@@ -266,6 +266,7 @@ export interface Employee {
   jobHistory?: JobHistoryItem[];
   careerGoals?: string;
   skills?: string[];
+  tag?: string; // e.g. "company-name_1"
 
   createdAt: string;
   updatedAt: string;
@@ -279,6 +280,7 @@ export interface Device {
   type: string;
   serialNumber: string;
   status: 'available' | 'assigned' | 'maintenance';
+  condition: 'working' | 'faulty';
   assignedTo?: string;
   assignedToId?: number;
   companyId?: number;

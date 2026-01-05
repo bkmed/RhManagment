@@ -257,7 +257,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         await employeesDb.update(employeeId, employeeData);
         showToast(t('employees.updated'));
       } else {
-        await employeesDb.add(employeeData);
+        const companyName = companies.find(c => c.id === companyId)?.name;
+        await employeesDb.add(employeeData, companyName);
         showToast(t('employees.added'));
       }
       navigateBack();

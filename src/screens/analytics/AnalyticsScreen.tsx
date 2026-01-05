@@ -18,6 +18,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useSelector } from 'react-redux';
 import { selectQuestionOccurrences } from '../../store/slices/analyticsSlice';
+import { selectAllDevices } from '../../store/slices/devicesSlice';
 import { useAuth } from '../../context/AuthContext';
 
 const screenWidth = Dimensions.get('window').width;
@@ -29,6 +30,7 @@ export const AnalyticsScreen = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const questionOccurrences = useSelector(selectQuestionOccurrences);
+  const allDevices = useSelector(selectAllDevices);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [adherenceChart, setAdherenceChart] = useState<{
     labels: string[];
@@ -242,6 +244,25 @@ export const AnalyticsScreen = () => {
                 </View>
               </View>
             ))}
+          </View>
+        )}
+
+        {/* Material Distribution (Admin only) */}
+        {(user?.role === 'admin' || user?.role === 'rh') && (
+          <View style={styles.insightsSection}>
+            <Text style={styles.sectionTitle}>Material Distribution</Text>
+            <View style={styles.cardsRow}>
+              <View style={[styles.card, { backgroundColor: theme.colors.success }]}>
+                <Text style={styles.cardNumber}>{allDevices.length}</Text>
+                <Text style={styles.cardLabel}>Total Material</Text>
+              </View>
+              <View style={[styles.card, { backgroundColor: theme.colors.error }]}>
+                <Text style={styles.cardNumber}>
+                  {allDevices.filter(d => d.condition === 'faulty').length}
+                </Text>
+                <Text style={styles.cardLabel}>Faulty Material</Text>
+              </View>
+            </View>
           </View>
         )}
       </ScrollView >
