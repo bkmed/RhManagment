@@ -165,6 +165,7 @@
   },
   "companies": {
     "add": "Ajouter une entreprise",
+    "noCompanyAssigned": "Vous n'êtes assigné à aucune entreprise. Veuillez contacter votre administrateur.",
     "address": "Adresse",
     "addressPlaceholder": "ex: 123 Rue des Affaires",
     "country": "Pays",
@@ -611,6 +612,7 @@
     "calendar": "Calendrier",
     "camera": "Caméra / Documents",
     "changePhoto": "Changer la Photo",
+    "changeBackgroundPhoto": "Changer la photo de couverture",
     "darkMode": "Mode Sombre",
     "edit": "Modifier le Profil",
     "enable": "Activer",

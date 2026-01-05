@@ -48,6 +48,7 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [photoUri, setPhotoUri] = useState(user?.photoUri || '');
+  const [backgroundPhotoUri, setBackgroundPhotoUri] = useState(user?.backgroundPhotoUri || '');
   const [loading, setLoading] = useState(false);
 
   // Extended fields
@@ -156,6 +157,69 @@ export const ProfileScreen = ({ navigation }: any) => {
     });
   };
 
+  const handlePickBackgroundPhoto = async () => {
+    if (Platform.OS === 'web') {
+      const input = (window as any).document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e: any) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event: any) => setBackgroundPhotoUri(event.target.result);
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+      return;
+    }
+
+    const status = await permissionsService.requestCameraPermission();
+    setCameraPermission(status);
+
+    if (status !== 'granted') {
+      showModal({
+        title: t('profile.permissionDenied'),
+        message: t('profile.permissionBlockedMessage'),
+        buttons: [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('profile.openSettings'),
+            onPress: () => permissionsService.openAppSettings(),
+          },
+        ],
+      });
+      return;
+    }
+
+    showModal({
+      title: t('profile.changeBackgroundPhoto'),
+      buttons: [
+        {
+          text: t('illnesses.takePhoto'),
+          onPress: () => {
+            launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
+              if (response.assets && response.assets[0]?.uri) {
+                setBackgroundPhotoUri(response.assets[0].uri);
+              }
+            });
+          },
+        },
+        {
+          text: t('illnesses.chooseFromLibrary'),
+          onPress: () => {
+            launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
+              if (response.assets && response.assets[0]?.uri) {
+                setBackgroundPhotoUri(response.assets[0].uri);
+              }
+            });
+          },
+        },
+        { text: t('common.cancel'), style: 'cancel' },
+      ],
+    });
+  };
+
   const handleSaveProfile = async () => {
     if (!name.trim() || !email.trim()) {
       notificationService.showAlert(t('common.error'), t('signUp.errorEmptyFields'));
@@ -168,6 +232,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         name: name.trim(),
         email: email.trim(),
         photoUri,
+        backgroundPhotoUri,
         firstName,
         lastName,
         age: parseInt(age) || undefined,
@@ -263,7 +328,19 @@ export const ProfileScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} bounces={false}>
         {/* Header Background */}
-        <View style={styles.headerBackground} />
+        <View style={styles.headerBackground}>
+          {backgroundPhotoUri ? (
+            <Image source={{ uri: backgroundPhotoUri }} style={styles.backgroundImage} />
+          ) : null}
+          {isEditing && (
+            <TouchableOpacity
+              style={styles.editBackgroundButton}
+              onPress={handlePickBackgroundPhoto}
+            >
+              <Text style={styles.editBackgroundIcon}>📸</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
         <View style={styles.mainContent}>
           {/* Profile Header Card */}
@@ -461,6 +538,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                       setName(user?.name || '');
                       setEmail(user?.email || '');
                       setPhotoUri(user?.photoUri || '');
+                      setBackgroundPhotoUri(user?.backgroundPhotoUri || '');
                     }}
                   >
                     <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
@@ -572,6 +650,26 @@ const createStyles = (theme: Theme) =>
       right: 0,
       height: 200,
       backgroundColor: theme.colors.primary,
+      overflow: 'hidden',
+    },
+    backgroundImage: {
+      width: '100%',
+      height: '100%',
+      resizeMode: 'cover',
+    },
+    editBackgroundButton: {
+      position: 'absolute',
+      top: theme.spacing.m,
+      right: theme.spacing.m,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    editBackgroundIcon: {
+      fontSize: 20,
     },
     mainContent: {
       padding: theme.spacing.m,

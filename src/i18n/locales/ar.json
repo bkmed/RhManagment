@@ -165,6 +165,7 @@
   },
   "companies": {
     "add": "إضافة شركة",
+    "noCompanyAssigned": "أنت غير معين لأي شركة. يرجى الاتصال بالمسؤول.",
     "address": "العنوان",
     "addressPlaceholder": "مثال: 123 شارع الأعمال",
     "country": "البلد",
@@ -611,6 +612,7 @@
     "calendar": "التقويم",
     "camera": "الكاميرا / المستندات",
     "changePhoto": "تغيير الصورة",
+    "changeBackgroundPhoto": "تغيير صورة الغلاف",
     "darkMode": "الوضعية الداكنة",
     "edit": "تعديل الملف الشخصي",
     "enable": "تفعيل",

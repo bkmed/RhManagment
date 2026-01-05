@@ -165,6 +165,7 @@
   },
   "companies": {
     "add": "Añadir empresa",
+    "noCompanyAssigned": "No estás asignado a ninguna empresa. Por favor, contacta con tu administrador.",
     "address": "Dirección",
     "addressPlaceholder": "ej. Calle Negocios 123",
     "country": "País",
@@ -610,6 +611,7 @@
     "calendar": "Calendario",
     "camera": "Cámara / Documentos",
     "changePhoto": "Cambiar Foto",
+    "changeBackgroundPhoto": "Cambiar foto de portada",
     "darkMode": "Modo oscuro",
     "edit": "Editar Perfil",
     "enable": "Activar",

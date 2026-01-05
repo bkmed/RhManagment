@@ -41,6 +41,14 @@ export const CompanyChatScreen = () => {
     const [inputText, setInputText] = useState('');
     const flatListRef = useRef<FlatList>(null);
 
+    const isAdmin = user?.role === 'admin' || user?.role === 'rh';
+
+    useEffect(() => {
+        if (!isAdmin && user?.companyId && !selectedCompanyId) {
+            dispatch(setSelectedCompanyId(user.companyId));
+        }
+    }, [isAdmin, user?.companyId, selectedCompanyId, dispatch]);
+
     const handleSend = () => {
         if (!inputText.trim() || !user || !selectedCompanyId) return;
 
@@ -137,23 +145,33 @@ export const CompanyChatScreen = () => {
                     <Text style={styles.headerTitle}>{t('chat.companyChat')}</Text>
                 </View>
                 <View style={styles.centered}>
-                    <Text style={[styles.messageText, { color: theme.colors.text, marginBottom: 20 }]}>
-                        {t('companies.selectCompany')}
-                    </Text>
-                    <FlatList
-                        data={companies}
-                        keyExtractor={(item) => String(item.id)}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={[styles.companyItem, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-                                onPress={() => dispatch(setSelectedCompanyId(item.id))}
-                            >
-                                <Text style={[styles.companyNameText, { color: theme.colors.text }]}>{item.name}</Text>
-                                <Text style={styles.sendIcon}>➤</Text>
-                            </TouchableOpacity>
-                        )}
-                        style={{ width: '100%', paddingHorizontal: 20 }}
-                    />
+                    {!isAdmin && !user?.companyId ? (
+                        <Text style={[styles.messageText, { color: theme.colors.text, textAlign: 'center' }]}>
+                            {t('companies.noCompanyAssigned')}
+                        </Text>
+                    ) : isAdmin ? (
+                        <>
+                            <Text style={[styles.messageText, { color: theme.colors.text, marginBottom: 20 }]}>
+                                {t('companies.selectCompany')}
+                            </Text>
+                            <FlatList
+                                data={companies}
+                                keyExtractor={(item) => String(item.id)}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        style={[styles.companyItem, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+                                        onPress={() => dispatch(setSelectedCompanyId(item.id))}
+                                    >
+                                        <Text style={[styles.companyNameText, { color: theme.colors.text }]}>{item.name}</Text>
+                                        <Text style={styles.sendIcon}>➤</Text>
+                                    </TouchableOpacity>
+                                )}
+                                style={{ width: '100%', paddingHorizontal: 20 }}
+                            />
+                        </>
+                    ) : (
+                        <ActivityIndicator color={theme.colors.primary} />
+                    )}
                 </View>
             </SafeAreaView>
         );
@@ -164,10 +182,12 @@ export const CompanyChatScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => dispatch(setSelectedCompanyId(null))} style={styles.backButton}>
-                    <Text style={[styles.backIcon, { color: theme.colors.primary }]}>←</Text>
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>{t('chat.companyChat') || 'Company Chat'}</Text>
+                {isAdmin && (
+                    <TouchableOpacity onPress={() => dispatch(setSelectedCompanyId(null))} style={styles.backButton}>
+                        <Text style={[styles.backIcon, { color: theme.colors.primary }]}>←</Text>
+                    </TouchableOpacity>
+                )}
+                <Text style={styles.headerTitle}>{t('chat.companyChat')}</Text>
             </View>
 
             <FlatList

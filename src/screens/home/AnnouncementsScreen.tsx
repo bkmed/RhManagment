@@ -9,6 +9,7 @@ import {
     TextInput,
     Platform,
     ScrollView,
+    ActivityIndicator,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +40,12 @@ export const AnnouncementsScreen = () => {
     const [newCategory, setNewCategory] = useState<'news' | 'event' | 'alert'>('news');
 
     const isAdmin = user?.role === 'admin' || user?.role === 'rh';
+
+    React.useEffect(() => {
+        if (!isAdmin && user?.companyId && !selectedCompanyId) {
+            dispatch(setSelectedCompanyId(user.companyId));
+        }
+    }, [isAdmin, user?.companyId, selectedCompanyId, dispatch]);
 
     const handleCreateAnnouncement = () => {
         if (!newTitle.trim() || !newContent.trim()) return;
@@ -112,23 +119,33 @@ export const AnnouncementsScreen = () => {
                     <Text style={styles.headerTitle}>{t('announcements.title')}</Text>
                 </View>
                 <View style={styles.centered}>
-                    <Text style={[styles.emptyText, { color: theme.colors.text, marginBottom: 20 }]}>
-                        {t('companies.selectCompany')}
-                    </Text>
-                    <FlatList
-                        data={companies}
-                        keyExtractor={(item) => String(item.id)}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={[styles.companyItem, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-                                onPress={() => dispatch(setSelectedCompanyId(item.id))}
-                            >
-                                <Text style={[styles.companyNameText, { color: theme.colors.text }]}>{item.name}</Text>
-                                <Text style={{ fontSize: 18 }}>➤</Text>
-                            </TouchableOpacity>
-                        )}
-                        style={{ width: '100%', paddingHorizontal: 20 }}
-                    />
+                    {!isAdmin && !user?.companyId ? (
+                        <Text style={[styles.emptyText, { color: theme.colors.text, textAlign: 'center' }]}>
+                            {t('companies.noCompanyAssigned')}
+                        </Text>
+                    ) : isAdmin ? (
+                        <>
+                            <Text style={[styles.emptyText, { color: theme.colors.text, marginBottom: 20 }]}>
+                                {t('companies.selectCompany')}
+                            </Text>
+                            <FlatList
+                                data={companies}
+                                keyExtractor={(item) => String(item.id)}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        style={[styles.companyItem, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+                                        onPress={() => dispatch(setSelectedCompanyId(item.id))}
+                                    >
+                                        <Text style={[styles.companyNameText, { color: theme.colors.text }]}>{item.name}</Text>
+                                        <Text style={{ fontSize: 18 }}>➤</Text>
+                                    </TouchableOpacity>
+                                )}
+                                style={{ width: '100%', paddingHorizontal: 20 }}
+                            />
+                        </>
+                    ) : (
+                        <ActivityIndicator color={theme.colors.primary} />
+                    )}
                 </View>
             </View>
         );
@@ -139,9 +156,11 @@ export const AnnouncementsScreen = () => {
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => dispatch(setSelectedCompanyId(null))} style={styles.backButton}>
-                    <Text style={[styles.backIcon, { color: theme.colors.primary }]}>←</Text>
-                </TouchableOpacity>
+                {isAdmin && (
+                    <TouchableOpacity onPress={() => dispatch(setSelectedCompanyId(null))} style={styles.backButton}>
+                        <Text style={[styles.backIcon, { color: theme.colors.primary }]}>←</Text>
+                    </TouchableOpacity>
+                )}
                 <Text style={styles.headerTitle}>{t('announcements.title')}</Text>
             </View>
             <FlatList

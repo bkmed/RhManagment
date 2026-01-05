@@ -165,6 +165,7 @@
   },
   "companies": {
     "add": "Add Company",
+    "noCompanyAssigned": "You are not assigned to any company. Please contact your administrator.",
     "select": "Select Company",
     "address": "Address",
     "addressPlaceholder": "e.g. 123 Business St",
@@ -611,6 +612,7 @@
     "calendar": "Calendar",
     "camera": "Camera / Documents",
     "changePhoto": "Change Photo",
+    "changeBackgroundPhoto": "Change Background Photo",
     "darkMode": "Dark Mode",
     "edit": "Edit Profile",
     "enable": "Enable",

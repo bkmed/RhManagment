@@ -205,6 +205,7 @@ export interface Announcement {
   createdAt: string;
   category: 'news' | 'event' | 'alert';
   companyId?: number;
+  backgroundPhotoUri?: string;
 }
 
 export interface ChatMessage {
@@ -249,4 +250,5 @@ export interface Employee {
   createdAt: string;
   updatedAt: string;
   location?: string;
+  backgroundPhotoUri?: string;
 }

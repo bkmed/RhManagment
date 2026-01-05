@@ -165,6 +165,7 @@
     },
     "companies": {
         "add": "कंपनी जोड़ें",
+        "noCompanyAssigned": "आप किसी भी कंपनी को असाइन नहीं किए गए हैं। कृपया अपने व्यवस्थापक से संपर्क करें।",
         "select": "कंपनी चुनें",
         "address": "पता",
         "addressPlaceholder": "उदा. 123 बिजनेस सेंट",
@@ -611,7 +612,8 @@
         "appearance": "दिखावट",
         "calendar": "कैलेंडर",
         "camera": "कैमरा / दस्तावेज़",
-        "changePhoto": "फोटो बदलें",
+        "changePhoto": "फ़ोटो बदलें",
+        "changeBackgroundPhoto": "कवर फ़ोटो बदलें",
         "darkMode": "डार्क मोड",
         "edit": "प्रोफ़ाइल संपादित करें",
         "enable": "सक्षम करें",

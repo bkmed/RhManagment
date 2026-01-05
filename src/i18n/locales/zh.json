@@ -165,6 +165,7 @@
     },
     "companies": {
         "add": "添加公司",
+        "noCompanyAssigned": "您未被分配到任何公司。请联系您的管理员。",
         "select": "选择公司",
         "address": "地址",
         "addressPlaceholder": "例如 某某商务街123号",
@@ -610,6 +611,7 @@
         "calendar": "日历",
         "camera": "摄像头 / 文档",
         "changePhoto": "修改照片",
+        "changeBackgroundPhoto": "更改背景照片",
         "darkMode": "深色模式",
         "edit": "编辑资料",
         "enable": "启用",

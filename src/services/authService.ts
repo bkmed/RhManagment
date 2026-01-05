@@ -39,6 +39,7 @@ export interface User {
     companyId?: number;
     status?: 'active' | 'pending' | 'rejected';
     birthDate?: string;
+    backgroundPhotoUri?: string;
 }
 
 export const authService = {

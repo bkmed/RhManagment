@@ -91,6 +91,11 @@ export const ChatScreen = () => {
                     contentContainerStyle={styles.listContent}
                     onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
                     onLayout={() => flatListRef.current?.scrollToEnd()}
+                    ListEmptyComponent={() => (
+                        <View style={styles.centered}>
+                            <Text style={{ color: theme.colors.subText }}>{t('chat.noMessages')}</Text>
+                        </View>
+                    )}
                 />
 
                 <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border }]}>
@@ -175,5 +180,11 @@ const styles = StyleSheet.create({
     sendIcon: {
         fontSize: 20,
         color: '#FFF',
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 40,
     },
 });
