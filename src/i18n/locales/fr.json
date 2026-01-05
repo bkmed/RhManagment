@@ -108,6 +108,9 @@
     "details": "Détails",
     "done": "Terminé",
     "downloadCalendarFile": "Fichier de calendrier téléchargé",
+    "assigned": "Assigné",
+    "available": "Disponible",
+    "maintenance": "Maintenance",
     "edit": "Modifier",
     "error": "Erreur",
     "errorTitle": "Erreur",
@@ -582,6 +585,7 @@
     "title": "Paie",
     "update": "Mettre à jour",
     "urgent": "URGENT",
+    "issuedBy": "Délivré par",
     "year": "Année"
   },
   "payrollDetails": {

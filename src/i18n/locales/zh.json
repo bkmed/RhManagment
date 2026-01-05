@@ -108,6 +108,9 @@
         "details": "详情",
         "done": "完成",
         "downloadCalendarFile": "日历文件已下载",
+        "assigned": "已分配",
+        "available": "可用",
+        "maintenance": "维护",
         "edit": "编辑",
         "error": "错误",
         "errorTitle": "错误",
@@ -582,6 +585,7 @@
         "title": "薪酬",
         "update": "更新",
         "urgent": "紧急",
+        "issuedBy": "颁发者",
         "year": "年"
     },
     "payrollDetails": {

@@ -108,6 +108,9 @@
     "details": "التفاصيل",
     "done": "تم",
     "downloadCalendarFile": "تم تنزيل ملف التقويم",
+    "assigned": "مُخصص",
+    "available": "متاح",
+    "maintenance": "صيانة",
     "edit": "تعديل",
     "error": "خطأ",
     "errorTitle": "خطأ",
@@ -582,6 +585,7 @@
     "title": "الرواتب",
     "update": "تحديث",
     "urgent": "عاجل",
+    "issuedBy": "صدر بواسطة",
     "year": "السنة"
   },
   "payrollDetails": {

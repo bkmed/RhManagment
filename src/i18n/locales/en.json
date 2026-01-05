@@ -108,6 +108,9 @@
     "details": "Details",
     "done": "Done",
     "downloadCalendarFile": "Calendar file downloaded",
+    "assigned": "Assigned",
+    "available": "Available",
+    "maintenance": "Maintenance",
     "edit": "Edit",
     "error": "Error",
     "errorTitle": "Error",
@@ -582,6 +585,7 @@
     "title": "Payroll",
     "update": "Update",
     "urgent": "URGENT",
+    "issuedBy": "Issued By",
     "year": "Year"
   },
   "payrollDetails": {

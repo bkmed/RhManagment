@@ -40,6 +40,14 @@ export const SearchOverlay = ({ visible, onClose, onSelect }: {
     const teams = useSelector(selectAllTeams);
     const announcements = useSelector(selectAllAnnouncements);
 
+    const formatDate = (dateString: string) => {
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch {
+            return dateString;
+        }
+    };
+
     const results = useMemo(() => {
         if (!query.trim()) return [];
 
@@ -92,14 +100,6 @@ export const SearchOverlay = ({ visible, onClose, onSelect }: {
 
         return searchResults;
     }, [query, employees, teams, announcements]);
-
-    const formatDate = (dateString: string) => {
-        try {
-            return new Date(dateString).toLocaleDateString();
-        } catch {
-            return dateString;
-        }
-    };
 
     const getIcon = (type: string) => {
         switch (type) {

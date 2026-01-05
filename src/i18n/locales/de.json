@@ -108,6 +108,9 @@
     "details": "Details",
     "done": "Fertig",
     "downloadCalendarFile": "Kalenderdatei heruntergeladen",
+    "assigned": "Zugewiesen",
+    "available": "Verfügbar",
+    "maintenance": "Wartung",
     "edit": "Bearbeiten",
     "error": "Fehler",
     "errorTitle": "Fehler",
@@ -582,6 +585,7 @@
     "title": "Gehaltsabrechnung",
     "update": "Aktualisieren",
     "urgent": "DRINGEND",
+    "issuedBy": "Ausgestellt von",
     "year": "Jahr"
   },
   "payrollDetails": {

@@ -108,6 +108,9 @@
         "details": "विवरण",
         "done": "हो गया",
         "downloadCalendarFile": "कैलेंडर फ़ाइल डाउनलोड की गई",
+        "assigned": "असाइन किया गया",
+        "available": "उपलब्ध",
+        "maintenance": "रखरखाव",
         "edit": "संपादित करें",
         "error": "त्रुटि",
         "errorTitle": "त्रुटि",
@@ -582,6 +585,7 @@
         "title": "पेरोल",
         "update": "अपडेट करें",
         "urgent": "अति आवश्यक",
+        "issuedBy": "द्वारा जारी किया गया",
         "year": "वर्ष"
     },
     "payrollDetails": {
