@@ -16,6 +16,8 @@ import { Theme } from '../../theme';
 import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+import { CountryPicker } from '../../components/CountryPicker';
+import { isValidEmail } from '../../utils/validation';
 
 export const AddCompanyScreen = ({ navigation, route }: any) => {
     const editId = route?.params?.id;
@@ -59,8 +61,18 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
+
         if (!name.trim()) newErrors.name = t('common.required');
-        // Add more validation if needed (email regex, phone regex)
+
+        // Email validation
+        if (email && !isValidEmail(email)) {
+            newErrors.email = t('common.invalidEmail') || 'Invalid email address';
+        }
+
+        // Phone validation
+        if (phone && !/^[\d\s\-\+]+$/.test(phone)) {
+            newErrors.phone = t('common.invalidPhone') || 'Invalid phone number';
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -131,13 +143,11 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
 
                     {/* Country */}
                     <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>{t('companies.country') || 'Country'}</Text>
-                        <TextInput
-                            style={styles.input}
+                        <CountryPicker
+                            label={t('companies.country') || 'Country'}
                             value={country}
-                            onChangeText={setCountry}
-                            placeholder={t('companies.countryPlaceholder') || 'e.g. USA'}
-                            placeholderTextColor={theme.colors.subText}
+                            onSelect={setCountry}
+                            placeholder={t('companies.countryPlaceholder') || 'Select a country'}
                         />
                     </View>
 
@@ -145,27 +155,35 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
                     <View style={styles.fieldContainer}>
                         <Text style={styles.label}>{t('companies.email') || t('common.email')}</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.email && styles.inputError]}
                             value={email}
-                            onChangeText={setEmail}
+                            onChangeText={(text) => {
+                                setEmail(text);
+                                if (errors.email) setErrors({ ...errors, email: '' });
+                            }}
                             keyboardType="email-address"
                             autoCapitalize="none"
                             placeholder={t('companies.emailPlaceholder') || 'e.g. contact@acme.com'}
                             placeholderTextColor={theme.colors.subText}
                         />
+                        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
                     </View>
 
                     {/* Phone */}
                     <View style={styles.fieldContainer}>
                         <Text style={styles.label}>{t('companies.phone') || t('common.phone')}</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.phone && styles.inputError]}
                             value={phone}
-                            onChangeText={setPhone}
+                            onChangeText={(text) => {
+                                setPhone(text);
+                                if (errors.phone) setErrors({ ...errors, phone: '' });
+                            }}
                             keyboardType="phone-pad"
                             placeholder={t('companies.phonePlaceholder') || 'e.g. +1 234 567 890'}
                             placeholderTextColor={theme.colors.subText}
                         />
+                        {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
                     </View>
 
                     <TouchableOpacity style={styles.saveButton} onPress={handleSave}>

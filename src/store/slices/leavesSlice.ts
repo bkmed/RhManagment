@@ -41,8 +41,11 @@ export const selectUpcomingLeaves = createSelector(
     (items) => {
         const now = new Date().toISOString();
         return items
-            .filter((l: Leave) => l.status === 'pending' || l.startDate >= now)
-            .sort((a: Leave, b: Leave) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+            .filter((l: Leave) => (l.status === 'pending' || (l.startDate && l.startDate >= now)))
+            .sort((a: Leave, b: Leave) => {
+                if (!a.startDate || !b.startDate) return 0;
+                return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+            });
     }
 );
 
@@ -50,7 +53,5 @@ export const selectPendingLeaves = createSelector(
     [selectAllLeaves],
     (items) => items.filter((l: Leave) => l.status === 'pending')
 );
-
-export default leavesSlice.reducer;
 
 export default leavesSlice.reducer;

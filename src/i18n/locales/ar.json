@@ -643,6 +643,8 @@
     "denied": "مرفوض",
     "endTime": "End Time",
     "errorDuration": "Permission cannot exceed {{hours}} hours",
+    "invalidEmail": "عنوان البريد الإلكتروني غير صالح",
+    "invalidPhone": "رقم الهاتف غير صالح",
     "granted": "ممنوح",
     "invalidTime": "End time must be after start time",
     "maxHours": "Max Permission Hours",

@@ -42,5 +42,3 @@ export const selectPendingClaims = createSelector(
 );
 
 export default claimsSlice.reducer;
-
-export default claimsSlice.reducer;
