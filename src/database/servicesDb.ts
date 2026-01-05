@@ -38,12 +38,18 @@ export const servicesDb = {
         return selectAllServices(store.getState());
     },
 
-    add: async (name: string): Promise<number> => {
+    getByCompany: async (companyId: number): Promise<Service[]> => {
+        const all = selectAllServices(store.getState());
+        return all.filter(s => !s.companyId || s.companyId === companyId);
+    },
+
+    add: async (name: string, companyId?: number): Promise<number> => {
         const now = new Date().toISOString();
         const id = Date.now();
         const newService: Service = {
             id,
             name,
+            companyId,
             createdAt: now,
             updatedAt: now,
         };
@@ -51,12 +57,13 @@ export const servicesDb = {
         return id;
     },
 
-    update: async (id: number, name: string): Promise<void> => {
+    update: async (id: number, name: string, companyId?: number): Promise<void> => {
         const existing = selectAllServices(store.getState()).find(s => s.id === id);
         if (existing) {
             store.dispatch(updateServiceAction({
                 ...existing,
                 name,
+                companyId,
                 updatedAt: new Date().toISOString(),
             }));
         }

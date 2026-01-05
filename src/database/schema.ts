@@ -14,6 +14,7 @@ export interface Claim {
 export interface Service {
   id: number;
   name: string;
+  companyId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -127,6 +128,15 @@ export interface Company {
 export interface Department {
   id: number;
   name: string;
+  companyId?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CompanySettings {
+  id: number;
+  companyId: number;
+  maxPermissionHours: number;
   createdAt: string;
   updatedAt: string;
 }

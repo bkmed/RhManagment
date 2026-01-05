@@ -78,6 +78,7 @@
   },
   "common": {
     "add": "Hinzufügen",
+    "allCompanies": "Alle Unternehmen",
     "addToCalendar": "Zum Kalender hinzufügen",
     "addedToCalendar": "Termin zum Kalender hinzugefügt",
     "askAnything": "Frag mich was...",
@@ -466,6 +467,7 @@
     "personalInfo": "Persönliche Informationen",
     "profile": "Profil",
     "services": "Dienste",
+    "settings": "Einstellungen",
     "sections": {
       "analytics": "",
       "communication": "",
@@ -677,6 +679,20 @@
     "list": "Dienste",
     "title": "Dienste",
     "namePlaceholder": "z.B. IT-Support"
+  },
+  "settings": {
+    "personal": "Persönliche Einstellungen",
+    "company": "Unternehmenseinstellungen",
+    "language": "Sprache",
+    "theme": "Thema",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel",
+    "themePremium": "Premium",
+    "notifications": "Benachrichtigungen",
+    "pushNotifications": "Push-Benachrichtigungen",
+    "emailNotifications": "E-Mail-Benachrichtigungen",
+    "params": "Unternehmensparameter",
+    "management": "Ressourcenmanagement"
   },
   "signUp": {
     "emailLabel": "E-Mail",

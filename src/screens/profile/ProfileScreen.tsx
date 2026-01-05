@@ -12,6 +12,7 @@ import {
   TextInput,
 } from 'react-native';
 import { storageService } from '../../services/storage';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { notificationService } from '../../services/notificationService';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
@@ -42,6 +43,7 @@ export const ProfileScreen = ({ navigation }: any) => {
   const { showModal } = useModal();
   const { t, i18n } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
+  const { setActiveTab } = React.useContext(WebNavigationContext) as any;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -539,6 +541,20 @@ export const ProfileScreen = ({ navigation }: any) => {
               )}
             </View>
           ))}
+          <View style={styles.divider} />
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => {
+              if (Platform.OS === 'web') {
+                setActiveTab?.('Settings', 'PersonalSettings');
+              } else {
+                navigation.navigate('Settings', { screen: 'PersonalSettings' });
+              }
+            }}
+          >
+            <Text style={styles.menuItemText}>⚙️ {t('settings.personal')}</Text>
+            <Text style={styles.menuItemArrow}>›</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Admin Settings Section */}
@@ -547,22 +563,6 @@ export const ProfileScreen = ({ navigation }: any) => {
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>{t('permissions.settings')}</Text>
             </View>
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>{t('permissions.maxHours')}</Text>
-              <TextInput
-                style={styles.input}
-                value={maxPermissionHours}
-                onChangeText={(text) => {
-                  const hours = text.replace(/[^0-9]/g, '');
-                  setMaxPermissionHours(hours);
-                  storageService.setString('config_max_permission_hours', hours);
-                }}
-                keyboardType="numeric"
-                placeholder="2"
-                placeholderTextColor={theme.colors.subText}
-              />
-            </View>
-            <View style={styles.divider} />
             <TouchableOpacity
               style={styles.menuItem}
               onPress={() => navigation.navigate('ManageCurrencies')}
@@ -570,6 +570,24 @@ export const ProfileScreen = ({ navigation }: any) => {
               <Text style={styles.menuItemText}>💰 {t('payroll.manageCurrencies')}</Text>
               <Text style={styles.menuItemArrow}>›</Text>
             </TouchableOpacity>
+            {user?.role === 'admin' && (
+              <>
+                <View style={styles.divider} />
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => {
+                    if (Platform.OS === 'web') {
+                      setActiveTab?.('Settings', 'CompanySettings');
+                    } else {
+                      navigation.navigate('Settings', { screen: 'CompanySettings' });
+                    }
+                  }}
+                >
+                  <Text style={styles.menuItemText}>🏢 {t('settings.company')}</Text>
+                  <Text style={styles.menuItemArrow}>›</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         )}
 

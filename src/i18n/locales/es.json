@@ -78,6 +78,7 @@
   },
   "common": {
     "add": "Añadir",
+    "allCompanies": "Todas las empresas",
     "addToCalendar": "Añadir al calendario",
     "addedToCalendar": "Evento añadido al calendario",
     "askAnything": "Pregúntame lo que sea...",
@@ -466,6 +467,7 @@
     "personalInfo": "Información Personal",
     "profile": "Perfil",
     "services": "Servicios",
+    "settings": "Ajustes",
     "sections": {
       "analytics": "Analítica",
       "communication": "Comunicación",
@@ -677,6 +679,20 @@
     "list": "Servicios",
     "title": "Servicios",
     "namePlaceholder": "ej. Soporte IT"
+  },
+  "settings": {
+    "personal": "Ajustes Personales",
+    "company": "Ajustes de Empresa",
+    "language": "Idioma",
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themePremium": "Premium",
+    "notifications": "Notificaciones",
+    "pushNotifications": "Notificaciones Push",
+    "emailNotifications": "Notificaciones por Email",
+    "params": "Parámetros de empresa",
+    "management": "Gestión de recursos"
   },
   "signUp": {
     "emailLabel": "Correo electrónico",

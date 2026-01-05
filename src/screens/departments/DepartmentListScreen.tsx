@@ -16,7 +16,7 @@ import { Department } from '../../database/schema';
 import { Theme } from '../../theme';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
-export const DepartmentListScreen = ({ navigation }: any) => {
+export const DepartmentListScreen = ({ navigation, route }: any) => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const { showModal } = useModal();
@@ -24,30 +24,37 @@ export const DepartmentListScreen = ({ navigation }: any) => {
     const styles = useMemo(() => createStyles(theme), [theme]);
     const { setActiveTab } = React.useContext(WebNavigationContext) as any;
 
+    const companyId = route?.params?.companyId;
+
     const [departments, setDepartments] = useState<Department[]>([]);
 
     useEffect(() => {
         loadDepartments();
-    }, []);
+    }, [companyId]);
 
     const loadDepartments = async () => {
-        const all = await departmentsDb.getAll();
-        setDepartments(all);
+        if (companyId) {
+            const all = await departmentsDb.getByCompany(companyId);
+            setDepartments(all);
+        } else {
+            const all = await departmentsDb.getAll();
+            setDepartments(all);
+        }
     };
 
     const handleAdd = () => {
         if (Platform.OS === 'web') {
-            setActiveTab?.('Departments', 'AddDepartment');
+            setActiveTab?.('Departments', 'AddDepartment', { companyId });
         } else {
-            navigation.navigate('AddDepartment');
+            navigation.navigate('AddDepartment', { companyId });
         }
     };
 
     const handleEdit = (id: number, name: string) => {
         if (Platform.OS === 'web') {
-            setActiveTab?.('Departments', 'AddDepartment', { departmentId: id });
+            setActiveTab?.('Departments', 'AddDepartment', { departmentId: id, companyId });
         } else {
-            navigation.navigate('AddDepartment', { departmentId: id });
+            navigation.navigate('AddDepartment', { departmentId: id, companyId });
         }
     };
 

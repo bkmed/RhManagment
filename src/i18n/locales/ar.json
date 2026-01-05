@@ -78,6 +78,7 @@
   },
   "common": {
     "add": "إضافة",
+    "allCompanies": "جميع الشركات",
     "addToCalendar": "إضافة إلى التقويم",
     "addedToCalendar": "تمت إضافة الحدث إلى التقويم",
     "askAnything": "اسألني أي شيء...",
@@ -466,6 +467,7 @@
     "personalInfo": "معلومات شخصية",
     "profile": "الملف الشخصي",
     "services": "الخدمات",
+    "settings": "الإعدادات",
     "sections": {
       "analytics": "",
       "communication": "",
@@ -677,6 +679,20 @@
     "list": "الخدمات",
     "title": "الخدمات",
     "namePlaceholder": "مثال: دعم تكنولوجيا المعلومات"
+  },
+  "settings": {
+    "personal": "الإعدادات الشخصية",
+    "company": "إعدادات الشركة",
+    "language": "اللغة",
+    "theme": "المظهر",
+    "themeLight": "فاتح",
+    "themeDark": "داكن",
+    "themePremium": "مميز",
+    "notifications": "التنبيهات",
+    "pushNotifications": "تنبيهات الهاتف",
+    "emailNotifications": "تنبيهات البريد الإلكتروني",
+    "params": "معايير الشركة",
+    "management": "إدارة الموارد"
   },
   "signUp": {
     "emailLabel": "البريد الإلكتروني",

@@ -13,6 +13,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { departmentsDb } from '../../database/departmentsDb';
 import { Theme } from '../../theme';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+import { useSelector } from 'react-redux';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { Dropdown } from '../../components/Dropdown';
 
 export const AddDepartmentScreen = ({ navigation, route }: any) => {
     const { theme } = useTheme();
@@ -22,10 +25,18 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
     const { setActiveTab } = React.useContext(WebNavigationContext) as any;
 
     const departmentId = route?.params?.departmentId;
+    const companyId = route?.params?.companyId;
     const isEdit = !!departmentId;
 
     const [name, setName] = useState('');
+    const [selectedCompanyId, setSelectedCompanyId] = useState<number | undefined>(companyId);
     const [error, setError] = useState('');
+
+    const companies = useSelector(selectAllCompanies);
+    const companyOptions = useMemo(() => [
+        { label: t('common.allCompanies') || 'All Companies / Global', value: 'global' },
+        ...companies.map(c => ({ label: c.name, value: c.id.toString() }))
+    ], [companies, t]);
 
     useEffect(() => {
         if (isEdit) {
@@ -35,10 +46,13 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
 
     const loadDepartment = async () => {
         try {
-            const departments = await departmentsDb.getAll();
+            const departments = companyId
+                ? await departmentsDb.getByCompany(companyId)
+                : await departmentsDb.getAll();
             const dept = departments.find(d => d.id === departmentId);
             if (dept) {
                 setName(dept.name);
+                setSelectedCompanyId(dept.companyId);
             }
         } catch (err) {
             showToast(t('common.error'), 'error');
@@ -53,16 +67,16 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
 
         try {
             if (isEdit) {
-                await departmentsDb.update(departmentId, name.trim());
+                await departmentsDb.update(departmentId, name.trim(), selectedCompanyId);
                 showToast(t('common.success'), 'success');
             } else {
-                await departmentsDb.add(name.trim());
+                await departmentsDb.add(name.trim(), selectedCompanyId);
                 showToast(t('common.success'), 'success');
             }
 
             // Navigate back
             if (Platform.OS === 'web') {
-                setActiveTab?.('Departments');
+                setActiveTab?.('Departments', '', { companyId: selectedCompanyId });
             } else {
                 navigation.goBack();
             }
@@ -85,6 +99,15 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
                 <Text style={styles.title}>
                     {isEdit ? t('common.edit') : t('departments.add')}
                 </Text>
+
+                <View style={styles.fieldContainer}>
+                    <Dropdown
+                        label={t('companies.title')}
+                        data={companyOptions}
+                        value={selectedCompanyId ? selectedCompanyId.toString() : 'global'}
+                        onSelect={(val) => setSelectedCompanyId(val === 'global' ? undefined : Number(val))}
+                    />
+                </View>
 
                 <View style={styles.fieldContainer}>
                     <Text style={styles.label}>{t('common.department')} *</Text>

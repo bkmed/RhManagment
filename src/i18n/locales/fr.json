@@ -78,6 +78,7 @@
   },
   "common": {
     "add": "Ajouter",
+    "allCompanies": "Toutes les entreprises",
     "addToCalendar": "Ajouter au calendrier",
     "addedToCalendar": "Événement ajouté au calendrier",
     "askAnything": "Demandez-moi n'importe quoi...",
@@ -466,6 +467,7 @@
     "personalInfo": "Informations Personnelles",
     "profile": "Profil",
     "services": "Services",
+    "settings": "Paramètres",
     "sections": {
       "analytics": "",
       "communication": "",
@@ -677,6 +679,20 @@
     "list": "Services",
     "title": "Services",
     "namePlaceholder": "ex. Support IT"
+  },
+  "settings": {
+    "personal": "Paramètres Personnels",
+    "company": "Paramètres Entreprise",
+    "language": "Langue",
+    "theme": "Thème",
+    "themeLight": "Clair",
+    "themeDark": "Sombre",
+    "themePremium": "Premium",
+    "notifications": "Notifications",
+    "pushNotifications": "Notifications Push",
+    "emailNotifications": "Notifications Email",
+    "params": "Paramètres de l'entreprise",
+    "management": "Gestion des ressources"
   },
   "signUp": {
     "emailLabel": "Email",

@@ -57,6 +57,8 @@ import { CareerHubScreen } from '../screens/profile/CareerHubScreen';
 import { PerformanceReviewScreen } from '../screens/analytics/PerformanceReviewScreen';
 import { OrgChartScreen } from '../screens/companies/OrgChartScreen';
 import { AnnouncementsScreen } from '../screens/home/AnnouncementsScreen';
+import { PersonalSettingsScreen } from '../screens/settings/PersonalSettingsScreen';
+import { CompanySettingsScreen } from '../screens/settings/CompanySettingsScreen';
 import { ChatScreen } from '../screens/home/ChatScreen';
 import { CompanyChatScreen } from '../screens/chat/CompanyChatScreen';
 import { NotificationBell } from '../components/common/NotificationBell';
@@ -425,7 +427,10 @@ const useNavigationSections = () => {
 
     sections.push({
       title: t('sections.personal'),
-      items: [{ key: 'Profile', label: t('navigation.profile'), icon: '👤' }]
+      items: [
+        { key: 'Profile', label: t('navigation.profile'), icon: '👤' },
+        { key: 'Settings', label: t('navigation.settings'), icon: '⚙️' }
+      ]
     });
 
     return sections;
@@ -549,6 +554,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
       <Drawer.Screen name="Claims" component={ClaimsStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
+      <Drawer.Screen name="Settings" component={SettingsStack} />
       <Drawer.Screen name="Announcements" component={AnnouncementsScreen} />
       <Drawer.Screen name="Chat" component={CompanyChatScreen} />
       {/* Map other screens if needed, ensuring names match keys */}
@@ -669,6 +675,10 @@ const WebNavigator = () => {
         return <AnnouncementsScreen />;
       case 'Chat':
         return <CompanyChatScreen />;
+      case 'Settings':
+        if (subScreen === 'CompanySettings')
+          return <CompanySettingsScreen />;
+        return <PersonalSettingsScreen />;
       case 'Profile':
         if (subScreen === 'CareerHub')
           return <CareerHubScreen />;

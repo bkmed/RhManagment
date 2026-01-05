@@ -78,6 +78,7 @@
   },
   "common": {
     "add": "Add",
+    "allCompanies": "All Companies",
     "addToCalendar": "Add to Calendar",
     "addedToCalendar": "Event added to calendar",
     "askAnything": "Ask me anything...",
@@ -462,10 +463,10 @@
     "leaves": "Leaves",
     "notifications": "Notifications",
     "orgChart": "Org Chart",
+    "params": "Params",
     "payroll": "Payroll",
-    "personalInfo": "Personal Information",
-    "profile": "Profile",
     "services": "Services",
+    "settings": "Settings",
     "sections": {
       "analytics": "Analytics",
       "communication": "Communication",
@@ -677,6 +678,20 @@
     "list": "Services",
     "title": "Services",
     "namePlaceholder": "e.g., IT Support"
+  },
+  "settings": {
+    "personal": "Personal Settings",
+    "company": "Company Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themePremium": "Premium",
+    "notifications": "Notifications",
+    "pushNotifications": "Push Notifications",
+    "emailNotifications": "Email Notifications",
+    "params": "Company Parameters",
+    "management": "Resource Management"
   },
   "signUp": {
     "emailLabel": "Email",

@@ -13,6 +13,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { servicesDb } from '../../database/servicesDb';
 import { Theme } from '../../theme';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+import { useSelector } from 'react-redux';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { Dropdown } from '../../components/Dropdown';
 
 export const AddServiceScreen = ({ navigation, route }: any) => {
     const { theme } = useTheme();
@@ -22,10 +25,18 @@ export const AddServiceScreen = ({ navigation, route }: any) => {
     const { setActiveTab } = React.useContext(WebNavigationContext) as any;
 
     const serviceId = route?.params?.serviceId;
+    const companyId = route?.params?.companyId;
     const isEdit = !!serviceId;
 
     const [name, setName] = useState('');
+    const [selectedCompanyId, setSelectedCompanyId] = useState<number | undefined>(companyId);
     const [error, setError] = useState('');
+
+    const companies = useSelector(selectAllCompanies);
+    const companyOptions = useMemo(() => [
+        { label: t('common.allCompanies') || 'All Companies / Global', value: 'global' },
+        ...companies.map(c => ({ label: c.name, value: c.id.toString() }))
+    ], [companies, t]);
 
     useEffect(() => {
         if (isEdit) {
@@ -35,10 +46,13 @@ export const AddServiceScreen = ({ navigation, route }: any) => {
 
     const loadService = async () => {
         try {
-            const services = await servicesDb.getAll();
+            const services = companyId
+                ? await servicesDb.getByCompany(companyId)
+                : await servicesDb.getAll();
             const service = services.find(s => s.id === serviceId);
             if (service) {
                 setName(service.name);
+                setSelectedCompanyId(service.companyId);
             }
         } catch (err) {
             showToast(t('common.error'), 'error');
@@ -53,16 +67,16 @@ export const AddServiceScreen = ({ navigation, route }: any) => {
 
         try {
             if (isEdit) {
-                await servicesDb.update(serviceId, name.trim());
+                await servicesDb.update(serviceId, name.trim(), selectedCompanyId);
                 showToast(t('common.success'), 'success');
             } else {
-                await servicesDb.add(name.trim());
+                await servicesDb.add(name.trim(), selectedCompanyId);
                 showToast(t('common.success'), 'success');
             }
 
             // Navigate back
             if (Platform.OS === 'web') {
-                setActiveTab?.('Services');
+                setActiveTab?.('Services', '', { companyId: selectedCompanyId });
             } else {
                 navigation.goBack();
             }
@@ -85,6 +99,15 @@ export const AddServiceScreen = ({ navigation, route }: any) => {
                 <Text style={styles.title}>
                     {isEdit ? t('common.edit') : t('services.add')}
                 </Text>
+
+                <View style={styles.fieldContainer}>
+                    <Dropdown
+                        label={t('companies.title')}
+                        data={companyOptions}
+                        value={selectedCompanyId ? selectedCompanyId.toString() : 'global'}
+                        onSelect={(val) => setSelectedCompanyId(val === 'global' ? undefined : Number(val))}
+                    />
+                </View>
 
                 <View style={styles.fieldContainer}>
                     <Text style={styles.label}>{t('common.service')} *</Text>

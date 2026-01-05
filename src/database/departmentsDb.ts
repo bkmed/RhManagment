@@ -1,37 +1,76 @@
+import { store } from '../store';
+import {
+    setDepartments,
+    addDepartment as addDepartmentAction,
+    updateDepartment as updateDepartmentAction,
+    deleteDepartment as deleteDepartmentAction,
+    selectAllDepartments,
+} from '../store/slices/departmentsSlice';
 import { Department } from './schema';
 
-// Mocking the DB for now since I cannot easily create the Redux slice in one step without verifying structure.
-let MOCK_DEPARTMENTS: Department[] = [
-    { id: 1, name: 'HR', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    { id: 2, name: 'Engineering', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+const DEFAULT_DEPARTMENTS: string[] = [
+    'Finance',
+    'Human Resources',
+    'Information Technology',
+    'Legal',
+    'Marketing',
+    'Operations',
+    'Research & Development',
+    'Sales'
 ];
 
 export const departmentsDb = {
-    getAll: async (): Promise<Department[]> => {
-        return Promise.resolve([...MOCK_DEPARTMENTS]);
-    },
-
-    add: async (name: string): Promise<number> => {
-        const newDept: Department = {
-            id: Date.now(),
-            name,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-        MOCK_DEPARTMENTS.push(newDept);
-        return Promise.resolve(newDept.id);
-    },
-
-    update: async (id: number, name: string): Promise<void> => {
-        const index = MOCK_DEPARTMENTS.findIndex(d => d.id === id);
-        if (index !== -1) {
-            MOCK_DEPARTMENTS[index] = { ...MOCK_DEPARTMENTS[index], name, updatedAt: new Date().toISOString() };
+    // Initialize with default departments if empty
+    init: async () => {
+        const existing = selectAllDepartments(store.getState());
+        if (existing.length === 0) {
+            const now = new Date().toISOString();
+            const initial = DEFAULT_DEPARTMENTS.map((name, index) => ({
+                id: index + 1,
+                name,
+                createdAt: now,
+                updatedAt: now,
+            }));
+            store.dispatch(setDepartments(initial));
         }
-        return Promise.resolve();
+    },
+
+    getAll: async (): Promise<Department[]> => {
+        return selectAllDepartments(store.getState());
+    },
+
+    getByCompany: async (companyId: number): Promise<Department[]> => {
+        const all = selectAllDepartments(store.getState());
+        return all.filter(d => !d.companyId || d.companyId === companyId);
+    },
+
+    add: async (name: string, companyId?: number): Promise<number> => {
+        const now = new Date().toISOString();
+        const id = Date.now();
+        const newDept: Department = {
+            id,
+            name,
+            companyId,
+            createdAt: now,
+            updatedAt: now,
+        };
+        store.dispatch(addDepartmentAction(newDept));
+        return id;
+    },
+
+    update: async (id: number, name: string, companyId?: number): Promise<void> => {
+        const existing = selectAllDepartments(store.getState()).find(d => d.id === id);
+        if (existing) {
+            store.dispatch(updateDepartmentAction({
+                ...existing,
+                name,
+                companyId,
+                updatedAt: new Date().toISOString(),
+            }));
+        }
     },
 
     delete: async (id: number): Promise<void> => {
-        MOCK_DEPARTMENTS = MOCK_DEPARTMENTS.filter(d => d.id !== id);
-        return Promise.resolve();
+        store.dispatch(deleteDepartmentAction(id));
     }
 };

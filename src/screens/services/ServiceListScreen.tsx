@@ -16,7 +16,7 @@ import { Service } from '../../database/schema';
 import { Theme } from '../../theme';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
-export const ServiceListScreen = ({ navigation }: any) => {
+export const ServiceListScreen = ({ navigation, route }: any) => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const { showModal } = useModal();
@@ -24,30 +24,37 @@ export const ServiceListScreen = ({ navigation }: any) => {
     const styles = useMemo(() => createStyles(theme), [theme]);
     const { setActiveTab } = React.useContext(WebNavigationContext) as any;
 
+    const companyId = route?.params?.companyId;
+
     const [services, setServices] = useState<Service[]>([]);
 
     useEffect(() => {
         loadServices();
-    }, []);
+    }, [companyId]);
 
     const loadServices = async () => {
-        const all = await servicesDb.getAll();
-        setServices(all);
+        if (companyId) {
+            const all = await servicesDb.getByCompany(companyId);
+            setServices(all);
+        } else {
+            const all = await servicesDb.getAll();
+            setServices(all);
+        }
     };
 
     const handleAdd = () => {
         if (Platform.OS === 'web') {
-            setActiveTab?.('Services', 'AddService');
+            setActiveTab?.('Services', 'AddService', { companyId });
         } else {
-            navigation.navigate('AddService');
+            navigation.navigate('AddService', { companyId });
         }
     };
 
     const handleEdit = (id: number, name: string) => {
         if (Platform.OS === 'web') {
-            setActiveTab?.('Services', 'AddService', { serviceId: id });
+            setActiveTab?.('Services', 'AddService', { serviceId: id, companyId });
         } else {
-            navigation.navigate('AddService', { serviceId: id });
+            navigation.navigate('AddService', { serviceId: id, companyId });
         }
     };
 
