@@ -180,6 +180,8 @@
     "title": "Unternehmen"
   },
   "departments": {
+    "add": "Abteilung hinzufügen",
+    "empty": "Keine Abteilungen gefunden",
     "finance": "Finanzen",
     "hr": "Personalwesen (HR)",
     "it": "Informationstechnik (IT)",
@@ -187,7 +189,9 @@
     "marketing": "Marketing",
     "operations": "Betrieb",
     "rd": "Forschung & Entwicklung",
-    "sales": "Vertrieb"
+    "sales": "Vertrieb",
+    "title": "Abteilungen",
+    "namePlaceholder": "z.B. IT-Abteilung"
   },
   "employees": {
     "add": "Mitarbeiter hinzufügen",
@@ -449,6 +453,7 @@
     "chat": "Chat",
     "claims": "Reklamationen",
     "companies": "Unternehmen",
+    "departments": "Abteilungen",
     "employees": "Mitarbeiter",
     "employmentDetails": "Beschäftigungsdetails",
     "history": "Verlauf",
@@ -460,6 +465,7 @@
     "payroll": "Gehaltsabrechnung",
     "personalInfo": "Persönliche Informationen",
     "profile": "Profil",
+    "services": "Dienste",
     "sections": {
       "analytics": "",
       "communication": "",
@@ -664,6 +670,13 @@
     "management": "Verwaltung",
     "organization": "Organisation",
     "personal": "Persönlich"
+  },
+  "services": {
+    "add": "Dienst hinzufügen",
+    "empty": "Keine Dienste gefunden",
+    "list": "Dienste",
+    "title": "Dienste",
+    "namePlaceholder": "z.B. IT-Support"
   },
   "signUp": {
     "emailLabel": "E-Mail",

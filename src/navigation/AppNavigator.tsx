@@ -48,6 +48,10 @@ import { CompanyListScreen } from '../screens/companies/CompanyListScreen';
 import { AddCompanyScreen } from '../screens/companies/AddCompanyScreen';
 import { TeamListScreen } from '../screens/teams/TeamListScreen';
 import { AddTeamScreen } from '../screens/teams/AddTeamScreen';
+import { DepartmentListScreen } from '../screens/departments/DepartmentListScreen';
+import { AddDepartmentScreen } from '../screens/departments/AddDepartmentScreen';
+import { ServiceListScreen } from '../screens/services/ServiceListScreen';
+import { AddServiceScreen } from '../screens/services/AddServiceScreen';
 import { TeamVacationsScreen } from '../screens/teams/TeamVacationsScreen';
 import { CareerHubScreen } from '../screens/profile/CareerHubScreen';
 import { PerformanceReviewScreen } from '../screens/analytics/PerformanceReviewScreen';
@@ -268,6 +272,43 @@ const TeamStack = () => {
   );
 };
 
+const DepartmentStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="DepartmentList"
+        component={DepartmentListScreen}
+        options={{ title: t('navigation.departments') }}
+      />
+      <Stack.Screen
+        name="AddDepartment"
+        component={AddDepartmentScreen}
+        options={{ title: t('departments.add') }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const ServiceStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="ServiceList"
+        component={ServiceListScreen}
+        options={{ title: t('navigation.services') }}
+      />
+      <Stack.Screen
+        name="AddService"
+        component={AddServiceScreen}
+        options={{ title: t('services.add') }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+
 const ProfileStack = () => {
   const { t } = useTranslation();
   return (
@@ -279,19 +320,9 @@ const ProfileStack = () => {
         options={{ headerShown: true, title: t('navigation.careerHub') }}
       />
       <Stack.Screen
-        name="ManageServices"
-        component={ManageServicesScreen}
-        options={{ headerShown: true, title: t('payroll.manageServices') }}
-      />
-      <Stack.Screen
         name="ManageCurrencies"
         component={ManageCurrenciesScreen}
         options={{ headerShown: true, title: t('payroll.currency') || 'Currencies' }}
-      />
-      <Stack.Screen
-        name="ManageDepartments"
-        component={ManageDepartmentsScreen}
-        options={{ headerShown: true, title: t('organization.manageDepartments') }}
       />
       <Stack.Screen
         name="MyTeam"
@@ -363,6 +394,8 @@ const useNavigationSections = () => {
     if (user?.role === 'admin') {
       organizationItems.push({ key: 'Companies', label: t('navigation.companies'), icon: '🏢' });
       organizationItems.push({ key: 'Teams', label: t('navigation.teams'), icon: '🤝' });
+      organizationItems.push({ key: 'Departments', label: t('navigation.departments'), icon: '🏛️' });
+      organizationItems.push({ key: 'Services', label: t('navigation.services'), icon: '⚙️' });
     }
 
     if (organizationItems.length > 0) {
@@ -511,6 +544,8 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Employees" component={EmployeesStack} />
       <Drawer.Screen name="Companies" component={CompanyStack} />
       <Drawer.Screen name="Teams" component={TeamStack} />
+      <Drawer.Screen name="Departments" component={DepartmentStack} />
+      <Drawer.Screen name="Services" component={ServiceStack} />
       <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
       <Drawer.Screen name="Claims" component={ClaimsStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
@@ -622,6 +657,14 @@ const WebNavigator = () => {
         if (subScreen === 'AddTeam')
           return <AddTeamScreen route={mockRoute} />;
         return <TeamListScreen />;
+      case 'Departments':
+        if (subScreen === 'AddDepartment')
+          return <AddDepartmentScreen route={mockRoute} />;
+        return <DepartmentListScreen />;
+      case 'Services':
+        if (subScreen === 'AddService')
+          return <AddServiceScreen route={mockRoute} />;
+        return <ServiceListScreen />;
       case 'Announcements':
         return <AnnouncementsScreen />;
       case 'Chat':
@@ -629,12 +672,8 @@ const WebNavigator = () => {
       case 'Profile':
         if (subScreen === 'CareerHub')
           return <CareerHubScreen />;
-        if (subScreen === 'ManageServices')
-          return <ManageServicesScreen />;
         if (subScreen === 'ManageCurrencies')
           return <ManageCurrenciesScreen />;
-        if (subScreen === 'ManageDepartments')
-          return <ManageDepartmentsScreen />;
         if (subScreen === 'MyTeam')
           return <MyTeamScreen />;
         return <ProfileStack />;

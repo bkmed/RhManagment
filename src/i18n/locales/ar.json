@@ -180,6 +180,8 @@
     "title": "الشركات"
   },
   "departments": {
+    "add": "إضافة قسم",
+    "empty": "لا توجد أقسام",
     "finance": "المالية",
     "hr": "الموارد البشرية",
     "it": "تكنولوجيا المعلومات",
@@ -187,7 +189,9 @@
     "marketing": "التسويق",
     "operations": "العمليات",
     "rd": "البحث والتطوير",
-    "sales": "المبيعات"
+    "sales": "المبيعات",
+    "title": "الأقسام",
+    "namePlaceholder": "مثال: قسم تكنولوجيا المعلومات"
   },
   "employees": {
     "add": "إضافة موظف",
@@ -449,6 +453,7 @@
     "chat": "الدردشة",
     "claims": "المطالبات",
     "companies": "الشركات",
+    "departments": "الأقسام",
     "employees": "الموظفون",
     "employmentDetails": "تفاصيل التوظيف",
     "history": "السجل",
@@ -460,6 +465,7 @@
     "payroll": "الرواتب",
     "personalInfo": "معلومات شخصية",
     "profile": "الملف الشخصي",
+    "services": "الخدمات",
     "sections": {
       "analytics": "",
       "communication": "",
@@ -664,6 +670,13 @@
     "management": "إدارة",
     "organization": "منظمة",
     "personal": "شخصي"
+  },
+  "services": {
+    "add": "إضافة خدمة",
+    "empty": "لا توجد خدمات",
+    "list": "الخدمات",
+    "title": "الخدمات",
+    "namePlaceholder": "مثال: دعم تكنولوجيا المعلومات"
   },
   "signUp": {
     "emailLabel": "البريد الإلكتروني",

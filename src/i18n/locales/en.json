@@ -180,6 +180,8 @@
     "title": "Companies"
   },
   "departments": {
+    "add": "Add Department",
+    "empty": "No departments found",
     "finance": "Finance",
     "hr": "Human Resources",
     "it": "Information Technology",
@@ -187,7 +189,9 @@
     "marketing": "Marketing",
     "operations": "Operations",
     "rd": "Research & Development",
-    "sales": "Sales"
+    "sales": "Sales",
+    "title": "Departments",
+    "namePlaceholder": "e.g., IT Department"
   },
   "employees": {
     "add": "Add Employee",
@@ -449,6 +453,7 @@
     "chat": "Chat",
     "claims": "Claims",
     "companies": "Companies",
+    "departments": "Departments",
     "employees": "Employees",
     "employmentDetails": "Employment Details",
     "history": "History",
@@ -460,6 +465,7 @@
     "payroll": "Payroll",
     "personalInfo": "Personal Information",
     "profile": "Profile",
+    "services": "Services",
     "sections": {
       "analytics": "Analytics",
       "communication": "Communication",
@@ -664,6 +670,13 @@
     "management": "",
     "organization": "",
     "personal": ""
+  },
+  "services": {
+    "add": "Add Service",
+    "empty": "No services found",
+    "list": "Services",
+    "title": "Services",
+    "namePlaceholder": "e.g., IT Support"
   },
   "signUp": {
     "emailLabel": "Email",
