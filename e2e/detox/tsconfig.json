@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "lib": [
+            "esnext"
+        ],
+        "types": [
+            "detox",
+            "jest",
+            "node"
+        ],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "strict": false
+    },
+    "include": [
+        "**/*.ts",
+        "**/*.js"
+    ]
+}

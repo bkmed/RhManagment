@@ -16,9 +16,9 @@
     "payroll": "Paie",
     "title": "Analytiques",
     "trends": "Tendances RH",
-    "upcomingLeavesChart": "Congés à venir",
-    "upcomingLeavesInsight": "Vous avez {{count}} congé à venir. Préparez les remplacements !",
-    "upcomingLeavesInsight_plural": "Vous avez {{count}} congés à venir. Préparez les remplacements !",
+    "upcomingLeavesChart": "Congés à venir (Employés)",
+    "upcomingLeavesInsight": "Il y a {{count}} employé avec des congés cette semaine.",
+    "upcomingLeavesInsight_plural": "Il y a {{count}} employés avec des congés cette semaine.",
     "recentQuestions": "Questions Récentes"
   },
   "announcements": {
@@ -26,7 +26,9 @@
     "noAnnouncements": "Aucune annonce trouvée",
     "placeholder": "Quoi de neuf dans l'entreprise ?",
     "publish": "Publier",
-    "title": "Annonces de l'Entreprise"
+    "title": "Occurrences des Questions",
+    "upcomingLeavesChart": "Congés à Venir",
+    "questionOccurrences": "Occurrences des Questions"
   },
   "chat": {
     "chat": "Messagerie",

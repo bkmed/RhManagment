@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useContext } from 'react';
 import {
     View,
     Text,
@@ -8,8 +8,6 @@ import {
     FlatList,
     KeyboardAvoidingView,
     Platform,
-    Modal,
-    Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -24,7 +22,6 @@ import { selectPendingLeaves } from '../../store/slices/leavesSlice';
 import { selectPendingClaims } from '../../store/slices/claimsSlice';
 import { trackQuery } from '../../store/slices/analyticsSlice';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
-import { useContext } from 'react';
 
 interface Message {
     id: string;
@@ -38,32 +35,26 @@ interface Message {
     };
 }
 
-export const ChatBot = ({
-    isScreen = false,
-    isOpen: externalIsOpen,
-    onClose: externalOnClose
-}: {
-    isScreen?: boolean;
-    isOpen?: boolean;
-    onClose?: () => void;
-}) => {
+export const ChatBot = ({ isScreen = true }: { isScreen?: boolean }) => {
     const { t } = useTranslation();
     const { theme } = useTheme();
     const { user } = useAuth();
     const navigation = useNavigation<any>();
-    const { setActiveTab } = useContext(WebNavigationContext) as any; // For Web Navigation
-    const styles = useMemo(() => createStyles(theme, isScreen), [theme, isScreen]);
-
-    const [internalIsOpen, setInternalIsOpen] = useState(isScreen);
-    const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
-    const setIsOpen = (val: boolean) => {
-        if (externalOnClose && !val) externalOnClose();
-        setInternalIsOpen(val);
-    };
+    const { setActiveTab } = useContext(WebNavigationContext) as any;
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [messages, setMessages] = useState<Message[]>([]);
+    const [inputText, setInputText] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
 
-    // Initial Greeting Effect
+    const employees = useSelector(selectAllEmployees);
+    const teams = useSelector(selectAllTeams);
+    const pendingLeaves = useSelector(selectPendingLeaves);
+    const pendingClaims = useSelector(selectPendingClaims);
+    const dispatch = useDispatch();
+
+    const flatListRef = useRef<FlatList>(null);
+
     useEffect(() => {
         setMessages([
             {
@@ -75,31 +66,6 @@ export const ChatBot = ({
         ]);
     }, [t, user?.name]);
 
-    const [inputText, setInputText] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
-
-    const employees = useSelector(selectAllEmployees);
-    const teams = useSelector(selectAllTeams);
-    const pendingLeaves = useSelector(selectPendingLeaves);
-    const pendingClaims = useSelector(selectPendingClaims);
-
-    const flatListRef = useRef<FlatList>(null);
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        if (isOpen) {
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 300,
-                useNativeDriver: true,
-            }).start();
-        } else {
-            fadeAnim.setValue(0);
-        }
-    }, [isOpen]);
-
-    const dispatch = useDispatch(); // Add dispatch hook
-
     const handleSend = () => {
         if (!inputText.trim()) return;
 
@@ -110,7 +76,6 @@ export const ChatBot = ({
             timestamp: new Date(),
         };
 
-        // Track user query in metrics
         dispatch(trackQuery({
             id: userMessage.id,
             text: userMessage.text,
@@ -122,9 +87,8 @@ export const ChatBot = ({
         setInputText('');
         setIsTyping(true);
 
-        // Simulate AI Response
         setTimeout(() => {
-            const response = generateResponse(inputText); // Now returns object
+            const response = generateResponse(inputText);
             const botMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 text: response.text,
@@ -137,9 +101,8 @@ export const ChatBot = ({
         }, 1000);
     };
 
-    // Multilingual Intent Keywords
     const INTENTS = {
-        payroll: ['payroll', 'salary', 'pay', 'paie', 'salaire', 'gehalt', 'nómina', 'nómina', 'راتب', 'رواتب'],
+        payroll: ['payroll', 'salary', 'pay', 'paie', 'salaire', 'gehalt', 'nómina', 'راتب', 'رواتب'],
         leave: ['leave', 'vacation', 'off', 'congé', 'vacances', 'urlaub', 'abwesenheit', 'vacaciones', 'permiso', 'إجازة', 'عطلة'],
         team: ['team', 'manager', 'équipe', 'chef', 'leitung', 'equipo', 'jefe', 'فريق', 'مدير'],
         claim: ['claim', 'expense', 'refund', 'réclamation', 'dépense', 'forderung', 'reclamación', 'gasto', 'مطالبة', 'مصروفات'],
@@ -152,10 +115,8 @@ export const ChatBot = ({
 
     const generateResponse = (text: string): { text: string, action?: { label: string, screen: string, subScreen?: string } } => {
         const input = text.toLowerCase();
-
         const checkIntent = (keywords: string[]) => keywords.some(k => input.includes(k));
 
-        // 1. Admin Specific: Stats & Approvals
         if (user?.role === 'admin') {
             if (checkIntent(INTENTS.approvals)) {
                 const totalPending = pendingLeaves.length + pendingClaims.length;
@@ -171,21 +132,17 @@ export const ChatBot = ({
                 };
             }
         } else {
-            // Employee Specific: My Requests Status
             if (checkIntent(INTENTS.approvals) || input.includes('status')) {
-                // Filter for current user's requests
                 const myPendingLeaves = pendingLeaves.filter(l => String(l.employeeId) === String(user?.id)).length;
                 const myPendingClaims = pendingClaims.filter(c => String(c.employeeId) === String(user?.id)).length;
                 const totalMyPending = myPendingLeaves + myPendingClaims;
-
                 return {
-                    text: t('chatBot.pendingApprovals', { count: totalMyPending }), // Reuse key or add new one? reused key works "You have X pending requests"
+                    text: t('chatBot.pendingApprovals', { count: totalMyPending }),
                     action: { label: t('chatBot.pendingApprovalsAction'), screen: 'LeavesTab' }
                 };
             }
         }
 
-        // 2. Navigation: Payroll
         if (checkIntent(INTENTS.payroll)) {
             return {
                 text: t('chatBot.payroll'),
@@ -193,7 +150,6 @@ export const ChatBot = ({
             };
         }
 
-        // 3. Navigation: Leaves / Vacation
         if (checkIntent(INTENTS.leave)) {
             return {
                 text: t('chatBot.leave', { days: user?.remainingVacationDays || 0 }),
@@ -201,7 +157,6 @@ export const ChatBot = ({
             };
         }
 
-        // 4. Navigation: Team
         if (checkIntent(INTENTS.team)) {
             const myTeam = teams.find(t => t.id === user?.teamId);
             if (myTeam) {
@@ -216,7 +171,6 @@ export const ChatBot = ({
             };
         }
 
-        // 5. Navigation: Claims
         if (checkIntent(INTENTS.claim)) {
             return {
                 text: t('chatBot.claim'),
@@ -224,7 +178,6 @@ export const ChatBot = ({
             };
         }
 
-        // 6. Navigation: Profile
         if (checkIntent(INTENTS.profile)) {
             return {
                 text: t('chatBot.profile'),
@@ -232,7 +185,6 @@ export const ChatBot = ({
             };
         }
 
-        // 7. General Employee Directory (for non-admins too)
         if (checkIntent(INTENTS.employees)) {
             return {
                 text: t('chatBot.employees', { count: employees.length }),
@@ -240,34 +192,21 @@ export const ChatBot = ({
             };
         }
 
-        if (checkIntent(INTENTS.howAreYou)) {
-            return { text: t('chatBot.responseCaVa') };
-        }
-
-        if (checkIntent(INTENTS.hello)) {
-            return { text: `${t('chatBot.howCanIHelp')}\n\n${t('chatBot.helpDetails')}` };
-        }
+        if (checkIntent(INTENTS.howAreYou)) return { text: t('chatBot.responseCaVa') };
+        if (checkIntent(INTENTS.hello)) return { text: `${t('chatBot.howCanIHelp')}\n\n${t('chatBot.helpDetails')}` };
 
         return { text: t('chatBot.fallback') };
     };
 
     const handleAction = (action: { label: string, screen: string, subScreen?: string }) => {
-        setIsOpen(false);
         if (Platform.OS === 'web') {
-            // Web Navigation
-            // Map mobile tab/stack names to Web Tabs
             let webTab = action.screen;
             if (action.screen === 'PayrollTab') webTab = 'Payroll';
             if (action.screen === 'LeavesTab') webTab = 'Leaves';
             if (action.screen === 'ClaimsTab') webTab = 'Claims';
-
             setActiveTab(webTab, action.subScreen);
         } else {
-            // Mobile Navigation
             if (action.subScreen) {
-                // Determine stack based on screen/tab
-                // This is a bit simplified; ideally navigation structure is more flattened or we know exact stack
-                // For now, let's try navigating to the Tab then the Screen if possible, or just the screen if it's unique
                 navigation.navigate(action.screen, { screen: action.subScreen });
             } else {
                 navigation.navigate(action.screen);
@@ -276,29 +215,13 @@ export const ChatBot = ({
     };
 
     const renderItem = ({ item }: { item: Message }) => (
-        <View style={[
-            styles.messageWrapper,
-            item.sender === 'user' ? styles.userWrapper : styles.botWrapper
-        ]}>
-            <View style={[
-                styles.bubble,
-                item.sender === 'user'
-                    ? { backgroundColor: theme.colors.primary }
-                    : { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, borderWidth: 1 }
-            ]}>
-                <Text style={[
-                    styles.messageText,
-                    { color: item.sender === 'user' ? '#FFF' : theme.colors.text }
-                ]}>
+        <View style={[styles.messageWrapper, item.sender === 'user' ? styles.userWrapper : styles.botWrapper]}>
+            <View style={[styles.bubble, item.sender === 'user' ? { backgroundColor: theme.colors.primary } : { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, borderWidth: 1 }]}>
+                <Text style={[styles.messageText, { color: item.sender === 'user' ? '#FFF' : theme.colors.text }]}>
                     {item.text}
                 </Text>
-
-                {/* Render Action Button if present */}
                 {item.action && (
-                    <TouchableOpacity
-                        style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
-                        onPress={() => handleAction(item.action!)}
-                    >
+                    <TouchableOpacity style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]} onPress={() => handleAction(item.action!)}>
                         <Text style={styles.actionButtonText}>{item.action.label} →</Text>
                     </TouchableOpacity>
                 )}
@@ -310,118 +233,51 @@ export const ChatBot = ({
     );
 
     return (
-        <>
-            <TouchableOpacity
-                style={[styles.floatingButton, { backgroundColor: theme.colors.primary }]}
-                onPress={() => setIsOpen(true)}
-            >
-                <Text style={styles.botIcon}>🤖</Text>
-                <View style={styles.proBadge}>
-                    <Text style={styles.proText}>PRO</Text>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.chatContainer, { backgroundColor: theme.colors.background, flex: 1 }]}>
+                <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
+                    <View style={styles.headerInfo}>
+                        <Text style={styles.headerTitle}>{t('common.assistant') || 'Assistant HR Pro'}</Text>
+                        <Text style={styles.headerStatus}>{t('common.online') || 'Online'}</Text>
+                    </View>
                 </View>
-            </TouchableOpacity>
 
-            <Modal
-                visible={isOpen}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={() => setIsOpen(false)}
-            >
-                <SafeAreaView style={styles.modalContainer}>
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                        style={[styles.chatContainer, { backgroundColor: theme.colors.background }]}
-                    >
-                        <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-                            <View style={styles.headerInfo}>
-                                <Text style={styles.headerTitle}>{t('common.assistant') || 'Assistant HR Pro'}</Text>
-                                <Text style={styles.headerStatus}>{t('common.online') || 'Online'}</Text>
-                            </View>
-                            <TouchableOpacity onPress={() => setIsOpen(false)} style={styles.closeButton}>
-                                <Text style={styles.closeIcon}>✕</Text>
-                            </TouchableOpacity>
-                        </View>
+                <FlatList
+                    ref={flatListRef}
+                    data={messages}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={styles.listContent}
+                    onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+                />
 
-                        <FlatList
-                            ref={flatListRef}
-                            data={messages}
-                            renderItem={renderItem}
-                            keyExtractor={(item) => item.id}
-                            contentContainerStyle={styles.listContent}
-                            onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
-                        />
+                {isTyping && (
+                    <Text style={[styles.typingIndicator, { color: theme.colors.subText }]}>
+                        Assistant is typing...
+                    </Text>
+                )}
 
-                        {isTyping && (
-                            <Text style={[styles.typingIndicator, { color: theme.colors.subText }]}>
-                                Assistant is typing...
-                            </Text>
-                        )}
-
-                        <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border }]}>
-                            <TextInput
-                                style={[styles.input, { color: theme.colors.text, borderColor: theme.colors.border }]}
-                                value={inputText}
-                                onChangeText={setInputText}
-                                placeholder={t('common.askAnything') || "Ask me anything..."}
-                                placeholderTextColor={theme.colors.subText}
-                            />
-                            <TouchableOpacity
-                                style={[styles.sendButton, { backgroundColor: theme.colors.primary }]}
-                                onPress={handleSend}
-                            >
-                                <Text style={styles.sendIcon}>🏹</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </KeyboardAvoidingView>
-                </SafeAreaView>
-            </Modal>
-        </>
+                <View style={[styles.inputContainer, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border }]}>
+                    <TextInput
+                        style={[styles.input, { color: theme.colors.text, borderColor: theme.colors.border }]}
+                        value={inputText}
+                        onChangeText={setInputText}
+                        placeholder={t('common.askAnything') || "Ask me anything..."}
+                        placeholderTextColor={theme.colors.subText}
+                    />
+                    <TouchableOpacity style={[styles.sendButton, { backgroundColor: theme.colors.primary }]} onPress={handleSend}>
+                        <Text style={styles.sendIcon}>🏹</Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 
-const createStyles = (theme: Theme, isScreen: boolean = false) =>
+const createStyles = (theme: Theme) =>
     StyleSheet.create({
-        floatingButton: {
-            position: 'absolute',
-            bottom: 24,
-            right: 24,
-            width: 60,
-            height: 60,
-            borderRadius: 30,
-            justifyContent: 'center',
-            alignItems: 'center',
-            ...theme.shadows.large,
-            zIndex: 1000,
-        },
-        botIcon: {
-            fontSize: 30,
-        },
-        proBadge: {
-            position: 'absolute',
-            top: -5,
-            right: -5,
-            backgroundColor: '#FFD700',
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-            borderRadius: 8,
-            borderWidth: 1,
-            borderColor: '#FFF',
-        },
-        proText: {
-            fontSize: 8,
-            fontWeight: 'bold',
-            color: '#000',
-        },
-        modalContainer: {
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            justifyContent: 'flex-end',
-        },
         chatContainer: {
-            height: '80%',
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            overflow: 'hidden',
+            flex: 1,
         },
         header: {
             flexDirection: 'row',
@@ -440,13 +296,6 @@ const createStyles = (theme: Theme, isScreen: boolean = false) =>
         headerStatus: {
             color: 'rgba(255,255,255,0.8)',
             fontSize: 12,
-        },
-        closeButton: {
-            padding: 4,
-        },
-        closeIcon: {
-            color: '#FFF',
-            fontSize: 24,
         },
         listContent: {
             padding: 20,

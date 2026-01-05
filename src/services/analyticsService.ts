@@ -14,17 +14,43 @@ export const analyticsService = {
     // Get overall analytics
     getAnalytics: async (): Promise<AnalyticsData> => {
         try {
-            const [payroll, leaves, illnesses] = await Promise.all([
+            const now = new Date();
+            const nextWeek = new Date();
+            nextWeek.setDate(now.getDate() + 7);
+
+            const [allPayroll, allLeaves, allIllnesses] = await Promise.all([
                 payrollDb.getAll(),
                 leavesDb.getUpcoming(),
                 illnessesDb.getExpiringSoon(),
             ]);
 
-            // Calculate weekly payroll distribution
+            // Filter for current week
+            const weeklyLeaves = allLeaves.filter(leave => {
+                if (!leave.dateTime) return false;
+                const d = new Date(leave.dateTime);
+                return d >= now && d <= nextWeek;
+            });
+
+            const weeklyIllnesses = allIllnesses.filter(illness => {
+                if (!illness.expiryDate) return false;
+                const d = new Date(illness.expiryDate);
+                return d >= now && d <= nextWeek;
+            });
+
+            // Count unique employees for upcoming leaves
+            const uniqueEmployeesWithLeaves = new Set(weeklyLeaves.map(l => l.employeeId)).size;
+
+            // Calculate weekly payroll distribution (last 7 days)
             const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const weeklyPayroll = daysOfWeek.map((day, index) => ({
+            const last7Days = Array.from({ length: 7 }, (_, i) => {
+                const d = new Date();
+                d.setDate(d.getDate() - (6 - i));
+                return d.toLocaleDateString('en-US', { weekday: 'short' });
+            });
+
+            const weeklyPayroll = last7Days.map(day => ({
                 day,
-                count: payroll.length, // Simplified or adjust logic as needed
+                count: allPayroll.filter(p => p.createdAt && new Date(p.createdAt).toLocaleDateString('en-US', { weekday: 'short' }) === day).length
             }));
 
             // Calculate adherence from real history
@@ -34,9 +60,9 @@ export const analyticsService = {
             const payrollAdherence = totalHistory > 0 ? Math.round((paidCount / totalHistory) * 100) : 0;
 
             return {
-                totalPayroll: payroll.length,
-                upcomingLeaves: leaves.length,
-                expiringIllness: illnesses.length,
+                totalPayroll: allPayroll.length,
+                upcomingLeaves: uniqueEmployeesWithLeaves,
+                expiringIllness: weeklyIllnesses.length,
                 payrollAdherence,
                 weeklyPayroll,
             };
@@ -65,7 +91,7 @@ export const analyticsService = {
         });
 
         const adherenceData = last7Days.map((day) => {
-            const dayHistory = history.filter((h) => h.paidAt.startsWith(day.dateStr));
+            const dayHistory = history.filter((h) => h.paidAt && h.paidAt.startsWith(day.dateStr));
             if (dayHistory.length === 0) return 0;
             const paid = dayHistory.filter((h) => h.status === 'paid').length;
             return Math.round((paid / dayHistory.length) * 100);
@@ -77,13 +103,13 @@ export const analyticsService = {
         };
     },
 
-    // Get upcoming leaves count by week
+    // Get upcoming leaves count by unique employees per week
     getUpcomingLeavesChart: async (): Promise<{ labels: string[]; data: number[] }> => {
         const leaves = await leavesDb.getUpcoming();
 
         // Group by next 4 weeks
         const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        const data = [0, 0, 0, 0];
+        const employeeSets = [new Set(), new Set(), new Set(), new Set()];
 
         leaves.forEach((leave) => {
             const leaveDate = new Date(leave.dateTime);
@@ -92,10 +118,10 @@ export const analyticsService = {
             const weekIndex = Math.floor(diffDays / 7);
 
             if (weekIndex >= 0 && weekIndex < 4) {
-                data[weekIndex]++;
+                employeeSets[weekIndex].add(leave.employeeId);
             }
         });
 
-        return { labels: weeks, data };
+        return { labels: weeks, data: employeeSets.map(set => set.size) };
     },
 };

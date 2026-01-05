@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe("Authentication - Login", () => {
   beforeEach(() => {
     cy.visit("/")

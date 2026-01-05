@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe("Calendar", () => {
   beforeEach(() => {
     // Mock authentication

@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe("Payslips", () => {
   beforeEach(() => {
     // Mock login as employee

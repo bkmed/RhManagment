@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe("Payslip Management", () => {
   beforeEach(() => {
     // Mock authentication

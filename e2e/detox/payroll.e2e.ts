@@ -1,3 +1,4 @@
+import { device, element, by, expect } from "detox";
 describe("Payroll Management", () => {
   beforeAll(async () => {
     await device.launchApp()

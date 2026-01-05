@@ -1,3 +1,4 @@
+import { device, element, by, expect } from "detox";
 describe("Notifications", () => {
   beforeAll(async () => {
     await device.launchApp()

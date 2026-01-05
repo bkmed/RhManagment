@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe("Admin Dashboard", () => {
   beforeEach(() => {
     // Mock authentication as admin

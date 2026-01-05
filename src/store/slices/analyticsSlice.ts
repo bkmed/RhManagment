@@ -42,4 +42,18 @@ export const selectTopQueries = (state: { analytics: AnalyticsState }) => {
     return state.analytics.chatQueries.slice(0, 5);
 }
 
+export const selectQuestionOccurrences = (state: { analytics: AnalyticsState }) => {
+    const counts: { [key: string]: number } = {};
+    state.analytics.chatQueries.forEach(query => {
+        if (query.role === 'user') {
+            const normalized = query.text.trim().toLowerCase();
+            counts[normalized] = (counts[normalized] || 0) + 1;
+        }
+    });
+
+    return Object.entries(counts)
+        .map(([text, count]) => ({ text, count }))
+        .sort((a, b) => b.count - a.count);
+};
+
 export default analyticsSlice.reducer;

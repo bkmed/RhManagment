@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe("Notifications", () => {
   beforeEach(() => {
     // Mock login

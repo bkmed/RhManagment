@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe("Leave Request", () => {
   beforeEach(() => {
     // Mock authentication

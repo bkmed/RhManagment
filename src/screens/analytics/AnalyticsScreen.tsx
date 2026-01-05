@@ -17,16 +17,18 @@ import { googleAnalytics } from '../../services/googleAnalytics';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useSelector } from 'react-redux';
-import { selectTopQueries } from '../../store/slices/analyticsSlice';
+import { selectQuestionOccurrences } from '../../store/slices/analyticsSlice';
+import { useAuth } from '../../context/AuthContext';
 
 const screenWidth = Dimensions.get('window').width;
 
 export const AnalyticsScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const recentQueries = useSelector(selectTopQueries);
+  const questionOccurrences = useSelector(selectQuestionOccurrences);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [adherenceChart, setAdherenceChart] = useState<{
     labels: string[];
@@ -223,27 +225,25 @@ export const AnalyticsScreen = () => {
           )}
         </View>
 
-        {/* Recent Questions Section */}
-        {
-          recentQueries.length > 0 && (
-            <View style={styles.insightsSection}>
-              <Text style={styles.sectionTitle}>
-                {t('analytics.recentQuestions') || 'Recent Questions'}
-              </Text>
-              {recentQueries.map((query) => (
-                <View key={query.id} style={[styles.insightCard, { backgroundColor: theme.colors.surface }]}>
-                  <Text style={styles.insightEmoji}>💬</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.insightText, { fontStyle: 'italic' }]}>"{query.text}"</Text>
-                    <Text style={[styles.timestamp, { fontSize: 10, color: theme.colors.subText }]}>
-                      {new Date(query.timestamp).toLocaleString()}
-                    </Text>
-                  </View>
+        {/* AI Question Analytics Section (Admin only) */}
+        {(user?.role === 'admin' || user?.role === 'rh') && questionOccurrences.length > 0 && (
+          <View style={styles.insightsSection}>
+            <Text style={styles.sectionTitle}>
+              {t('analytics.questionOccurrences') || 'Question Occurrences'}
+            </Text>
+            {questionOccurrences.map((occurrence, index) => (
+              <View key={index} style={[styles.insightCard, { backgroundColor: theme.colors.surface, justifyContent: 'space-between' }]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                  <Text style={styles.insightEmoji}>📊</Text>
+                  <Text style={[styles.insightText, { fontStyle: 'italic' }]}>"{occurrence.text}"</Text>
                 </View>
-              ))}
-            </View>
-          )
-        }
+                <View style={[styles.occurrenceBadge, { backgroundColor: theme.colors.primary }]}>
+                  <Text style={styles.occurrenceText}>{occurrence.count}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView >
     </View >
   );
@@ -357,5 +357,16 @@ const createStyles = (theme: Theme) =>
     timestamp: {
       fontSize: 12,
       marginTop: 4,
+    },
+    occurrenceBadge: {
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 12,
+      marginLeft: 12,
+    },
+    occurrenceText: {
+      color: '#FFF',
+      fontSize: 12,
+      fontWeight: 'bold',
     },
   });
