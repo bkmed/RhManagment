@@ -16,10 +16,11 @@
     "payroll": "Nómina",
     "title": "Analítica",
     "trends": "Tendencias de RRHH",
-    "upcomingLeavesChart": "Próximas vacaciones",
-    "upcomingLeavesInsight": "Tiene {{count}} próxima vacación. ¡Prepárese para la cobertura!",
-    "upcomingLeavesInsight_plural": "Tiene {{count}} próximas vacaciones. ¡Prepárese para la cobertura!",
-    "recentQuestions": "Preguntas Recientes"
+    "upcomingLeavesChart": "Próximas vacaciones (Empleados)",
+    "upcomingLeavesInsight": "Hay {{count}} empleados con próximas vacaciones esta semana.",
+    "upcomingLeavesInsight_plural": "Hay {{count}} empleados con próximas vacaciones esta semana.",
+    "recentQuestions": "Preguntas Recientes",
+    "questionOccurrences": "Frecuencia de preguntas"
   },
   "announcements": {
     "addAnnouncement": "Nuevo Anuncio",

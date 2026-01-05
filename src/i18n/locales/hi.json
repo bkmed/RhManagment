@@ -16,10 +16,11 @@
         "payroll": "पेरोल",
         "title": "विश्लेषण",
         "trends": "मानव संसाधन रुझान",
-        "upcomingLeavesChart": "आगामी छुट्टियाँ",
-        "upcomingLeavesInsight": "आपकी {{count}} आगामी छुट्टी है। तैयारी करें!",
-        "upcomingLeavesInsight_plural": "आपकी {{count}} आगामी छुट्टियाँ हैं। तैयारी करें!",
-        "recentQuestions": "हाल के प्रश्न"
+        "upcomingLeavesChart": "आगामी छुट्टियाँ (कर्मचारी)",
+        "upcomingLeavesInsight": "इस सप्ताह {{count}} कर्मचारियों की आगामी छुट्टियाँ हैं।",
+        "upcomingLeavesInsight_plural": "इस सप्ताह {{count}} कर्मचारियों की आगामी छुट्टियाँ हैं।",
+        "recentQuestions": "हाल के प्रश्न",
+        "questionOccurrences": "प्रश्नों की आवृत्ति"
     },
     "announcements": {
         "addAnnouncement": "नई घोषणा",

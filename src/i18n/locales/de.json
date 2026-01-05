@@ -16,10 +16,11 @@
     "payroll": "Gehalt",
     "title": "Analytik",
     "trends": "HR-Trends",
-    "upcomingLeavesChart": "Anstehende Abwesenheiten",
-    "upcomingLeavesInsight": "Sie haben {{count}} anstehende Abwesenheit. Bitte planen Sie Ersatz!",
-    "upcomingLeavesInsight_plural": "Sie haben {{count}} anstehende Abwesenheiten. Bitte planen Sie Ersatz!",
-    "recentQuestions": "Häufige Fragen"
+    "upcomingLeavesChart": "Anstehende Abwesenheiten (Mitarbeiter)",
+    "upcomingLeavesInsight": "Es gibt {{count}} Mitarbeiter mit anstehenden Abwesenheiten in dieser Woche.",
+    "upcomingLeavesInsight_plural": "Es gibt {{count}} Mitarbeiter mit anstehenden Abwesenheiten in dieser Woche.",
+    "recentQuestions": "Häufige Fragen",
+    "questionOccurrences": "Fragenhäufigkeit"
   },
   "announcements": {
     "addAnnouncement": "Neue Ankündigung",

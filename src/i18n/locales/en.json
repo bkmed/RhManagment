@@ -19,16 +19,15 @@
     "upcomingLeavesChart": "Upcoming Leaves (Employees)",
     "upcomingLeavesInsight": "There are {{count}} employees with upcoming leaves this week.",
     "upcomingLeavesInsight_plural": "There are {{count}} employees with upcoming leaves this week.",
-    "recentQuestions": "Recent Questions"
+    "recentQuestions": "Recent Questions",
+    "questionOccurrences": "Question Occurrences"
   },
   "announcements": {
     "addAnnouncement": "New Announcement",
     "noAnnouncements": "No announcements found",
     "placeholder": "What's new in the company?",
     "publish": "Publish",
-    "title": "Question Occurrences",
-    "upcomingLeavesChart": "Upcoming Leaves",
-    "questionOccurrences": "Question Occurrences"
+    "title": "Company Announcements"
   },
   "chat": {
     "chat": "Chat",

@@ -16,10 +16,11 @@
         "payroll": "薪酬",
         "title": "分析",
         "trends": "人力资源趋势",
-        "upcomingLeavesChart": "即将到来的休假",
-        "upcomingLeavesInsight": "您有 {{count}} 个即将到来的休假。请做好交接准备！",
-        "upcomingLeavesInsight_plural": "您有 {{count}} 个即将到来的休假。请做好交接准备！",
-        "recentQuestions": "最近的问题"
+        "upcomingLeavesChart": "即将到来的休假（员工）",
+        "upcomingLeavesInsight": "本周有 {{count}} 名员工即将休假。",
+        "upcomingLeavesInsight_plural": "本周有 {{count}} 名员工即将休假。",
+        "recentQuestions": "最近的问题",
+        "questionOccurrences": "问题出现次数"
     },
     "announcements": {
         "addAnnouncement": "新建公告",

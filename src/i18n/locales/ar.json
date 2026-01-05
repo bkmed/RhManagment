@@ -16,10 +16,11 @@
     "payroll": "الرواتب",
     "title": "التحليلات",
     "trends": "اتجاهات الموارد البشرية",
-    "upcomingLeavesChart": "الإجازات القادمة",
-    "upcomingLeavesInsight": "لديك {{count}} إجازة قادمة. استعد للتغطية!",
-    "upcomingLeavesInsight_plural": "لديك {{count}} إجازات قادمة. استعد للتغطية!",
-    "recentQuestions": "الأسئلة الشائعة"
+    "upcomingLeavesChart": "الإجازات القادمة (الموظفون)",
+    "upcomingLeavesInsight": "هناك {{count}} موظفين لديهم إجازات قادمة هذا الأسبوع.",
+    "upcomingLeavesInsight_plural": "هناك {{count}} موظفين لديهم إجازات قادمة هذا الأسبوع.",
+    "recentQuestions": "الأسئلة الشائعة",
+    "questionOccurrences": "تكرار الأسئلة"
   },
   "announcements": {
     "addAnnouncement": "إعلان جديد",

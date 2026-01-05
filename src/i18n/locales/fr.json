@@ -19,16 +19,15 @@
     "upcomingLeavesChart": "Congés à venir (Employés)",
     "upcomingLeavesInsight": "Il y a {{count}} employé avec des congés cette semaine.",
     "upcomingLeavesInsight_plural": "Il y a {{count}} employés avec des congés cette semaine.",
-    "recentQuestions": "Questions Récentes"
+    "recentQuestions": "Questions Récentes",
+    "questionOccurrences": "Occurrences des Questions"
   },
   "announcements": {
     "addAnnouncement": "Nouvelle Annonce",
     "noAnnouncements": "Aucune annonce trouvée",
     "placeholder": "Quoi de neuf dans l'entreprise ?",
     "publish": "Publier",
-    "title": "Occurrences des Questions",
-    "upcomingLeavesChart": "Congés à Venir",
-    "questionOccurrences": "Occurrences des Questions"
+    "title": "Annonces de l'Entreprise"
   },
   "chat": {
     "chat": "Messagerie",
