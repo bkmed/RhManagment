@@ -32,6 +32,7 @@ import companySettingsReducer from './slices/companySettingsSlice';
 
 import analyticsReducer from './slices/analyticsSlice';
 import invoicesReducer from './slices/invoicesSlice';
+import devicesReducer from './slices/devicesSlice';
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -53,12 +54,13 @@ const rootReducer = combineReducers({
     companySettings: companySettingsReducer,
     analytics: analyticsReducer,
     invoices: invoicesReducer,
+    devices: devicesReducer,
 });
 
 const persistConfig = {
     key: 'root',
     storage: reduxStorage,
-    whitelist: ['auth', 'leaves', 'employees', 'payroll', 'claims', 'illnesses', 'companies', 'teams', 'goals', 'performance', 'announcements', 'notifications', 'messages', 'services', 'currencies', 'analytics', 'companySettings', 'departments', 'invoices'], // add slices here to persist
+    whitelist: ['auth', 'leaves', 'employees', 'payroll', 'claims', 'illnesses', 'companies', 'teams', 'goals', 'performance', 'announcements', 'notifications', 'messages', 'services', 'currencies', 'analytics', 'companySettings', 'departments', 'invoices', 'devices'], // add slices here to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

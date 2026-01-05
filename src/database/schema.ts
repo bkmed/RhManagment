@@ -272,3 +272,16 @@ export interface Employee {
   location?: string;
   backgroundPhotoUri?: string;
 }
+
+export interface Device {
+  id?: number;
+  name: string;
+  type: string;
+  serialNumber: string;
+  status: 'available' | 'assigned' | 'maintenance';
+  assignedTo?: string;
+  assignedToId?: number;
+  companyId?: number;
+  createdAt: string;
+  updatedAt: string;
+}
