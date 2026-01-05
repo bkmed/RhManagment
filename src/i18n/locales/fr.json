@@ -28,6 +28,7 @@
   },
   "chat": {
     "chat": "Messagerie",
+    "companyChat": "Chat de l'Entreprise",
     "noMessages": "Aucun message pour le moment",
     "send": "Envoyer",
     "title": "",
@@ -469,7 +470,6 @@
     "profile": "Profil",
     "services": "Services",
     "settings": "Paramètres",
-    "settings": "Paramètres",
     "teams": "Équipes"
   },
   "notifications": {
@@ -683,11 +683,11 @@
     "themeDark": "Sombre",
     "themePremium": "Premium",
     "themeCustom": "Personnalisé",
-    "customColors": "Couleurs personnalisées",
-    "colorPrimary": "Couleur primaire",
-    "colorSecondary": "Couleur secondaire",
-    "colorBackground": "Couleur de fond",
-    "colorSurface": "Couleur de surface",
+    "customizeColors": "Configurer les couleurs",
+    "primaryColor": "Couleur primaire",
+    "secondaryColor": "Couleur secondaire",
+    "backgroundColor": "Couleur de fond",
+    "surfaceColor": "Couleur de surface",
     "notifications": "Notifications",
     "pushNotifications": "Notifications Push",
     "emailNotifications": "Notifications Email",
@@ -729,6 +729,9 @@
     "selectTeam": "Sélectionner l'équipe",
     "selectTeamLeader": "Sélectionner un chef d'équipe",
     "supervised": "supervisé(s)",
+    "myTeam": "Mon Équipe",
+    "noTeamAssigned": "Aucune équipe assignée",
+    "manager": "Manager",
     "teamLeader": "Chef d'équipe",
     "title": "Équipes",
     "validation": {

@@ -5,15 +5,18 @@ import {
     StyleSheet,
     TouchableOpacity,
     ScrollView,
+    Platform,
     Switch,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { Theme } from '../../theme';
 import { Dropdown } from '../../components/Dropdown';
 
-export const PersonalSettingsScreen = () => {
+export const PersonalSettingsScreen = ({ navigation }: any) => {
     const { theme, themeMode, setThemeMode, customColors, setCustomColor } = useTheme() as any;
+    const { setActiveTab } = React.useContext(WebNavigationContext) as any;
     const { t, i18n } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -49,7 +52,7 @@ export const PersonalSettingsScreen = () => {
                             key={th.id}
                             style={[
                                 styles.row,
-                                index !== themes.length - 1 && styles.borderBottom,
+                                (index !== themes.length - 1 || themeMode === 'custom') && styles.borderBottom,
                                 themeMode === th.id && styles.selectedRow
                             ]}
                             onPress={() => setThemeMode(th.id as any)}
@@ -58,6 +61,21 @@ export const PersonalSettingsScreen = () => {
                             {themeMode === th.id && <Text style={styles.checkIcon}>✓</Text>}
                         </TouchableOpacity>
                     ))}
+                    {themeMode === 'custom' && (
+                        <TouchableOpacity
+                            style={[styles.row, styles.customThemeButton]}
+                            onPress={() => {
+                                if (Platform.OS === 'web') {
+                                    setActiveTab('CustomThemeColors');
+                                } else {
+                                    navigation.navigate('CustomThemeColors');
+                                }
+                            }}
+                        >
+                            <Text style={styles.customThemeButtonText}>🎨 {t('settings.customizeColors') || 'Configure Colors'}</Text>
+                            <Text style={styles.menuItemArrow}>›</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
 
@@ -145,5 +163,18 @@ const createStyles = (theme: Theme) =>
             height: 4,
             borderRadius: 2,
             marginTop: -theme.spacing.s,
+        },
+        customThemeButton: {
+            backgroundColor: `${theme.colors.primary}10`,
+            marginTop: theme.spacing.s,
+        },
+        customThemeButtonText: {
+            ...theme.textVariants.body,
+            color: theme.colors.primary,
+            fontWeight: '600',
+        },
+        menuItemArrow: {
+            fontSize: 20,
+            color: theme.colors.subText,
         },
     });

@@ -28,6 +28,7 @@
   },
   "chat": {
     "chat": "",
+    "companyChat": "Unternehmens-Chat",
     "noMessages": "Noch keine Nachrichten",
     "send": "Senden",
     "title": "Nachrichten",
@@ -469,7 +470,6 @@
     "profile": "Profil",
     "services": "Dienste",
     "settings": "Einstellungen",
-    "settings": "Einstellungen",
     "teams": "Teams"
   },
   "notifications": {
@@ -674,6 +674,12 @@
     "themeLight": "Hell",
     "themeDark": "Dunkel",
     "themePremium": "Premium",
+    "themeCustom": "Benutzerdefiniert",
+    "customizeColors": "Farben konfigurieren",
+    "primaryColor": "Primärfarbe",
+    "secondaryColor": "Sekundärfarbe",
+    "backgroundColor": "Hintergrundfarbe",
+    "surfaceColor": "Oberflächenfarbe",
     "notifications": "Benachrichtigungen",
     "pushNotifications": "Push-Benachrichtigungen",
     "emailNotifications": "E-Mail-Benachrichtigungen",
@@ -715,6 +721,9 @@
     "selectTeam": "Team auswählen",
     "selectTeamLeader": "Teamleiter auswählen",
     "supervised": "betreut",
+    "myTeam": "Mein Team",
+    "noTeamAssigned": "Kein Team zugewiesen",
+    "manager": "Manager",
     "teamLeader": "Teamleiter",
     "title": "Teams",
     "validation": {

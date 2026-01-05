@@ -62,6 +62,7 @@ import { CompanySettingsScreen } from '../screens/settings/CompanySettingsScreen
 import { ChatScreen } from '../screens/home/ChatScreen';
 import { CompanyChatScreen } from '../screens/chat/CompanyChatScreen';
 import { LanguageSelectionScreen } from '../screens/settings/LanguageSelectionScreen';
+import { CustomThemeColorsScreen } from '../screens/settings/CustomThemeColorsScreen';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { SearchOverlay } from '../components/common/SearchOverlay';
 import { ChatBot } from '../components/common/ChatBot';
@@ -310,6 +311,28 @@ const ServiceStack = () => {
     </Stack.Navigator>
   );
 };
+const SettingsStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="PersonalSettings"
+        component={PersonalSettingsScreen}
+        options={{ title: t('settings.personal') }}
+      />
+      <Stack.Screen
+        name="CompanySettings"
+        component={CompanySettingsScreen}
+        options={{ title: t('settings.company') }}
+      />
+      <Stack.Screen
+        name="CustomThemeColors"
+        component={CustomThemeColorsScreen}
+        options={{ title: t('settings.customizeColors') || 'Customize Colors' }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 
 const ProfileStack = () => {
@@ -330,7 +353,7 @@ const ProfileStack = () => {
       <Stack.Screen
         name="Language"
         component={LanguageSelectionScreen}
-        options={{ headerShown: true, title: t('profile.language') }}
+        options={{ title: t('profile.language') }}
       />
       <Stack.Screen
         name="MyTeam"
@@ -402,8 +425,7 @@ const useNavigationSections = () => {
     if (user?.role === 'admin') {
       organizationItems.push({ key: 'Companies', label: t('navigation.companies'), icon: '🏢' });
       organizationItems.push({ key: 'Teams', label: t('navigation.teams'), icon: '🤝' });
-      organizationItems.push({ key: 'Departments', label: t('navigation.departments'), icon: '🏛️' });
-      organizationItems.push({ key: 'Services', label: t('navigation.services'), icon: '⚙️' });
+      organizationItems.push({ key: 'CompanySettings', label: t('settings.company'), icon: '🏢' });
     }
 
     if (organizationItems.length > 0) {
@@ -435,6 +457,7 @@ const useNavigationSections = () => {
       title: t('sections.personal'),
       items: [
         { key: 'Profile', label: t('navigation.profile'), icon: '👤' },
+        { key: 'MyTeam', label: t('teams.myTeam'), icon: '👥' },
         { key: 'Settings', label: t('navigation.settings'), icon: '⚙️' },
         { key: 'Language', label: t('profile.language'), icon: '🌐' }
       ]
@@ -684,10 +707,14 @@ const WebNavigator = () => {
         return <CompanyChatScreen />;
       case 'Language':
         return <LanguageSelectionScreen />;
+      case 'CustomThemeColors':
+        return <CustomThemeColorsScreen />;
       case 'Settings':
-        if (subScreen === 'CompanySettings')
-          return <CompanySettingsScreen />;
         return <PersonalSettingsScreen />;
+      case 'CompanySettings':
+        return <CompanySettingsScreen />;
+      case 'MyTeam':
+        return <MyTeamScreen />;
       case 'Profile':
         if (subScreen === 'CareerHub')
           return <CareerHubScreen />;

@@ -18,6 +18,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAllMessages, sendMessage } from '../../store/slices/messagesSlice';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
+import { selectAllCompanies, selectSelectedCompanyId, setSelectedCompanyId } from '../../store/slices/companiesSlice';
 import { Theme } from '../../theme';
 import { ChatMessage } from '../../database/schema';
 
@@ -30,6 +31,8 @@ export const CompanyChatScreen = () => {
 
     const messages = useSelector(selectAllMessages);
     const employees = useSelector(selectAllEmployees);
+    const companies = useSelector(selectAllCompanies);
+    const selectedCompanyId = useSelector(selectSelectedCompanyId);
 
     // Reverse messages for FlatList (newest at bottom) if inverted, or just scroll to end.
     // Usually chat is inverted or we scroll to end. Let's stick to standard scroll to end for now or inverted for better UX.
@@ -39,13 +42,13 @@ export const CompanyChatScreen = () => {
     const flatListRef = useRef<FlatList>(null);
 
     const handleSend = () => {
-        if (!inputText.trim() || !user) return;
+        if (!inputText.trim() || !user || !selectedCompanyId) return;
 
         const newMessage: ChatMessage = {
             id: Date.now().toString(),
             text: inputText.trim(),
             senderId: String(user.id), // Ensure string
-            receiverId: 'all',
+            receiverId: String(selectedCompanyId), // Use company ID as receiver for company chat
             createdAt: new Date().toISOString(),
         };
 
@@ -127,20 +130,59 @@ export const CompanyChatScreen = () => {
         );
     };
 
+    if (!selectedCompanyId) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.headerTitle}>{t('chat.companyChat')}</Text>
+                </View>
+                <View style={styles.centered}>
+                    <Text style={[styles.messageText, { color: theme.colors.text, marginBottom: 20 }]}>
+                        {t('companies.selectCompany')}
+                    </Text>
+                    <FlatList
+                        data={companies}
+                        keyExtractor={(item) => String(item.id)}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity
+                                style={[styles.companyItem, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+                                onPress={() => dispatch(setSelectedCompanyId(item.id))}
+                            >
+                                <Text style={[styles.companyNameText, { color: theme.colors.text }]}>{item.name}</Text>
+                                <Text style={styles.sendIcon}>➤</Text>
+                            </TouchableOpacity>
+                        )}
+                        style={{ width: '100%', paddingHorizontal: 20 }}
+                    />
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    const filteredMessages = messages.filter(m => m.receiverId === String(selectedCompanyId));
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => dispatch(setSelectedCompanyId(null))} style={styles.backButton}>
+                    <Text style={[styles.backIcon, { color: theme.colors.primary }]}>←</Text>
+                </TouchableOpacity>
                 <Text style={styles.headerTitle}>{t('chat.companyChat') || 'Company Chat'}</Text>
             </View>
 
             <FlatList
                 ref={flatListRef}
-                data={messages}
+                data={filteredMessages}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.listContent}
                 onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
                 onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
+                ListEmptyComponent={() => (
+                    <View style={styles.centered}>
+                        <Text style={{ color: theme.colors.subText }}>{t('chat.noMessages')}</Text>
+                    </View>
+                )}
             />
 
             <KeyboardAvoidingView
@@ -173,6 +215,7 @@ export const CompanyChatScreen = () => {
 const createStyles = (theme: Theme) =>
     StyleSheet.create({
         container: {
+            flex: 1,
             backgroundColor: theme.colors.background,
         },
         header: {
@@ -312,5 +355,35 @@ const createStyles = (theme: Theme) =>
             color: '#FFF',
             fontSize: 18,
             marginLeft: 2, // Optical adjustment
+        },
+        centered: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+        },
+        companyItem: {
+            width: '100%',
+            padding: 16,
+            borderRadius: 12,
+            marginBottom: 12,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderWidth: 1,
+            ...theme.shadows.small,
+        },
+        companyNameText: {
+            fontSize: 16,
+            fontWeight: '600',
+        },
+        backButton: {
+            position: 'absolute',
+            left: theme.spacing.m,
+            padding: 8,
+        },
+        backIcon: {
+            fontSize: 24,
+            fontWeight: 'bold',
         },
     });

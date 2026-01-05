@@ -28,6 +28,7 @@
     },
     "chat": {
         "chat": "",
+        "companyChat": "कंपनी चैट",
         "noMessages": "अभी तक कोई संदेश नहीं",
         "send": "भेजें",
         "title": "संदेश सेवा",
@@ -683,16 +684,16 @@
         "themeDark": "डार्क",
         "themePremium": "प्रीमियम",
         "themeCustom": "कस्टम",
-        "customColors": "कस्टम रंग",
-        "colorPrimary": "प्राथमिक रंग",
-        "colorSecondary": "द्वितीयक रंग",
-        "colorBackground": "पृष्ठभूमि रंग",
-        "colorSurface": "सतह का रंग",
+        "customizeColors": "रंग कॉन्फ़िगर करें",
+        "primaryColor": "प्राथमिक रंग",
+        "secondaryColor": "द्वितीयक रंग",
+        "backgroundColor": "पृष्ठभूमि रंग",
+        "surfaceColor": "सतह का रंग",
         "notifications": "सूचनाएं",
         "pushNotifications": "पुश सूचनाएं",
         "emailNotifications": "ईमेल सूचनाएं",
         "params": "कंपनी पैरामीटर",
-        "management": "संसाधन प्रबंधन"
+        "management": "संसंसाधन प्रबंधन"
     },
     "signUp": {
         "emailLabel": "ईमेल",
@@ -729,6 +730,9 @@
         "selectTeam": "टीम चुनें",
         "selectTeamLeader": "टीम लीडर चुनें",
         "supervised": "पर्यवेक्षित",
+        "myTeam": "मेरी टीम",
+        "noTeamAssigned": "कोई टीम असाइन नहीं की गई",
+        "manager": "प्रबंधक",
         "teamLeader": "टीम लीडर",
         "title": "टीमें",
         "validation": {

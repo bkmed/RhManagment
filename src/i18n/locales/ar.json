@@ -28,6 +28,7 @@
   },
   "chat": {
     "chat": "",
+    "companyChat": "دردشة الشركة",
     "noMessages": "لا توجد رسائل بعد",
     "send": "إرسال",
     "title": "المراسلة",
@@ -469,7 +470,6 @@
     "profile": "الملف الشخصي",
     "services": "الخدمات",
     "settings": "الإعدادات",
-    "settings": "الإعدادات",
     "teams": "الفرق"
   },
   "notifications": {
@@ -682,6 +682,12 @@
     "themeLight": "فاتح",
     "themeDark": "داكن",
     "themePremium": "مميز",
+    "themeCustom": "مخصص",
+    "customizeColors": "تخصيص الألوان",
+    "primaryColor": "اللون الأساسي",
+    "secondaryColor": "اللون الثانوي",
+    "backgroundColor": "لون الخلفية",
+    "surfaceColor": "لون السطح",
     "notifications": "التنبيهات",
     "pushNotifications": "تنبيهات الهاتف",
     "emailNotifications": "تنبيهات البريد الإلكتروني",
@@ -723,6 +729,9 @@
     "selectTeam": "اختر الفريق",
     "selectTeamLeader": "اختر قائد الفريق",
     "supervised": "مشرف عليه",
+    "myTeam": "فريقي",
+    "noTeamAssigned": "لم يتم تعيين فريق",
+    "manager": "المدير",
     "teamLeader": "قائد الفريق",
     "title": "الفرق",
     "validation": {

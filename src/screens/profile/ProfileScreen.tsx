@@ -9,14 +9,14 @@ import {
   Platform,
   I18nManager,
   Image,
-  TextInput,
+  Dimensions,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import { storageService } from '../../services/storage';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { notificationService } from '../../services/notificationService';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
-import { authService } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
@@ -28,20 +28,16 @@ import {
   PermissionStatus,
 } from '../../services/permissions';
 import { Theme } from '../../theme';
+import { selectPendingLeaves } from '../../store/slices/leavesSlice';
+import { selectPendingClaims } from '../../store/slices/claimsSlice';
+import { selectAllPayroll } from '../../store/slices/payrollSlice';
+import { selectAllTeams } from '../../store/slices/teamsSlice';
 
-const LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'ar', name: 'العربية', flag: '🇹🇳' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-];
+const { width } = Dimensions.get('window');
+const isSmallScreen = width < 400;
 
 export const ProfileScreen = ({ navigation }: any) => {
-  const { theme, themeMode, setThemeMode } = useTheme();
-  const { showToast } = useToast();
+  const { theme } = useTheme();
   const { showModal } = useModal();
   const { t, i18n } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
@@ -67,43 +63,26 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [website, setWebsite] = useState(user?.socialLinks?.website || '');
   const [skills, setSkills] = useState(user?.skills?.join(', ') || '');
 
-  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+  // Stats from Redux
+  const pendingLeaves = useSelector(selectPendingLeaves);
+  const pendingClaims = useSelector(selectPendingClaims);
+  const payrollItems = useSelector(selectAllPayroll);
+  const teams = useSelector(selectAllTeams);
+
+  const userTeam = useMemo(() => {
+    return teams.find(t => t.id === user?.teamId);
+  }, [teams, user]);
+
   const [cameraPermission, setCameraPermission] =
     useState<PermissionStatus>('unavailable');
   const [notificationPermission, setNotificationPermission] =
     useState<PermissionStatus>('unavailable');
   const [calendarPermission, setCalendarPermission] =
     useState<PermissionStatus>('unavailable');
-  const [maxPermissionHours, setMaxPermissionHours] = useState('2');
 
   useEffect(() => {
     checkPermissions();
-    loadConfig();
   }, []);
-
-  const loadConfig = async () => {
-    const savedMax = await storageService.getString('config_max_permission_hours');
-    if (savedMax) setMaxPermissionHours(savedMax);
-  };
-
-  useEffect(() => {
-    setName(user?.name || '');
-    setEmail(user?.email || '');
-    setPhotoUri(user?.photoUri || '');
-
-    // Load extended fields
-    setFirstName(user?.firstName || '');
-    setLastName(user?.lastName || '');
-    setAge(user?.age ? String(user.age) : '');
-    setGender(user?.gender || 'male');
-    setEmergencyName(user?.emergencyContact?.name || '');
-    setEmergencyPhone(user?.emergencyContact?.phone || '');
-    setEmergencyRelationship(user?.emergencyContact?.relationship || '');
-    setLinkedin(user?.socialLinks?.linkedin || '');
-    setSkype(user?.socialLinks?.skype || '');
-    setWebsite(user?.socialLinks?.website || '');
-    setSkills(user?.skills?.join(', ') || '');
-  }, [user]);
 
   const checkPermissions = async () => {
     const camera = await permissionsService.checkCameraPermission();
@@ -112,27 +91,6 @@ export const ProfileScreen = ({ navigation }: any) => {
     setCameraPermission(camera);
     setNotificationPermission(notification);
     setCalendarPermission(calendar);
-  };
-
-  const handleLanguageChange = async (langCode: string) => {
-    try {
-      await i18n.changeLanguage(langCode);
-      storageService.setString('user-language', langCode);
-      setCurrentLanguage(langCode);
-
-      const shouldBeRTL = langCode === 'ar';
-      if (I18nManager.isRTL !== shouldBeRTL) {
-        I18nManager.forceRTL(shouldBeRTL);
-        if (Platform.OS !== 'web') {
-          notificationService.showAlert(
-            t('profile.restartRequired'),
-            t('profile.restartRequiredMessage')
-          );
-        }
-      }
-    } catch (error) {
-      notificationService.showAlert(t('common.error'), t('profile.languageChangeError'));
-    }
   };
 
   const handlePickPhoto = async () => {
@@ -242,16 +200,6 @@ export const ProfileScreen = ({ navigation }: any) => {
     }
     const status = await permissionsService.requestCameraPermission();
     setCameraPermission(status);
-    if (status === 'blocked') {
-      showModal({
-        title: t('profile.permissionBlocked'),
-        message: t('profile.permissionBlockedMessage'),
-        buttons: [
-          { text: t('common.cancel'), style: 'cancel' },
-          { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
-        ],
-      });
-    }
   };
 
   const handleNotificationPermission = async (value: boolean) => {
@@ -261,16 +209,6 @@ export const ProfileScreen = ({ navigation }: any) => {
     }
     const status = await permissionsService.requestNotificationPermission();
     setNotificationPermission(status);
-    if (status === 'blocked') {
-      showModal({
-        title: t('profile.permissionBlocked'),
-        message: t('profile.permissionBlockedMessage'),
-        buttons: [
-          { text: t('common.cancel'), style: 'cancel' },
-          { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
-        ],
-      });
-    }
   };
 
   const handleCalendarPermission = async (value: boolean) => {
@@ -280,16 +218,6 @@ export const ProfileScreen = ({ navigation }: any) => {
     }
     const status = await permissionsService.requestCalendarPermission();
     setCalendarPermission(status);
-    if (status === 'blocked') {
-      showModal({
-        title: t('profile.permissionBlocked'),
-        message: t('profile.permissionBlockedMessage'),
-        buttons: [
-          { text: t('common.cancel'), style: 'cancel' },
-          { text: t('profile.openSettings'), onPress: () => permissionsService.openAppSettings() },
-        ],
-      });
-    }
   };
 
   const handleLogout = async () => {
@@ -319,50 +247,100 @@ export const ProfileScreen = ({ navigation }: any) => {
     }
   };
 
+  const DashboardStat = ({ label, value, icon, color }: any) => (
+    <View style={styles.statCard}>
+      <View style={[styles.statIconContainer, { backgroundColor: color + '15' }]}>
+        <Text style={[styles.statIcon, { color }]}>{icon}</Text>
+      </View>
+      <View>
+        <Text style={styles.statValue}>{value}</Text>
+        <Text style={styles.statLabel}>{label}</Text>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={Platform.OS === 'web' ? styles.webProfileLayout : null}>
-          {/* Profile Header Section */}
-          <View style={[styles.headerCard, Platform.OS === 'web' && styles.headerCardWeb]}>
-            <TouchableOpacity
-              style={[styles.avatarContainer, Platform.OS === 'web' && styles.avatarContainerWeb]}
-              onPress={isEditing ? handlePickPhoto : undefined}
-              disabled={!isEditing}
-            >
-              <View style={styles.avatar}>
-                {photoUri ? (
-                  <Image source={{ uri: photoUri }} style={styles.avatarImage} />
-                ) : (
-                  <Text style={styles.avatarText}>
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
-                  </Text>
-                )}
-                {isEditing && (
-                  <View style={styles.editOverlay}>
-                    <Text style={styles.editOverlayText}>📸</Text>
-                  </View>
-                )}
-              </View>
-              <View style={styles.roleBadge}>
-                <Text style={styles.roleBadgeText}>
-                  {t(`roles.${user?.role}`)}
-                </Text>
-              </View>
-            </TouchableOpacity>
+      <ScrollView contentContainerStyle={styles.content} bounces={false}>
+        {/* Header Background */}
+        <View style={styles.headerBackground} />
 
-            {!isEditing ? (
-              <View style={styles.headerInfo}>
+        <View style={styles.mainContent}>
+          {/* Profile Header Card */}
+          <View style={styles.headerCard}>
+            <View style={styles.headerTop}>
+              <TouchableOpacity
+                style={styles.avatarContainer}
+                onPress={isEditing ? handlePickPhoto : undefined}
+                disabled={!isEditing}
+              >
+                <View style={[styles.avatar, { borderColor: theme.colors.surface, borderWidth: 4 }]}>
+                  {photoUri ? (
+                    <Image source={{ uri: photoUri }} style={styles.avatarImage} />
+                  ) : (
+                    <Text style={styles.avatarText}>
+                      {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    </Text>
+                  )}
+                  {isEditing && (
+                    <View style={styles.editOverlay}>
+                      <Text style={styles.editOverlayText}>📸</Text>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.roleBadge}>
+                  <Text style={styles.roleBadgeText}>
+                    {t(`roles.${user?.role}`)}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              <View style={styles.headerMainInfo}>
                 <Text style={styles.userName}>{user?.name}</Text>
                 <Text style={styles.userEmail}>{user?.email}</Text>
-                <TouchableOpacity
-                  style={styles.editButton}
-                  onPress={() => setIsEditing(true)}
-                >
-                  <Text style={styles.editButtonText}>{t('profile.edit')}</Text>
-                </TouchableOpacity>
+                <View style={styles.teamContainer}>
+                  <Text style={styles.teamText}>🏢 {userTeam?.name || t('teams.noTeamAssigned')}</Text>
+                </View>
               </View>
-            ) : (
+            </View>
+
+            {!isEditing && (
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => setIsEditing(true)}
+              >
+                <Text style={styles.editButtonText}>✎ {t('profile.edit')}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Stats Dashboard */}
+          {!isEditing && (
+            <View style={styles.statsRow}>
+              <DashboardStat
+                icon="📅"
+                value={pendingLeaves.length}
+                label={t('leaves.upcoming')}
+                color={theme.colors.primary}
+              />
+              <DashboardStat
+                icon="📝"
+                value={pendingClaims.length}
+                label={t('claims.statusPending')}
+                color={theme.colors.secondary}
+              />
+              <DashboardStat
+                icon="💰"
+                value={payrollItems.length}
+                label={t('payroll.title')}
+                color="#4CAF50"
+              />
+            </View>
+          )}
+
+          {isEditing ? (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>👤 {t('profile.edit')}</Text>
               <View style={styles.editForm}>
                 <AuthInput
                   label={t('signUp.nameLabel')}
@@ -424,7 +402,7 @@ export const ProfileScreen = ({ navigation }: any) => {
 
                 <View style={styles.divider} />
 
-                <Text style={styles.subSectionTitle}>{t('employees.emergencyContact')}</Text>
+                <Text style={styles.subSectionTitle}>🚑 {t('employees.emergencyContact')}</Text>
                 <AuthInput
                   label={t('employees.emergencyName')}
                   value={emergencyName}
@@ -453,7 +431,7 @@ export const ProfileScreen = ({ navigation }: any) => {
 
                 <View style={styles.divider} />
 
-                <Text style={styles.subSectionTitle}>{t('employees.socialLinks')}</Text>
+                <Text style={styles.subSectionTitle}>🔗 {t('employees.socialLinks')}</Text>
                 <AuthInput
                   label={t('employees.linkedin')}
                   value={linkedin}
@@ -462,10 +440,17 @@ export const ProfileScreen = ({ navigation }: any) => {
                 />
 
                 <AuthInput
+                  label={t('employees.website')}
+                  value={website}
+                  onChangeText={setWebsite}
+                  placeholder="https://example.com"
+                />
+
+                <AuthInput
                   label={t('employees.skills')}
                   value={skills}
                   onChangeText={setSkills}
-                  placeholder="React, Node.js, HR"
+                  placeholder="React, Node.js, HR (Separate with commas)"
                 />
 
                 <View style={styles.editActions}>
@@ -491,122 +476,79 @@ export const ProfileScreen = ({ navigation }: any) => {
                   </TouchableOpacity>
                 </View>
               </View>
-            )}
-          </View>
-
-          <View style={Platform.OS === 'web' ? styles.settingsGrid : null}>
-            {/* Account Settings Section */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeaderRow}>
-                <Text style={styles.sectionTitle}>{t('profile.accountSettings')}</Text>
-              </View>
-              <View style={styles.fieldGroup}>
-                <Dropdown
-                  label={t('profile.language')}
-                  data={LANGUAGES.map(lang => ({
-                    label: `${lang.flag} ${lang.name}`,
-                    value: lang.code,
-                  }))}
-                  value={currentLanguage}
-                  onSelect={handleLanguageChange}
-                />
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.fieldGroup}>
-                <Dropdown
-                  label={t('profile.appearance')}
-                  data={[
-                    { label: '☀️ ' + t('profile.lightMode'), value: 'light' },
-                    { label: '🌙 ' + t('profile.darkMode'), value: 'dark' },
-                    { label: '👑 ' + t('profile.premiumMode'), value: 'premium' },
-                  ]}
-                  value={themeMode}
-                  onSelect={(val) => setThemeMode(val as any)}
-                />
-              </View>
-              <View style={styles.divider} />
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => navigation.navigate('MyTeam')}
-              >
-                <Text style={styles.menuItemText}>👥 {t('teams.myTeam') || 'My Team'}</Text>
-                <Text style={styles.menuItemArrow}>›</Text>
-              </TouchableOpacity>
             </View>
+          ) : (
+            <>
+              {/* Professional Profile View */}
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>🎯 {t('profile.professionalProfile')}</Text>
 
-            {/* Permissions Section */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeaderRow}>
-                <Text style={styles.sectionTitle}>{t('profile.securityPermissions')}</Text>
-              </View>
-              {[
-                { label: t('profile.camera'), status: cameraPermission, onValueChange: handleCameraPermission },
-                { label: t('profile.notifications'), status: notificationPermission, onValueChange: handleNotificationPermission },
-                { label: t('profile.calendar'), status: calendarPermission, onValueChange: handleCalendarPermission },
-              ].map((perm, index) => (
-                <View key={index} style={styles.permissionRow}>
-                  <View style={styles.permissionInfo}>
-                    <Text style={styles.permissionLabel}>{perm.label}</Text>
-                    <Text style={[styles.permissionStatus, { color: getPermissionStatusColor(perm.status) }]}>
-                      {getPermissionStatusText(perm.status)}
-                    </Text>
-                  </View>
-                  {Platform.OS !== 'web' && perm.status !== 'unavailable' && (
-                    <Switch
-                      value={perm.status === 'granted'}
-                      onValueChange={perm.onValueChange}
-                      trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-                      thumbColor={theme.colors.surface}
-                    />
+                <Text style={styles.fieldLabel}>{t('employees.skills')}</Text>
+                <View style={styles.tagContainer}>
+                  {user?.skills?.map((skill: string, index: number) => (
+                    <View key={index} style={styles.tag}>
+                      <Text style={styles.tagText}>{skill}</Text>
+                    </View>
+                  )) || <Text style={styles.emptyText}>{t('common.noData')}</Text>}
+                </View>
+
+                <View style={styles.divider} />
+
+                <Text style={styles.fieldLabel}>{t('employees.socialLinks')}</Text>
+                <View style={styles.socialRows}>
+                  {user?.socialLinks?.linkedin && (
+                    <View style={styles.socialItem}>
+                      <Text style={styles.socialIcon}>💼</Text>
+                      <Text style={styles.socialValue}>{user.socialLinks.linkedin}</Text>
+                    </View>
                   )}
+                  {user?.socialLinks?.website && (
+                    <View style={styles.socialItem}>
+                      <Text style={styles.socialIcon}>🌐</Text>
+                      <Text style={styles.socialValue}>{user.socialLinks.website}</Text>
+                    </View>
+                  )}
+                  {user?.socialLinks?.skype && (
+                    <View style={styles.socialItem}>
+                      <Text style={styles.socialIcon}>💬</Text>
+                      <Text style={styles.socialValue}>{user.socialLinks.skype}</Text>
+                    </View>
+                  )}
+                  {!user?.socialLinks && <Text style={styles.emptyText}>{t('common.noData')}</Text>}
                 </View>
-              ))}
-              <View style={styles.divider} />
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => {
-                  if (Platform.OS === 'web') {
-                    setActiveTab?.('Settings', 'PersonalSettings');
-                  } else {
-                    navigation.navigate('Settings', { screen: 'PersonalSettings' });
-                  }
-                }}
-              >
-                <Text style={styles.menuItemText}>⚙️ {t('settings.personal')}</Text>
-                <Text style={styles.menuItemArrow}>›</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Admin Settings Section */}
-            {(user?.role === 'admin' || user?.role === 'rh') && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeaderRow}>
-                  <Text style={styles.sectionTitle}>{t('permissions.settings')}</Text>
-                </View>
-                {user?.role === 'admin' && (
-                  <>
-                    <View style={styles.divider} />
-                    <TouchableOpacity
-                      style={styles.menuItem}
-                      onPress={() => {
-                        if (Platform.OS === 'web') {
-                          setActiveTab?.('Settings', 'CompanySettings');
-                        } else {
-                          navigation.navigate('Settings', { screen: 'CompanySettings' });
-                        }
-                      }}
-                    >
-                      <Text style={styles.menuItemText}>🏢 {t('settings.company')}</Text>
-                      <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-                  </>
-                )}
               </View>
-            )}
-          </View>
+
+              {/* Security & Permissions */}
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>🔒 {t('profile.securityPermissions')}</Text>
+                {[
+                  { label: t('profile.camera'), status: cameraPermission, onValueChange: handleCameraPermission },
+                  { label: t('profile.notifications'), status: notificationPermission, onValueChange: handleNotificationPermission },
+                  { label: t('profile.calendar'), status: calendarPermission, onValueChange: handleCalendarPermission },
+                ].map((perm, index) => (
+                  <View key={index} style={styles.permissionRow}>
+                    <View style={styles.permissionInfo}>
+                      <Text style={styles.permissionLabel}>{perm.label}</Text>
+                      <Text style={[styles.permissionStatus, { color: getPermissionStatusColor(perm.status) }]}>
+                        {getPermissionStatusText(perm.status)}
+                      </Text>
+                    </View>
+                    {Platform.OS !== 'web' && perm.status !== 'unavailable' && (
+                      <Switch
+                        value={perm.status === 'granted'}
+                        onValueChange={perm.onValueChange}
+                        trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+                        thumbColor={theme.colors.surface}
+                      />
+                    )}
+                  </View>
+                ))}
+              </View>
+            </>
+          )}
 
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutText}>{t('profile.logout')}</Text>
+            <Text style={styles.logoutText}>🚪 {t('profile.logout')}</Text>
           </TouchableOpacity>
           <Text style={styles.versionText}>{t('profile.version')} 1.0.0</Text>
         </View>
@@ -620,45 +562,51 @@ const createStyles = (theme: Theme) =>
     container: {
       backgroundColor: theme.colors.background
     },
-    content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
-    section: {
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.spacing.m,
-      padding: theme.spacing.m,
-      marginBottom: theme.spacing.l,
-      ...theme.shadows.small,
+    content: {
+      paddingBottom: theme.spacing.xl
     },
-    sectionTitle: { ...theme.textVariants.subheader, color: theme.colors.text, fontSize: 18 },
-    sectionHeaderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: theme.spacing.m },
+    headerBackground: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 200,
+      backgroundColor: theme.colors.primary,
+    },
+    mainContent: {
+      padding: theme.spacing.m,
+      marginTop: 60, // Peak relative to header background
+    },
     headerCard: {
       backgroundColor: theme.colors.surface,
       borderRadius: theme.spacing.m,
       padding: theme.spacing.l,
-      marginBottom: theme.spacing.l,
-      alignItems: 'center',
+      marginBottom: theme.spacing.m,
       ...theme.shadows.medium,
-      ...(Platform.OS === 'web' && {
-        flexDirection: 'row',
-        padding: theme.spacing.xl,
-      })
     },
-    headerCardWeb: {
-      flexDirection: 'row',
-      padding: theme.spacing.xl,
+    headerTop: {
+      flexDirection: Platform.OS === 'web' && width > 600 ? 'row' : 'column',
+      alignItems: 'center',
     },
-    avatarContainer: { position: 'relative', marginBottom: theme.spacing.m },
-    avatarContainerWeb: { marginRight: theme.spacing.xl, marginBottom: 0 },
+    headerMainInfo: {
+      marginLeft: Platform.OS === 'web' && width > 600 ? theme.spacing.l : 0,
+      marginTop: Platform.OS === 'web' && width > 600 ? 0 : theme.spacing.m,
+      alignItems: Platform.OS === 'web' && width > 600 ? 'flex-start' : 'center',
+    },
+    avatarContainer: {
+      position: 'relative',
+    },
     avatar: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
+      width: 120,
+      height: 120,
+      borderRadius: 60,
       backgroundColor: theme.colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
       overflow: 'hidden',
     },
     avatarImage: { width: '100%', height: '100%' },
-    avatarText: { fontSize: 40, fontWeight: 'bold', color: '#FFFFFF' },
+    avatarText: { fontSize: 48, fontWeight: 'bold', color: '#FFFFFF' },
     editOverlay: {
       ...StyleSheet.absoluteFillObject,
       backgroundColor: 'rgba(0,0,0,0.3)',
@@ -668,39 +616,110 @@ const createStyles = (theme: Theme) =>
     editOverlayText: { fontSize: 24 },
     roleBadge: {
       position: 'absolute',
-      bottom: -4,
-      right: -10,
+      bottom: 5,
+      right: 5,
       backgroundColor: theme.colors.secondary,
-      paddingHorizontal: theme.spacing.s,
-      paddingVertical: 2,
-      borderRadius: 10,
-      borderWidth: 2,
+      paddingHorizontal: theme.spacing.m,
+      paddingVertical: 4,
+      borderRadius: 15,
+      borderWidth: 3,
       borderColor: theme.colors.surface,
     },
-    roleBadgeText: { fontSize: 10, fontWeight: 'bold', color: theme.colors.text, textTransform: 'uppercase' },
-    headerInfo: { alignItems: 'center', width: '100%' },
-    userName: { ...theme.textVariants.header, fontSize: 24, color: theme.colors.text, marginBottom: 4 },
-    userEmail: { ...theme.textVariants.body, color: theme.colors.subText, fontSize: 16, marginBottom: theme.spacing.m },
-    editButton: {
-      paddingHorizontal: theme.spacing.l,
-      paddingVertical: theme.spacing.s,
-      borderRadius: theme.spacing.m,
-      backgroundColor: theme.colors.primary + '20',
+    roleBadgeText: { fontSize: 12, fontWeight: 'bold', color: theme.colors.text },
+    userName: { ...theme.textVariants.header, fontSize: 26, color: theme.colors.text, marginBottom: 4 },
+    userEmail: { ...theme.textVariants.body, color: theme.colors.subText, fontSize: 16, marginBottom: 8 },
+    teamContainer: {
+      backgroundColor: theme.colors.primary + '10',
+      paddingHorizontal: theme.spacing.m,
+      paddingVertical: 4,
+      borderRadius: theme.spacing.s,
     },
-    editButtonText: { color: theme.colors.primary, fontWeight: 'bold' },
-    editForm: { width: '100%', paddingHorizontal: theme.spacing.m },
-    editActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: theme.spacing.m, gap: theme.spacing.m },
-    actionButton: { paddingHorizontal: theme.spacing.l, paddingVertical: theme.spacing.s, borderRadius: theme.spacing.s },
+    teamText: { color: theme.colors.primary, fontWeight: '600', fontSize: 14 },
+    editButton: {
+      alignSelf: 'stretch',
+      marginTop: theme.spacing.l,
+      paddingVertical: theme.spacing.m,
+      borderRadius: theme.spacing.m,
+      backgroundColor: theme.colors.primary + '10',
+      alignItems: 'center',
+    },
+    editButtonText: { color: theme.colors.primary, fontWeight: 'bold', fontSize: 16 },
+    statsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: theme.spacing.m,
+      gap: theme.spacing.s,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.spacing.m,
+      padding: theme.spacing.m,
+      flexDirection: 'row',
+      alignItems: 'center',
+      ...theme.shadows.small,
+    },
+    statIconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: theme.spacing.s,
+    },
+    statIcon: { fontSize: 20 },
+    statValue: { fontSize: 20, fontWeight: 'bold', color: theme.colors.text },
+    statLabel: { fontSize: 11, color: theme.colors.subText },
+    card: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.spacing.m,
+      padding: theme.spacing.l,
+      marginBottom: theme.spacing.m,
+      ...theme.shadows.small,
+    },
+    cardTitle: {
+      ...theme.textVariants.subheader,
+      color: theme.colors.text,
+      fontSize: 18,
+      marginBottom: theme.spacing.l
+    },
+    fieldLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.colors.subText,
+      marginBottom: theme.spacing.s,
+    },
+    tagContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing.s,
+    },
+    tag: {
+      backgroundColor: theme.colors.primary + '15',
+      paddingHorizontal: theme.spacing.m,
+      paddingVertical: 6,
+      borderRadius: 20,
+    },
+    tagText: { color: theme.colors.primary, fontSize: 13, fontWeight: '500' },
+    socialRows: { gap: theme.spacing.m },
+    socialItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background,
+      padding: theme.spacing.m,
+      borderRadius: theme.spacing.s,
+    },
+    socialIcon: { fontSize: 18, marginRight: theme.spacing.m },
+    socialValue: { color: theme.colors.text, fontSize: 14, flex: 1 },
+    emptyText: { color: theme.colors.subText, fontStyle: 'italic' },
+    editForm: { width: '100%' },
+    editActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: theme.spacing.l, gap: theme.spacing.m },
+    actionButton: { paddingHorizontal: theme.spacing.xl, paddingVertical: theme.spacing.m, borderRadius: theme.spacing.m },
     cancelButton: { backgroundColor: theme.colors.border },
-    cancelButtonText: { color: theme.colors.text },
+    cancelButtonText: { color: theme.colors.text, fontWeight: '600' },
     saveButton: { backgroundColor: theme.colors.primary },
     saveButtonText: { color: '#FFFFFF', fontWeight: 'bold' },
-    fieldGroup: { marginBottom: theme.spacing.m },
-    divider: { height: 1, backgroundColor: theme.colors.border, marginVertical: theme.spacing.m },
-    captionText: { ...theme.textVariants.caption, color: theme.colors.subText },
-    versionText: { ...theme.textVariants.caption, color: theme.colors.subText, textAlign: 'center', marginTop: theme.spacing.l },
-    row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: theme.spacing.s },
-    label: { ...theme.textVariants.body, color: theme.colors.text },
+    divider: { height: 1, backgroundColor: theme.colors.border, marginVertical: theme.spacing.l },
     permissionRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -709,63 +728,33 @@ const createStyles = (theme: Theme) =>
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
     },
-    fieldContainer: {
-      marginTop: theme.spacing.m,
-    },
-    input: {
-      backgroundColor: theme.colors.background,
-      borderRadius: theme.spacing.s,
-      padding: theme.spacing.m,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      color: theme.colors.text,
-      marginTop: theme.spacing.xs,
-    },
     permissionInfo: { flex: 1 },
     permissionLabel: { ...theme.textVariants.body, color: theme.colors.text, marginBottom: theme.spacing.xs },
     permissionStatus: { ...theme.textVariants.caption, fontSize: 12 },
     logoutButton: {
       backgroundColor: theme.colors.surface,
-      padding: theme.spacing.m,
+      margin: theme.spacing.m,
+      padding: theme.spacing.l,
       borderRadius: theme.spacing.m,
       alignItems: 'center',
       borderWidth: 1,
       borderColor: theme.colors.error,
     },
-    logoutText: { ...theme.textVariants.button, color: theme.colors.error },
+    logoutText: { ...theme.textVariants.button, color: theme.colors.error, fontSize: 16 },
+    versionText: { ...theme.textVariants.caption, color: theme.colors.subText, textAlign: 'center' },
     responsiveRow: {
       flexDirection: 'row',
       alignItems: 'center',
+      gap: theme.spacing.m,
     },
     fieldContainerFlex: {
       flex: 1,
     },
-    menuItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: theme.spacing.m,
-    },
-    menuItemText: {
-      ...theme.textVariants.body,
-      color: theme.colors.text,
-      fontSize: 16,
-    },
-    menuItemArrow: {
-      fontSize: 20,
-      color: theme.colors.subText,
-    },
     subSectionTitle: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: 'bold',
       color: theme.colors.primary,
-      marginBottom: theme.spacing.s,
+      marginBottom: theme.spacing.m,
       marginTop: theme.spacing.s,
-    },
-    webProfileLayout: { maxWidth: 1000, width: '100%', alignSelf: 'center' },
-    settingsGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.l,
     },
   });

@@ -22,6 +22,7 @@ import {
 import { Announcement } from '../../database/schema';
 import { formatDate } from '../../utils/dateUtils';
 import { RootState } from '../../store';
+import { selectAllCompanies, selectSelectedCompanyId, setSelectedCompanyId } from '../../store/slices/companiesSlice';
 
 export const AnnouncementsScreen = () => {
     const { t } = useTranslation();
@@ -29,6 +30,8 @@ export const AnnouncementsScreen = () => {
     const { user } = useAuth();
     const dispatch = useDispatch();
     const announcements = useSelector(selectAllAnnouncements);
+    const companies = useSelector(selectAllCompanies);
+    const selectedCompanyId = useSelector(selectSelectedCompanyId);
 
     const [modalVisible, setModalVisible] = useState(false);
     const [newTitle, setNewTitle] = useState('');
@@ -47,6 +50,7 @@ export const AnnouncementsScreen = () => {
             category: newCategory,
             authorId: Number(user?.id) || 0,
             authorName: user?.name || 'Admin',
+            companyId: selectedCompanyId || 0,
             createdAt: new Date().toISOString(),
             date: new Date().toISOString(),
         };
@@ -101,10 +105,47 @@ export const AnnouncementsScreen = () => {
         </View>
     );
 
+    if (!selectedCompanyId) {
+        return (
+            <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+                <View style={styles.header}>
+                    <Text style={styles.headerTitle}>{t('announcements.title')}</Text>
+                </View>
+                <View style={styles.centered}>
+                    <Text style={[styles.emptyText, { color: theme.colors.text, marginBottom: 20 }]}>
+                        {t('companies.selectCompany')}
+                    </Text>
+                    <FlatList
+                        data={companies}
+                        keyExtractor={(item) => String(item.id)}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity
+                                style={[styles.companyItem, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+                                onPress={() => dispatch(setSelectedCompanyId(item.id))}
+                            >
+                                <Text style={[styles.companyNameText, { color: theme.colors.text }]}>{item.name}</Text>
+                                <Text style={{ fontSize: 18 }}>➤</Text>
+                            </TouchableOpacity>
+                        )}
+                        style={{ width: '100%', paddingHorizontal: 20 }}
+                    />
+                </View>
+            </View>
+        );
+    }
+
+    const filteredAnnouncements = announcements.filter(a => a.companyId === selectedCompanyId);
+
     return (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => dispatch(setSelectedCompanyId(null))} style={styles.backButton}>
+                    <Text style={[styles.backIcon, { color: theme.colors.primary }]}>←</Text>
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>{t('announcements.title')}</Text>
+            </View>
             <FlatList
-                data={[...announcements].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())}
+                data={[...filteredAnnouncements].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())}
                 renderItem={renderItem}
                 keyExtractor={(item) => (item.id || 0).toString()}
                 contentContainerStyle={styles.listContent}
@@ -373,5 +414,47 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         fontSize: 16,
+    },
+    header: {
+        padding: 16,
+        backgroundColor: '#FFF', // theme.colors.surface would be better but keeping simple for now
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(0,0,0,0.05)',
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    companyItem: {
+        width: '100%',
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderWidth: 1,
+    },
+    companyNameText: {
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    backButton: {
+        position: 'absolute',
+        left: 16,
+        padding: 8,
+    },
+    backIcon: {
+        fontSize: 24,
+        fontWeight: 'bold',
     },
 });
