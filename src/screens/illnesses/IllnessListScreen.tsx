@@ -280,7 +280,19 @@ export const IllnessListScreen = ({ navigation }: any) => {
         <ScrollView contentContainerStyle={styles.listContent}>
           {groupedData.length === 0 || (groupedData[0].items && groupedData[0].items.length === 0 && groupedData[0].id === 'mine') ? (
             <View style={styles.emptyContainer}>
+              <Text style={styles.emptyIcon}>🏥</Text>
               <Text style={styles.emptyText}>{t('illnesses.empty')}</Text>
+              <Text style={styles.emptySubText}>
+                {activeTab === 'mine' ? t('illnesses.addFirst') : t('common.noData')}
+              </Text>
+              {activeTab === 'mine' && (
+                <TouchableOpacity
+                  style={styles.emptyAddButton}
+                  onPress={() => navigation.navigate('AddIllness')}
+                >
+                  <Text style={styles.emptyAddButtonText}>+ {t('illnesses.add')}</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ) : (
             groupedData.map(group => (
@@ -461,14 +473,33 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       paddingVertical: 60,
     },
+    emptyIcon: {
+      fontSize: 64,
+      marginBottom: theme.spacing.m,
+    },
     emptyText: {
       ...theme.textVariants.subheader,
       color: theme.colors.subText,
-      marginBottom: theme.spacing.s,
+      marginBottom: theme.spacing.xs,
+      fontSize: 18,
     },
     emptySubText: {
       ...theme.textVariants.body,
       color: theme.colors.subText,
+      textAlign: 'center',
+      marginBottom: theme.spacing.l,
+    },
+    emptyAddButton: {
+      backgroundColor: theme.colors.primary,
+      paddingHorizontal: theme.spacing.xl,
+      paddingVertical: theme.spacing.m,
+      borderRadius: theme.spacing.m,
+      marginTop: theme.spacing.m,
+    },
+    emptyAddButtonText: {
+      color: '#FFF',
+      fontWeight: '600',
+      fontSize: 16,
     },
     fab: {
       position: 'absolute' as any,

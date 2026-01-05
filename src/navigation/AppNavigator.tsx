@@ -65,6 +65,7 @@ import { ChatScreen } from '../screens/home/ChatScreen';
 import { CompanyChatScreen } from '../screens/chat/CompanyChatScreen';
 import { LanguageSelectionScreen } from '../screens/settings/LanguageSelectionScreen';
 import { CustomThemeColorsScreen } from '../screens/settings/CustomThemeColorsScreen';
+import { ManageDevicesScreen } from '../screens/settings/ManageDevicesScreen';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { SearchOverlay } from '../components/common/SearchOverlay';
 import { ChatBot } from '../components/common/ChatBot';
@@ -349,6 +350,11 @@ const SettingsStack = () => {
         name="CustomThemeColors"
         component={CustomThemeColorsScreen}
         options={{ title: t('settings.customizeColors') || 'Customize Colors' }}
+      />
+      <Stack.Screen
+        name="ManageDevices"
+        component={ManageDevicesScreen}
+        options={{ title: t('navigation.manageDevices') || 'Manage Devices' }}
       />
     </Stack.Navigator>
   );
@@ -738,6 +744,16 @@ const WebNavigator = () => {
       case 'Settings':
         return <PersonalSettingsScreen />;
       case 'CompanySettings':
+        if (subScreen === 'ManageDevices')
+          return <ManageDevicesScreen />;
+        if (subScreen === 'CustomThemeColors')
+          return <CustomThemeColorsScreen />;
+        if (subScreen === 'Departments')
+          return <DepartmentStack />;
+        if (subScreen === 'Services')
+          return <ServiceStack />;
+        if (subScreen === 'ManageCurrencies')
+          return <ManageCurrenciesScreen />;
         return <CompanySettingsScreen />;
       case 'MyTeam':
         return <MyTeamScreen />;

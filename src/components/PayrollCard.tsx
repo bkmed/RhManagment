@@ -115,12 +115,13 @@ const createStyles = (theme: Theme) =>
     StyleSheet.create({
         card: {
             backgroundColor: theme.colors.surface,
-            borderRadius: theme.spacing.m,
-            padding: theme.spacing.m,
+            borderRadius: 16,
+            padding: theme.spacing.l,
             marginBottom: theme.spacing.m,
             ...theme.shadows.small,
-            borderLeftWidth: 4,
+            borderLeftWidth: 5,
             borderLeftColor: theme.colors.primary,
+            elevation: 3,
         },
         header: {
             flexDirection: 'row',
@@ -185,7 +186,8 @@ const createStyles = (theme: Theme) =>
         amount: {
             ...theme.textVariants.header,
             color: theme.colors.primary,
-            fontSize: 20,
+            fontSize: 22,
+            fontWeight: 'bold',
         },
         benefitsRow: {
             flexDirection: 'row',
@@ -198,18 +200,24 @@ const createStyles = (theme: Theme) =>
             flexDirection: 'row',
             alignItems: 'center',
             backgroundColor: theme.colors.background,
-            paddingHorizontal: theme.spacing.s,
-            paddingVertical: 4,
-            borderRadius: 6,
-            gap: 4,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 8,
+            gap: 6,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.08,
+            shadowRadius: 2,
+            elevation: 1,
         },
         benefitIcon: {
-            fontSize: 12,
+            fontSize: 14,
         },
         benefitText: {
             ...theme.textVariants.caption,
             color: theme.colors.text,
             fontWeight: '600',
+            fontSize: 13,
         },
         footer: {
             flexDirection: 'row',

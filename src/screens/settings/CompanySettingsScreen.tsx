@@ -72,7 +72,8 @@ export const CompanySettingsScreen = ({ navigation }: any) => {
 
     const navigateTo = (screen: string) => {
         if (Platform.OS === 'web') {
-            setActiveTab?.(screen);
+            // For web, handle as subScreen under CompanySettings
+            setActiveTab?.('CompanySettings', screen);
         } else {
             navigation.navigate(screen);
         }
@@ -143,10 +144,17 @@ export const CompanySettingsScreen = ({ navigation }: any) => {
                                 <Text style={styles.arrow}>›</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={styles.menuRow}
+                                style={[styles.menuRow, styles.borderBottom]}
                                 onPress={() => navigateTo('ManageCurrencies')}
                             >
                                 <Text style={styles.menuText}>💰 {t('payroll.manageCurrencies')}</Text>
+                                <Text style={styles.arrow}>›</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.menuRow}
+                                onPress={() => navigateTo('ManageDevices')}
+                            >
+                                <Text style={styles.menuText}>📱 {t('navigation.manageDevices')}</Text>
                                 <Text style={styles.arrow}>›</Text>
                             </TouchableOpacity>
                         </View>
