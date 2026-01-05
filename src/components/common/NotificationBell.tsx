@@ -18,6 +18,90 @@ import {
     markAllAsRead
 } from '../../store/slices/notificationsSlice';
 import { formatDate } from '../../utils/dateUtils';
+import { Theme } from '../../theme';
+
+const createStyles = (theme: Theme) =>
+    StyleSheet.create({
+        bellButton: {
+            padding: 8,
+            position: 'relative',
+        },
+        bellIcon: {
+            fontSize: 22,
+        },
+        badge: {
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            minWidth: 18,
+            height: 18,
+            borderRadius: 9,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 4,
+            borderWidth: 1.5,
+            borderColor: '#FFF',
+        },
+        badgeText: {
+            color: '#FFF',
+            fontSize: 10,
+            fontWeight: 'bold',
+        },
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-end',
+            paddingTop: 80, // Adjust based on header height
+            paddingRight: 20,
+        },
+        popover: {
+            width: 320,
+            borderRadius: 16,
+            ...theme.shadows.large,
+        },
+        popoverHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: 16,
+            borderBottomWidth: 1,
+        },
+        popoverTitle: {
+            fontSize: 16,
+            fontWeight: '700',
+        },
+        markReadText: {
+            fontSize: 12,
+            fontWeight: '600',
+        },
+        notificationItem: {
+            padding: 16,
+            borderBottomWidth: 1,
+        },
+        notificationHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 4,
+        },
+        notificationTitle: {
+            fontSize: 14,
+            flex: 1,
+        },
+        notificationDate: {
+            fontSize: 10,
+            marginLeft: 8,
+        },
+        notificationMessage: {
+            fontSize: 13,
+            lineHeight: 18,
+            opacity: 0.8,
+        },
+        emptyContainer: {
+            padding: 32,
+            alignItems: 'center',
+        },
+    });
 
 export const NotificationBell = () => {
     const { t } = useTranslation();
@@ -25,6 +109,7 @@ export const NotificationBell = () => {
     const dispatch = useDispatch();
     const notifications = useSelector(selectAllNotifications);
     const unreadCount = useSelector(selectUnreadCount);
+    const styles = React.useMemo(() => createStyles(theme), [theme]);
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleNotificationPress = (id: string) => {
@@ -112,98 +197,3 @@ export const NotificationBell = () => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    bellButton: {
-        padding: 8,
-        position: 'relative',
-    },
-    bellIcon: {
-        fontSize: 22,
-    },
-    badge: {
-        position: 'absolute',
-        top: 4,
-        right: 4,
-        minWidth: 18,
-        height: 18,
-        borderRadius: 9,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 4,
-        borderWidth: 1.5,
-        borderColor: '#FFF',
-    },
-    badgeText: {
-        color: '#FFF',
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.2)',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-end',
-        paddingTop: 80, // Adjust based on header height
-        paddingRight: 20,
-    },
-    popover: {
-        width: 320,
-        borderRadius: 16,
-        ...Platform.select({
-            ios: {
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.15,
-                shadowRadius: 12,
-            },
-            android: {
-                elevation: 8,
-            },
-            web: {
-                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-            }
-        }),
-    },
-    popoverHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 16,
-        borderBottomWidth: 1,
-    },
-    popoverTitle: {
-        fontSize: 16,
-        fontWeight: '700',
-    },
-    markReadText: {
-        fontSize: 12,
-        fontWeight: '600',
-    },
-    notificationItem: {
-        padding: 16,
-        borderBottomWidth: 1,
-    },
-    notificationHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 4,
-    },
-    notificationTitle: {
-        fontSize: 14,
-        flex: 1,
-    },
-    notificationDate: {
-        fontSize: 10,
-        marginLeft: 8,
-    },
-    notificationMessage: {
-        fontSize: 13,
-        lineHeight: 18,
-        opacity: 0.8,
-    },
-    emptyContainer: {
-        padding: 32,
-        alignItems: 'center',
-    },
-});

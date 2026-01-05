@@ -16,22 +16,18 @@ import { leavesDb } from '../database/leavesDb';
 import { illnessesDb } from '../database/illnessesDb';
 import { employeesDb } from '../database/employeesDb';
 import { claimsDb } from '../database/claimsDb';
-import { companiesDb } from '../database/companiesDb';
-import { teamsDb } from '../database/teamsDb';
 import { permissionsService } from '../services/permissions';
 import { useTheme } from '../context/ThemeContext';
 import { Theme } from '../theme';
 import { formatDate } from '../utils/dateUtils';
 import { WebNavigationContext } from '../navigation/WebNavigationContext';
-import { Employee, Leave, Claim } from '../database/schema';
 
 // ======= Helper Components =======
 
-const StatCard = ({ title, value, icon, color, onPress }: any) => {
-  const { theme } = useTheme();
+const StatCard = ({ title, value, icon, color, onPress, styles }: any) => {
   return (
     <TouchableOpacity
-      style={[styles.statCard, { backgroundColor: color, shadowColor: theme.shadows.medium.shadowColor }]}
+      style={[styles.statCard, { backgroundColor: color }]}
       onPress={onPress}
     >
       <View style={styles.statIconWrapper}>
@@ -45,8 +41,7 @@ const StatCard = ({ title, value, icon, color, onPress }: any) => {
   );
 };
 
-const ActivityItem = ({ icon, title, subtitle, time }: any) => {
-  const { theme } = useTheme();
+const ActivityItem = ({ icon, title, subtitle, time, theme, styles }: any) => {
   return (
     <View style={[styles.activityItem, { borderBottomColor: theme.colors.border }]}>
       <View style={[styles.activityIconWrapper, { backgroundColor: theme.colors.primary + '15' }]}>
@@ -63,9 +58,8 @@ const ActivityItem = ({ icon, title, subtitle, time }: any) => {
 
 // ======= Role Dashboards =======
 
-const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
+const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme }: any) => {
   const { t } = useTranslation();
-  const { theme } = useTheme();
 
   return (
     <View style={styles.dashboardContainer}>
@@ -76,6 +70,7 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
           icon="👥"
           color={theme.colors.primary}
           onPress={() => navigateToTab('Employees')}
+          styles={styles}
         />
         <StatCard
           title={t('leaves.approvals')}
@@ -83,6 +78,7 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
           icon="⏳"
           color={theme.colors.warning}
           onPress={() => navigateToTab('Leaves', 'LeaveApprovalList')}
+          styles={styles}
         />
       </View>
       <View style={styles.statsContainer}>
@@ -92,6 +88,7 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
           icon="📝"
           color={theme.colors.secondary}
           onPress={() => navigateToTab('Claims')}
+          styles={styles}
         />
         <StatCard
           title={t('navigation.payroll')}
@@ -99,61 +96,52 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
           icon="💰"
           color={theme.colors.success}
           onPress={() => navigateToTab('Payroll')}
+          styles={styles}
         />
       </View>
 
-      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('home.quickActions')}</Text>
-      <View style={styles.managementButtons}>
+      <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
+      <View style={styles.actionGrid}>
         <TouchableOpacity
-          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+          style={styles.actionButton}
           onPress={() => navigateToTab('Employees', 'AddEmployee')}
         >
-          <Text style={styles.managementIcon}>➕</Text>
-          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('employees.add')}</Text>
+          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.primary + '15' }]}>
+            <Text style={styles.actionIcon}>➕</Text>
+          </View>
+          <Text style={styles.actionLabel}>{t('employees.add')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+          style={styles.actionButton}
           onPress={() => navigateToTab('Companies')}
         >
-          <Text style={styles.managementIcon}>🏢</Text>
-          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('home.companies')}</Text>
+          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.secondary + '15' }]}>
+            <Text style={styles.actionIcon}>🏢</Text>
+          </View>
+          <Text style={styles.actionLabel}>{t('home.companies')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+          style={styles.actionButton}
           onPress={() => navigateToTab('Teams')}
         >
-          <Text style={styles.managementIcon}>🚀</Text>
-          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('home.teams')}</Text>
+          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.success + '15' }]}>
+            <Text style={styles.actionIcon}>🚀</Text>
+          </View>
+          <Text style={styles.actionLabel}>{t('home.teams')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+          style={styles.actionButton}
           onPress={() => navigateToTab('Leaves', 'TeamVacations')}
         >
-          <Text style={styles.managementIcon}>🏖️</Text>
-          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('navigation.leaves')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-          onPress={() => navigateToTab('Analytics', 'PerformanceReview')}
-        >
-          <Text style={styles.managementIcon}>📈</Text>
-          <Text style={[styles.managementText, { color: theme.colors.text }]}>
-            {t('performance.title') || 'Performance'}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-          onPress={() => navigateToTab('Companies', 'OrgChart')}
-        >
-          <Text style={styles.managementIcon}>📊</Text>
-          <Text style={[styles.managementText, { color: theme.colors.text }]}>
-            {t('navigation.orgChart') || 'Organigramme'}
-          </Text>
+          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.info + '15' }]}>
+            <Text style={styles.actionIcon}>🏖️</Text>
+          </View>
+          <Text style={styles.actionLabel}>{t('navigation.leaves')}</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('home.recentActivity')}</Text>
-      <View style={[styles.activityCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+      <Text style={styles.sectionTitle}>{t('home.recentActivity')}</Text>
+      <View style={styles.activityCard}>
         {recentActivity.length > 0 ? (
           recentActivity.map((activity: any, index: number) => (
             <ActivityItem
@@ -162,10 +150,14 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
               title={activity.title}
               subtitle={activity.subtitle}
               time={formatDate(activity.date)}
+              theme={theme}
+              styles={styles}
             />
           ))
         ) : (
-          <Text style={[styles.emptyText, { color: theme.colors.subText }]}>{t('home.noRecentActivity')}</Text>
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>{t('home.noRecentActivity')}</Text>
+          </View>
         )}
       </View>
     </View>
@@ -178,9 +170,10 @@ const EmployeeDashboard = ({
   navigateToTab,
   hasNotificationPermission,
   handleEnableNotifications,
+  styles,
+  theme,
 }: any) => {
   const { t } = useTranslation();
-  const { theme } = useTheme();
 
   return (
     <View style={styles.dashboardContainer}>
@@ -191,6 +184,7 @@ const EmployeeDashboard = ({
           icon="💰"
           color={theme.colors.primary}
           onPress={() => navigateToTab('Payroll')}
+          styles={styles}
         />
         <StatCard
           title={t('home.upcomingLeaves')}
@@ -198,12 +192,13 @@ const EmployeeDashboard = ({
           icon="📅"
           color={theme.colors.success}
           onPress={() => navigateToTab('Leaves')}
+          styles={styles}
         />
       </View>
 
-      <View style={[styles.balanceCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.medium.shadowColor }]}>
+      <View style={styles.balanceCard}>
         <View style={styles.balanceHeader}>
-          <Text style={[styles.balanceTitle, { color: theme.colors.text }]}>{t('leavePolicy.title')}</Text>
+          <Text style={styles.balanceTitle}>{t('leavePolicy.title')}</Text>
           <View style={[styles.managedBadge, { backgroundColor: theme.colors.primary + '15' }]}>
             <Text style={[styles.balanceManaged, { color: theme.colors.primary }]}>
               {t('leavePolicy.managedBy')}
@@ -213,26 +208,22 @@ const EmployeeDashboard = ({
 
         <View style={styles.balanceGrid}>
           <View style={styles.balanceItem}>
-            <Text style={[styles.balanceLabel, { color: theme.colors.subText }]}>{t('leavePolicy.perYear')}</Text>
-            <Text style={[styles.balanceValue, { color: theme.colors.text }]}>
+            <Text style={styles.balanceLabel}>{t('leavePolicy.perYear')}</Text>
+            <Text style={styles.balanceValue}>
               {user?.vacationDaysPerYear || 25}
             </Text>
           </View>
           <View style={[styles.balanceDivider, { backgroundColor: theme.colors.border }]} />
           <View style={styles.balanceItem}>
-            <Text style={[styles.balanceLabel, { color: theme.colors.subText }]}>
-              {t('leavePolicy.remaining')}
-            </Text>
-            <Text
-              style={[styles.balanceValue, { color: theme.colors.primary }]}
-            >
+            <Text style={styles.balanceLabel}>{t('leavePolicy.remaining')}</Text>
+            <Text style={[styles.balanceValue, { color: theme.colors.primary }]}>
               {user?.remainingVacationDays ?? 25}
             </Text>
           </View>
           <View style={[styles.balanceDivider, { backgroundColor: theme.colors.border }]} />
           <View style={styles.balanceItem}>
-            <Text style={[styles.balanceLabel, { color: theme.colors.subText }]}>{t('home.statePaidLeaves')}</Text>
-            <Text style={[styles.balanceValue, { color: theme.colors.text }]}>
+            <Text style={styles.balanceLabel}>{t('home.statePaidLeaves')}</Text>
+            <Text style={styles.balanceValue}>
               {user?.statePaidLeaves || 0}
             </Text>
           </View>
@@ -283,78 +274,41 @@ const EmployeeDashboard = ({
         )}
       </View>
 
-      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>{t('home.quickActions')}</Text>
-      <TouchableOpacity
-        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
-        onPress={() => navigateToTab('Claims', 'AddClaim')}
-      >
-        <Text style={styles.actionIcon}>📝</Text>
-        <View style={styles.actionContent}>
-          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('claims.newClaim')}</Text>
-          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
-            {t('claims.descriptionPlaceholder')}
-          </Text>
-        </View>
-        <Text style={styles.actionArrow}>›</Text>
-      </TouchableOpacity>
+      <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
+      <View style={styles.quickActions}>
+        <TouchableOpacity
+          style={styles.quickActionItem}
+          onPress={() => navigateToTab('Claims', 'AddClaim')}
+        >
+          <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.secondary + '15' }]}>
+            <Text style={{ fontSize: 20 }}>📝</Text>
+          </View>
+          <Text style={styles.quickActionText}>{t('claims.newClaim')}</Text>
+          <Text style={{ color: theme.colors.subText }}>›</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
-        onPress={() => navigateToTab('Leaves', 'AddLeave')}
-      >
-        <Text style={styles.actionIcon}>📅</Text>
-        <View style={styles.actionContent}>
-          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('home.scheduleLeave')}</Text>
-          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
-            {t('home.scheduleLeaveSubtitle')}
-          </Text>
-        </View>
-        <Text style={styles.actionArrow}>›</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickActionItem}
+          onPress={() => navigateToTab('Leaves', 'AddLeave')}
+        >
+          <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.success + '15' }]}>
+            <Text style={{ fontSize: 20 }}>📅</Text>
+          </View>
+          <Text style={styles.quickActionText}>{t('home.scheduleLeave')}</Text>
+          <Text style={{ color: theme.colors.subText }}>›</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
-        onPress={() => navigateToTab('Leaves', 'TeamVacations')}
-      >
-        <Text style={styles.actionIcon}>🤝</Text>
-        <View style={styles.actionContent}>
-          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('navigation.teams')}</Text>
-          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
-            {t('home.viewTeamLeaves')}
-          </Text>
-        </View>
-        <Text style={styles.actionArrow}>›</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
-        onPress={() => navigateToTab('Profile', 'CareerHub')}
-      >
-        <Text style={styles.actionIcon}>🚀</Text>
-        <View style={styles.actionContent}>
-          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('navigation.careerHub')}</Text>
-          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
-            {t('home.manageCareer')}
-          </Text>
-        </View>
-        <Text style={styles.actionArrow}>›</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.actionButton, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, shadowColor: theme.shadows.small.shadowColor }]}
-        onPress={() => navigateToTab('Companies', 'OrgChart')}
-      >
-        <Text style={styles.actionIcon}>📊</Text>
-        <View style={styles.actionContent}>
-          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>
-            {t('navigation.orgChart') || 'Organigramme'}
-          </Text>
-          <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
-            {t('home.viewOrgChart')}
-          </Text>
-        </View>
-        <Text style={styles.actionArrow}>›</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickActionItem}
+          onPress={() => navigateToTab('Profile', 'CareerHub')}
+        >
+          <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.primary + '15' }]}>
+            <Text style={{ fontSize: 20 }}>🚀</Text>
+          </View>
+          <Text style={styles.quickActionText}>{t('navigation.careerHub')}</Text>
+          <Text style={{ color: theme.colors.subText }}>›</Text>
+        </TouchableOpacity>
+      </View>
 
       {!hasNotificationPermission && (
         <TouchableOpacity
@@ -372,12 +326,12 @@ const EmployeeDashboard = ({
 // ======= Main HomeScreen =======
 
 export const HomeScreen = () => {
-  const navigation = useNavigation<any>();
-  const { t } = useTranslation();
-  const { theme } = useTheme();
   const { user } = useAuth();
-
-  const { setActiveTab } = useContext(WebNavigationContext);
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const navigation = useNavigation<any>();
+  const { setActiveTab } = useContext(WebNavigationContext) as any;
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [summary, setSummary] = useState<any>({
     payroll: 0,
@@ -396,15 +350,12 @@ export const HomeScreen = () => {
   const loadData = async () => {
     try {
       if (user?.role === 'admin' || user?.role === 'rh') {
-        // Load Admin Data
-        const [employees, allLeaves, allClaims, allPayroll] = await Promise.all(
-          [
-            employeesDb.getAll(),
-            leavesDb.getAll(),
-            claimsDb.getAll(),
-            payrollDb.getAll(),
-          ],
-        );
+        const [employees, allLeaves, allClaims, allPayroll] = await Promise.all([
+          employeesDb.getAll(),
+          leavesDb.getAll(),
+          claimsDb.getAll(),
+          payrollDb.getAll(),
+        ]);
 
         const pendingLeaves = allLeaves.filter(l => l.status === 'pending');
         const pendingClaims = allClaims.filter(c => c.status === 'pending');
@@ -416,7 +367,6 @@ export const HomeScreen = () => {
           totalPayroll: allPayroll.length,
         });
 
-        // Generate Recent Activity
         const activity = [
           ...pendingLeaves.slice(0, 3).map(l => ({
             icon: '📅',
@@ -430,29 +380,20 @@ export const HomeScreen = () => {
             subtitle: c.description,
             date: c.createdAt,
           })),
-        ].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-        );
+        ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
         setRecentActivity(activity);
       } else {
-        // Load Employee Data
-        let [allPayroll, upcomingLeaves, expiringIllnesses] = await Promise.all(
-          [
-            payrollDb.getAll(),
-            leavesDb.getUpcoming(),
-            illnessesDb.getExpiringSoon(),
-          ],
-        );
+        let [allPayroll, upcomingLeaves, expiringIllnesses] = await Promise.all([
+          payrollDb.getAll(),
+          leavesDb.getUpcoming(),
+          illnessesDb.getExpiringSoon(),
+        ]);
 
         if (user?.employeeId) {
           allPayroll = allPayroll.filter(p => p.employeeId === user.employeeId);
-          upcomingLeaves = upcomingLeaves.filter(
-            l => l.employeeId === user.employeeId,
-          );
-          expiringIllnesses = expiringIllnesses.filter(
-            i => i.employeeId === user.employeeId,
-          );
+          upcomingLeaves = upcomingLeaves.filter(l => l.employeeId === user.employeeId);
+          expiringIllnesses = expiringIllnesses.filter(i => i.employeeId === user.employeeId);
         }
 
         setSummary({
@@ -462,7 +403,6 @@ export const HomeScreen = () => {
         });
       }
 
-      // Check notification permission
       const status = await permissionsService.checkNotificationPermission();
       setHasNotificationPermission(status === 'granted');
     } catch (error) {
@@ -518,18 +458,22 @@ export const HomeScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+    <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.greeting, { color: theme.colors.subText }]}>{t('home.greeting')}</Text>
-          <Text style={[styles.userName, { color: theme.colors.text }]}>{user?.name}</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.subText }]}>
-            {user?.role === 'admin' ? t('home.hrAdmin') : t('home.subtitle')}
-          </Text>
+          <View>
+            <Text style={styles.welcome}>{t('home.greeting')}</Text>
+            <Text style={styles.name}>{user?.name}</Text>
+          </View>
+          <TouchableOpacity
+            style={[styles.notificationIcon, { backgroundColor: theme.colors.surface }]}
+            onPress={() => navigateToTab('Profile', 'Notifications')}
+          >
+            <Text style={{ fontSize: 20 }}>🔔</Text>
+          </TouchableOpacity>
         </View>
 
         {user?.role === 'admin' || user?.role === 'rh' ? (
@@ -537,6 +481,8 @@ export const HomeScreen = () => {
             summary={summary}
             recentActivity={recentActivity}
             navigateToTab={navigateToTab}
+            styles={styles}
+            theme={theme}
           />
         ) : (
           <EmployeeDashboard
@@ -545,6 +491,8 @@ export const HomeScreen = () => {
             navigateToTab={navigateToTab}
             hasNotificationPermission={hasNotificationPermission}
             handleEnableNotifications={handleEnableNotifications}
+            styles={styles}
+            theme={theme}
           />
         )}
       </ScrollView>
@@ -552,274 +500,288 @@ export const HomeScreen = () => {
   );
 };
 
-// ======= Styles =======
-
-const styles = StyleSheet.create({
-  content: {
-    padding: 20,
-    width: '100%',
-    maxWidth: 800,
-    alignSelf: 'center',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    marginBottom: 24,
-    marginTop: Platform.OS === 'web' ? 20 : 0,
-  },
-  greeting: {
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  userName: {
-    fontSize: 28,
-    fontWeight: '800',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-  },
-  dashboardContainer: {
-    gap: 20,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  statCard: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  statIconWrapper: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  statIcon: {
-    fontSize: 22,
-  },
-  statInfo: {
-    flex: 1,
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#FFF',
-    opacity: 0.9,
-    fontWeight: '600',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginTop: 8,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    padding: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    elevation: 2,
-  },
-  actionIcon: {
-    fontSize: 24,
-    marginRight: 16,
-  },
-  actionContent: {
-    flex: 1,
-  },
-  actionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  actionSubtitle: {
-    fontSize: 13,
-  },
-  actionArrow: {
-    fontSize: 20,
-    color: '#94A3B8',
-  },
-  balanceCard: {
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 1,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 5,
-  },
-  balanceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  balanceTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  managedBadge: {
-    backgroundColor: '#EFF6FF',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  balanceManaged: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#3B82F6',
-    textTransform: 'uppercase',
-  },
-  balanceGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-  balanceItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  balanceLabel: {
-    fontSize: 12,
-    color: '#64748B',
-    marginBottom: 4,
-  },
-  balanceValue: {
-    fontSize: 24,
-    fontWeight: '800',
-  },
-  balanceDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: '#F1F5F9',
-  },
-  senioritySection: {
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    paddingTop: 16,
-  },
-  seniorityRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  seniorityItem: {
-    flex: 1,
-  },
-  countryLabel: {
-    fontSize: 11,
-    color: '#94A3B8',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  countryValue: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  tipCard: {
-    flexDirection: 'row',
-    backgroundColor: '#F0F9FF',
-    padding: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#BAE6FD',
-  },
-  tipIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  tipText: {
-    flex: 1,
-    fontSize: 13,
-    color: '#0369A1',
-    fontWeight: '500',
-  },
-  managementButtons: {
-    flexDirection: 'row',
-    gap: 12,
-    flexWrap: 'wrap',
-  },
-  managementCard: {
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    alignItems: 'center',
-    flex: 1,
-    minWidth: 100,
-  },
-  managementIcon: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
-  managementText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  activityCard: {
-    borderRadius: 20,
-    padding: 8,
-    borderWidth: 1,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  activityIconWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#F8FAFC',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  activityIcon: {
-    fontSize: 18,
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1E293B',
-  },
-  activitySubtitle: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  activityTime: {
-    fontSize: 10,
-    color: '#94A3B8',
-    marginTop: 2,
-  },
-  emptyText: {
-    textAlign: 'center',
-    padding: 20,
-    color: '#94A3B8',
-  },
-});
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    scrollContent: {
+      paddingBottom: 100,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    header: {
+      padding: 24,
+      paddingTop: Platform.OS === 'ios' ? 20 : 40,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    welcome: {
+      fontSize: 16,
+      color: theme.colors.subText,
+      marginBottom: 4,
+    },
+    name: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+    },
+    notificationIcon: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...theme.shadows.small,
+    },
+    dashboardContainer: {
+      paddingHorizontal: 24,
+      gap: 24,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: theme.colors.text,
+      marginTop: 8,
+    },
+    statsContainer: {
+      flexDirection: 'row',
+      gap: 16,
+    },
+    statCard: {
+      flex: 1,
+      padding: 16,
+      borderRadius: 20,
+      gap: 12,
+      ...theme.shadows.small,
+    },
+    statIconWrapper: {
+      width: 44,
+      height: 44,
+      borderRadius: 14,
+      backgroundColor: 'rgba(255,255,255,0.2)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    statIcon: {
+      fontSize: 22,
+    },
+    statInfo: {
+      gap: 2,
+    },
+    statNumber: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#FFF',
+    },
+    statLabel: {
+      fontSize: 12,
+      color: '#FFF',
+      opacity: 0.9,
+      fontWeight: '600',
+    },
+    actionGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    actionButton: {
+      width: '48%',
+      padding: 16,
+      borderRadius: 20,
+      backgroundColor: theme.colors.surface,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      gap: 12,
+      ...theme.shadows.small,
+    },
+    actionIconWrapper: {
+      width: 48,
+      height: 48,
+      borderRadius: 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    actionIcon: {
+      fontSize: 24,
+    },
+    actionLabel: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: theme.colors.text,
+    },
+    activityCard: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: 24,
+      padding: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      ...theme.shadows.small,
+    },
+    activityItem: {
+      flexDirection: 'row',
+      padding: 16,
+      alignItems: 'center',
+      borderBottomWidth: 1,
+    },
+    activityIconWrapper: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 16,
+    },
+    activityIcon: {
+      fontSize: 20,
+    },
+    activityContent: {
+      flex: 1,
+      gap: 2,
+    },
+    activityTitle: {
+      fontSize: 15,
+      fontWeight: '600',
+    },
+    activitySubtitle: {
+      fontSize: 13,
+    },
+    activityTime: {
+      fontSize: 11,
+      marginTop: 2,
+    },
+    balanceCard: {
+      borderRadius: 24,
+      padding: 24,
+      backgroundColor: theme.colors.surface,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      ...theme.shadows.medium,
+    },
+    balanceHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 24,
+    },
+    balanceTitle: {
+      fontSize: 16,
+      color: theme.colors.text,
+      fontWeight: '700',
+    },
+    managedBadge: {
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 8,
+    },
+    balanceManaged: {
+      fontSize: 10,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+    },
+    balanceGrid: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 24,
+    },
+    balanceItem: {
+      alignItems: 'center',
+      flex: 1,
+    },
+    balanceLabel: {
+      fontSize: 12,
+      color: theme.colors.subText,
+      marginBottom: 4,
+    },
+    balanceValue: {
+      fontSize: 24,
+      fontWeight: '800',
+      color: theme.colors.text,
+    },
+    balanceDivider: {
+      width: 1,
+      height: 40,
+    },
+    senioritySection: {
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
+      paddingTop: 16,
+    },
+    seniorityRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    seniorityItem: {
+      flex: 1,
+    },
+    countryLabel: {
+      fontSize: 11,
+      color: theme.colors.subText,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    countryValue: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    quickActions: {
+      gap: 12,
+    },
+    quickActionItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: theme.colors.surface,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      ...theme.shadows.small,
+    },
+    quickActionIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    quickActionText: {
+      flex: 1,
+      fontSize: 15,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    tipCard: {
+      flexDirection: 'row',
+      backgroundColor: theme.colors.primary + '10',
+      padding: 16,
+      borderRadius: 16,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: theme.colors.primary + '30',
+    },
+    tipIcon: {
+      fontSize: 20,
+      marginRight: 12,
+    },
+    tipText: {
+      flex: 1,
+      fontSize: 13,
+      color: theme.colors.primary,
+      fontWeight: '500',
+    },
+    emptyState: {
+      padding: 20,
+      alignItems: 'center',
+    },
+    emptyText: {
+      color: theme.colors.subText,
+      fontSize: 14,
+    },
+  });

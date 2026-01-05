@@ -210,9 +210,8 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
-      ...theme.shadows.medium,
+      ...theme.shadows.large,
       zIndex: 999,
-      elevation: 10,
     } as any,
     fabText: {
       fontSize: 32,

@@ -14,6 +14,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import {
     selectAllAnnouncements,
@@ -33,6 +34,7 @@ export const AnnouncementsScreen = () => {
     const announcements = useSelector(selectAllAnnouncements);
     const companies = useSelector(selectAllCompanies);
     const selectedCompanyId = useSelector(selectSelectedCompanyId);
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [modalVisible, setModalVisible] = useState(false);
     const [newTitle, setNewTitle] = useState('');
@@ -264,216 +266,200 @@ export const AnnouncementsScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    listContent: {
-        padding: 16,
-        paddingBottom: 100,
-    },
-    card: {
-        padding: 16,
-        borderRadius: 16,
-        marginBottom: 16,
-        borderWidth: 1,
-        ...Platform.select({
-            ios: {
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 8,
-            },
-            android: {
-                elevation: 3,
-            },
-            web: {
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-            },
-        }),
-    },
-    cardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    categoryBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
-        gap: 6,
-    },
-    categoryIcon: {
-        fontSize: 14,
-    },
-    categoryText: {
-        fontSize: 10,
-        fontWeight: 'bold',
-        letterSpacing: 0.5,
-    },
-    dateText: {
-        fontSize: 12,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    content: {
-        fontSize: 14,
-        lineHeight: 20,
-        marginBottom: 16,
-    },
-    cardFooter: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(0,0,0,0.05)',
-        paddingTop: 12,
-    },
-    author: {
-        fontSize: 12,
-        fontStyle: 'italic',
-    },
-    deleteButton: {
-        padding: 4,
-    },
-    fab: {
-        position: 'absolute',
-        bottom: 24,
-        right: 24,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-    },
-    fabIcon: {
-        fontSize: 32,
-        color: '#FFF',
-        lineHeight: 36,
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    modalContainer: {
-        width: '100%',
-        maxWidth: 500,
-        borderRadius: 24,
-        padding: 24,
-        maxHeight: '80%',
-    },
-    modalTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
-        marginBottom: 8,
-        marginTop: 16,
-    },
-    input: {
-        borderWidth: 1,
-        borderRadius: 12,
-        padding: 12,
-        fontSize: 16,
-    },
-    textArea: {
-        height: 120,
-        textAlignVertical: 'top',
-    },
-    categoryToggle: {
-        flexDirection: 'row',
-        gap: 8,
-        marginTop: 8,
-    },
-    categoryOption: {
-        flex: 1,
-        padding: 10,
-        borderRadius: 10,
-        borderWidth: 1,
-        alignItems: 'center',
-    },
-    categoryOptionText: {
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    modalFooter: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        gap: 12,
-        marginTop: 24,
-    },
-    modalButton: {
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        borderRadius: 12,
-        minWidth: 100,
-        alignItems: 'center',
-    },
-    emptyContainer: {
-        height: 300,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 16,
-    },
-    header: {
-        padding: 16,
-        backgroundColor: '#FFF', // theme.colors.surface would be better but keeping simple for now
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(0,0,0,0.05)',
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    companyItem: {
-        width: '100%',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderWidth: 1,
-    },
-    companyNameText: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    backButton: {
-        position: 'absolute',
-        left: 16,
-        padding: 8,
-    },
-    backIcon: {
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-});
+const createStyles = (theme: Theme) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+        },
+        listContent: {
+            padding: 16,
+            paddingBottom: 100,
+        },
+        card: {
+            padding: 16,
+            borderRadius: 16,
+            marginBottom: 16,
+            borderWidth: 1,
+            ...theme.shadows.small,
+        },
+        cardHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 12,
+        },
+        categoryBadge: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 8,
+            gap: 6,
+        },
+        categoryIcon: {
+            fontSize: 14,
+        },
+        categoryText: {
+            fontSize: 10,
+            fontWeight: 'bold',
+            letterSpacing: 0.5,
+        },
+        dateText: {
+            fontSize: 12,
+        },
+        title: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 8,
+        },
+        content: {
+            fontSize: 14,
+            lineHeight: 20,
+            marginBottom: 16,
+        },
+        cardFooter: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderTopWidth: 1,
+            borderTopColor: 'rgba(0,0,0,0.05)',
+            paddingTop: 12,
+        },
+        author: {
+            fontSize: 12,
+            fontStyle: 'italic',
+        },
+        deleteButton: {
+            padding: 4,
+        },
+        fab: {
+            position: 'absolute',
+            bottom: 24,
+            right: 24,
+            width: 56,
+            height: 56,
+            borderRadius: 28,
+            justifyContent: 'center',
+            alignItems: 'center',
+            ...theme.shadows.medium,
+        },
+        fabIcon: {
+            fontSize: 32,
+            color: '#FFF',
+            lineHeight: 36,
+        },
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+        },
+        modalContainer: {
+            width: '100%',
+            maxWidth: 500,
+            borderRadius: 24,
+            padding: 24,
+            maxHeight: '80%',
+        },
+        modalTitle: {
+            fontSize: 22,
+            fontWeight: 'bold',
+            marginBottom: 20,
+        },
+        label: {
+            fontSize: 14,
+            fontWeight: '600',
+            marginBottom: 8,
+            marginTop: 16,
+        },
+        input: {
+            borderWidth: 1,
+            borderRadius: 12,
+            padding: 12,
+            fontSize: 16,
+        },
+        textArea: {
+            height: 120,
+            textAlignVertical: 'top',
+        },
+        categoryToggle: {
+            flexDirection: 'row',
+            gap: 8,
+            marginTop: 8,
+        },
+        categoryOption: {
+            flex: 1,
+            padding: 10,
+            borderRadius: 10,
+            borderWidth: 1,
+            alignItems: 'center',
+        },
+        categoryOptionText: {
+            fontSize: 10,
+            fontWeight: 'bold',
+        },
+        modalFooter: {
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            gap: 12,
+            marginTop: 24,
+        },
+        modalButton: {
+            paddingHorizontal: 20,
+            paddingVertical: 12,
+            borderRadius: 12,
+            minWidth: 100,
+            alignItems: 'center',
+        },
+        emptyContainer: {
+            height: 300,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        emptyText: {
+            fontSize: 16,
+        },
+        header: {
+            padding: 16,
+            backgroundColor: theme.colors.surface,
+            borderBottomWidth: 1,
+            borderBottomColor: 'rgba(0,0,0,0.05)',
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'center',
+        },
+        headerTitle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+        },
+        centered: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+        },
+        companyItem: {
+            width: '100%',
+            padding: 16,
+            borderRadius: 12,
+            marginBottom: 12,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderWidth: 1,
+        },
+        companyNameText: {
+            fontSize: 16,
+            fontWeight: '600',
+        },
+        backButton: {
+            position: 'absolute',
+            left: 16,
+            padding: 8,
+        },
+        backIcon: {
+            fontSize: 24,
+            fontWeight: 'bold',
+        },
+    });

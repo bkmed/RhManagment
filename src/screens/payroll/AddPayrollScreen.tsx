@@ -15,6 +15,7 @@ import { payrollDb, employeesDb, companiesDb, teamsDb, servicesDb, currenciesDb,
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
+import { Employee, Leave, Claim, Payroll } from '../../database/schema';
 import { Dropdown } from '../../components/Dropdown';
 import { useSelector } from 'react-redux';
 import { selectAllServices } from '../../store/slices/servicesSlice';
@@ -121,9 +122,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
           setYear(item.year || new Date().getFullYear() + '');
           setHoursWorked(item.hoursWorked ? item.hoursWorked.toString() : '');
           setCurrency(item.currency || '€');
-          setCompanyId(item.companyId);
-          setTeamId(item.teamId);
-          setEmployeeId(item.employeeId);
+          setCompanyId(item.companyId ?? null);
+          setTeamId(item.teamId ?? null);
+          setEmployeeId(item.employeeId ?? null);
         }
       }
     } catch (error) {
@@ -149,7 +150,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
       );
 
-      const payrollData = {
+      const payrollData: Omit<Payroll, 'id' | 'createdAt' | 'updatedAt'> = {
         name: name.trim(),
         amount: parseFloat(amount) || 0,
         currency,
@@ -158,7 +159,18 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         startDate: new Date().toISOString().split('T')[0], // Default to today
         reminderEnabled: false,
         isUrgent: false,
-        mealVouchers: mealVouchers ? parseFloat(mealVouchers) : undefined,
+        mealVouchers: (() => {
+          if (!mealVouchers) return undefined;
+          const clean = mealVouchers.toLowerCase().replace(/,/g, '.').replace(/\s/g, '');
+          if (clean.includes('x') || clean.includes('*')) {
+            const parts = clean.split(/[x*]/);
+            if (parts.length === 2) {
+              const val = parseFloat(parts[0]) * parseFloat(parts[1]);
+              return isNaN(val) ? undefined : val;
+            }
+          }
+          return parseFloat(clean) || undefined;
+        })(),
         giftVouchers: giftVouchers ? parseFloat(giftVouchers) : undefined,
         bonusAmount: bonusAmount ? parseFloat(bonusAmount) : undefined,
         bonusType,
@@ -167,9 +179,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         month,
         year,
         hoursWorked: hoursWorked ? parseFloat(hoursWorked) : undefined,
-        companyId,
-        teamId,
-        employeeId: employeeId || (user?.role === 'employee' ? Number(user.id) : undefined),
+        companyId: companyId ?? undefined,
+        teamId: teamId ?? undefined,
+        employeeId: (employeeId ?? undefined) || (user?.role === 'employee' ? Number(user.id) : undefined),
       };
 
       let id: number;

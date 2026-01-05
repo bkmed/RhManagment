@@ -4,12 +4,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useNetworkStatus } from '../services/offlineService';
 import { useTheme } from '../context/ThemeContext';
+import { Theme } from '../theme';
 
 export const OfflineIndicator = () => {
   const { isOffline } = useNetworkStatus();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const styles = React.useMemo(() => createStyles(theme, insets), [theme, insets]);
   const slideAnim = useRef(new Animated.Value(-100)).current;
   const isNative = Platform.OS === 'ios' || Platform.OS === 'android';
   useEffect(() => {
@@ -39,7 +41,6 @@ export const OfflineIndicator = () => {
       style={[
         styles.container,
         {
-          top: insets.top,
           backgroundColor: theme.colors.warning || '#FF9500',
           transform: [{ translateY: slideAnim }],
         },
@@ -51,39 +52,28 @@ export const OfflineIndicator = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    zIndex: 9999,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-      },
-      android: {
-        elevation: 5,
-      },
-      web: {
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
-      },
-    }),
-  },
-  icon: {
-    fontSize: 18,
-    marginRight: 8,
-  },
-  text: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
+const createStyles = (theme: Theme, insets: any) =>
+  StyleSheet.create({
+    container: {
+      position: 'absolute',
+      top: insets.top,
+      left: 0,
+      right: 0,
+      zIndex: 9999,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      ...theme.shadows.medium,
+    },
+    icon: {
+      fontSize: 18,
+      marginRight: 8,
+    },
+    text: {
+      color: '#FFFFFF',
+      fontSize: 14,
+      fontWeight: '600',
+    },
+  });

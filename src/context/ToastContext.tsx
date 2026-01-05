@@ -183,8 +183,8 @@ const createToastStyles = (theme: Theme, type: ToastType) =>
             marginHorizontal: 16,
             maxWidth: 500,
             width: '90%',
-            ...theme.shadows.medium,
-            elevation: 8,
+            ...theme.shadows.large,
+            zIndex: 999,
         },
         icon: {
             fontSize: 20,

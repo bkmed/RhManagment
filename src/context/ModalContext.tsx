@@ -175,8 +175,8 @@ const createModalStyles = (theme: Theme) =>
             backgroundColor: theme.colors.surface,
             borderRadius: 16,
             padding: 24,
-            ...theme.shadows.medium,
-            elevation: 10,
+            ...theme.shadows.large,
+            zIndex: 1000,
         },
         title: {
             ...theme.textVariants.header,

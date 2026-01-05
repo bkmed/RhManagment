@@ -300,7 +300,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
         </ScrollView>
       )}
 
-      {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && (
+      {user && (
         <TouchableOpacity
           style={styles.fab}
           onPress={() => navigation.navigate('AddIllness')}
@@ -480,9 +480,8 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
-      ...theme.shadows.medium,
+      ...theme.shadows.large,
       zIndex: 999,
-      elevation: 10,
     } as any,
     fabText: {
       fontSize: 32,

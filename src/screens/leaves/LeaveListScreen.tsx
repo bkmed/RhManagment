@@ -308,7 +308,6 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       ...theme.shadows.medium,
       zIndex: 999,
-      elevation: 10,
     } as any,
     fabText: {
       fontSize: 32,

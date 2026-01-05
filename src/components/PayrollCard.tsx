@@ -69,8 +69,10 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
             <View style={styles.benefitsRow}>
                 {payroll.mealVouchers && (
                     <View style={styles.benefitItem}>
-                        <Text style={styles.benefitIcon}>🍱</Text>
-                        <Text style={styles.benefitText}>{payroll.mealVouchers} {t('payroll.mealVouchers')}</Text>
+                        <Text style={styles.benefitIcon}>🎫</Text>
+                        <Text style={styles.benefitText}>
+                            {t('payroll.mealVouchers')}: {payroll.mealVouchers.toFixed(2)} {payroll.currency || '€'}
+                        </Text>
                     </View>
                 )}
                 {payroll.giftVouchers && (
@@ -90,23 +92,21 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
                 )}
             </View>
 
-            <View style={styles.footer}>
-                <View style={styles.freqContainer}>
-                    <Text style={styles.freqIcon}>🔄</Text>
-                    <Text style={styles.frequency}>{t(`payroll.freq${payroll.frequency.replace(/\s+/g, '')}`)}</Text>
+            {times.length > 0 && (
+                <View style={styles.footer}>
+                    <View style={styles.timesContainer}>
+                        <Text style={styles.timeIcon}>🔔</Text>
+                        {times.slice(0, 3).map((time, index) => (
+                            <View key={index} style={styles.timeBadge}>
+                                <Text style={styles.timeText}>{time}</Text>
+                            </View>
+                        ))}
+                        {times.length > 3 && (
+                            <Text style={styles.moreTimes}>+{times.length - 3}</Text>
+                        )}
+                    </View>
                 </View>
-                <View style={styles.timesContainer}>
-                    <Text style={styles.timeIcon}>🔔</Text>
-                    {times.slice(0, 3).map((time, index) => (
-                        <View key={index} style={styles.timeBadge}>
-                            <Text style={styles.timeText}>{time}</Text>
-                        </View>
-                    ))}
-                    {times.length > 3 && (
-                        <Text style={styles.moreTimes}>+{times.length - 3}</Text>
-                    )}
-                </View>
-            </View>
+            )}
         </TouchableOpacity>
     );
 };

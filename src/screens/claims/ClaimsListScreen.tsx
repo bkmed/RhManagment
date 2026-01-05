@@ -383,9 +383,9 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
-      ...theme.shadows.medium,
-      elevation: 6,
-    },
+      ...theme.shadows.large,
+      zIndex: 999,
+    } as any,
     fabText: {
       fontSize: 32,
       color: theme.colors.background,

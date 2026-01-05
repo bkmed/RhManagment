@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
     View,
     Text,
@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
+import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
@@ -42,7 +43,8 @@ export const ChatBot = () => {
     const { theme } = useTheme();
     const { user } = useAuth();
     const navigation = useNavigation<any>();
-    const { setActiveTab } = useContext(WebNavigationContext); // For Web Navigation
+    const { setActiveTab } = useContext(WebNavigationContext) as any; // For Web Navigation
+    const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -363,156 +365,144 @@ export const ChatBot = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    floatingButton: {
-        position: 'absolute',
-        bottom: 24,
-        right: 24,
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        ...Platform.select({
-            ios: {
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 6,
-            },
-            android: {
-                elevation: 8,
-            },
-            web: {
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            }
-        }),
-        zIndex: 1000,
-    },
-    botIcon: {
-        fontSize: 30,
-    },
-    proBadge: {
-        position: 'absolute',
-        top: -5,
-        right: -5,
-        backgroundColor: '#FFD700',
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#FFF',
-    },
-    proText: {
-        fontSize: 8,
-        fontWeight: 'bold',
-        color: '#000',
-    },
-    modalContainer: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'flex-end',
-    },
-    chatContainer: {
-        height: '80%',
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        overflow: 'hidden',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 20,
-    },
-    headerInfo: {
-        flex: 1,
-    },
-    headerTitle: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    headerStatus: {
-        color: 'rgba(255,255,255,0.8)',
-        fontSize: 12,
-    },
-    closeButton: {
-        padding: 4,
-    },
-    closeIcon: {
-        color: '#FFF',
-        fontSize: 24,
-    },
-    listContent: {
-        padding: 20,
-    },
-    messageWrapper: {
-        marginBottom: 20,
-        maxWidth: '85%',
-    },
-    userWrapper: {
-        alignSelf: 'flex-end',
-    },
-    botWrapper: {
-        alignSelf: 'flex-start',
-    },
-    bubble: {
-        padding: 14,
-        borderRadius: 20,
-    },
-    messageText: {
-        fontSize: 15,
-        lineHeight: 22,
-    },
-    timestamp: {
-        fontSize: 10,
-        marginTop: 4,
-        marginHorizontal: 8,
-    },
-    typingIndicator: {
-        paddingHorizontal: 20,
-        paddingBottom: 10,
-        fontSize: 12,
-        fontStyle: 'italic',
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        paddingBottom: Platform.OS === 'ios' ? 32 : 16,
-        borderTopWidth: 1,
-    },
-    input: {
-        flex: 1,
-        borderWidth: 1,
-        borderRadius: 24,
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        marginRight: 12,
-        fontSize: 16,
-    },
-    sendButton: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    sendIcon: {
-        fontSize: 22,
-        color: '#FFF',
-    },
-    actionButton: {
-        marginTop: 10,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 8,
-        alignSelf: 'flex-start',
-    },
-    actionButtonText: {
-        color: '#000',
-        fontWeight: '600',
-        fontSize: 14,
-    },
-});
+const createStyles = (theme: Theme) =>
+    StyleSheet.create({
+        floatingButton: {
+            position: 'absolute',
+            bottom: 24,
+            right: 24,
+            width: 60,
+            height: 60,
+            borderRadius: 30,
+            justifyContent: 'center',
+            alignItems: 'center',
+            ...theme.shadows.large,
+            zIndex: 1000,
+        },
+        botIcon: {
+            fontSize: 30,
+        },
+        proBadge: {
+            position: 'absolute',
+            top: -5,
+            right: -5,
+            backgroundColor: '#FFD700',
+            paddingHorizontal: 6,
+            paddingVertical: 2,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: '#FFF',
+        },
+        proText: {
+            fontSize: 8,
+            fontWeight: 'bold',
+            color: '#000',
+        },
+        modalContainer: {
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'flex-end',
+        },
+        chatContainer: {
+            height: '80%',
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            overflow: 'hidden',
+        },
+        header: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: 20,
+        },
+        headerInfo: {
+            flex: 1,
+        },
+        headerTitle: {
+            color: '#FFF',
+            fontSize: 18,
+            fontWeight: 'bold',
+        },
+        headerStatus: {
+            color: 'rgba(255,255,255,0.8)',
+            fontSize: 12,
+        },
+        closeButton: {
+            padding: 4,
+        },
+        closeIcon: {
+            color: '#FFF',
+            fontSize: 24,
+        },
+        listContent: {
+            padding: 20,
+        },
+        messageWrapper: {
+            marginBottom: 20,
+            maxWidth: '85%',
+        },
+        userWrapper: {
+            alignSelf: 'flex-end',
+        },
+        botWrapper: {
+            alignSelf: 'flex-start',
+        },
+        bubble: {
+            padding: 14,
+            borderRadius: 20,
+        },
+        messageText: {
+            fontSize: 15,
+            lineHeight: 22,
+        },
+        timestamp: {
+            fontSize: 10,
+            marginTop: 4,
+            marginHorizontal: 8,
+        },
+        typingIndicator: {
+            paddingHorizontal: 20,
+            paddingBottom: 10,
+            fontSize: 12,
+            fontStyle: 'italic',
+        },
+        inputContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: 16,
+            paddingBottom: Platform.OS === 'ios' ? 32 : 16,
+            borderTopWidth: 1,
+        },
+        input: {
+            flex: 1,
+            borderWidth: 1,
+            borderRadius: 24,
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            marginRight: 12,
+            fontSize: 16,
+        },
+        sendButton: {
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        sendIcon: {
+            fontSize: 22,
+            color: '#FFF',
+        },
+        actionButton: {
+            marginTop: 10,
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 8,
+            alignSelf: 'flex-start',
+        },
+        actionButtonText: {
+            color: '#000',
+            fontWeight: '600',
+            fontSize: 14,
+        },
+    });

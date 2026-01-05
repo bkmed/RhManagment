@@ -11,6 +11,10 @@ export { payrollDb } from './payrollDb';
 export { leavesDb } from './leavesDb';
 export { illnessesDb } from './illnessesDb';
 export { remoteDb } from './remoteDb';
+export { companiesDb } from './companiesDb';
+export { teamsDb } from './teamsDb';
+export { claimsDb } from './claimsDb';
+export { invoicesDb } from './invoicesDb';
 
 // Export schemas
 export * from './schema';

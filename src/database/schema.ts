@@ -52,6 +52,8 @@ export interface Payroll {
   month?: string;      // e.g., "1" for January
   year?: string;       // e.g., "2024"
   hoursWorked?: number;
+  companyId?: number;
+  teamId?: number;
 }
 
 export interface PayrollHistory {
