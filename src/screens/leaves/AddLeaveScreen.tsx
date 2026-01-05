@@ -48,19 +48,34 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const [notes, setNotes] = useState('');
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [sendEmail, setSendEmail] = useState(true);
-  const [type, setType] = useState<'leave' | 'permission'>('leave');
+  const [type, setType] = useState<'leave' | 'sick_leave' | 'carer_leave' | 'permission' | 'authorization'>('leave');
   const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>('pending');
   const [department, setDepartment] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
-  const companies = useSelector((state: RootState) => selectAllCompanies(state));
-  const teams = useSelector((state: RootState) => selectAllTeams(state));
-  const employees = useSelector((state: RootState) => selectAllEmployees(state));
+  const allCompanies = useSelector((state: RootState) => selectAllCompanies(state));
+  const allTeams = useSelector((state: RootState) => selectAllTeams(state));
+  const allEmployees = useSelector((state: RootState) => selectAllEmployees(state));
 
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [teamId, setTeamId] = useState<number | null>(null);
   const [employeeId, setEmployeeId] = useState<number | null>(user?.role === 'employee' && user?.id ? Number(user.id) : null);
+
+  // Cascading lists
+  const filteredTeams = useMemo(() => {
+    if (!companyId) return [];
+    return allTeams.filter(t => t.companyId === companyId);
+  }, [allTeams, companyId]);
+
+  const filteredEmployees = useMemo(() => {
+    if (!companyId && !teamId) return allEmployees;
+    return allEmployees.filter(emp => {
+      const matchesCompany = !companyId || emp.companyId === companyId;
+      const matchesTeam = !teamId || emp.teamId === teamId;
+      return matchesCompany && matchesTeam;
+    });
+  }, [allEmployees, companyId, teamId]);
 
   // Permission specific state
   const [permissionDate, setPermissionDate] = useState(new Date());
@@ -74,6 +89,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
     if (!isEdit && user?.role === 'employee') {
       setEmployeeName(user.name);
       setDepartment(user.department || '');
+      setEmployeeId(user.employeeId || null);
     }
   }, [user, isEdit]);
 
@@ -101,6 +117,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
       if (leave) {
         setTitle(leave.title || '');
         setEmployeeName(leave.employeeName || '');
+        setEmployeeId(leave.employeeId || null);
         setLocation(leave.location || '');
         setStartDate(leave.startDate ? new Date(leave.startDate) : new Date(leave.dateTime));
         setEndDate(leave.endDate ? new Date(leave.endDate) : new Date(leave.dateTime));
@@ -118,11 +135,12 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const handleSave = async () => {
     const newErrors: { [key: string]: string } = {};
     if (!title.trim()) newErrors.title = t('common.required');
+    if (!employeeId && user?.role !== 'employee') newErrors.employeeId = t('common.required');
 
     let permissionStart: Date | null = null;
     let permissionEnd: Date | null = null;
 
-    if (type === 'permission') {
+    if (type === 'permission' || type === 'authorization') {
       // Validate Permission
       if (startTime >= endTime) {
         newErrors.endDate = t('permissions.invalidTime');
@@ -158,21 +176,22 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
     setLoading(true);
 
     try {
+      const selectedEmp = allEmployees.find(e => e.id === employeeId);
       const leaveData = {
         title: title.trim(),
-        employeeName: (user?.role === 'employee' ? (user?.name || '') : employeeName).trim() || undefined,
-        employeeId: (user?.role === 'employee' ? user?.employeeId : (initialEmployeeId || user?.employeeId)) || 0,
+        employeeName: (user?.role === 'employee' ? (user?.name || '') : (selectedEmp?.name || employeeName)).trim(),
+        employeeId: (user?.role === 'employee' ? user?.employeeId : employeeId) || 0,
         location: location.trim() || undefined,
-        dateTime: type === 'permission' ? permissionStart!.toISOString() : startDate!.toISOString(),
-        startDate: type === 'permission' ? permissionStart!.toISOString() : startDate!.toISOString(),
-        endDate: type === 'permission' ? permissionEnd!.toISOString() : endDate!.toISOString(),
+        dateTime: (type === 'permission' || type === 'authorization') ? permissionStart!.toISOString() : startDate!.toISOString(),
+        startDate: (type === 'permission' || type === 'authorization') ? permissionStart!.toISOString() : startDate!.toISOString(),
+        endDate: (type === 'permission' || type === 'authorization') ? permissionEnd!.toISOString() : endDate!.toISOString(),
         notes: notes.trim() || undefined,
         reminderEnabled,
         type,
         status,
-        department,
-        companyId,
-        teamId,
+        department: selectedEmp?.department || department,
+        companyId: selectedEmp?.companyId || companyId,
+        teamId: selectedEmp?.teamId || teamId,
       };
 
       let id: number;
@@ -183,12 +202,12 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         id = await leavesDb.add(leaveData);
 
         // Notify HR/Admin (Simulated via local notification for now)
-        await notificationService.notifyNewLeaveRequest(id, employeeName, t(`leaveTypes.${type}`));
+        await notificationService.notifyNewLeaveRequest(id, leaveData.employeeName, t(`leaveTypes.${type}`));
 
         if (sendEmail) {
           // Open Email Draft for HR - Don't await to avoid blocking UI
           emailService.sendLeaveRequestEmail(
-            employeeName || user?.name || '',
+            leaveData.employeeName,
             t(`leaveTypes.${type}`),
             startDate?.toLocaleDateString() || new Date().toLocaleDateString(),
             endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
@@ -241,137 +260,118 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.formContainer}>
-          {/* Section: General Information */}
+          {/* Section: Leave Type & Identity */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('common.generalInfo') || t('navigation.personalInfo')}</Text>
+            <Text style={styles.sectionTitle}>{t('leaves.leaveType')}</Text>
 
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('leaves.leaveTitle')} *</Text>
-                <TextInput
-                  style={[styles.input, errors.title && styles.inputError]}
-                  value={title}
-                  onChangeText={text => {
-                    setTitle(text);
-                    if (errors.title) setErrors({ ...errors, title: '' });
-                  }}
-                  placeholder={t('leaves.titlePlaceholder')}
-                  placeholderTextColor={theme.colors.subText}
-                />
-                {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
-              </View>
-
-              {user?.role !== 'employee' && (
-                <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>{t('leaves.employee')}</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={employeeName}
-                    onChangeText={setEmployeeName}
-                    placeholder={t('leaves.employeePlaceholder')}
-                    placeholderTextColor={theme.colors.subText}
-                  />
-                </View>
-              )}
+            <View style={styles.typeSelector}>
+              {[
+                { label: t('leaveTypes.standard_leave'), value: 'leave' },
+                { label: t('leaveTypes.sick_leave'), value: 'sick_leave' },
+                { label: t('leaveTypes.carer_leave'), value: 'carer_leave' },
+                { label: t('leaveTypes.authorization'), value: 'authorization' },
+                { label: t('leaveTypes.permission'), value: 'permission' },
+              ].map((item) => (
+                <TouchableOpacity
+                  key={item.value}
+                  onPress={() => setType(item.value as any)}
+                  style={[styles.typeChip, type === item.value && styles.activeTypeChip]}
+                >
+                  <Text style={[styles.typeChipText, type === item.value && styles.activeTypeChipText]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
 
-            {/* Company / Team / Employee Selection */}
-            <View style={styles.responsiveRow}>
-              {(user?.role === 'admin' || user?.role === 'rh') && (
-                <View style={styles.fieldContainer}>
-                  <Dropdown
-                    label={t('companies.selectCompany')}
-                    data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
-                    value={companyId ? String(companyId) : ''}
-                    onSelect={(val) => setCompanyId(Number(val))}
-                  />
-                </View>
-              )}
-              {(user?.role === 'admin' || user?.role === 'rh') && (
-                <View style={styles.fieldContainer}>
-                  <Dropdown
-                    label={t('teams.selectTeam')}
-                    data={teams.map(t => ({ label: t.name, value: String(t.id) }))}
-                    value={teamId ? String(teamId) : ''}
-                    onSelect={(val) => setTeamId(Number(val))}
-                  />
-                </View>
-              )}
+            <View style={styles.divider} />
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>{t('leaves.leaveTitle')} *</Text>
+              <TextInput
+                style={[styles.input, errors.title && styles.inputError]}
+                value={title}
+                onChangeText={text => {
+                  setTitle(text);
+                  if (errors.title) setErrors({ ...errors, title: '' });
+                }}
+                placeholder={t('leaves.titlePlaceholder')}
+                placeholderTextColor={theme.colors.subText}
+              />
+              {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
             </View>
 
             {(user?.role === 'admin' || user?.role === 'rh') && (
-              <View style={styles.fieldContainer}>
-                <Dropdown
-                  label={t('employees.name')}
-                  data={employees.map(e => ({ label: e.name, value: String(e.id) }))}
-                  value={employeeId ? String(employeeId) : ''}
-                  onSelect={(val) => setEmployeeId(Number(val))}
-                />
-              </View>
-            )}
+              <>
+                <View style={styles.responsiveRow}>
+                  <View style={styles.fieldContainer}>
+                    <Dropdown
+                      label={t('companies.selectCompany')}
+                      data={[
+                        { label: t('common.allCompanies'), value: '' },
+                        ...allCompanies.map(c => ({ label: c.name, value: String(c.id) }))
+                      ]}
+                      value={companyId ? String(companyId) : ''}
+                      onSelect={(val) => {
+                        setCompanyId(val ? Number(val) : null);
+                        setTeamId(null);
+                        setEmployeeId(null);
+                      }}
+                    />
+                  </View>
+                  <View style={styles.fieldContainer}>
+                    <Dropdown
+                      label={t('teams.selectTeam')}
+                      data={[
+                        { label: t('common.noTeam'), value: '' },
+                        ...filteredTeams.map(t => ({ label: t.name, value: String(t.id) }))
+                      ]}
+                      value={teamId ? String(teamId) : ''}
+                      onSelect={(val) => {
+                        setTeamId(val ? Number(val) : null);
+                        setEmployeeId(null);
+                      }}
+                    />
+                  </View>
+                </View>
 
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <Dropdown
-                  label={t('leaves.leaveType')}
-                  data={[
-                    { label: t('leaveTypes.leave'), value: 'leave' },
-                    { label: t('leaveTypes.permission'), value: 'permission' },
-                  ]}
-                  value={type}
-                  onSelect={(val: any) => setType(val)}
-                />
-              </View>
-
-              {user?.role !== 'employee' && (
                 <View style={styles.fieldContainer}>
                   <Dropdown
-                    label={t('leaves.status')}
-                    data={[
-                      { label: t('leaveStatus.pending'), value: 'pending' },
-                      { label: t('leaveStatus.approved'), value: 'approved' },
-                      { label: t('leaveStatus.declined'), value: 'declined' },
-                    ]}
-                    value={status}
-                    onSelect={(val: any) => setStatus(val)}
+                    label={t('leaves.employee')}
+                    data={filteredEmployees.map(e => ({ label: e.name, value: String(e.id) }))}
+                    value={employeeId ? String(employeeId) : ''}
+                    onSelect={(val) => {
+                      setEmployeeId(Number(val));
+                      if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                    }}
+                    error={errors.employeeId}
                   />
                 </View>
-              )}
-            </View>
+              </>
+            )}
 
             {user?.role !== 'employee' && (
-              <View style={styles.responsiveRow}>
-                <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>{t('common.service')}</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={department}
-                    onChangeText={setDepartment}
-                    placeholder={t('common.service')}
-                    placeholderTextColor={theme.colors.subText}
-                  />
-                </View>
-
-                <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>{t('common.local')}</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={location}
-                    onChangeText={setLocation}
-                    placeholder={t('common.local')}
-                    placeholderTextColor={theme.colors.subText}
-                  />
-                </View>
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('leaves.status')}
+                  data={[
+                    { label: t('leaveStatus.pending'), value: 'pending' },
+                    { label: t('leaveStatus.approved'), value: 'approved' },
+                    { label: t('leaveStatus.declined'), value: 'declined' },
+                  ]}
+                  value={status}
+                  onSelect={(val: any) => setStatus(val)}
+                />
               </View>
             )}
           </View>
 
           {/* Section: Schedule */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('payroll.freqWeekly') || t('leaves.time')}</Text>
+            <Text style={styles.sectionTitle}>{t('leaves.time')}</Text>
 
             <View style={styles.responsiveRow}>
-              {type === 'permission' ? (
+              {(type === 'permission' || type === 'authorization') ? (
                 <>
                   <View style={styles.fieldContainer}>
                     <DateTimePickerField
@@ -430,13 +430,23 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
                 </>
               )}
             </View>
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>{t('common.local')}</Text>
+              <TextInput
+                style={styles.input}
+                value={location}
+                onChangeText={setLocation}
+                placeholder={t('common.local')}
+                placeholderTextColor={theme.colors.subText}
+              />
+            </View>
           </View>
 
           {/* Section: Additional Details */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('payroll.notes')}</Text>
 
-            <Text style={styles.label}>{t('leaves.notes')}</Text>
             <TextInput
               style={[styles.input, styles.notesInput]}
               value={notes}
@@ -469,8 +479,8 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
 
             <View style={styles.switchRow}>
               <View>
-                <Text style={styles.label}>{t('common.sendEmail') || "Envoyer un email"}</Text>
-                <Text style={styles.captionText}>{t('common.notifyHr') || "Notifier les RH"}</Text>
+                <Text style={styles.label}>{t('common.sendEmail')}</Text>
+                <Text style={styles.captionText}>{t('common.notifyHr')}</Text>
               </View>
               <Switch
                 value={sendEmail}
@@ -530,10 +540,35 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.subheader,
       color: theme.colors.primary,
       marginBottom: theme.spacing.l,
-      fontSize: 18,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
-      paddingBottom: theme.spacing.s,
+      fontSize: 16,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+    },
+    typeSelector: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing.s,
+      marginBottom: theme.spacing.m,
+    },
+    typeChip: {
+      paddingHorizontal: theme.spacing.m,
+      paddingVertical: theme.spacing.s,
+      borderRadius: 20,
+      backgroundColor: theme.colors.background,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    activeTypeChip: {
+      backgroundColor: theme.colors.primary,
+      borderColor: theme.colors.primary,
+    },
+    typeChipText: {
+      fontSize: 12,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    activeTypeChipText: {
+      color: '#FFF',
     },
     responsiveRow: {
       flexDirection: Platform.OS === 'web' ? 'row' : 'column',
@@ -541,20 +576,19 @@ const createStyles = (theme: Theme) =>
     },
     fieldContainer: {
       flex: 1,
-      marginBottom: Platform.OS === 'web' ? 0 : theme.spacing.m,
+      marginBottom: theme.spacing.m,
     },
     fieldGroup: {
       marginTop: theme.spacing.m,
     },
     label: {
-      ...theme.textVariants.caption,
+      fontSize: 13,
       fontWeight: '600',
       color: theme.colors.text,
       marginBottom: theme.spacing.s,
-      marginTop: theme.spacing.m,
     },
     input: {
-      backgroundColor: theme.colors.surface,
+      backgroundColor: theme.colors.background,
       borderRadius: theme.spacing.s,
       padding: theme.spacing.m,
       fontSize: 16,
@@ -567,7 +601,6 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginTop: theme.spacing.m,
     },
     captionText: {
       ...theme.textVariants.caption,
@@ -594,7 +627,8 @@ const createStyles = (theme: Theme) =>
     saveButtonDisabled: { opacity: 0.5 },
     saveButtonText: {
       ...theme.textVariants.button,
-      color: theme.colors.surface,
+      color: '#FFF',
+      fontWeight: 'bold',
     },
     inputError: { borderColor: theme.colors.error },
     errorText: {

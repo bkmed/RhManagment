@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { Claim } from '../../database/schema';
+import { RootState } from '../index';
 
 interface ClaimsState {
     items: Claim[];
@@ -33,9 +34,13 @@ const claimsSlice = createSlice({
 
 export const { setClaims, addClaim, updateClaim, deleteClaim } = claimsSlice.actions;
 
-export const selectAllClaims = (state: { claims: ClaimsState }) => state.claims.items;
+export const selectAllClaims = (state: RootState) => state.claims.items;
 
-export const selectPendingClaims = (state: { claims: ClaimsState }) =>
-    state.claims.items.filter((c) => c.status === 'pending');
+export const selectPendingClaims = createSelector(
+    [selectAllClaims],
+    (items) => items.filter((c: Claim) => c.status === 'pending')
+);
+
+export default claimsSlice.reducer;
 
 export default claimsSlice.reducer;

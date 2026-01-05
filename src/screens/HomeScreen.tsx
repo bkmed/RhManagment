@@ -130,7 +130,7 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab }: any) => {
           onPress={() => navigateToTab('Leaves', 'TeamVacations')}
         >
           <Text style={styles.managementIcon}>🏖️</Text>
-          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('navigation.teams')}</Text>
+          <Text style={[styles.managementText, { color: theme.colors.text }]}>{t('navigation.leaves')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.managementCard, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
@@ -320,7 +320,7 @@ const EmployeeDashboard = ({
         <View style={styles.actionContent}>
           <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('navigation.teams')}</Text>
           <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
-            Voir les congés de mon équipe
+            {t('home.viewTeamLeaves')}
           </Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
@@ -334,7 +334,7 @@ const EmployeeDashboard = ({
         <View style={styles.actionContent}>
           <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{t('navigation.careerHub')}</Text>
           <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
-            Gérez vos objectifs et votre carrière
+            {t('home.manageCareer')}
           </Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
@@ -350,7 +350,7 @@ const EmployeeDashboard = ({
             {t('navigation.orgChart') || 'Organigramme'}
           </Text>
           <Text style={[styles.actionSubtitle, { color: theme.colors.subText }]}>
-            Voir la structure de l'entreprise
+            {t('home.viewOrgChart')}
           </Text>
         </View>
         <Text style={styles.actionArrow}>›</Text>
@@ -518,7 +518,7 @@ export const HomeScreen = () => {
   }
 
   return (
-    <View style={{ backgroundColor: theme.colors.background }}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -528,7 +528,7 @@ export const HomeScreen = () => {
           <Text style={[styles.greeting, { color: theme.colors.subText }]}>{t('home.greeting')}</Text>
           <Text style={[styles.userName, { color: theme.colors.text }]}>{user?.name}</Text>
           <Text style={[styles.subtitle, { color: theme.colors.subText }]}>
-            {user?.role === 'admin' ? 'Administration RH' : t('home.subtitle')}
+            {user?.role === 'admin' ? t('home.hrAdmin') : t('home.subtitle')}
           </Text>
         </View>
 

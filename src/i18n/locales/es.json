@@ -7,6 +7,7 @@
     "expiringSoon": "Expira pronto",
     "hrAnalytics": "Analítica de RRHH",
     "hrInsights": "Perspectivas de RRHH",
+    "illnessExpiring": "Enfermedad que expira",
     "illnessesExpiring": "{{count}} caso de enfermedad que expira pronto. Considere procesarlo.",
     "illnessesExpiring_plural": "{{count}} casos de enfermedad que expiran pronto. Considere procesarlos.",
     "leaves": "Vacaciones",
@@ -17,7 +18,8 @@
     "trends": "Tendencias de RRHH",
     "upcomingLeavesChart": "Próximas vacaciones",
     "upcomingLeavesInsight": "Tiene {{count}} próxima vacación. ¡Prepárese para la cobertura!",
-    "upcomingLeavesInsight_plural": "Tiene {{count}} próximas vacaciones. ¡Prepárese para la cobertura!"
+    "upcomingLeavesInsight_plural": "Tiene {{count}} próximas vacaciones. ¡Prepárese para la cobertura!",
+    "recentQuestions": "Preguntas Recientes"
   },
   "announcements": {
     "addAnnouncement": "Nuevo Anuncio",
@@ -27,7 +29,7 @@
     "title": "Anuncios de la Empresa"
   },
   "chat": {
-    "chat": "",
+    "chat": "Chat",
     "companyChat": "Chat de la Empresa",
     "noMessages": "No hay mensajes aún",
     "send": "Enviar",
@@ -53,7 +55,10 @@
     "profileAction": "Ir a Perfil",
     "team": "Estás en el equipo {{team}} (Depto: {{dept}}).",
     "teamAction": "Ver Mi Equipo",
-    "teamUnknown": "No pude encontrar tu equipo, verifica tu perfil."
+    "teamUnknown": "No pude encontrar tu equipo, verifica tu perfil.",
+    "howCanIHelp": "¿Cómo puedo ayudarle hoy?",
+    "helpDetails": "Puedo ayudarle con:\n• Ver y gestionar su **Nómina**\n• Solicitar o consultar el estado de **Vacaciones**\n• Ver los detalles de su **Equipo**\n• Enviar **Reclamaciones** y gastos\n• Explorar el **Directorio de Empleados**",
+    "responseCaVa": "¡Estoy muy bien, gracias por preguntar! ¿Cómo puedo asistirle?"
   },
   "claims": {
     "description": "Descripción",
@@ -309,10 +314,17 @@
     "tip": "Consejo: ¡Active las notificaciones para no perder nunca sus recordatorios de nómina!",
     "upcomingLeaves": "Próximas vacaciones",
     "viewAnalytics": "Ver analítica",
-    "viewAnalyticsSubtitle": "Ver sus perspectivas de RRHH"
+    "viewAnalyticsSubtitle": "Ver sus perspectivas de RRHH",
+    "viewTeamLeaves": "Ver las vacaciones de mi equipo",
+    "manageCareer": "Gestionar sus objetivos y carrera",
+    "viewOrgChart": "Ver la estructura de la empresa",
+    "hrAdmin": "Administración de RRHH"
   },
   "illnesses": {
-    "add": "Añadir registro",
+    "add": "Añadir enfermedad",
+    "allIllnesses": "Todas las enfermedades",
+    "myIllnesses": "Mis enfermedades",
+    "teamIllnesses": "Enfermedades del equipo",
     "addFirst": "Añada su primer registro",
     "addPhoto": "Añadir documento",
     "chooseFromLibrary": "Elegir de la biblioteca",
@@ -349,8 +361,31 @@
     "saveButton": "Guardar registro",
     "saveError": "Error al guardar el registro",
     "takePhoto": "Tomar foto",
-    "title": "Enfermedad / Facturación",
-    "updateButton": "Actualizar registro"
+    "title": "Enfermedad",
+    "updateButton": "Actualizar enfermedad"
+  },
+  "invoices": {
+    "add": "Añadir factura",
+    "allInvoices": "Todas las facturas",
+    "amount": "Monto",
+    "amountPlaceholder": "ej. 50.00",
+    "currency": "Moneda",
+    "description": "Descripción",
+    "descriptionPlaceholder": "ej. Suministros de oficina",
+    "details": "Detalles de la factura",
+    "edit": "Editar factura",
+    "empty": "No se encontraron facturas",
+    "loadError": "Error al cargar la factura",
+    "myInvoices": "Mis facturas",
+    "photoButton": "📷 Añadir recibo/factura",
+    "saveButton": "Guardar factura",
+    "saveError": "Error al guardar la factura",
+    "statusPending": "Pendiente",
+    "statusApproved": "Aprobada",
+    "statusRejected": "Rechazada",
+    "teamInvoices": "Facturas del equipo",
+    "title": "Facturas",
+    "updateButton": "Actualizar factura"
   },
   "languages": {
     "ar": "Árabe",
@@ -387,8 +422,12 @@
     "pending": "Pendiente"
   },
   "leaveTypes": {
-    "leave": "Vacaciones",
-    "permission": "Permiso"
+    "leave": "Permiso/Vaca.",
+    "standard_leave": "Vacaciones",
+    "sick_leave": "Baja médica",
+    "carer_leave": "Permiso por acompañamiento",
+    "permission": "Permiso",
+    "authorization": "Autorización"
   },
   "leaves": {
     "add": "Añadir vacaciones",
@@ -462,7 +501,7 @@
     "employmentDetails": "Detalles de Empleo",
     "history": "Historial",
     "home": "Inicio",
-    "illnesses": "Enfermedad / Facturación",
+    "illnesses": "Enfermedad",
     "leaves": "Vacaciones",
     "notifications": "Notificaciones",
     "orgChart": "Organigrama",
@@ -580,7 +619,16 @@
     "noGoals": "No se encontraron objetivos",
     "noReviews": "No se encontraron revisiones",
     "reviews": "Revisiones de Rendimiento",
-    "title": "Seguimiento de Rendimiento"
+    "title": "Seguimiento de Rendimiento",
+    "newReview": "Nueva Revisión",
+    "employee": "Empleado",
+    "period": "Periodo",
+    "score": "Puntuación (1-5)",
+    "comments": "Comentarios",
+    "feedbackPlaceholder": "Feedback cualitativo...",
+    "periodPlaceholder": "p. ej. Q4 2025",
+    "managerSubtitle": "Gestionar las revisiones de su equipo",
+    "employeeSubtitle": "Ver sus revisiones"
   },
   "permissions": {
     "calendar": "Permiso de calendario",

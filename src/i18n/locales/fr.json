@@ -7,6 +7,7 @@
     "expiringSoon": "Expire bientôt",
     "hrAnalytics": "Analytiques RH",
     "hrInsights": "Informations RH",
+    "illnessExpiring": "Maladie expirant",
     "illnessesExpiring": "{{count}} dossier de maladie expire bientôt. Pensez à le traiter.",
     "illnessesExpiring_plural": "{{count}} dossiers de maladie expirent bientôt. Pensez à les traiter.",
     "leaves": "Congés",
@@ -17,7 +18,8 @@
     "trends": "Tendances RH",
     "upcomingLeavesChart": "Congés à venir",
     "upcomingLeavesInsight": "Vous avez {{count}} congé à venir. Préparez les remplacements !",
-    "upcomingLeavesInsight_plural": "Vous avez {{count}} congés à venir. Préparez les remplacements !"
+    "upcomingLeavesInsight_plural": "Vous avez {{count}} congés à venir. Préparez les remplacements !",
+    "recentQuestions": "Questions Récentes"
   },
   "announcements": {
     "addAnnouncement": "Nouvelle Annonce",
@@ -31,7 +33,7 @@
     "companyChat": "Chat de l'Entreprise",
     "noMessages": "Aucun message pour le moment",
     "send": "Envoyer",
-    "title": "",
+    "title": "Messagerie",
     "typeMessage": "Tapez un message..."
   },
   "chatBot": {
@@ -53,7 +55,10 @@
     "profileAction": "Aller au Profil",
     "team": "Vous êtes dans l'équipe {{team}} (Dépt: {{dept}}).",
     "teamAction": "Voir Mon Équipe",
-    "teamUnknown": "Je ne trouve pas votre équipe, vérifiez votre profil."
+    "teamUnknown": "Je ne trouve pas votre équipe, vérifiez votre profil.",
+    "howCanIHelp": "Comment puis-je vous aider aujourd'hui ?",
+    "helpDetails": "Je peux vous aider à :\n• Consulter et gérer votre **Paie**\n• Demander ou vérifier le statut de vos **Congés**\n• Voir les détails de votre **Équipe**\n• Soumettre des **Réclamations** et frais\n• Parcourir l'**Annuaire des employés**",
+    "responseCaVa": "Je vais très bien, merci de demander ! Comment puis-je vous assister ?"
   },
   "claims": {
     "description": "Description",
@@ -124,7 +129,8 @@
     "next": "Suivant",
     "no": "Non",
     "noData": "Aucune donnée disponible",
-    "noTeam": "No Team",
+    "noTeam": "Aucune équipe",
+    "none": "Aucun(e)",
     "notifyHr": "Notifier les RH",
     "ok": "OK",
     "online": "En ligne",
@@ -309,10 +315,17 @@
     "tip": "Conseil : Activez les notifications pour ne jamais manquer vos rappels de paie !",
     "upcomingLeaves": "Congés à venir",
     "viewAnalytics": "Voir les analytiques",
-    "viewAnalyticsSubtitle": "Consultez vos données RH"
+    "viewAnalyticsSubtitle": "Consultez vos données RH",
+    "viewTeamLeaves": "Voir les congés de mon équipe",
+    "manageCareer": "Gérez vos objectifs et votre carrière",
+    "viewOrgChart": "Voir la structure de l'entreprise",
+    "hrAdmin": "Administration RH"
   },
   "illnesses": {
-    "add": "Ajouter un dossier",
+    "add": "Ajouter une maladie",
+    "allIllnesses": "Toutes les maladies",
+    "myIllnesses": "Mes maladies",
+    "teamIllnesses": "Maladies de l'équipe",
     "addFirst": "Ajoutez votre premier dossier",
     "addPhoto": "Ajouter un document",
     "chooseFromLibrary": "Choisir depuis la bibliothèque",
@@ -349,8 +362,31 @@
     "saveButton": "Enregistrer le dossier",
     "saveError": "Échec de l'enregistrement du dossier",
     "takePhoto": "Prendre une photo",
-    "title": "Maladies / Facturation",
-    "updateButton": "Mettre à jour le dossier"
+    "title": "Maladies",
+    "updateButton": "Modifier la maladie"
+  },
+  "invoices": {
+    "add": "Ajouter une facture",
+    "allInvoices": "Toutes les factures",
+    "amount": "Montant",
+    "amountPlaceholder": "ex: 50.00",
+    "currency": "Devise",
+    "description": "Description",
+    "descriptionPlaceholder": "ex: Fournitures de bureau",
+    "details": "Détails de la facture",
+    "edit": "Modifier la facture",
+    "empty": "Aucune facture trouvée",
+    "loadError": "Échec du chargement de la facture",
+    "myInvoices": "Mes factures",
+    "photoButton": "📷 Ajouter un reçu/facture",
+    "saveButton": "Enregistrer la facture",
+    "saveError": "Échec de l'enregistrement de la facture",
+    "statusPending": "En attente",
+    "statusApproved": "Approuvée",
+    "statusRejected": "Rejetée",
+    "teamInvoices": "Factures de l'équipe",
+    "title": "Factures",
+    "updateButton": "Mettre à jour la facture"
   },
   "languages": {
     "ar": "العربية",
@@ -388,7 +424,11 @@
   },
   "leaveTypes": {
     "leave": "Congé",
-    "permission": "Autorisation"
+    "standard_leave": "Congé",
+    "sick_leave": "Congé maladie",
+    "carer_leave": "Congé maladie d'accompagnement",
+    "permission": "Permission",
+    "authorization": "Autorisation"
   },
   "leaves": {
     "add": "Ajouter un congé",
@@ -462,7 +502,7 @@
     "employmentDetails": "Détails d'Emploi",
     "history": "Historique",
     "home": "Accueil",
-    "illnesses": "Maladies / Facturation",
+    "illnesses": "Maladies",
     "leaves": "Congés",
     "notifications": "Notifications",
     "orgChart": "Organigramme",
@@ -581,7 +621,16 @@
     "noGoals": "Aucun objectif trouvé",
     "noReviews": "Aucune évaluation trouvée",
     "reviews": "Évaluations de Performance",
-    "title": "Suivi de Performance"
+    "title": "Suivi de Performance",
+    "newReview": "Nouvelle Évaluation",
+    "employee": "Employé",
+    "period": "Période",
+    "score": "Score (1-5)",
+    "comments": "Commentaires",
+    "feedbackPlaceholder": "Feedback qualitatif...",
+    "periodPlaceholder": "ex: T4 2025",
+    "managerSubtitle": "Gérez les évaluations de votre équipe",
+    "employeeSubtitle": "Consultez vos évaluations"
   },
   "permissions": {
     "calendar": "Autorisation du calendrier",

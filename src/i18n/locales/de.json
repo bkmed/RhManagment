@@ -7,6 +7,7 @@
     "expiringSoon": "Läuft bald ab",
     "hrAnalytics": "HR-Analytik",
     "hrInsights": "HR-Einblicke",
+    "illnessExpiring": "Krankheit endet",
     "illnessesExpiring": "{{count}} Krankheitsfall läuft bald ab. Bitte bearbeiten.",
     "illnessesExpiring_plural": "{{count}} Krankheitsfälle laufen bald ab. Bitte bearbeiten.",
     "leaves": "Abwesenheiten",
@@ -17,7 +18,8 @@
     "trends": "HR-Trends",
     "upcomingLeavesChart": "Anstehende Abwesenheiten",
     "upcomingLeavesInsight": "Sie haben {{count}} anstehende Abwesenheit. Bitte planen Sie Ersatz!",
-    "upcomingLeavesInsight_plural": "Sie haben {{count}} anstehende Abwesenheiten. Bitte planen Sie Ersatz!"
+    "upcomingLeavesInsight_plural": "Sie haben {{count}} anstehende Abwesenheiten. Bitte planen Sie Ersatz!",
+    "recentQuestions": "Häufige Fragen"
   },
   "announcements": {
     "addAnnouncement": "Neue Ankündigung",
@@ -27,7 +29,7 @@
     "title": "Unternehmensankündigungen"
   },
   "chat": {
-    "chat": "",
+    "chat": "Chat",
     "companyChat": "Unternehmens-Chat",
     "noMessages": "Noch keine Nachrichten",
     "send": "Senden",
@@ -52,8 +54,11 @@
     "profile": "Sie können Ihre Informationen in Ihrem Profil aktualisieren.",
     "profileAction": "Zum Profil",
     "team": "Sie sind im Team {{team}} (Abt: {{dept}}).",
-    "teamAction": "Mein Team Ansehen",
-    "teamUnknown": "Ich konnte Ihr Team nicht finden. Bitte prüfen Sie Ihr Profil."
+    "teamAction": "Mein Team anzeigen",
+    "teamUnknown": "Ich konnte Ihre Teaminformationen nicht finden, aber Sie können Ihr Profil überprüfen.",
+    "howCanIHelp": "Wie kann ich Ihnen heute helfen?",
+    "helpDetails": "Ich kann Ihnen helfen bei:\n• Anzeige und Verwaltung Ihrer **Gehaltsabrechnung**\n• Beantragung oder Überprüfung des **Urlaubsstatus**\n• Anzeige Ihrer **Teamdetails**\n• Einreichung von **Ansprüchen** und Ausgaben\n• Durchsuchen des **Mitarbeiterverzeichnisses**",
+    "responseCaVa": "Mir geht es sehr gut, danke der Nachfrage! Wie kann ich Ihnen behilflich sein?"
   },
   "claims": {
     "description": "Beschreibung",
@@ -309,10 +314,17 @@
     "tip": "Tipp: Aktivieren Sie Benachrichtigungen, um keine Gehaltserinnerungen zu verpassen!",
     "upcomingLeaves": "Anstehende Abwesenheiten",
     "viewAnalytics": "Analytik anzeigen",
-    "viewAnalyticsSubtitle": "Sehen Sie Ihre HR-Daten"
+    "viewAnalyticsSubtitle": "Sehen Sie Ihre HR-Daten",
+    "viewTeamLeaves": "Abwesenheiten meines Teams anzeigen",
+    "manageCareer": "Ziele und Karriere verwalten",
+    "viewOrgChart": "Unternehmensstruktur ansehen",
+    "hrAdmin": "HR-Administration"
   },
   "illnesses": {
-    "add": "Eintrag hinzufügen",
+    "add": "Krankmeldung hinzufügen",
+    "allIllnesses": "Alle Krankmeldungen",
+    "myIllnesses": "Meine Krankmeldungen",
+    "teamIllnesses": "Team-Krankmeldungen",
     "addFirst": "Fügen Sie Ihren ersten Eintrag hinzu",
     "addPhoto": "Dokument hinzufügen",
     "chooseFromLibrary": "Aus Bibliothek wählen",
@@ -349,8 +361,31 @@
     "saveButton": "Eintrag speichern",
     "saveError": "Fehler beim Speichern des Eintrags",
     "takePhoto": "Foto aufnehmen",
-    "title": "Krankheit / Abrechnung",
-    "updateButton": "Eintrag aktualisieren"
+    "title": "Krankheit",
+    "updateButton": "Krankmeldung aktualisieren"
+  },
+  "invoices": {
+    "add": "Rechnung hinzufügen",
+    "allInvoices": "Alle Rechnungen",
+    "amount": "Betrag",
+    "amountPlaceholder": "z.B. 50.00",
+    "currency": "Währung",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "z.B. Büromaterial",
+    "details": "Rechnungsdetails",
+    "edit": "Rechnung bearbeiten",
+    "empty": "Keine Rechnungen gefunden",
+    "loadError": "Rechnung konnte nicht geladen werden",
+    "myInvoices": "Meine Rechnungen",
+    "photoButton": "📷 Beleg/Rechnung hinzufügen",
+    "saveButton": "Rechnung speichern",
+    "saveError": "Rechnung konnte nicht gespeichert werden",
+    "statusPending": "Ausstehend",
+    "statusApproved": "Genehmigt",
+    "statusRejected": "Abgelehnt",
+    "teamInvoices": "Team-Rechnungen",
+    "title": "Rechnungen",
+    "updateButton": "Rechnung aktualisieren"
   },
   "languages": {
     "ar": "العربية",
@@ -388,7 +423,11 @@
   },
   "leaveTypes": {
     "leave": "Urlaub",
-    "permission": "Berechtigung"
+    "standard_leave": "Standardurlaub",
+    "sick_leave": "Krankheitsurlaub",
+    "carer_leave": "Pflegeurlaub",
+    "permission": "Berechtigung",
+    "authorization": "Autorisierung"
   },
   "leaves": {
     "add": "Abwesenheit hinzufügen",
@@ -462,7 +501,7 @@
     "employmentDetails": "Beschäftigungsdetails",
     "history": "Verlauf",
     "home": "Startseite",
-    "illnesses": "Krankheit / Abrechnung",
+    "illnesses": "Krankheit",
     "leaves": "Abwesenheiten",
     "notifications": "Benachrichtigungen",
     "orgChart": "Organigramm",
@@ -581,7 +620,16 @@
     "noGoals": "Keine Ziele gefunden",
     "noReviews": "Keine Beurteilungen gefunden",
     "reviews": "Leistungsbeurteilungen",
-    "title": "Leistungsverfolgung"
+    "title": "Leistungsverfolgung",
+    "newReview": "Neue Beurteilung",
+    "employee": "Mitarbeiter",
+    "period": "Zeitraum",
+    "score": "Bewertung (1-5)",
+    "comments": "Kommentare",
+    "feedbackPlaceholder": "Qualitatives Feedback...",
+    "periodPlaceholder": "z.B. Q4 2025",
+    "managerSubtitle": "Leistungsbeurteilungen Ihres Teams verwalten",
+    "employeeSubtitle": "Ihre Beurteilungen ansehen"
   },
   "permissions": {
     "calendar": "Kalender-Berechtigung",

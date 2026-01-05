@@ -26,6 +26,8 @@ const spacing = {
   xxl: 48,
 };
 
+import { Platform } from 'react-native';
+
 const shadows = {
   small: {
     shadowColor: '#091E42',
@@ -33,6 +35,7 @@ const shadows = {
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+    ...(Platform.OS === 'web' && { boxShadow: '0px 2px 3px rgba(9, 30, 66, 0.1)' }),
   },
   medium: {
     shadowColor: '#091E42',
@@ -40,6 +43,7 @@ const shadows = {
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 4,
+    ...(Platform.OS === 'web' && { boxShadow: '0px 8px 12px rgba(9, 30, 66, 0.15)' }),
   },
   large: {
     shadowColor: '#091E42',
@@ -47,6 +51,7 @@ const shadows = {
     shadowOpacity: 0.2,
     shadowRadius: 16,
     elevation: 8,
+    ...(Platform.OS === 'web' && { boxShadow: '0px 12px 16px rgba(9, 30, 66, 0.2)' }),
   },
 };
 
@@ -173,6 +178,7 @@ export const premiumTheme = {
       shadowOpacity: 0.3,
       shadowRadius: 10,
       elevation: 5,
+      ...(Platform.OS === 'web' && { boxShadow: '0px 4px 10px rgba(212, 175, 55, 0.3)' }),
     },
   },
   textVariants: {

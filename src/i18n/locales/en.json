@@ -7,6 +7,7 @@
     "expiringSoon": "Expiring Soon",
     "hrAnalytics": "HR Analytics",
     "hrInsights": "HR Insights",
+    "illnessExpiring": "Illness Expiring",
     "illnessesExpiring": "{{count}} illness case expiring soon. Consider processing.",
     "illnessesExpiring_plural": "{{count}} illness cases expiring soon. Consider processing.",
     "leaves": "Leaves",
@@ -17,7 +18,8 @@
     "trends": "HR Trends",
     "upcomingLeavesChart": "Upcoming Leaves",
     "upcomingLeavesInsight": "You have {{count}} upcoming leave. Prepare for cover!",
-    "upcomingLeavesInsight_plural": "You have {{count}} upcoming leaves. Prepare for cover!"
+    "upcomingLeavesInsight_plural": "You have {{count}} upcoming leaves. Prepare for cover!",
+    "recentQuestions": "Recent Questions"
   },
   "announcements": {
     "addAnnouncement": "New Announcement",
@@ -27,7 +29,7 @@
     "title": "Company Announcements"
   },
   "chat": {
-    "chat": "",
+    "chat": "Chat",
     "companyChat": "Company Chat",
     "noMessages": "No messages yet",
     "send": "Send",
@@ -53,7 +55,10 @@
     "profileAction": "Go to Profile",
     "team": "You are in the {{team}} team (Dept: {{dept}}).",
     "teamAction": "View My Team",
-    "teamUnknown": "I couldn't find your team information, but you can check your profile."
+    "teamUnknown": "I couldn't find your team information, but you can check your profile.",
+    "howCanIHelp": "How can I help you today?",
+    "helpDetails": "I can help you with:\n• Viewing and managing your **Payroll**\n• Requesting or checking **Leave** status\n• Viewing your **Team** details\n• Submitting **Claims** and expenses\n• Browsing the **Employee Directory**",
+    "responseCaVa": "I'm doing great, thank you for asking! How can I assist you?"
   },
   "claims": {
     "description": "Description",
@@ -125,6 +130,7 @@
     "no": "No",
     "noData": "No data available",
     "noTeam": "No Team",
+    "none": "None",
     "notifyHr": "Notify HR",
     "ok": "OK",
     "online": "Online",
@@ -309,10 +315,17 @@
     "tip": "Tip: Enable notifications to never miss your payroll reminders!",
     "upcomingLeaves": "Upcoming Leaves",
     "viewAnalytics": "View Analytics",
-    "viewAnalyticsSubtitle": "See your HR insights"
+    "viewAnalyticsSubtitle": "See your HR insights",
+    "viewTeamLeaves": "View my team's leaves",
+    "manageCareer": "Manage your goals and career",
+    "viewOrgChart": "See company structure",
+    "hrAdmin": "HR Administration"
   },
   "illnesses": {
-    "add": "Add Record",
+    "add": "Add Illness",
+    "allIllnesses": "All Illnesses",
+    "myIllnesses": "My Illnesses",
+    "teamIllnesses": "Team Illnesses",
     "addFirst": "Add your first record",
     "addPhoto": "Add Document",
     "chooseFromLibrary": "Choose from Library",
@@ -349,8 +362,31 @@
     "saveButton": "Save Record",
     "saveError": "Failed to save record",
     "takePhoto": "Take Photo",
-    "title": "Illness / Invoicing",
-    "updateButton": "Update Record"
+    "title": "Illness",
+    "updateButton": "Update Illness"
+  },
+  "invoices": {
+    "add": "Add Invoice",
+    "allInvoices": "All Invoices",
+    "amount": "Amount",
+    "amountPlaceholder": "e.g., 50.00",
+    "currency": "Currency",
+    "description": "Description",
+    "descriptionPlaceholder": "e.g., Office supplies",
+    "details": "Invoice Details",
+    "edit": "Edit Invoice",
+    "empty": "No invoices found",
+    "loadError": "Failed to load invoice",
+    "myInvoices": "My Invoices",
+    "photoButton": "📷 Add Receipt/Invoice",
+    "saveButton": "Save Invoice",
+    "saveError": "Failed to save invoice",
+    "statusPending": "Pending",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "teamInvoices": "Team Invoices",
+    "title": "Invoices",
+    "updateButton": "Update Invoice"
   },
   "languages": {
     "ar": "العربية",
@@ -388,7 +424,11 @@
   },
   "leaveTypes": {
     "leave": "Leave",
-    "permission": "Permission"
+    "standard_leave": "Standard Leave",
+    "sick_leave": "Sick Leave",
+    "carer_leave": "Carer's Leave",
+    "permission": "Permission",
+    "authorization": "Authorization"
   },
   "leaves": {
     "add": "Add Leave",
@@ -462,7 +502,7 @@
     "employmentDetails": "Employment Details",
     "history": "History",
     "home": "Home",
-    "illnesses": "Illness / Invoicing",
+    "illnesses": "Illness",
     "leaves": "Leaves",
     "notifications": "Notifications",
     "orgChart": "Org Chart",
@@ -571,6 +611,8 @@
     "employeeHeader": "Employee Information",
     "grossPay": "Gross Pay",
     "netPay": "Net Pay",
+    "none": "None",
+    "otherAllowances": "Other Allowances",
     "period": "Pay Period",
     "title": "Pay Slip",
     "totalDeductions": "Total Deductions",
@@ -581,7 +623,16 @@
     "noGoals": "No goals found",
     "noReviews": "No reviews found",
     "reviews": "Performance Reviews",
-    "title": "Performance Tracking"
+    "title": "Performance Tracking",
+    "newReview": "New Review",
+    "employee": "Employee",
+    "period": "Period",
+    "score": "Score (1-5)",
+    "comments": "Comments",
+    "feedbackPlaceholder": "Qualitative feedback...",
+    "periodPlaceholder": "e.g. Q4 2025",
+    "managerSubtitle": "Manage your team's reviews",
+    "employeeSubtitle": "View your reviews"
   },
   "permissions": {
     "calendar": "Calendar Permission",

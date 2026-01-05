@@ -108,7 +108,7 @@ const App = () => {
         <ThemeProvider>
           <ToastProvider>
             <ModalProvider>
-              <SafeAreaProvider>
+              <SafeAreaProvider style={{ flex: 1 }}>
                 <WebThemeHandler />
                 <OfflineIndicator />
                 <AppNavigator />

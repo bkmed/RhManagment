@@ -44,6 +44,8 @@ import { RemoteCalendarScreen } from '../screens/remote/RemoteCalendarScreen';
 import { AddClaimScreen } from '../screens/claims/AddClaimScreen';
 import { ClaimsListScreen } from '../screens/claims/ClaimsListScreen';
 import { ClaimDetailsScreen } from '../screens/claims/ClaimDetailsScreen';
+import { InvoiceListScreen } from '../screens/claims/InvoiceListScreen';
+import { AddInvoiceScreen } from '../screens/claims/AddInvoiceScreen';
 import { CompanyListScreen } from '../screens/companies/CompanyListScreen';
 import { AddCompanyScreen } from '../screens/companies/AddCompanyScreen';
 import { TeamListScreen } from '../screens/teams/TeamListScreen';
@@ -235,6 +237,24 @@ const ClaimsStack = () => {
   );
 };
 
+const InvoicesStack = () => {
+  const { t } = useTranslation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="InvoiceList"
+        component={InvoiceListScreen}
+        options={{ title: t('invoices.title') }}
+      />
+      <Stack.Screen
+        name="AddInvoice"
+        component={AddInvoiceScreen}
+        options={{ title: t('invoices.add') }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const CompanyStack = () => {
   const { t } = useTranslation();
   return (
@@ -389,6 +409,7 @@ const TabNavigator = () => (
     <Tab.Screen name="PayrollTab" component={PayrollStack} />
     <Tab.Screen name="LeavesTab" component={LeavesStack} />
     <Tab.Screen name="ClaimsTab" component={ClaimsStack} options={{ title: 'Claims' }} />
+    <Tab.Screen name="InvoicesTab" component={InvoicesStack} options={{ title: 'Invoices' }} />
     <Tab.Screen name="ChatTab" component={CompanyChatScreen} options={{ title: 'Chat' }} />
   </Tab.Navigator>
 );
@@ -413,7 +434,9 @@ const useNavigationSections = () => {
           { key: 'Payroll', label: t('navigation.payroll'), icon: '💰' },
           { key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' },
           { key: 'Claims', label: t('navigation.claims'), icon: '📝' },
-          { key: 'Remote', label: t('remote.title'), icon: '📅' }
+          { key: 'Invoices', label: t('invoices.title'), icon: '🧾' },
+          { key: 'Remote', label: t('remote.title'), icon: '📅' },
+          { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' }
         ]
       },
     ];
@@ -439,8 +462,7 @@ const useNavigationSections = () => {
       sections.push({
         title: t('sections.analytics'),
         items: [
-          { key: 'Analytics', label: t('navigation.analytics'), icon: '📊' },
-          { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' }
+          { key: 'Analytics', label: t('navigation.analytics'), icon: '📊' }
         ]
       });
     }
@@ -583,6 +605,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Services" component={ServiceStack} />
       <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
       <Drawer.Screen name="Claims" component={ClaimsStack} />
+      <Drawer.Screen name="Invoices" component={InvoicesStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
       <Drawer.Screen name="Settings" component={SettingsStack} />
       <Drawer.Screen name="Announcements" component={AnnouncementsScreen} />
@@ -601,7 +624,7 @@ const WebNavigator = () => {
   const { theme, themeMode } = useTheme();
   const { user } = useAuth();
   const { width, height } = useWindowDimensions();
-  const isMobile = width < 1024;
+  const isMobile = width < 1045;
 
   const [activeTab, setActiveTab] = useState('Home');
   const [subScreen, setSubScreen] = useState('');
@@ -683,6 +706,9 @@ const WebNavigator = () => {
         if (subScreen === 'AddClaim') return <AddClaimScreen route={mockRoute} />;
         if (subScreen === 'ClaimDetails') return <ClaimDetailsScreen route={mockRoute} />;
         return <ClaimsStack />;
+      case 'Invoices':
+        if (subScreen === 'AddInvoice') return <AddInvoiceScreen route={mockRoute} />;
+        return <InvoicesStack />;
       case 'Companies':
         if (subScreen === 'AddCompany')
           return <AddCompanyScreen route={mockRoute} />;
@@ -733,8 +759,13 @@ const WebNavigator = () => {
   return (
     <WebNavigationContext.Provider value={contextValue}>
       <View style={[
-        { flex: 1, backgroundColor: theme.colors.background },
-        !isMobile && { flexDirection: 'row' }
+        {
+          flex: 1,
+          backgroundColor: theme.colors.background,
+          minHeight: Platform.OS === 'web' ? '100vh' : '100%',
+          width: '100%',
+        },
+        !isMobile ? { flexDirection: 'row' } : { flexDirection: 'column' }
       ] as any}>
 
         {/* Desktop Sidebar OR Mobile Header */}
@@ -822,29 +853,17 @@ const WebNavigator = () => {
                           backgroundColor: `${theme.colors.primary}10`,
                           borderRightWidth: 3,
                           borderRightColor: theme.colors.primary,
-                        },
+                        }
                       ]}
                     >
-                      <Text
-                        style={[
-                          webStyles.navIcon,
-                          activeTab === item.key && { color: theme.colors.primary },
-                        ]}
-                      >
-                        {item.icon}
-                      </Text>
-                      <Text
-                        style={[
-                          webStyles.navLabel,
-                          {
-                            color:
-                              activeTab === item.key
-                                ? theme.colors.primary
-                                : theme.colors.text,
-                            fontWeight: activeTab === item.key ? '700' : '500',
-                          },
-                        ]}
-                      >
+                      <Text style={webStyles.navIcon}>{item.icon}</Text>
+                      <Text style={[
+                        webStyles.navLabel,
+                        {
+                          color: activeTab === item.key ? theme.colors.primary : theme.colors.text,
+                          fontWeight: activeTab === item.key ? 'bold' : 'normal'
+                        }
+                      ]}>
                         {item.label}
                       </Text>
                     </TouchableOpacity>
@@ -909,13 +928,11 @@ const WebNavigator = () => {
             </View>
           )}
 
-          <ScrollView
-            ref={scrollViewRef}
-            style={{ flex: 1 }}
-            contentContainerStyle={{ padding: isMobile ? 12 : 32 }}
+          <View
+            style={{ flex: 1, padding: isMobile ? 12 : 32 }}
           >
             {getActiveComponent()}
-          </ScrollView>
+          </View>
         </View>
 
         {/* Mobile Menu Overlay */}
@@ -930,7 +947,7 @@ const WebNavigator = () => {
               style={[
                 webStyles.mobileMenu,
                 {
-                  backgroundColor: theme.colors.surface, // Solid color from theme
+                  backgroundColor: theme.colors.surface,
                   borderRightWidth: 1,
                   borderRightColor: theme.colors.border,
                   height: height,
@@ -1021,14 +1038,13 @@ const WebNavigator = () => {
             </View>
           </View>
         )}
-
-      </View >
+      </View>
       <SearchOverlay
         visible={isSearchVisible}
         onClose={() => setIsSearchVisible(false)}
         onSelect={handleSearchSelect}
       />
-    </WebNavigationContext.Provider >
+    </WebNavigationContext.Provider>
   );
 };
 

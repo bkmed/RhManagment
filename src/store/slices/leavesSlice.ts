@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { Leave } from '../../database/schema';
+import { RootState } from '../index';
 
 interface LeavesState {
     items: Leave[];
@@ -33,16 +34,23 @@ const leavesSlice = createSlice({
 
 export const { setLeaves, addLeave, updateLeave, deleteLeave } = leavesSlice.actions;
 
-export const selectAllLeaves = (state: { leaves: LeavesState }) => state.leaves.items;
+export const selectAllLeaves = (state: RootState) => state.leaves.items;
 
-export const selectUpcomingLeaves = (state: { leaves: LeavesState }) => {
-    const now = new Date().toISOString();
-    return state.leaves.items
-        .filter((l) => l.status === 'pending' || l.dateTime >= now)
-        .sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
-};
+export const selectUpcomingLeaves = createSelector(
+    [selectAllLeaves],
+    (items) => {
+        const now = new Date().toISOString();
+        return items
+            .filter((l: Leave) => l.status === 'pending' || l.startDate >= now)
+            .sort((a: Leave, b: Leave) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+    }
+);
 
-export const selectPendingLeaves = (state: { leaves: LeavesState }) =>
-    state.leaves.items.filter((l) => l.status === 'pending');
+export const selectPendingLeaves = createSelector(
+    [selectAllLeaves],
+    (items) => items.filter((l: Leave) => l.status === 'pending')
+);
+
+export default leavesSlice.reducer;
 
 export default leavesSlice.reducer;

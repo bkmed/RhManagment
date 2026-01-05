@@ -27,6 +27,7 @@ import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { RootState } from '../../store';
 import { Dropdown } from '../../components/Dropdown';
+import { selectAllServices } from '../../store/slices/servicesSlice';
 
 export const AddIllnessScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
@@ -55,10 +56,11 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
   const companies = useSelector((state: RootState) => selectAllCompanies(state));
   const teams = useSelector((state: RootState) => selectAllTeams(state));
   const employees = useSelector((state: RootState) => selectAllEmployees(state));
+  const services = useSelector((state: RootState) => selectAllServices(state));
 
-  const [companyId, setCompanyId] = useState<number | null>(null);
-  const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(user?.role === 'employee' && user?.id ? Number(user.id) : null);
+  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
+  const [teamId, setTeamId] = useState<number | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<number | undefined>(user?.role === 'employee' && user?.id ? Number(user.id) : undefined);
 
   // Auto-fill logic for employees
   useEffect(() => {
@@ -175,10 +177,10 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
 
       let id: number;
       if (isEdit && illnessId) {
-        await illnessesDb.update(illnessId, illnessData);
+        await illnessesDb.update(illnessId, illnessData as any);
         id = illnessId;
       } else {
-        id = await illnessesDb.add(illnessData);
+        id = await illnessesDb.add(illnessData as Omit<any, any>);
       }
 
       if (expiryDate) {
@@ -284,13 +286,11 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
             {user?.role !== 'employee' && (
               <View style={styles.responsiveRow}>
                 <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>{t('common.service')}</Text>
-                  <TextInput
-                    style={styles.input}
+                  <Dropdown
+                    label={t('common.service')}
+                    data={services.map(s => ({ label: s.name, value: s.name }))}
                     value={department}
-                    onChangeText={setDepartment}
-                    placeholder={t('common.service')}
-                    placeholderTextColor={theme.colors.subText}
+                    onSelect={setDepartment}
                   />
                 </View>
 
@@ -382,7 +382,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { backgroundColor: theme.colors.background },
+    container: { flex: 1, backgroundColor: theme.colors.background },
     content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
     formContainer: {
       flex: 1,

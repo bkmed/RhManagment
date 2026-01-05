@@ -74,7 +74,7 @@ export interface Leave {
   notes?: string;
   reminderEnabled: boolean;
   status: 'pending' | 'approved' | 'declined';
-  type: 'leave' | 'permission';
+  type: 'leave' | 'sick_leave' | 'carer_leave' | 'permission' | 'authorization';
   createdAt: string;
   updatedAt: string;
   department?: string; // Service
@@ -103,6 +103,24 @@ export interface Illness {
   updatedAt: string;
   department?: string; // Service
   location?: string;   // Local
+  companyId?: number;
+  teamId?: number;
+}
+
+export interface Invoice {
+  id?: number;
+  employeeId: number;
+  employeeName?: string;
+  amount: number;
+  currency: string;
+  description: string;
+  photoUri?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
+  companyId?: number;
+  teamId?: number;
+  department?: string; // Service
 }
 
 export interface IllnessHistory {

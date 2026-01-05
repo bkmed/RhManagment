@@ -130,7 +130,8 @@ export const ChatBot = () => {
         profile: ['profile', 'setting', 'edit', 'profil', 'paramètre', 'einstellung', 'perfil', 'ajuste', 'ملف', 'إعدادات'],
         employees: ['employee', 'staff', 'worker', 'employé', 'personnel', 'mitarbeiter', 'empleado', 'trabajador', 'موظف', 'عمال'],
         approvals: ['approval', 'pending', 'request', 'approbation', 'attente', 'genehmigung', 'ausstehend', 'aprobación', 'pendiente', 'موافقة', 'معلقة'],
-        hello: ['hello', 'hi', 'bonjour', 'salut', 'hallo', 'hola', 'مرحبا', 'أهلا']
+        hello: ['hello', 'hi', 'bonjour', 'salut', 'hallo', 'hola', 'مرحبا', 'أهلا', '你好', 'नमस्ते'],
+        howAreYou: ['how are you', 'how is it going', 'comment ça va', 'ca va', 'ça va', 'wie geht es', 'como estas', 'cómo estás', 'كيف حالك', '你好吗', 'आप कैसे हैं']
     };
 
     const generateResponse = (text: string): { text: string, action?: { label: string, screen: string, subScreen?: string } } => {
@@ -223,8 +224,12 @@ export const ChatBot = () => {
             };
         }
 
+        if (checkIntent(INTENTS.howAreYou)) {
+            return { text: t('chatBot.responseCaVa') };
+        }
+
         if (checkIntent(INTENTS.hello)) {
-            return { text: t('chatBot.help') };
+            return { text: `${t('chatBot.howCanIHelp')}\n\n${t('chatBot.helpDetails')}` };
         }
 
         return { text: t('chatBot.fallback') };
@@ -368,11 +373,20 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
-        elevation: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+            },
+            android: {
+                elevation: 8,
+            },
+            web: {
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            }
+        }),
         zIndex: 1000,
     },
     botIcon: {

@@ -46,6 +46,11 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
                     <View style={styles.titleColumn}>
                         <View style={styles.nameRow}>
                             <Text style={styles.name}>{payroll.name}</Text>
+                            {payroll.isUrgent && (
+                                <View style={styles.urgentBadge}>
+                                    <Text style={styles.urgentText}>{t('payroll.isUrgent').toUpperCase()}</Text>
+                                </View>
+                            )}
                         </View>
                         {monthYearDisplay && (
                             <View style={styles.monthYearBadge}>
@@ -65,13 +70,13 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
                 {payroll.mealVouchers && (
                     <View style={styles.benefitItem}>
                         <Text style={styles.benefitIcon}>🍱</Text>
-                        <Text style={styles.benefitText}>{payroll.mealVouchers}</Text>
+                        <Text style={styles.benefitText}>{payroll.mealVouchers} {t('payroll.mealVouchers')}</Text>
                     </View>
                 )}
                 {payroll.giftVouchers && (
                     <View style={styles.benefitItem}>
                         <Text style={styles.benefitIcon}>🎁</Text>
-                        <Text style={styles.benefitText}>{payroll.giftVouchers}</Text>
+                        <Text style={styles.benefitText}>{payroll.giftVouchers} {t('payroll.giftVouchers')}</Text>
                     </View>
                 )}
                 {payroll.bonusAmount && payroll.bonusType !== 'none' && (
@@ -79,15 +84,19 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
                         <Text style={styles.benefitIcon}>💰</Text>
                         <Text style={styles.benefitText}>
                             {payroll.bonusType === '13th_month' ? t('payroll.thirtheenthMonth') : t('payroll.performanceBonus')}
-                            : {payroll.bonusAmount}
+                            : {payroll.bonusAmount} {payroll.currency || '€'}
                         </Text>
                     </View>
                 )}
             </View>
 
             <View style={styles.footer}>
-                <Text style={styles.frequency}>{t(`payroll.freq${payroll.frequency.replace(/\s+/g, '')}`)}</Text>
+                <View style={styles.freqContainer}>
+                    <Text style={styles.freqIcon}>🔄</Text>
+                    <Text style={styles.frequency}>{t(`payroll.freq${payroll.frequency.replace(/\s+/g, '')}`)}</Text>
+                </View>
                 <View style={styles.timesContainer}>
+                    <Text style={styles.timeIcon}>🔔</Text>
                     {times.slice(0, 3).map((time, index) => (
                         <View key={index} style={styles.timeBadge}>
                             <Text style={styles.timeText}>{time}</Text>
@@ -214,7 +223,20 @@ const createStyles = (theme: Theme) =>
         frequency: {
             ...theme.textVariants.body,
             color: theme.colors.subText,
+            fontSize: 13,
+            fontWeight: '500',
+        },
+        freqContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+        },
+        freqIcon: {
             fontSize: 14,
+        },
+        timeIcon: {
+            fontSize: 14,
+            marginRight: 4,
         },
         timesContainer: {
             flexDirection: 'row',
@@ -222,18 +244,21 @@ const createStyles = (theme: Theme) =>
             gap: 4,
         },
         timeBadge: {
-            backgroundColor: theme.colors.secondary + '20',
+            backgroundColor: theme.colors.primary + '10',
             paddingHorizontal: 8,
             paddingVertical: 2,
             borderRadius: 10,
+            borderWidth: 1,
+            borderColor: theme.colors.primary + '20',
         },
         timeText: {
-            color: theme.colors.secondary,
+            color: theme.colors.primary,
             fontSize: 12,
             fontWeight: '600',
         },
         moreTimes: {
             fontSize: 12,
             color: theme.colors.subText,
+            fontWeight: 'bold',
         },
     });

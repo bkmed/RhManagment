@@ -156,6 +156,7 @@ export const TeamListScreen = ({ navigation }: any) => {
 const createStyles = (theme: Theme) =>
     StyleSheet.create({
         container: {
+            flex: 1,
             backgroundColor: theme.colors.background,
         },
         listContent: {

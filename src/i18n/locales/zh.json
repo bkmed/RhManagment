@@ -7,6 +7,7 @@
         "expiringSoon": "即将过期",
         "hrAnalytics": "人力资源分析",
         "hrInsights": "人力资源洞察",
+        "illnessExpiring": "病假即将过期",
         "illnessesExpiring": "{{count}} 个病假案例即将过期。请考虑处理。",
         "illnessesExpiring_plural": "{{count}} 个病假案例即将过期。请考虑处理。",
         "leaves": "休假",
@@ -17,7 +18,8 @@
         "trends": "人力资源趋势",
         "upcomingLeavesChart": "即将到来的休假",
         "upcomingLeavesInsight": "您有 {{count}} 个即将到来的休假。请做好交接准备！",
-        "upcomingLeavesInsight_plural": "您有 {{count}} 个即将到来的休假。请做好交接准备！"
+        "upcomingLeavesInsight_plural": "您有 {{count}} 个即将到来的休假。请做好交接准备！",
+        "recentQuestions": "最近的问题"
     },
     "announcements": {
         "addAnnouncement": "新建公告",
@@ -27,7 +29,7 @@
         "title": "公司公告"
     },
     "chat": {
-        "chat": "",
+        "chat": "聊天",
         "companyChat": "公司聊天",
         "noMessages": "暂无消息",
         "send": "发送",
@@ -53,7 +55,10 @@
         "profileAction": "前往个人资料",
         "team": "您在 {{team}} 团队（部门：{{dept}}）。",
         "teamAction": "查看我的团队",
-        "teamUnknown": "我找不到您的团队信息，但您可以查看您的个人资料。"
+        "teamUnknown": "找不到您的团队信息，但您可以查看您的个人资料。",
+        "howCanIHelp": "今天我能为您做些什么？",
+        "helpDetails": "我可以为您提供以下帮助：\n• 查看和管理您的**薪酬**\n• 申请或查询**休假**状态\n• 查看您的**团队**详情\n• 提交**报销**和费用\n• 浏览**员工通讯录**",
+        "responseCaVa": "我很好，谢谢您的关心！请问有什么我可以帮您的吗？"
     },
     "claims": {
         "description": "描述",
@@ -309,10 +314,17 @@
         "tip": "提示：启用通知以绝不错过您的薪酬提醒！",
         "upcomingLeaves": "即将到来的休假",
         "viewAnalytics": "查看分析",
-        "viewAnalyticsSubtitle": "查看您的人力资源洞察"
+        "viewAnalyticsSubtitle": "查看您的人力资源洞察",
+        "viewTeamLeaves": "查看我团队的休假",
+        "manageCareer": "管理您的目标和职业生涯",
+        "viewOrgChart": "查看公司结构",
+        "hrAdmin": "人力资源管理"
     },
     "illnesses": {
-        "add": "添加记录",
+        "add": "添加疾病记录",
+        "allIllnesses": "所有疾病记录",
+        "myIllnesses": "我的疾病记录",
+        "teamIllnesses": "团队疾病记录",
         "addFirst": "添加您的第一条记录",
         "addPhoto": "添加文档",
         "chooseFromLibrary": "从媒体库选择",
@@ -349,8 +361,31 @@
         "saveButton": "保存记录",
         "saveError": "保存记录失败",
         "takePhoto": "拍照",
-        "title": "病假 / 开票",
-        "updateButton": "更新记录"
+        "title": "病假",
+        "updateButton": "更新疾病记录"
+    },
+    "invoices": {
+        "add": "添加发票",
+        "allInvoices": "所有发票",
+        "amount": "金额",
+        "amountPlaceholder": "例如 50.00",
+        "currency": "货币",
+        "description": "描述",
+        "descriptionPlaceholder": "例如 办公用品",
+        "details": "发票详情",
+        "edit": "编辑发票",
+        "empty": "未找到发票",
+        "loadError": "加载发票失败",
+        "myInvoices": "我的发票",
+        "photoButton": "📷 添加收据/发票",
+        "saveButton": "保存发票",
+        "saveError": "保存发票失败",
+        "statusPending": "待处理",
+        "statusApproved": "已批准",
+        "statusRejected": "已拒绝",
+        "teamInvoices": "团队发票",
+        "title": "发票",
+        "updateButton": "更新发票"
     },
     "languages": {
         "ar": "العربية",
@@ -390,7 +425,11 @@
     },
     "leaveTypes": {
         "leave": "休假",
-        "permission": "假条"
+        "standard_leave": "标准假期",
+        "sick_leave": "病假",
+        "carer_leave": "陪护假",
+        "permission": "假条",
+        "authorization": "授权"
     },
     "leaves": {
         "add": "添加休假",
@@ -464,7 +503,7 @@
         "employmentDetails": "就业详情",
         "history": "历史",
         "home": "首页",
-        "illnesses": "病假 / 开票",
+        "illnesses": "病假",
         "leaves": "休假",
         "notifications": "通知",
         "orgChart": "组织结构图",
@@ -581,7 +620,16 @@
         "noGoals": "未找到目标",
         "noReviews": "未找到考评",
         "reviews": "绩效考评",
-        "title": "绩效追踪"
+        "title": "绩效追踪",
+        "newReview": "新考评",
+        "employee": "员工",
+        "period": "期间",
+        "score": "评分 (1-5)",
+        "comments": "评论",
+        "feedbackPlaceholder": "定性反馈...",
+        "periodPlaceholder": "例如：2025年第四季度",
+        "managerSubtitle": "管理您团队的考评",
+        "employeeSubtitle": "查看您的考评"
     },
     "permissions": {
         "calendar": "日历权限",

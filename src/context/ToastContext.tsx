@@ -48,7 +48,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return (
         <ToastContext.Provider value={{ showToast }}>
             {children}
-            <View style={styles.container} pointerEvents="box-none">
+            <View style={[styles.container, { pointerEvents: 'box-none' as any }]}>
                 {toasts.map((toast, index) => (
                     <ToastItem
                         key={toast.id}
