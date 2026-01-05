@@ -96,13 +96,18 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
     return (
         <View style={styles.container}>
             <View style={styles.card}>
-                <Text style={styles.title}>
-                    {isEdit ? t('common.edit') : t('departments.add')}
-                </Text>
+                <View style={styles.headerRow}>
+                    <TouchableOpacity onPress={handleCancel} style={styles.backButton}>
+                        <Text style={styles.backButtonText}>‹ {t('common.back')}</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.title}>
+                        {isEdit ? t('common.edit') : t('departments.add')}
+                    </Text>
+                </View>
 
                 <View style={styles.fieldContainer}>
                     <Dropdown
-                        label={t('companies.title')}
+                        label={t('companies.select')}
                         data={companyOptions}
                         value={selectedCompanyId ? selectedCompanyId.toString() : 'global'}
                         onSelect={(val) => setSelectedCompanyId(val === 'global' ? undefined : Number(val))}
@@ -158,7 +163,21 @@ const createStyles = (theme: Theme) =>
         title: {
             ...theme.textVariants.header,
             color: theme.colors.text,
+            fontSize: 24,
+        },
+        headerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: theme.spacing.m,
             marginBottom: theme.spacing.l,
+        },
+        backButton: {
+            padding: theme.spacing.s,
+        },
+        backButtonText: {
+            color: theme.colors.primary,
+            fontSize: 18,
+            fontWeight: '600',
         },
         fieldContainer: {
             marginBottom: theme.spacing.l,

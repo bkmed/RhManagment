@@ -177,6 +177,7 @@
     "namePlaceholder": "مثال: شركة النخبة",
     "phone": "الهاتف",
     "phonePlaceholder": "مثال: +966 12 345 6789",
+    "select": "اختر شركة",
     "selectCompany": "اختر الشركة",
     "title": "الشركات"
   },
@@ -468,14 +469,7 @@
     "profile": "الملف الشخصي",
     "services": "الخدمات",
     "settings": "الإعدادات",
-    "sections": {
-      "analytics": "",
-      "communication": "",
-      "general": "",
-      "management": "",
-      "organization": "",
-      "personal": ""
-    },
+    "settings": "الإعدادات",
     "teams": "الفرق"
   },
   "notifications": {
@@ -666,11 +660,11 @@
     "rh": "الموارد البشرية"
   },
   "sections": {
-    "analytics": "تحليلات",
-    "communication": "تواصل",
+    "analytics": "التحليلات",
+    "communication": "التواصل",
     "general": "عام",
-    "management": "إدارة",
-    "organization": "منظمة",
+    "management": "الإدارة",
+    "organization": "المؤسسة",
     "personal": "شخصي"
   },
   "services": {

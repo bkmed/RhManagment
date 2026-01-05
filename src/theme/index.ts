@@ -185,5 +185,45 @@ export const premiumTheme = {
   },
 };
 
+export const createCustomTheme = (customColors: {
+  primary: string;
+  secondary: string;
+  background: string;
+  surface: string;
+}): Theme => {
+  const isDark = true; // Most custom themes look better in dark mode base
+  return {
+    dark: isDark,
+    colors: {
+      primary: customColors.primary,
+      secondary: customColors.secondary,
+      accent: palette.accent,
+      background: customColors.background,
+      surface: customColors.surface,
+      text: '#FFFFFF',
+      subText: palette.gray500,
+      border: palette.gray800,
+      error: palette.error,
+      success: palette.success,
+      warning: palette.warning,
+      warningBackground: '#2D2200',
+      primaryBackground: customColors.primary + '33',
+      successBackground: '#E3FCEF',
+      card: customColors.surface,
+      notification: customColors.primary,
+    },
+    spacing,
+    shadows,
+    textVariants: {
+      ...textVariants,
+      header: { ...textVariants.header, color: '#FFFFFF' },
+      subheader: { ...textVariants.subheader, color: '#E3E3E3' },
+      body: { ...textVariants.body, color: '#E3E3E3' },
+      caption: { ...textVariants.caption, color: palette.gray500 },
+      button: { ...textVariants.button, color: '#FFFFFF' },
+    },
+  };
+};
+
 export type Theme = typeof lightTheme;
 export const theme = lightTheme; // Default export for backward compatibility during refactor

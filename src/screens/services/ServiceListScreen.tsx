@@ -42,6 +42,14 @@ export const ServiceListScreen = ({ navigation, route }: any) => {
         }
     };
 
+    const handleBack = () => {
+        if (Platform.OS === 'web') {
+            setActiveTab?.('Settings', 'CompanySettings');
+        } else {
+            navigation.goBack();
+        }
+    };
+
     const handleAdd = () => {
         if (Platform.OS === 'web') {
             setActiveTab?.('Services', 'AddService', { companyId });
@@ -84,7 +92,12 @@ export const ServiceListScreen = ({ navigation, route }: any) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>{t('services.title')}</Text>
+                <View style={styles.headerLeft}>
+                    <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                        <Text style={styles.backButtonText}>‹ {t('common.back')}</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.title}>{t('services.title')}</Text>
+                </View>
                 <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
                     <Text style={styles.addButtonText}>+ {t('common.add')}</Text>
                 </TouchableOpacity>
@@ -132,6 +145,20 @@ const createStyles = (theme: Theme) =>
         title: {
             ...theme.textVariants.header,
             color: theme.colors.text,
+            fontSize: 24,
+        },
+        headerLeft: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: theme.spacing.m,
+        },
+        backButton: {
+            padding: theme.spacing.s,
+        },
+        backButtonText: {
+            color: theme.colors.primary,
+            fontSize: 18,
+            fontWeight: '600',
         },
         addButton: {
             backgroundColor: theme.colors.primary,

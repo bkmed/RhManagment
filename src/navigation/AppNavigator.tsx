@@ -61,6 +61,7 @@ import { PersonalSettingsScreen } from '../screens/settings/PersonalSettingsScre
 import { CompanySettingsScreen } from '../screens/settings/CompanySettingsScreen';
 import { ChatScreen } from '../screens/home/ChatScreen';
 import { CompanyChatScreen } from '../screens/chat/CompanyChatScreen';
+import { LanguageSelectionScreen } from '../screens/settings/LanguageSelectionScreen';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { SearchOverlay } from '../components/common/SearchOverlay';
 import { ChatBot } from '../components/common/ChatBot';
@@ -327,6 +328,11 @@ const ProfileStack = () => {
         options={{ headerShown: true, title: t('payroll.currency') || 'Currencies' }}
       />
       <Stack.Screen
+        name="Language"
+        component={LanguageSelectionScreen}
+        options={{ headerShown: true, title: t('profile.language') }}
+      />
+      <Stack.Screen
         name="MyTeam"
         component={MyTeamScreen}
         options={{ headerShown: true, title: t('teams.myTeam') || 'My Team' }}
@@ -429,7 +435,8 @@ const useNavigationSections = () => {
       title: t('sections.personal'),
       items: [
         { key: 'Profile', label: t('navigation.profile'), icon: '👤' },
-        { key: 'Settings', label: t('navigation.settings'), icon: '⚙️' }
+        { key: 'Settings', label: t('navigation.settings'), icon: '⚙️' },
+        { key: 'Language', label: t('profile.language'), icon: '🌐' }
       ]
     });
 
@@ -675,6 +682,8 @@ const WebNavigator = () => {
         return <AnnouncementsScreen />;
       case 'Chat':
         return <CompanyChatScreen />;
+      case 'Language':
+        return <LanguageSelectionScreen />;
       case 'Settings':
         if (subScreen === 'CompanySettings')
           return <CompanySettingsScreen />;

@@ -177,6 +177,7 @@
     "namePlaceholder": "ex: Acme Corp",
     "phone": "Téléphone",
     "phonePlaceholder": "ex: +33 1 23 45 67 89",
+    "select": "Sélectionner Entreprise",
     "selectCompany": "Sélectionner l'entreprise",
     "title": "Entreprises"
   },
@@ -468,14 +469,7 @@
     "profile": "Profil",
     "services": "Services",
     "settings": "Paramètres",
-    "sections": {
-      "analytics": "",
-      "communication": "",
-      "general": "",
-      "management": "",
-      "organization": "",
-      "personal": ""
-    },
+    "settings": "Paramètres",
     "teams": "Équipes"
   },
   "notifications": {
@@ -666,7 +660,7 @@
     "rh": "RH"
   },
   "sections": {
-    "analytics": "Analytique",
+    "analytics": "Analytiques",
     "communication": "Communication",
     "general": "Général",
     "management": "Gestion",
@@ -688,6 +682,12 @@
     "themeLight": "Clair",
     "themeDark": "Sombre",
     "themePremium": "Premium",
+    "themeCustom": "Personnalisé",
+    "customColors": "Couleurs personnalisées",
+    "colorPrimary": "Couleur primaire",
+    "colorSecondary": "Couleur secondaire",
+    "colorBackground": "Couleur de fond",
+    "colorSurface": "Couleur de surface",
     "notifications": "Notifications",
     "pushNotifications": "Notifications Push",
     "emailNotifications": "Notifications Email",

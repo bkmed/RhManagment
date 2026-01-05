@@ -35,6 +35,8 @@ const LANGUAGES = [
   { code: 'ar', name: 'العربية', flag: '🇹🇳' },
   { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
   { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'zh', name: '中文', flag: '🇨🇳' },
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
 ];
 
 export const ProfileScreen = ({ navigation }: any) => {
@@ -134,6 +136,22 @@ export const ProfileScreen = ({ navigation }: any) => {
   };
 
   const handlePickPhoto = async () => {
+    if (Platform.OS === 'web') {
+      const input = (window as any).document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e: any) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event: any) => setPhotoUri(event.target.result);
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+      return;
+    }
+
     const status = await permissionsService.requestCameraPermission();
     setCameraPermission(status);
 
@@ -304,299 +322,296 @@ export const ProfileScreen = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Profile Header Section */}
-        <View style={styles.headerCard}>
-          <TouchableOpacity
-            style={styles.avatarContainer}
-            onPress={isEditing ? handlePickPhoto : undefined}
-            disabled={!isEditing}
-          >
-            <View style={styles.avatar}>
-              {photoUri ? (
-                <Image source={{ uri: photoUri }} style={styles.avatarImage} />
-              ) : (
-                <Text style={styles.avatarText}>
-                  {user?.name?.charAt(0).toUpperCase() || 'U'}
-                </Text>
-              )}
-              {isEditing && (
-                <View style={styles.editOverlay}>
-                  <Text style={styles.editOverlayText}>📸</Text>
-                </View>
-              )}
-            </View>
-            <View style={styles.roleBadge}>
-              <Text style={styles.roleBadgeText}>
-                {t(`roles.${user?.role}`)}
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          {!isEditing ? (
-            <View style={styles.headerInfo}>
-              <Text style={styles.userName}>{user?.name}</Text>
-              <Text style={styles.userEmail}>{user?.email}</Text>
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => setIsEditing(true)}
-              >
-                <Text style={styles.editButtonText}>{t('profile.edit')}</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.editForm}>
-              <AuthInput
-                label={t('signUp.nameLabel')}
-                value={name}
-                onChangeText={setName}
-                placeholder={t('signUp.namePlaceholder')}
-              />
-              <AuthInput
-                label={t('signUp.emailLabel')}
-                value={email}
-                onChangeText={setEmail}
-                placeholder={t('signUp.emailPlaceholder')}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-
-              <View style={styles.responsiveRow}>
-                <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
-                  <AuthInput
-                    label={t('employees.firstName')}
-                    value={firstName}
-                    onChangeText={setFirstName}
-                    placeholder={t('employees.firstName')}
-                  />
-                </View>
-                <View style={styles.fieldContainerFlex}>
-                  <AuthInput
-                    label={t('employees.lastName')}
-                    value={lastName}
-                    onChangeText={setLastName}
-                    placeholder={t('employees.lastName')}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.responsiveRow}>
-                <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
-                  <AuthInput
-                    label={t('employees.age')}
-                    value={age}
-                    onChangeText={setAge}
-                    placeholder="25"
-                    keyboardType="numeric"
-                  />
-                </View>
-                <View style={styles.fieldContainerFlex}>
-                  <Dropdown
-                    label={t('employees.gender')}
-                    data={[
-                      { label: t('employees.genderMale'), value: 'male' },
-                      { label: t('employees.genderFemale'), value: 'female' },
-                      { label: t('employees.genderOther'), value: 'other' },
-                    ]}
-                    value={gender}
-                    onSelect={(val) => setGender(val as any)}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.divider} />
-
-              <Text style={styles.subSectionTitle}>{t('employees.emergencyContact')}</Text>
-              <AuthInput
-                label={t('employees.emergencyName')}
-                value={emergencyName}
-                onChangeText={setEmergencyName}
-                placeholder={t('employees.emergencyName')}
-              />
-              <View style={styles.responsiveRow}>
-                <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
-                  <AuthInput
-                    label={t('employees.emergencyPhone')}
-                    value={emergencyPhone}
-                    onChangeText={setEmergencyPhone}
-                    placeholder={t('employees.emergencyPhone')}
-                    keyboardType="phone-pad"
-                  />
-                </View>
-                <View style={styles.fieldContainerFlex}>
-                  <AuthInput
-                    label={t('employees.emergencyRelationship')}
-                    value={emergencyRelationship}
-                    onChangeText={setEmergencyRelationship}
-                    placeholder={t('employees.emergencyRelationship')}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.divider} />
-
-              <Text style={styles.subSectionTitle}>{t('employees.socialLinks')}</Text>
-              <AuthInput
-                label={t('employees.linkedin')}
-                value={linkedin}
-                onChangeText={setLinkedin}
-                placeholder="https://linkedin.com/in/..."
-              />
-
-              <AuthInput
-                label={t('employees.skills')}
-                value={skills}
-                onChangeText={setSkills}
-                placeholder="React, Node.js, HR"
-              />
-
-              <View style={styles.editActions}>
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.cancelButton]}
-                  onPress={() => {
-                    setIsEditing(false);
-                    setName(user?.name || '');
-                    setEmail(user?.email || '');
-                    setPhotoUri(user?.photoUri || '');
-                  }}
-                >
-                  <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.saveButton]}
-                  onPress={handleSaveProfile}
-                  disabled={loading}
-                >
-                  <Text style={styles.saveButtonText}>
-                    {loading ? t('common.loading') : t('profile.save')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        </View>
-
-        {/* Account Settings Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>{t('profile.accountSettings')}</Text>
-          </View>
-          <View style={styles.fieldGroup}>
-            <Dropdown
-              label={t('profile.language')}
-              data={LANGUAGES.map(lang => ({
-                label: `${lang.flag} ${lang.name}`,
-                value: lang.code,
-              }))}
-              value={currentLanguage}
-              onSelect={handleLanguageChange}
-            />
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.fieldGroup}>
-            <Dropdown
-              label={t('profile.appearance')}
-              data={[
-                { label: '☀️ ' + t('profile.lightMode'), value: 'light' },
-                { label: '🌙 ' + t('profile.darkMode'), value: 'dark' },
-                { label: '👑 ' + t('profile.premiumMode'), value: 'premium' },
-              ]}
-              value={themeMode}
-              onSelect={(val) => setThemeMode(val as any)}
-            />
-          </View>
-          <View style={styles.divider} />
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => navigation.navigate('MyTeam')}
-          >
-            <Text style={styles.menuItemText}>👥 {t('teams.myTeam') || 'My Team'}</Text>
-            <Text style={styles.menuItemArrow}>›</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Permissions Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>{t('profile.securityPermissions')}</Text>
-          </View>
-          {[
-            { label: t('profile.camera'), status: cameraPermission, onValueChange: handleCameraPermission },
-            { label: t('profile.notifications'), status: notificationPermission, onValueChange: handleNotificationPermission },
-            { label: t('profile.calendar'), status: calendarPermission, onValueChange: handleCalendarPermission },
-          ].map((perm, index) => (
-            <View key={index} style={styles.permissionRow}>
-              <View style={styles.permissionInfo}>
-                <Text style={styles.permissionLabel}>{perm.label}</Text>
-                <Text style={[styles.permissionStatus, { color: getPermissionStatusColor(perm.status) }]}>
-                  {getPermissionStatusText(perm.status)}
-                </Text>
-              </View>
-              {perm.status !== 'unavailable' && (
-                <Switch
-                  value={perm.status === 'granted'}
-                  onValueChange={perm.onValueChange}
-                  trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-                  thumbColor={theme.colors.surface}
-                />
-              )}
-            </View>
-          ))}
-          <View style={styles.divider} />
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => {
-              if (Platform.OS === 'web') {
-                setActiveTab?.('Settings', 'PersonalSettings');
-              } else {
-                navigation.navigate('Settings', { screen: 'PersonalSettings' });
-              }
-            }}
-          >
-            <Text style={styles.menuItemText}>⚙️ {t('settings.personal')}</Text>
-            <Text style={styles.menuItemArrow}>›</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Admin Settings Section */}
-        {(user?.role === 'admin' || user?.role === 'rh') && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>{t('permissions.settings')}</Text>
-            </View>
+        <View style={Platform.OS === 'web' ? styles.webProfileLayout : null}>
+          {/* Profile Header Section */}
+          <View style={[styles.headerCard, Platform.OS === 'web' && styles.headerCardWeb]}>
             <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => navigation.navigate('ManageCurrencies')}
+              style={[styles.avatarContainer, Platform.OS === 'web' && styles.avatarContainerWeb]}
+              onPress={isEditing ? handlePickPhoto : undefined}
+              disabled={!isEditing}
             >
-              <Text style={styles.menuItemText}>💰 {t('payroll.manageCurrencies')}</Text>
-              <Text style={styles.menuItemArrow}>›</Text>
+              <View style={styles.avatar}>
+                {photoUri ? (
+                  <Image source={{ uri: photoUri }} style={styles.avatarImage} />
+                ) : (
+                  <Text style={styles.avatarText}>
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </Text>
+                )}
+                {isEditing && (
+                  <View style={styles.editOverlay}>
+                    <Text style={styles.editOverlayText}>📸</Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.roleBadge}>
+                <Text style={styles.roleBadgeText}>
+                  {t(`roles.${user?.role}`)}
+                </Text>
+              </View>
             </TouchableOpacity>
-            {user?.role === 'admin' && (
-              <>
-                <View style={styles.divider} />
+
+            {!isEditing ? (
+              <View style={styles.headerInfo}>
+                <Text style={styles.userName}>{user?.name}</Text>
+                <Text style={styles.userEmail}>{user?.email}</Text>
                 <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={() => {
-                    if (Platform.OS === 'web') {
-                      setActiveTab?.('Settings', 'CompanySettings');
-                    } else {
-                      navigation.navigate('Settings', { screen: 'CompanySettings' });
-                    }
-                  }}
+                  style={styles.editButton}
+                  onPress={() => setIsEditing(true)}
                 >
-                  <Text style={styles.menuItemText}>🏢 {t('settings.company')}</Text>
-                  <Text style={styles.menuItemArrow}>›</Text>
+                  <Text style={styles.editButtonText}>{t('profile.edit')}</Text>
                 </TouchableOpacity>
-              </>
+              </View>
+            ) : (
+              <View style={styles.editForm}>
+                <AuthInput
+                  label={t('signUp.nameLabel')}
+                  value={name}
+                  onChangeText={setName}
+                  placeholder={t('signUp.namePlaceholder')}
+                />
+                <AuthInput
+                  label={t('signUp.emailLabel')}
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder={t('signUp.emailPlaceholder')}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+
+                <View style={styles.responsiveRow}>
+                  <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
+                    <AuthInput
+                      label={t('employees.firstName')}
+                      value={firstName}
+                      onChangeText={setFirstName}
+                      placeholder={t('employees.firstName')}
+                    />
+                  </View>
+                  <View style={styles.fieldContainerFlex}>
+                    <AuthInput
+                      label={t('employees.lastName')}
+                      value={lastName}
+                      onChangeText={setLastName}
+                      placeholder={t('employees.lastName')}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.responsiveRow}>
+                  <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
+                    <AuthInput
+                      label={t('employees.age')}
+                      value={age}
+                      onChangeText={setAge}
+                      placeholder="25"
+                      keyboardType="numeric"
+                    />
+                  </View>
+                  <View style={styles.fieldContainerFlex}>
+                    <Dropdown
+                      label={t('employees.gender')}
+                      data={[
+                        { label: t('employees.genderMale'), value: 'male' },
+                        { label: t('employees.genderFemale'), value: 'female' },
+                        { label: t('employees.genderOther'), value: 'other' },
+                      ]}
+                      value={gender}
+                      onSelect={(val) => setGender(val as any)}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.divider} />
+
+                <Text style={styles.subSectionTitle}>{t('employees.emergencyContact')}</Text>
+                <AuthInput
+                  label={t('employees.emergencyName')}
+                  value={emergencyName}
+                  onChangeText={setEmergencyName}
+                  placeholder={t('employees.emergencyName')}
+                />
+                <View style={styles.responsiveRow}>
+                  <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
+                    <AuthInput
+                      label={t('employees.emergencyPhone')}
+                      value={emergencyPhone}
+                      onChangeText={setEmergencyPhone}
+                      placeholder={t('employees.emergencyPhone')}
+                      keyboardType="phone-pad"
+                    />
+                  </View>
+                  <View style={styles.fieldContainerFlex}>
+                    <AuthInput
+                      label={t('employees.emergencyRelationship')}
+                      value={emergencyRelationship}
+                      onChangeText={setEmergencyRelationship}
+                      placeholder={t('employees.emergencyRelationship')}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.divider} />
+
+                <Text style={styles.subSectionTitle}>{t('employees.socialLinks')}</Text>
+                <AuthInput
+                  label={t('employees.linkedin')}
+                  value={linkedin}
+                  onChangeText={setLinkedin}
+                  placeholder="https://linkedin.com/in/..."
+                />
+
+                <AuthInput
+                  label={t('employees.skills')}
+                  value={skills}
+                  onChangeText={setSkills}
+                  placeholder="React, Node.js, HR"
+                />
+
+                <View style={styles.editActions}>
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.cancelButton]}
+                    onPress={() => {
+                      setIsEditing(false);
+                      setName(user?.name || '');
+                      setEmail(user?.email || '');
+                      setPhotoUri(user?.photoUri || '');
+                    }}
+                  >
+                    <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.saveButton]}
+                    onPress={handleSaveProfile}
+                    disabled={loading}
+                  >
+                    <Text style={styles.saveButtonText}>
+                      {loading ? t('common.loading') : t('profile.save')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             )}
           </View>
-        )}
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>{t('profile.logout')}</Text>
-        </TouchableOpacity>
-        <Text style={styles.versionText}>{t('profile.version')} 1.0.0</Text>
-      </ScrollView>
-    </View>
+          <View style={Platform.OS === 'web' ? styles.settingsGrid : null}>
+            {/* Account Settings Section */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitle}>{t('profile.accountSettings')}</Text>
+              </View>
+              <View style={styles.fieldGroup}>
+                <Dropdown
+                  label={t('profile.language')}
+                  data={LANGUAGES.map(lang => ({
+                    label: `${lang.flag} ${lang.name}`,
+                    value: lang.code,
+                  }))}
+                  value={currentLanguage}
+                  onSelect={handleLanguageChange}
+                />
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.fieldGroup}>
+                <Dropdown
+                  label={t('profile.appearance')}
+                  data={[
+                    { label: '☀️ ' + t('profile.lightMode'), value: 'light' },
+                    { label: '🌙 ' + t('profile.darkMode'), value: 'dark' },
+                    { label: '👑 ' + t('profile.premiumMode'), value: 'premium' },
+                  ]}
+                  value={themeMode}
+                  onSelect={(val) => setThemeMode(val as any)}
+                />
+              </View>
+              <View style={styles.divider} />
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => navigation.navigate('MyTeam')}
+              >
+                <Text style={styles.menuItemText}>👥 {t('teams.myTeam') || 'My Team'}</Text>
+                <Text style={styles.menuItemArrow}>›</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Permissions Section */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitle}>{t('profile.securityPermissions')}</Text>
+              </View>
+              {[
+                { label: t('profile.camera'), status: cameraPermission, onValueChange: handleCameraPermission },
+                { label: t('profile.notifications'), status: notificationPermission, onValueChange: handleNotificationPermission },
+                { label: t('profile.calendar'), status: calendarPermission, onValueChange: handleCalendarPermission },
+              ].map((perm, index) => (
+                <View key={index} style={styles.permissionRow}>
+                  <View style={styles.permissionInfo}>
+                    <Text style={styles.permissionLabel}>{perm.label}</Text>
+                    <Text style={[styles.permissionStatus, { color: getPermissionStatusColor(perm.status) }]}>
+                      {getPermissionStatusText(perm.status)}
+                    </Text>
+                  </View>
+                  {Platform.OS !== 'web' && perm.status !== 'unavailable' && (
+                    <Switch
+                      value={perm.status === 'granted'}
+                      onValueChange={perm.onValueChange}
+                      trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+                      thumbColor={theme.colors.surface}
+                    />
+                  )}
+                </View>
+              ))}
+              <View style={styles.divider} />
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  if (Platform.OS === 'web') {
+                    setActiveTab?.('Settings', 'PersonalSettings');
+                  } else {
+                    navigation.navigate('Settings', { screen: 'PersonalSettings' });
+                  }
+                }}
+              >
+                <Text style={styles.menuItemText}>⚙️ {t('settings.personal')}</Text>
+                <Text style={styles.menuItemArrow}>›</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Admin Settings Section */}
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <View style={styles.section}>
+                <View style={styles.sectionHeaderRow}>
+                  <Text style={styles.sectionTitle}>{t('permissions.settings')}</Text>
+                </View>
+                {user?.role === 'admin' && (
+                  <>
+                    <View style={styles.divider} />
+                    <TouchableOpacity
+                      style={styles.menuItem}
+                      onPress={() => {
+                        if (Platform.OS === 'web') {
+                          setActiveTab?.('Settings', 'CompanySettings');
+                        } else {
+                          navigation.navigate('Settings', { screen: 'CompanySettings' });
+                        }
+                      }}
+                    >
+                      <Text style={styles.menuItemText}>🏢 {t('settings.company')}</Text>
+                      <Text style={styles.menuItemArrow}>›</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </View>
+            )}
+          </View>
+
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutText}>{t('profile.logout')}</Text>
+          </TouchableOpacity>
+          <Text style={styles.versionText}>{t('profile.version')} 1.0.0</Text>
+        </View>
+      </ScrollView >
+    </View >
   );
 };
 
@@ -622,8 +637,17 @@ const createStyles = (theme: Theme) =>
       marginBottom: theme.spacing.l,
       alignItems: 'center',
       ...theme.shadows.medium,
+      ...(Platform.OS === 'web' && {
+        flexDirection: 'row',
+        padding: theme.spacing.xl,
+      })
+    },
+    headerCardWeb: {
+      flexDirection: 'row',
+      padding: theme.spacing.xl,
     },
     avatarContainer: { position: 'relative', marginBottom: theme.spacing.m },
+    avatarContainerWeb: { marginRight: theme.spacing.xl, marginBottom: 0 },
     avatar: {
       width: 100,
       height: 100,
@@ -737,5 +761,11 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.primary,
       marginBottom: theme.spacing.s,
       marginTop: theme.spacing.s,
+    },
+    webProfileLayout: { maxWidth: 1000, width: '100%', alignSelf: 'center' },
+    settingsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: theme.spacing.l,
     },
   });

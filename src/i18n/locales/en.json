@@ -164,6 +164,7 @@
   },
   "companies": {
     "add": "Add Company",
+    "select": "Select Company",
     "address": "Address",
     "addressPlaceholder": "e.g. 123 Business St",
     "country": "Country",
@@ -465,16 +466,9 @@
     "orgChart": "Org Chart",
     "params": "Params",
     "payroll": "Payroll",
+    "profile": "Profile",
     "services": "Services",
     "settings": "Settings",
-    "sections": {
-      "analytics": "Analytics",
-      "communication": "Communication",
-      "general": "General",
-      "management": "Management",
-      "organization": "Organization",
-      "personal": "Personal"
-    },
     "teams": "Teams"
   },
   "notifications": {
@@ -665,12 +659,12 @@
     "rh": "HR"
   },
   "sections": {
-    "analytics": "",
-    "communication": "",
-    "general": "",
-    "management": "",
-    "organization": "",
-    "personal": ""
+    "analytics": "Analytics",
+    "communication": "Communication",
+    "general": "General",
+    "management": "Management",
+    "organization": "Organization",
+    "personal": "Personal"
   },
   "services": {
     "add": "Add Service",
@@ -687,6 +681,12 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "themePremium": "Premium",
+    "themeCustom": "Custom",
+    "customColors": "Custom Colors",
+    "colorPrimary": "Primary Color",
+    "colorSecondary": "Secondary Color",
+    "colorBackground": "Background Color",
+    "colorSurface": "Surface Color",
     "notifications": "Notifications",
     "pushNotifications": "Push Notifications",
     "emailNotifications": "Email Notifications",

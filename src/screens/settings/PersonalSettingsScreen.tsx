@@ -10,51 +10,36 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
+import { Dropdown } from '../../components/Dropdown';
 
 export const PersonalSettingsScreen = () => {
-    const { theme, themeMode, setThemeMode } = useTheme();
+    const { theme, themeMode, setThemeMode, customColors, setCustomColor } = useTheme() as any;
     const { t, i18n } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
 
-    const languages = [
-        { code: 'en', label: 'English', flag: '🇺🇸' },
-        { code: 'fr', label: 'Français', flag: '🇫🇷' },
-        { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-        { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-        { code: 'es', label: 'Español', flag: '🇪🇸' },
-    ];
 
     const themes = [
         { id: 'light', label: t('settings.themeLight') || 'Light' },
         { id: 'dark', label: t('settings.themeDark') || 'Dark' },
         { id: 'premium', label: t('settings.themePremium') || 'Premium' },
+        { id: 'custom', label: t('settings.themeCustom') || 'Custom' },
     ];
 
-    const toggleLanguage = (code: string) => {
-        i18n.changeLanguage(code);
-    };
+    const COLOR_PALETTE = [
+        { label: 'Deep Blue', value: '#0052CC' },
+        { label: 'Royal Blue', value: '#172B4D' },
+        { label: 'Teal', value: '#00A3BF' },
+        { label: 'Emerald', value: '#36B37E' },
+        { label: 'Purple', value: '#6554C0' },
+        { label: 'Rose', value: '#FF5630' },
+        { label: 'Amber', value: '#FFAB00' },
+        { label: 'Slate', value: '#1D1D1F' },
+        { label: 'Black', value: '#121212' },
+    ];
+
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>{t('settings.language') || 'Language'}</Text>
-                <View style={styles.card}>
-                    {languages.map((lang, index) => (
-                        <TouchableOpacity
-                            key={lang.code}
-                            style={[
-                                styles.row,
-                                index !== languages.length - 1 && styles.borderBottom,
-                                i18n.language === lang.code && styles.selectedRow
-                            ]}
-                            onPress={() => toggleLanguage(lang.code)}
-                        >
-                            <Text style={styles.rowText}>{lang.flag} {lang.label}</Text>
-                            {i18n.language === lang.code && <Text style={styles.checkIcon}>✓</Text>}
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            </View>
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>{t('settings.theme') || 'Theme'}</Text>
@@ -139,5 +124,26 @@ const createStyles = (theme: Theme) =>
             color: theme.colors.primary,
             fontWeight: 'bold',
             fontSize: 18,
+        },
+        customThemeContainer: {
+            marginTop: theme.spacing.m,
+        },
+        subTitle: {
+            ...theme.textVariants.body,
+            fontWeight: '600',
+            color: theme.colors.text,
+            marginBottom: theme.spacing.s,
+            marginTop: theme.spacing.m,
+        },
+        colorPickerRow: {
+            padding: theme.spacing.m,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.colors.border,
+        },
+        colorPreview: {
+            width: '100%',
+            height: 4,
+            borderRadius: 2,
+            marginTop: -theme.spacing.s,
         },
     });

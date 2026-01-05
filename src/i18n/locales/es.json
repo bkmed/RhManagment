@@ -177,6 +177,7 @@
     "namePlaceholder": "ej. Acme Corp",
     "phone": "Teléfono",
     "phonePlaceholder": "ej. +1 234 567 890",
+    "select": "Seleccionar Empresa",
     "selectCompany": "Seleccionar Empresa",
     "title": "Empresas"
   },
@@ -464,18 +465,9 @@
     "notifications": "Notificaciones",
     "orgChart": "Organigrama",
     "payroll": "Nómina",
-    "personalInfo": "Información Personal",
     "profile": "Perfil",
     "services": "Servicios",
     "settings": "Ajustes",
-    "sections": {
-      "analytics": "Analítica",
-      "communication": "Comunicación",
-      "general": "General",
-      "management": "Gestión",
-      "organization": "Organización",
-      "personal": "Personal"
-    },
     "teams": "Equipos"
   },
   "notifications": {
@@ -666,12 +658,12 @@
     "rh": "RRHH"
   },
   "sections": {
-    "analytics": "",
-    "communication": "",
-    "general": "",
-    "management": "",
-    "organization": "",
-    "personal": ""
+    "analytics": "Analítica",
+    "communication": "Comunicación",
+    "general": "General",
+    "management": "Gestión",
+    "organization": "Organización",
+    "personal": "Personal"
   },
   "services": {
     "add": "Añadir Servicio",

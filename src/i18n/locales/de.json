@@ -177,6 +177,7 @@
     "namePlaceholder": "z.B. Acme Corp",
     "phone": "Telefon",
     "phonePlaceholder": "z.B. +49 30 123456",
+    "select": "Unternehmen auswählen",
     "selectCompany": "Unternehmen auswählen",
     "title": "Unternehmen"
   },
@@ -468,14 +469,7 @@
     "profile": "Profil",
     "services": "Dienste",
     "settings": "Einstellungen",
-    "sections": {
-      "analytics": "",
-      "communication": "",
-      "general": "",
-      "management": "",
-      "organization": "",
-      "personal": ""
-    },
+    "settings": "Einstellungen",
     "teams": "Teams"
   },
   "notifications": {
@@ -664,14 +658,6 @@
     "chef_dequipe": "Teamleiter",
     "employee": "Mitarbeiter",
     "rh": "Personalwesen (HR)"
-  },
-  "sections": {
-    "analytics": "Analytik",
-    "communication": "Kommunikation",
-    "general": "Allgemein",
-    "management": "Verwaltung",
-    "organization": "Organisation",
-    "personal": "Persönlich"
   },
   "services": {
     "add": "Dienst hinzufügen",

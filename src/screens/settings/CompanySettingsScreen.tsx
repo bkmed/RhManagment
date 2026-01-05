@@ -136,10 +136,17 @@ export const CompanySettingsScreen = ({ navigation }: any) => {
                                 <Text style={styles.arrow}>›</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={styles.menuRow}
+                                style={[styles.menuRow, styles.borderBottom]}
                                 onPress={() => navigateTo('Services')}
                             >
                                 <Text style={styles.menuText}>⚙️ {t('navigation.services')}</Text>
+                                <Text style={styles.arrow}>›</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.menuRow}
+                                onPress={() => navigateTo('ManageCurrencies')}
+                            >
+                                <Text style={styles.menuText}>💰 {t('payroll.manageCurrencies')}</Text>
                                 <Text style={styles.arrow}>›</Text>
                             </TouchableOpacity>
                         </View>
