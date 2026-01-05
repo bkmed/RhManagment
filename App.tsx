@@ -72,7 +72,9 @@ const App = () => {
       try {
         // Initialize services
         const { servicesDb } = await import('./src/database/servicesDb');
+        const { devicesDb } = await import('./src/database/devicesDb');
         await servicesDb.init();
+        await devicesDb.init();
 
         // Migrate data first
         await migrateData();

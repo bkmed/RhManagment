@@ -25,8 +25,8 @@ export const MyDevicesScreen = () => {
 
     const devices = useSelector(selectAllDevices);
     const myDevices = useMemo(() =>
-        devices.filter((d: Device) => d.assignedToId === user?.id),
-        [devices, user?.id]
+        devices.filter((d: Device) => d.assignedToId === user?.employeeId),
+        [devices, user?.employeeId]
     );
 
     const handleReportStatus = (id: number, currentCondition: 'working' | 'faulty') => {

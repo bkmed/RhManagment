@@ -76,8 +76,8 @@ export const ProfileScreen = ({ navigation }: any) => {
   const companies = useSelector(selectAllCompanies);
 
   const myDevicesCount = useMemo(() => {
-    return devices.filter((d: Device) => d.assignedToId === user?.id).length;
-  }, [devices, user?.id]);
+    return devices.filter((d: Device) => d.assignedToId === user?.employeeId).length;
+  }, [devices, user?.employeeId]);
 
   const userTeam = useMemo(() => {
     return teams.find(t => t.id === user?.teamId);
