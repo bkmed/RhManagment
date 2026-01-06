@@ -124,3 +124,5 @@ update all mocked data to have a good exemple
  90 user 8 equipe 2 entreprise, ou chauqe 4 equipe on une seul entreprise et un seul rh et chaque equipe un seul che equipe
  test cypress 
  test detox et cree mois un index template pour voir leur resultat et capture si defallant
+
+ add a commercial .md of it
