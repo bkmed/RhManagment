@@ -92,8 +92,15 @@ const AuthStack = () => {
 
 const PayrollStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="PayrollList"
         component={PayrollListScreen}
@@ -115,8 +122,15 @@ const PayrollStack = () => {
 
 const LeavesStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="LeaveList"
         component={LeaveListScreen}
@@ -148,8 +162,15 @@ const LeavesStack = () => {
 
 const IllnessesStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="IllnessList"
         component={IllnessListScreen}
@@ -176,8 +197,15 @@ const IllnessesStack = () => {
 
 const EmployeesStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="EmployeeList"
         component={EmployeeListScreen}
@@ -199,8 +227,15 @@ const EmployeesStack = () => {
 
 const AnalyticsStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="AnalyticsMain"
         component={AnalyticsScreen}
@@ -217,8 +252,15 @@ const AnalyticsStack = () => {
 
 const ClaimsStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="ClaimsList"
         component={ClaimsListScreen}
@@ -240,8 +282,15 @@ const ClaimsStack = () => {
 
 const InvoicesStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="InvoiceList"
         component={InvoiceListScreen}
@@ -258,8 +307,15 @@ const InvoicesStack = () => {
 
 const CompanyStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="CompanyList"
         component={CompanyListScreen}
@@ -281,8 +337,15 @@ const CompanyStack = () => {
 
 const TeamStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="TeamList"
         component={TeamListScreen}
@@ -299,8 +362,15 @@ const TeamStack = () => {
 
 const DepartmentStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="DepartmentList"
         component={DepartmentListScreen}
@@ -317,8 +387,15 @@ const DepartmentStack = () => {
 
 const ServiceStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="ServiceList"
         component={ServiceListScreen}
@@ -334,8 +411,15 @@ const ServiceStack = () => {
 };
 const SettingsStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen
         name="PersonalSettings"
         component={PersonalSettingsScreen}
@@ -362,8 +446,16 @@ const SettingsStack = () => {
 
 const ProfileStack = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+        headerTitleStyle: { color: theme.colors.text, fontWeight: '600' },
+      }}
+    >
       <Stack.Screen name="ProfileMain" component={ProfileScreen} />
       <Stack.Screen
         name="CareerHub"
@@ -657,9 +749,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                         : 'transparent',
                       ...(isFocused &&
                         themeMode === 'premium' && {
-                          borderWidth: 1,
-                          borderColor: theme.colors.primary,
-                        }),
+                        borderWidth: 1,
+                        borderColor: theme.colors.primary,
+                      }),
                     }}
                     onPress={() => navigation.navigate(item.key)}
                   >
@@ -927,7 +1019,7 @@ const WebNavigator = () => {
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
-      {}
+      { }
       <View
         style={
           [
@@ -941,7 +1033,7 @@ const WebNavigator = () => {
           ] as any
         }
       >
-        {}
+        { }
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (

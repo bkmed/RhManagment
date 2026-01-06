@@ -246,6 +246,38 @@ class PermissionsService {
     return this.mapNativePermissionStatus(result);
   }
 
+  /**
+   * Check storage permission status
+   */
+  async checkStoragePermission(): Promise<PermissionStatus> {
+    if (Platform.OS === 'web') {
+      return 'granted'; // Browsers handle storage differently
+    }
+
+    const permission =
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.PHOTO_LIBRARY // On iOS, it's often Photo Library for general "Documents/Media"
+        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+    const result = await check(permission);
+    return this.mapNativePermissionStatus(result);
+  }
+
+  /**
+   * Request storage permission
+   */
+  async requestStoragePermission(): Promise<PermissionStatus> {
+    if (Platform.OS === 'web') {
+      return 'granted';
+    }
+
+    const permission =
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.PHOTO_LIBRARY
+        : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE;
+    const result = await request(permission);
+    return this.mapNativePermissionStatus(result);
+  }
+
   private mapWebPermissionState(state: PermissionState): PermissionStatus {
     switch (state) {
       case 'granted':

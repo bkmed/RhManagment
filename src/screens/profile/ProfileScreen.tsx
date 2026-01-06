@@ -100,6 +100,8 @@ export const ProfileScreen = ({ navigation }: any) => {
     useState<PermissionStatus>('unavailable');
   const [calendarPermission, setCalendarPermission] =
     useState<PermissionStatus>('unavailable');
+  const [storagePermission, setStoragePermission] =
+    useState<PermissionStatus>('unavailable');
 
   useEffect(() => {
     checkPermissions();
@@ -109,9 +111,11 @@ export const ProfileScreen = ({ navigation }: any) => {
     const camera = await permissionsService.checkCameraPermission();
     const notification = await permissionsService.checkNotificationPermission();
     const calendar = await permissionsService.checkCalendarPermission();
+    const storage = await permissionsService.checkStoragePermission();
     setCameraPermission(camera);
     setNotificationPermission(notification);
     setCalendarPermission(calendar);
+    setStoragePermission(storage);
   };
 
   const handlePickPhoto = async () => {
@@ -269,24 +273,24 @@ export const ProfileScreen = ({ navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-              name: emergencyName,
-              phone: emergencyPhone,
-              relationship: emergencyRelationship,
-            }
+            name: emergencyName,
+            phone: emergencyPhone,
+            relationship: emergencyRelationship,
+          }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-                linkedin,
-                skype,
-                website,
-              }
+              linkedin,
+              skype,
+              website,
+            }
             : undefined,
         skills: skills
           ? skills
-              .split(',')
-              .map(s => s.trim())
-              .filter(s => s)
+            .split(',')
+            .map(s => s.trim())
+            .filter(s => s)
           : undefined,
       });
       setIsEditing(false);
@@ -312,12 +316,42 @@ export const ProfileScreen = ({ navigation }: any) => {
   };
 
   const handleNotificationPermission = async (value: boolean) => {
-    if (!value) {
+    if (!user) return;
+
+    if (value) {
+      const status = await permissionsService.requestNotificationPermission();
+      setNotificationPermission(status);
+      if (status !== 'granted' && Platform.OS !== 'web') return;
+    } else {
       setNotificationPermission('denied');
-      return;
     }
-    const status = await permissionsService.requestNotificationPermission();
-    setNotificationPermission(status);
+
+    // Persist preference
+    try {
+      await updateProfile({
+        notificationPreferences: {
+          push: value,
+          email: user.notificationPreferences?.email ?? false,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to update push preference:', error);
+    }
+  };
+
+  const handleEmailNotificationToggle = async (value: boolean) => {
+    if (!user) return;
+
+    try {
+      await updateProfile({
+        notificationPreferences: {
+          push: user.notificationPreferences?.push ?? true,
+          email: value,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to update email preference:', error);
+    }
   };
 
   const handleCalendarPermission = async (value: boolean) => {
@@ -327,6 +361,15 @@ export const ProfileScreen = ({ navigation }: any) => {
     }
     const status = await permissionsService.requestCalendarPermission();
     setCalendarPermission(status);
+  };
+
+  const handleStoragePermission = async (value: boolean) => {
+    if (!value) {
+      setStoragePermission('denied');
+      return;
+    }
+    const status = await permissionsService.requestStoragePermission();
+    setStoragePermission(status);
   };
 
   const handleLogout = async () => {
@@ -730,8 +773,8 @@ export const ProfileScreen = ({ navigation }: any) => {
                       <Text style={styles.tagText}>{skill}</Text>
                     </View>
                   )) || (
-                    <Text style={styles.emptyText}>{t('common.noData')}</Text>
-                  )}
+                      <Text style={styles.emptyText}>{t('common.noData')}</Text>
+                    )}
                 </View>
 
                 <View style={styles.divider} />
@@ -782,9 +825,29 @@ export const ProfileScreen = ({ navigation }: any) => {
                     onValueChange: handleCameraPermission,
                   },
                   {
-                    label: t('profile.notifications'),
-                    status: notificationPermission,
+                    label: t('profile.documents') || 'Documents',
+                    status: storagePermission,
+                    onValueChange: handleStoragePermission,
+                  },
+                  {
+                    label:
+                      t('settings.pushNotifications') || 'Push Notifications',
+                    status:
+                      user?.notificationPreferences?.push &&
+                        notificationPermission === 'granted'
+                        ? 'granted'
+                        : notificationPermission,
                     onValueChange: handleNotificationPermission,
+                    value: user?.notificationPreferences?.push ?? true,
+                  },
+                  {
+                    label:
+                      t('settings.emailNotifications') || 'Email Notifications',
+                    status: (user?.notificationPreferences?.email
+                      ? 'granted'
+                      : 'denied') as PermissionStatus,
+                    onValueChange: handleEmailNotificationToggle,
+                    value: user?.notificationPreferences?.email ?? false,
                   },
                   {
                     label: t('profile.calendar'),
@@ -804,17 +867,19 @@ export const ProfileScreen = ({ navigation }: any) => {
                         {getPermissionStatusText(perm.status)}
                       </Text>
                     </View>
-                    {Platform.OS !== 'web' && perm.status !== 'unavailable' && (
-                      <Switch
-                        value={perm.status === 'granted'}
-                        onValueChange={perm.onValueChange}
-                        trackColor={{
-                          false: theme.colors.border,
-                          true: theme.colors.primary,
-                        }}
-                        thumbColor={theme.colors.surface}
-                      />
-                    )}
+                    <Switch
+                      value={
+                        perm.value !== undefined
+                          ? perm.value
+                          : perm.status === 'granted'
+                      }
+                      onValueChange={perm.onValueChange}
+                      trackColor={{
+                        false: theme.colors.border,
+                        true: theme.colors.primary,
+                      }}
+                      thumbColor={theme.colors.surface}
+                    />
                   </View>
                 ))}
               </View>

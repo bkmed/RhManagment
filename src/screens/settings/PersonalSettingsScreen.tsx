@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
-  Switch,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
@@ -65,38 +64,6 @@ export const PersonalSettingsScreen = ({ navigation }: any) => {
               <Text style={styles.menuItemArrow}>›</Text>
             </TouchableOpacity>
           )}
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          {t('settings.notifications') || 'Notifications'}
-        </Text>
-        <View style={styles.card}>
-          <View style={[styles.row, styles.borderBottom]}>
-            <Text style={styles.rowText}>
-              {t('settings.pushNotifications') || 'Push Notifications'}
-            </Text>
-            <Switch
-              trackColor={{
-                false: theme.colors.border,
-                true: theme.colors.primary,
-              }}
-              value={true}
-            />
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.rowText}>
-              {t('settings.emailNotifications') || 'Email Notifications'}
-            </Text>
-            <Switch
-              trackColor={{
-                false: theme.colors.border,
-                true: theme.colors.primary,
-              }}
-              value={false}
-            />
-          </View>
         </View>
       </View>
     </ScrollView>

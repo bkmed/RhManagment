@@ -41,6 +41,10 @@ export interface User {
   status?: 'active' | 'pending' | 'rejected';
   birthDate?: string;
   backgroundPhotoUri?: string;
+  notificationPreferences?: {
+    push: boolean;
+    email: boolean;
+  };
 }
 
 export const authService = {
@@ -64,6 +68,7 @@ export const authService = {
           statePaidLeaves: 25,
           country: 'France',
           hiringDate: '2018-01-15',
+          notificationPreferences: { push: true, email: true },
         },
       },
       'hr@demo.com': {
@@ -78,6 +83,7 @@ export const authService = {
           statePaidLeaves: 30,
           country: 'Tunisia',
           hiringDate: '2019-03-10',
+          notificationPreferences: { push: true, email: false },
         },
       },
       'chef@demo.com': {
@@ -94,6 +100,7 @@ export const authService = {
           statePaidLeaves: 30,
           country: 'Tunisia',
           hiringDate: '2020-06-01',
+          notificationPreferences: { push: true, email: true },
         },
       },
       'employee@demo.com': {
@@ -110,6 +117,7 @@ export const authService = {
           statePaidLeaves: 30,
           country: 'Tunisia',
           hiringDate: '2021-09-20',
+          notificationPreferences: { push: true, email: false },
         },
       },
     };
@@ -147,6 +155,7 @@ export const authService = {
         name: 'Test User',
         email: 'test@test.com',
         role: 'admin',
+        notificationPreferences: { push: true, email: true },
       };
       storageService.setString(AUTH_KEY, JSON.stringify(testUser));
       return testUser;
@@ -169,6 +178,10 @@ export const authService = {
         photoUri: user.photoUri,
         department: user.department,
         employeeId: user.employeeId,
+        notificationPreferences: user.notificationPreferences || {
+          push: true,
+          email: true,
+        },
       };
       storageService.setString(AUTH_KEY, JSON.stringify(sessionUser));
       return sessionUser;
@@ -215,6 +228,7 @@ export const authService = {
       email: newUser.email,
       role: newUser.role,
       country: newUser.country,
+      notificationPreferences: { push: true, email: true },
       // We pass status here if User interface supports it, otherwise it's just in the DB
     };
     storageService.setString(AUTH_KEY, JSON.stringify(sessionUser));
