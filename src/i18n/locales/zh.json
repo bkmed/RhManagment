@@ -391,7 +391,8 @@
         "saveError": "保存记录失败",
         "takePhoto": "拍照",
         "title": "病假",
-        "updateButton": "更新疾病记录"
+        "updateButton": "更新疾病记录",
+        "collisionError": "该员工在此期间已有病假记录。"
     },
     "invoices": {
         "add": "添加发票",
@@ -491,7 +492,8 @@
         "titlePlaceholder": "例如 暑假",
         "upcoming": "即将到来",
         "update": "更新",
-        "updateSuccess": "休假申请更新成功"
+        "updateSuccess": "休假申请更新成功",
+        "collisionError": "该员工在此期间已安排了休假或授权。"
     },
     "login": {
         "admin": "管理员",

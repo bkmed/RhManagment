@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
+import { Leave } from '../../database/schema';
 import { notificationService } from '../../services/notificationService';
 import { emailService } from '../../services/emailService';
 import { storageService } from '../../services/storage';
@@ -26,19 +27,29 @@ import { useSelector } from 'react-redux';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
+import { selectAllLeaves } from '../../store/slices/leavesSlice';
 import { RootState } from '../../store';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp, ParamListBase } from '@react-navigation/native';
 
-export const AddLeaveScreen = ({ navigation, route }: any) => {
+export const AddLeaveScreen = ({
+  navigation,
+  route
+}: {
+  navigation: NativeStackNavigationProp<ParamListBase>;
+  route: RouteProp<ParamListBase>;
+}) => {
   const { theme } = useTheme();
   const { showToast } = useToast();
   const { t } = useTranslation();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const leaveId = route?.params?.leaveId;
+  const params = route.params as { leaveId?: string; employeeName?: string; employeeId?: number } | undefined;
+  const leaveId = params?.leaveId;
   const isEdit = !!leaveId;
-  const initialEmployeeName = route?.params?.employeeName || '';
-  const initialEmployeeId = route?.params?.employeeId;
+  const initialEmployeeName = params?.employeeName || '';
+  const initialEmployeeId = params?.employeeId;
 
   const [title, setTitle] = useState('');
   const [employeeName, setEmployeeName] = useState(initialEmployeeName);
@@ -57,6 +68,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const allCompanies = useSelector((state: RootState) => selectAllCompanies(state));
   const allTeams = useSelector((state: RootState) => selectAllTeams(state));
   const allEmployees = useSelector((state: RootState) => selectAllEmployees(state));
+  const allLeaves = useSelector((state: RootState) => selectAllLeaves(state));
 
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [teamId, setTeamId] = useState<number | null>(null);
@@ -113,7 +125,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
   const loadLeave = async () => {
     if (!leaveId) return;
     try {
-      const leave = await leavesDb.getById(leaveId);
+      const leave = await leavesDb.getById(Number(params?.leaveId));
       if (leave) {
         setTitle(leave.title || '');
         setEmployeeName(leave.employeeName || '');
@@ -127,7 +139,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
         setStatus(leave.status || 'pending');
         setDepartment(leave.department || '');
       }
-    } catch (error) {
+    } catch {
       notificationService.showAlert(t('common.error'), t('leaves.loadError'));
     }
   };
@@ -173,6 +185,27 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
       return;
     }
 
+    // Collision Check
+    const finalStartDate = (type === 'permission' || type === 'authorization') ? permissionStart! : startDate!;
+    const finalEndDate = (type === 'permission' || type === 'authorization') ? permissionEnd! : endDate!;
+
+    const hasCollision = allLeaves.some((l: Leave) => {
+      if (l.id === leaveId) return false; // Skip the same leave when editing
+      if (l.employeeId !== (user?.role === 'employee' ? user?.employeeId : employeeId)) return false;
+      if (l.status === 'declined') return false;
+
+      const lStart = new Date(l.startDate || l.dateTime);
+      const lEnd = new Date(l.endDate || l.dateTime);
+
+      // Overlap check: (start1 < end2) and (end1 > start2)
+      return (finalStartDate < lEnd) && (finalEndDate > lStart);
+    });
+
+    if (hasCollision) {
+      notificationService.showAlert(t('common.error'), t('leaves.collisionError'));
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -196,8 +229,8 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
 
       let id: number;
       if (isEdit && leaveId) {
-        await leavesDb.update(leaveId, leaveData);
-        id = leaveId;
+        await leavesDb.update(Number(leaveId), leaveData);
+        id = Number(leaveId);
       } else {
         id = await leavesDb.add(leaveData);
 
@@ -244,7 +277,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
           if (navigation && navigation.canGoBack()) {
             navigation.goBack();
           } else {
-            navigation.navigate('Leaves' as any);
+            navigation.navigate('Leaves');
           }
         }
       }, 100);
@@ -274,7 +307,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
               ].map((item) => (
                 <TouchableOpacity
                   key={item.value}
-                  onPress={() => setType(item.value as any)}
+                  onPress={() => setType(item.value as Leave['type'])}
                   style={[styles.typeChip, type === item.value && styles.activeTypeChip]}
                 >
                   <Text style={[styles.typeChipText, type === item.value && styles.activeTypeChipText]}>
@@ -360,7 +393,7 @@ export const AddLeaveScreen = ({ navigation, route }: any) => {
                     { label: t('leaveStatus.declined'), value: 'declined' },
                   ]}
                   value={status}
-                  onSelect={(val: any) => setStatus(val)}
+                  onSelect={(val: string) => setStatus(val as Leave['status'])}
                 />
               </View>
             )}

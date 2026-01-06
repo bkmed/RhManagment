@@ -391,7 +391,8 @@
     "saveError": "Fehler beim Speichern des Eintrags",
     "takePhoto": "Foto aufnehmen",
     "title": "Krankheit",
-    "updateButton": "Krankmeldung aktualisieren"
+    "updateButton": "Krankmeldung aktualisieren",
+    "collisionError": "Dieser Mitarbeiter hat in diesem Zeitraum bereits einen Krankheitsfall."
   },
   "invoices": {
     "add": "Rechnung hinzufügen",
@@ -491,7 +492,8 @@
     "titlePlaceholder": "z.B. Sommerurlaub",
     "upcoming": "Anstehend",
     "update": "Aktualisieren",
-    "updateSuccess": "Urlaubsantrag erfolgreich aktualisiert"
+    "updateSuccess": "Urlaubsantrag erfolgreich aktualisiert",
+    "collisionError": "Dieser Mitarbeiter hat in diesem Zeitraum bereits einen Urlaub oder eine Genehmigung geplant."
   },
   "login": {
     "admin": "Admin",

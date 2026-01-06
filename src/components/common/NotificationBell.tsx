@@ -6,7 +6,6 @@ import {
     StyleSheet,
     FlatList,
     Modal,
-    Platform,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';

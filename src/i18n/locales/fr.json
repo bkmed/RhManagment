@@ -350,6 +350,7 @@
     "hrAdmin": "Administration RH"
   },
   "illnesses": {
+    "collisionError": "Cet employé a déjà un dossier de maladie pendant cette période.",
     "add": "Ajouter une maladie",
     "allIllnesses": "Toutes les maladies",
     "myIllnesses": "Mes maladies",
@@ -460,6 +461,7 @@
   },
   "leaves": {
     "add": "Ajouter un congé",
+    "collisionError": "Cet employé a déjà un congé ou une autorisation prévu pendant cette période.",
     "addFirst": "Appuyez sur + pour planifier un congé",
     "approvals": "Approbations en attente",
     "approve": "Approuver",

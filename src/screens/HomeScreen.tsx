@@ -24,7 +24,26 @@ import { WebNavigationContext } from '../navigation/WebNavigationContext';
 
 // ======= Helper Components =======
 
-const StatCard = ({ title, value, icon, color, onPress, styles }: any) => {
+interface HomeSummary {
+  payroll: number;
+  upcomingLeaves: number;
+  expiringIllness: number;
+  totalEmployees: number;
+  pendingLeaves: number;
+  pendingClaims: number;
+  totalPayroll: number;
+}
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: string;
+  color: string;
+  onPress: () => void;
+  styles: any;
+}
+
+const StatCard = ({ title, value, icon, color, onPress, styles }: StatCardProps) => {
   return (
     <TouchableOpacity
       style={[styles.statCard, { backgroundColor: color }]}
@@ -41,7 +60,16 @@ const StatCard = ({ title, value, icon, color, onPress, styles }: any) => {
   );
 };
 
-const ActivityItem = ({ icon, title, subtitle, time, theme, styles }: any) => {
+interface ActivityItemProps {
+  icon: string;
+  title: string;
+  subtitle: string;
+  time: string;
+  theme: Theme;
+  styles: any;
+}
+
+const ActivityItem = ({ icon, title, subtitle, time, theme, styles }: ActivityItemProps) => {
   return (
     <View style={[styles.activityItem, { borderBottomColor: theme.colors.border }]}>
       <View style={[styles.activityIconWrapper, { backgroundColor: theme.colors.primary + '15' }]}>
@@ -58,7 +86,15 @@ const ActivityItem = ({ icon, title, subtitle, time, theme, styles }: any) => {
 
 // ======= Role Dashboards =======
 
-const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme }: any) => {
+interface AdminDashboardProps {
+  summary: HomeSummary;
+  recentActivity: any[];
+  navigateToTab: (tab: string, screen?: string) => void;
+  styles: any;
+  theme: Theme;
+}
+
+const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme }: AdminDashboardProps) => {
   const { t } = useTranslation();
 
   return (
@@ -133,7 +169,7 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme 
           style={styles.actionButton}
           onPress={() => navigateToTab('Leaves', 'TeamVacations')}
         >
-          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.info + '15' }]}>
+          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.accent + '15' }]}>
             <Text style={styles.actionIcon}>🏖️</Text>
           </View>
           <Text style={styles.actionLabel}>{t('navigation.leaves')}</Text>
@@ -164,6 +200,16 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme 
   );
 };
 
+interface EmployeeDashboardProps {
+  user: any;
+  summary: HomeSummary;
+  navigateToTab: (tab: string, screen?: string) => void;
+  hasNotificationPermission: boolean;
+  handleEnableNotifications: () => Promise<void>;
+  styles: any;
+  theme: Theme;
+}
+
 const EmployeeDashboard = ({
   user,
   summary,
@@ -172,7 +218,7 @@ const EmployeeDashboard = ({
   handleEnableNotifications,
   styles,
   theme,
-}: any) => {
+}: EmployeeDashboardProps) => {
   const { t } = useTranslation();
 
   return (
@@ -333,7 +379,7 @@ export const HomeScreen = () => {
   const { setActiveTab } = useContext(WebNavigationContext) as any;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [summary, setSummary] = useState<any>({
+  const [summary, setSummary] = useState<HomeSummary>({
     payroll: 0,
     upcomingLeaves: 0,
     expiringIllness: 0,
@@ -360,12 +406,13 @@ export const HomeScreen = () => {
         const pendingLeaves = allLeaves.filter(l => l.status === 'pending');
         const pendingClaims = allClaims.filter(c => c.status === 'pending');
 
-        setSummary({
+        setSummary(prev => ({
+          ...prev,
           totalEmployees: employees.length,
           pendingLeaves: pendingLeaves.length,
           pendingClaims: pendingClaims.length,
           totalPayroll: allPayroll.length,
-        });
+        }));
 
         const activity = [
           ...pendingLeaves.map(l => ({
@@ -409,11 +456,12 @@ export const HomeScreen = () => {
           expiringIllnesses = expiringIllnesses.filter(i => i.employeeId === user.employeeId);
         }
 
-        setSummary({
+        setSummary(prev => ({
+          ...prev,
           payroll: allPayroll.length,
           upcomingLeaves: upcomingLeaves.length,
           expiringIllness: expiringIllnesses.length,
-        });
+        }));
       }
 
       const status = await permissionsService.checkNotificationPermission();

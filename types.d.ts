@@ -6,7 +6,7 @@ declare global {
         localStorage: Storage;
     }
 
-    var window: Window & typeof globalThis;
+    let window: Window & typeof globalThis;
 }
 
 export { };

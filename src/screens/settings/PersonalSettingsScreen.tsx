@@ -102,19 +102,6 @@ export const PersonalSettingsScreen = ({ navigation }: any) => {
                     </View>
                 </View>
             </View>
-
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Debug</Text>
-                <View style={styles.card}>
-                    <TouchableOpacity
-                        style={styles.row}
-                        onPress={handleTestCrash}
-                    >
-                        <Text style={[styles.rowText, { color: '#FF5630' }]}>Trigger Test Crash</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
         </ScrollView>
     );
 };

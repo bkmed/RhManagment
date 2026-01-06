@@ -350,6 +350,7 @@
     "hrAdmin": "HR Administration"
   },
   "illnesses": {
+    "collisionError": "This employee already has an illness record during this period.",
     "add": "Add Illness",
     "allIllnesses": "All Illnesses",
     "myIllnesses": "My Illnesses",
@@ -460,6 +461,7 @@
   },
   "leaves": {
     "add": "Add Leave",
+    "collisionError": "This employee already has a leave or authorization scheduled during this period.",
     "addFirst": "Tap + to schedule a leave",
     "approvals": "Pending Approvals",
     "approve": "Approve",

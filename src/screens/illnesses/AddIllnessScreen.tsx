@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import {
@@ -11,7 +10,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Switch,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -27,20 +25,30 @@ import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { RootState } from '../../store';
 import { Dropdown } from '../../components/Dropdown';
+import { selectAllIllnesses } from '../../store/slices/illnessesSlice';
+import { Illness } from '../../database/schema';
 import { selectAllServices } from '../../store/slices/servicesSlice';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp, ParamListBase } from '@react-navigation/native';
 
-export const AddIllnessScreen = ({ navigation, route }: any) => {
+export const AddIllnessScreen = ({
+  navigation,
+  route
+}: {
+  navigation: NativeStackNavigationProp<ParamListBase>;
+  route: RouteProp<ParamListBase>;
+}) => {
   const { theme } = useTheme();
-  const { showToast } = useToast();
   const { showModal } = useModal();
   const { t } = useTranslation();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const illnessId = route?.params?.illnessId;
+  const params = route.params as { illnessId?: string; employeeName?: string; employeeId?: number } | undefined;
+  const illnessId = params?.illnessId;
   const isEdit = !!illnessId;
-  const initialEmployeeName = route?.params?.employeeName || '';
-  const initialEmployeeId = route?.params?.employeeId;
+  const initialEmployeeName = params?.employeeName || '';
+  const initialEmployeeId = params?.employeeId;
 
   const [payrollName, setPayrollName] = useState('');
   const [employeeName, setEmployeeName] = useState(initialEmployeeName);
@@ -57,6 +65,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
   const teams = useSelector((state: RootState) => selectAllTeams(state));
   const employees = useSelector((state: RootState) => selectAllEmployees(state));
   const services = useSelector((state: RootState) => selectAllServices(state));
+  const allIllnesses = useSelector((state: RootState) => selectAllIllnesses(state));
 
   const [companyId, setCompanyId] = useState<number | undefined>(undefined);
   const [teamId, setTeamId] = useState<number | undefined>(undefined);
@@ -85,7 +94,7 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
   const loadIllness = async () => {
     if (!illnessId) return;
     try {
-      const illness = await illnessesDb.getById(illnessId);
+      const illness = await illnessesDb.getById(Number(illnessId));
       if (illness) {
         setPayrollName(illness.payrollName || '');
         setEmployeeName(illness.employeeName || '');
@@ -96,24 +105,26 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
         setDepartment(illness.department || '');
         setLocation(illness.location || '');
       }
-    } catch (error) {
+    } catch {
       notificationService.showAlert(t('common.error'), t('illnesses.loadError'));
     }
   };
 
   const handleTakePhoto = async () => {
     if (Platform.OS === 'web') {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       const input = (window as any).document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
       input.onchange = (e: any) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (file) {
           const reader = new FileReader();
           reader.onload = (event: any) => setPhotoUri(event.target.result);
           reader.readAsDataURL(file);
         }
       };
+      /* eslint-enable @typescript-eslint/no-explicit-any */
       input.click();
       return;
     }
@@ -159,6 +170,26 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
+    // Collision Check
+    const checkStart = issueDate!;
+    const checkEnd = expiryDate || issueDate!;
+
+    const hasCollision = allIllnesses.some((i: Illness) => {
+      if (i.id === illnessId) return false;
+      if (i.employeeId !== (user?.role === 'employee' ? user?.employeeId : employeeId)) return false;
+
+      const iStart = new Date(i.issueDate);
+      const iEnd = i.expiryDate ? new Date(i.expiryDate) : iStart;
+
+      // Overlap check
+      return (checkStart <= iEnd) && (checkEnd >= iStart);
+    });
+
+    if (hasCollision) {
+      notificationService.showAlert(t('common.error'), t('illnesses.collisionError'));
+      return;
+    }
+
     setLoading(true);
     try {
       const illnessData = {
@@ -177,10 +208,10 @@ export const AddIllnessScreen = ({ navigation, route }: any) => {
 
       let id: number;
       if (isEdit && illnessId) {
-        await illnessesDb.update(illnessId, illnessData as any);
-        id = illnessId;
+        await illnessesDb.update(Number(illnessId), illnessData as Partial<Illness>);
+        id = Number(illnessId);
       } else {
-        id = await illnessesDb.add(illnessData as Omit<any, any>);
+        id = await illnessesDb.add(illnessData as Omit<Illness, 'id'>);
       }
 
       if (expiryDate) {

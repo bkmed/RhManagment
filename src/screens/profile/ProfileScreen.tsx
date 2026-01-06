@@ -7,18 +7,15 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
-  I18nManager,
   Image,
   Dimensions,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import { storageService } from '../../services/storage';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { notificationService } from '../../services/notificationService';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { Dropdown } from '../../components/Dropdown';
 import { AuthInput } from '../../components/auth/AuthInput';
@@ -37,12 +34,11 @@ import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { Device } from '../../database/schema';
 
 const { width } = Dimensions.get('window');
-const isSmallScreen = width < 400;
 
 export const ProfileScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { showModal } = useModal();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
   const { setActiveTab } = React.useContext(WebNavigationContext) as any;
   const styles = useMemo(() => createStyles(theme), [theme]);

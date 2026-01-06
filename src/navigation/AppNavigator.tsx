@@ -1,4 +1,4 @@
-import React, { useState, useMemo, createContext, useRef } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   Platform,
   View,
@@ -33,9 +33,7 @@ import { AddEmployeeScreen } from '../screens/employees/AddEmployeeScreen';
 import { EmployeeDetailsScreen } from '../screens/employees/EmployeeDetailsScreen';
 import { AnalyticsScreen } from '../screens/analytics/AnalyticsScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
-import { ManageServicesScreen } from '../screens/profile/ManageServicesScreen';
 import { ManageCurrenciesScreen } from '../screens/profile/ManageCurrenciesScreen';
-import { ManageDepartmentsScreen } from '../screens/profile/ManageDepartmentsScreen';
 import { MyTeamScreen } from '../screens/teams/MyTeamScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
@@ -61,7 +59,6 @@ import { OrgChartScreen } from '../screens/companies/OrgChartScreen';
 import { AnnouncementsScreen } from '../screens/home/AnnouncementsScreen';
 import { PersonalSettingsScreen } from '../screens/settings/PersonalSettingsScreen';
 import { CompanySettingsScreen } from '../screens/settings/CompanySettingsScreen';
-import { ChatScreen } from '../screens/home/ChatScreen';
 import { CompanyChatScreen } from '../screens/chat/CompanyChatScreen';
 import { LanguageSelectionScreen } from '../screens/settings/LanguageSelectionScreen';
 import { CustomThemeColorsScreen } from '../screens/settings/CustomThemeColorsScreen';
@@ -80,7 +77,6 @@ import { WebNavigationContext } from './WebNavigationContext';
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => {
-  const { t } = useTranslation();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
@@ -776,6 +772,8 @@ const WebNavigator = () => {
           return <ManageCurrenciesScreen />;
         if (subScreen === 'MyTeam')
           return <MyTeamScreen />;
+        if (subScreen === 'MyDevices')
+          return <MyDevicesScreen />;
         return <ProfileStack />;
       default:
         return <HomeStack />;

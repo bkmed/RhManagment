@@ -391,7 +391,8 @@
     "saveError": "Error al guardar el registro",
     "takePhoto": "Tomar foto",
     "title": "Enfermedad",
-    "updateButton": "Actualizar enfermedad"
+    "updateButton": "Actualizar enfermedad",
+    "collisionError": "Este empleado ya tiene un registro de enfermedad durante este período."
   },
   "invoices": {
     "add": "Añadir factura",
@@ -491,7 +492,8 @@
     "titlePlaceholder": "ej. Vacaciones de verano",
     "upcoming": "Próximas",
     "update": "Actualizar",
-    "updateSuccess": "Solicitud de vacaciones actualizada con éxito"
+    "updateSuccess": "Solicitud de vacaciones actualizada con éxito",
+    "collisionError": "Este empleado ya tiene una vacación o autorización programada durante este período."
   },
   "login": {
     "admin": "Admin",

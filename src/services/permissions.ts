@@ -1,4 +1,4 @@
-import { Platform, Linking } from 'react-native';
+import { Platform } from 'react-native';
 import { PERMISSIONS, request, check, RESULTS, openSettings } from 'react-native-permissions';
 import notifee, { AuthorizationStatus } from '@notifee/react-native';
 import { notificationService } from './notificationService';
@@ -7,7 +7,7 @@ import { notificationService } from './notificationService';
 declare global {
     interface Navigator {
         permissions?: {
-            query(permissionDesc: { name: string }): Promise<{ state: string }>;
+            query(permissionDesc: { name: PermissionName }): Promise<{ state: PermissionState }>;
         };
         mediaDevices?: {
             getUserMedia(constraints: { video?: boolean; audio?: boolean }): Promise<MediaStream>;
@@ -48,26 +48,22 @@ class PermissionsService {
      */
     async checkCameraPermission(): Promise<PermissionStatus> {
         if (Platform.OS === 'web') {
-            // Web: Use both MediaDevices API and Permissions API
-            const nav = typeof window !== 'undefined' && (window as any).navigator;
+            const nav = typeof window !== 'undefined' ? (window as unknown as { navigator: Navigator }).navigator : null;
             if (nav?.permissions?.query) {
                 try {
                     const result = await nav.permissions.query({ name: 'camera' });
                     return this.mapWebPermissionState(result.state);
-                } catch (error) {
-                    // Fallback to MediaDevices check if permissions API fails
+                } catch {
                     if (nav.mediaDevices?.getUserMedia) {
-                        return 'denied'; // Can't determine without requesting
+                        return 'denied';
                     }
                 }
             } else if (nav?.mediaDevices?.getUserMedia) {
-                // Browser supports camera but not permissions query
-                return 'denied'; // Need to request to know actual status
+                return 'denied';
             }
             return 'unavailable';
         }
 
-        // Mobile: Use react-native-permissions
         const permission = Platform.OS === 'ios'
             ? PERMISSIONS.IOS.CAMERA
             : PERMISSIONS.ANDROID.CAMERA;
@@ -80,15 +76,15 @@ class PermissionsService {
      */
     async requestCameraPermission(): Promise<PermissionStatus> {
         if (Platform.OS === 'web') {
-            const nav = typeof window !== 'undefined' && (window as any).navigator;
+            const nav = typeof window !== 'undefined' ? (window as unknown as { navigator: Navigator }).navigator : null;
             if (nav?.mediaDevices?.getUserMedia) {
                 try {
                     const stream = await nav.mediaDevices.getUserMedia({ video: true });
-                    // Stop the stream immediately after getting permission
-                    stream.getTracks().forEach((track: any) => track.stop());
+                    stream.getTracks().forEach((track: { stop(): void }) => track.stop());
                     return 'granted';
-                } catch (error: any) {
-                    if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                } catch (error: unknown) {
+                    const err = error as { name: string };
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
                         return 'blocked';
                     }
                     return 'denied';
@@ -97,7 +93,6 @@ class PermissionsService {
             return 'unavailable';
         }
 
-        // Mobile: Request permission
         const permission = Platform.OS === 'ios'
             ? PERMISSIONS.IOS.CAMERA
             : PERMISSIONS.ANDROID.CAMERA;
@@ -110,14 +105,13 @@ class PermissionsService {
      */
     async checkNotificationPermission(): Promise<PermissionStatus> {
         if (Platform.OS === 'web') {
-            // Web: Use Permissions API with fallback to Notification API
             try {
-                const nav = typeof window !== 'undefined' && (window as any).navigator;
+                const nav = typeof window !== 'undefined' ? (window as unknown as { navigator: Navigator }).navigator : null;
                 if (nav?.permissions?.query) {
                     const result = await nav.permissions.query({ name: 'notifications' });
                     return this.mapWebPermissionState(result.state);
                 }
-            } catch (error) {
+            } catch {
                 // Ignore and fall back
             }
 
@@ -130,7 +124,6 @@ class PermissionsService {
             return 'unavailable';
         }
 
-        // Mobile: Notifications are handled by notifee
         const settings = await notifee.getNotificationSettings();
         if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) return 'granted';
         if (settings.authorizationStatus === AuthorizationStatus.DENIED) return 'denied';
@@ -148,14 +141,13 @@ class PermissionsService {
                     if (permission === 'granted') return 'granted';
                     if (permission === 'denied') return 'blocked';
                     return 'denied';
-                } catch (error) {
+                } catch {
                     return 'denied';
                 }
             }
             return 'unavailable';
         }
 
-        // Mobile: handled by notifee
         const settings = await notifee.requestPermission();
         if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) return 'granted';
         if (settings.authorizationStatus === AuthorizationStatus.DENIED) return 'denied';
@@ -167,7 +159,6 @@ class PermissionsService {
      */
     async checkCalendarPermission(): Promise<PermissionStatus> {
         if (Platform.OS === 'web') {
-            // Web: Use localStorage to track calendar permission preference
             if (typeof window !== 'undefined' && window.localStorage) {
                 const permission = localStorage.getItem('calendar-permission');
                 if (permission === 'granted') return 'granted';
@@ -176,7 +167,6 @@ class PermissionsService {
             return 'unavailable';
         }
 
-        // Mobile: Use react-native-permissions
         const permission = Platform.OS === 'ios'
             ? PERMISSIONS.IOS.CALENDARS
             : PERMISSIONS.ANDROID.WRITE_CALENDAR;
@@ -189,19 +179,17 @@ class PermissionsService {
      */
     async requestCalendarPermission(): Promise<PermissionStatus> {
         if (Platform.OS === 'web') {
-            // Web: Store permission preference in localStorage
             if (typeof window !== 'undefined' && window.localStorage) {
                 try {
                     localStorage.setItem('calendar-permission', 'granted');
                     return 'granted';
-                } catch (error) {
+                } catch {
                     return 'denied';
                 }
             }
             return 'unavailable';
         }
 
-        // Mobile: Request permission
         const permission = Platform.OS === 'ios'
             ? PERMISSIONS.IOS.CALENDARS
             : PERMISSIONS.ANDROID.WRITE_CALENDAR;
@@ -209,9 +197,6 @@ class PermissionsService {
         return this.mapNativePermissionStatus(result);
     }
 
-    /**
-     * Map web permission state to our PermissionStatus
-     */
     private mapWebPermissionState(state: PermissionState): PermissionStatus {
         switch (state) {
             case 'granted': return 'granted';
@@ -221,9 +206,6 @@ class PermissionsService {
         }
     }
 
-    /**
-     * Map native permission status to our PermissionStatus
-     */
     private mapNativePermissionStatus(status: string): PermissionStatus {
         switch (status) {
             case RESULTS.GRANTED: return 'granted';
