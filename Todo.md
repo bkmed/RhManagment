@@ -94,3 +94,14 @@ common.invalidAmount missing
 rajouter un message de reausite ou error
 
 review all key in all lang to be same and verify the translation if it is ok in all lang
+
+menu nest pas responsive en hauteur et width aussi in resize
+
+employees.birthDate missing
+employees.countryplaceholder missing
+
+rajouter manage notification ou on peu envoyer une notification a tt les employe dans la meme equipe ou meme entreprise ou all for admin comme la notif explore the new phase
+
+remplace title: 'Welcome to RhManagment!',
+message: 'Explore the new Phase 3 features like Search and Chat.',
+avec un welcome pro in all lang
