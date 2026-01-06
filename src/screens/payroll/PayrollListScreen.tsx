@@ -35,7 +35,7 @@ export const PayrollListScreen = ({ navigation }: any) => {
       if (user?.role === 'employee' && user?.employeeId) {
         data = data.filter(item => item.employeeId === user.employeeId);
       } else if (user?.role === 'chef_dequipe' && user?.department) {
-        // Chef sees payroll for their department (need to join with employee data usually, 
+        // Chef sees payroll for their department (need to join with employee data usually,
         // but for now filtering if payroll itself has department or via external join)
         // Simplified: Chef sees all for now if not filtered by employeeId
       }
@@ -58,11 +58,13 @@ export const PayrollListScreen = ({ navigation }: any) => {
   const filteredPayrollItems = useMemo(() => {
     if (!searchQuery) return payrollItems;
     const lowerQuery = searchQuery.toLowerCase();
-    return payrollItems.filter(
-      item =>
-        item.name.toLowerCase().includes(lowerQuery) ||
-        String(item.amount).toLowerCase().includes(lowerQuery),
-    ).sort((a, b) => a.name.localeCompare(b.name));
+    return payrollItems
+      .filter(
+        item =>
+          item.name.toLowerCase().includes(lowerQuery) ||
+          String(item.amount).toLowerCase().includes(lowerQuery),
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [payrollItems, searchQuery]);
 
   const handlePayrollPress = (payroll: Payroll) => {

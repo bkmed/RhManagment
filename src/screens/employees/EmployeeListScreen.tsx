@@ -40,7 +40,10 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       setEmployees(data);
     } catch (error) {
       console.error('Error loading employees:', error);
-      notificationService.showAlert(t('common.error'), t('employees.loadError'));
+      notificationService.showAlert(
+        t('common.error'),
+        t('employees.loadError'),
+      );
     } finally {
       setLoading(false);
     }
@@ -75,9 +78,7 @@ export const EmployeeListScreen = ({ navigation }: any) => {
         }
       >
         <View style={styles.headerRow}>
-          <Text style={styles.name}>
-            {item.name}
-          </Text>
+          <Text style={styles.name}>{item.name}</Text>
           {item.position && (
             <View style={styles.positionBadge}>
               <Text style={styles.positionText}>

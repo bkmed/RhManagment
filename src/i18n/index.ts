@@ -29,7 +29,7 @@ const languageDetector = {
       callback('en');
     }
   },
-  init: () => { },
+  init: () => {},
   cacheUserLanguage: async (language: string) => {
     try {
       storageService.setString('user-language', language);

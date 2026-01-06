@@ -26,9 +26,12 @@ import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'approved': return '#4CAF50';
-    case 'declined': return '#F44336';
-    default: return '#FF9800';
+    case 'approved':
+      return '#4CAF50';
+    case 'declined':
+      return '#F44336';
+    default:
+      return '#FF9800';
   }
 };
 
@@ -96,14 +99,20 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
       if (employeeData) {
         setEmployee(employeeData);
       } else {
-        notificationService.showAlert(t('common.error'), t('employees.notFound'));
+        notificationService.showAlert(
+          t('common.error'),
+          t('employees.notFound'),
+        );
         navigationBack();
       }
 
       setLeaves(leavesData);
     } catch (error) {
       console.error('Error loading employee details:', error);
-      notificationService.showAlert(t('common.error'), t('employees.loadError'));
+      notificationService.showAlert(
+        t('common.error'),
+        t('employees.loadError'),
+      );
     } finally {
       setLoading(false);
     }
@@ -151,23 +160,26 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
     <View style={styles.leaveCard}>
       <View style={styles.leaveHeader}>
         <Text style={styles.leaveTitle}>{item.title}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + '20' }]}>
-          <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+        <View
+          style={[
+            styles.statusBadge,
+            { backgroundColor: getStatusColor(item.status) + '20' },
+          ]}
+        >
+          <Text
+            style={[styles.statusText, { color: getStatusColor(item.status) }]}
+          >
             {t(`leaveStatus.${item.status}`)}
           </Text>
         </View>
       </View>
       <Text style={styles.leaveDate}>
-        {formatDate(item.dateTime)}
-        {' '}
-        {formatDateTime(item.dateTime)}
+        {formatDate(item.dateTime)} {formatDateTime(item.dateTime)}
       </Text>
       {item.location && (
         <Text style={styles.leaveDetail}>📍 {item.location}</Text>
       )}
-      {item.notes && (
-        <Text style={styles.leaveDetail}>📝 {item.notes}</Text>
-      )}
+      {item.notes && <Text style={styles.leaveDetail}>📝 {item.notes}</Text>}
     </View>
   );
 
@@ -184,18 +196,24 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
           <View style={styles.header}>
             <View style={styles.employeeInfoContainer}>
               {employee.photoUri ? (
-                <Image source={{ uri: employee.photoUri }} style={styles.employeePhoto} />
+                <Image
+                  source={{ uri: employee.photoUri }}
+                  style={styles.employeePhoto}
+                />
               ) : (
-                <View style={[styles.employeePhoto, styles.employeePhotoPlaceholder]}>
+                <View
+                  style={[
+                    styles.employeePhoto,
+                    styles.employeePhotoPlaceholder,
+                  ]}
+                >
                   <Text style={styles.employeePhotoPlaceholderText}>
                     {employee.name.charAt(0)}
                   </Text>
                 </View>
               )}
               <View>
-                <Text style={styles.name}>
-                  {employee.name}
-                </Text>
+                <Text style={styles.name}>{employee.name}</Text>
                 {employee.position && (
                   <Text style={styles.position}>
                     {t(`departments.${employee.position}`, {
@@ -246,7 +264,16 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
               </View>
               <View style={styles.fieldContainer}>
                 <Text style={styles.detailLabel}>{t('employees.gender')}</Text>
-                <Text style={styles.detailValue}>{employee.gender ? t(`employees.gender${employee.gender.charAt(0).toUpperCase() + employee.gender.slice(1)}`) : '-'}</Text>
+                <Text style={styles.detailValue}>
+                  {employee.gender
+                    ? t(
+                        `employees.gender${
+                          employee.gender.charAt(0).toUpperCase() +
+                          employee.gender.slice(1)
+                        }`,
+                      )
+                    : '-'}
+                </Text>
               </View>
             </View>
 
@@ -258,22 +285,36 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
             <View style={styles.divider} />
 
             {/* Emergency Contact Section */}
-            <Text style={styles.subSectionTitle}>{t('employees.emergencyContact')}</Text>
+            <Text style={styles.subSectionTitle}>
+              {t('employees.emergencyContact')}
+            </Text>
             {employee.emergencyContact ? (
               <View style={styles.infoBox}>
                 <View style={styles.responsiveRow}>
                   <View style={styles.fieldContainer}>
-                    <Text style={styles.detailLabel}>{t('employees.emergencyName')}</Text>
-                    <Text style={styles.detailValue}>{employee.emergencyContact.name}</Text>
+                    <Text style={styles.detailLabel}>
+                      {t('employees.emergencyName')}
+                    </Text>
+                    <Text style={styles.detailValue}>
+                      {employee.emergencyContact.name}
+                    </Text>
                   </View>
                   <View style={styles.fieldContainer}>
-                    <Text style={styles.detailLabel}>{t('employees.emergencyPhone')}</Text>
-                    <Text style={styles.detailValue}>{employee.emergencyContact.phone}</Text>
+                    <Text style={styles.detailLabel}>
+                      {t('employees.emergencyPhone')}
+                    </Text>
+                    <Text style={styles.detailValue}>
+                      {employee.emergencyContact.phone}
+                    </Text>
                   </View>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>{t('employees.emergencyRelationship')}</Text>
-                  <Text style={styles.detailValue}>{employee.emergencyContact.relationship}</Text>
+                  <Text style={styles.detailLabel}>
+                    {t('employees.emergencyRelationship')}
+                  </Text>
+                  <Text style={styles.detailValue}>
+                    {employee.emergencyContact.relationship}
+                  </Text>
                 </View>
               </View>
             ) : (
@@ -283,9 +324,15 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
             <View style={styles.divider} />
 
             {/* Skills & History Section */}
-            <Text style={styles.subSectionTitle}>{t('employees.linkedin')}</Text>
+            <Text style={styles.subSectionTitle}>
+              {t('employees.linkedin')}
+            </Text>
             {employee.socialLinks?.linkedin ? (
-              <Text style={[styles.detailValue, { color: theme.colors.primary }]}>{employee.socialLinks.linkedin}</Text>
+              <Text
+                style={[styles.detailValue, { color: theme.colors.primary }]}
+              >
+                {employee.socialLinks.linkedin}
+              </Text>
             ) : (
               <Text style={styles.emptyTextSmall}>{t('common.noData')}</Text>
             )}
@@ -294,12 +341,18 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.detailLabel}>{t('employees.hiringDate')}</Text>
-                <Text style={styles.detailValue}>{employee.hiringDate ? formatDate(employee.hiringDate) : '-'}</Text>
+                <Text style={styles.detailLabel}>
+                  {t('employees.hiringDate')}
+                </Text>
+                <Text style={styles.detailValue}>
+                  {employee.hiringDate ? formatDate(employee.hiringDate) : '-'}
+                </Text>
               </View>
               <View style={styles.fieldContainer}>
                 <Text style={styles.detailLabel}>{t('common.service')}</Text>
-                <Text style={styles.detailValue}>{employee.department || '-'}</Text>
+                <Text style={styles.detailValue}>
+                  {employee.department || '-'}
+                </Text>
               </View>
             </View>
 
@@ -322,12 +375,23 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.detailLabel}>{t('leavePolicy.perYear')}</Text>
-                <Text style={styles.detailValue}>{employee.vacationDaysPerYear}</Text>
+                <Text style={styles.detailLabel}>
+                  {t('leavePolicy.perYear')}
+                </Text>
+                <Text style={styles.detailValue}>
+                  {employee.vacationDaysPerYear}
+                </Text>
               </View>
               <View style={styles.fieldContainer}>
-                <Text style={styles.detailLabel}>{t('leavePolicy.remaining')}</Text>
-                <Text style={[styles.detailValue, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+                <Text style={styles.detailLabel}>
+                  {t('leavePolicy.remaining')}
+                </Text>
+                <Text
+                  style={[
+                    styles.detailValue,
+                    { color: theme.colors.primary, fontWeight: 'bold' },
+                  ]}
+                >
                   {employee.remainingVacationDays}
                 </Text>
               </View>
@@ -337,13 +401,17 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{t('leaves.title')}</Text>
-          {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && (
+          {(user?.role === 'admin' ||
+            user?.role === 'rh' ||
+            user?.role === 'chef_dequipe') && (
             <View style={styles.headerActions}>
               <TouchableOpacity
                 onPress={() => navigateToAddIllness(employee)}
                 style={[styles.addButton, styles.secondaryButton]}
               >
-                <Text style={[styles.addButtonText, styles.secondaryButtonText]}>
+                <Text
+                  style={[styles.addButtonText, styles.secondaryButtonText]}
+                >
                   + {t('employees.addIllness')}
                 </Text>
               </TouchableOpacity>

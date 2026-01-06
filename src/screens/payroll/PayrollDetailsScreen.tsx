@@ -67,7 +67,15 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
   };
 
   const totals = useMemo(() => {
-    if (!payroll) return { base: 0, bonus: 0, vouchers: 0, earnings: 0, deductions: 0, net: 0 };
+    if (!payroll)
+      return {
+        base: 0,
+        bonus: 0,
+        vouchers: 0,
+        earnings: 0,
+        deductions: 0,
+        net: 0,
+      };
 
     // Convert string amounts (e.g., "3000€" or "3000") to numbers
     const cleanAmount = (val: string | number | undefined) => {
@@ -79,7 +87,8 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
     const baseSalary = cleanAmount(payroll.amount);
     const bonus = cleanAmount(payroll.bonusAmount);
     // Vouchers technically "benefits" but let's count them in gross for display
-    const vouchers = cleanAmount(payroll.mealVouchers) + cleanAmount(payroll.giftVouchers);
+    const vouchers =
+      cleanAmount(payroll.mealVouchers) + cleanAmount(payroll.giftVouchers);
 
     const gross = baseSalary + bonus + vouchers;
 
@@ -93,14 +102,16 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
       vouchers,
       earnings: gross,
       deductions,
-      net
+      net,
     };
   }, [payroll]);
 
   if (loading || !payroll) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={{ color: theme.colors.text }}>{t('payrollDetails.loading')}</Text>
+        <Text style={{ color: theme.colors.text }}>
+          {t('payrollDetails.loading')}
+        </Text>
       </View>
     );
   }
@@ -118,7 +129,9 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
     return (
       <View style={styles.tableRow}>
         <Text style={styles.tableCellLabel}>{label}</Text>
-        <Text style={styles.tableCellValue}>{value.toFixed(2)} {payroll.currency || '€'}</Text>
+        <Text style={styles.tableCellValue}>
+          {value.toFixed(2)} {payroll.currency || '€'}
+        </Text>
       </View>
     );
   };
@@ -131,10 +144,14 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           <View style={styles.header}>
             <View>
               <Text style={styles.companyName}>{t('payslip.companyName')}</Text>
-              <Text style={styles.companyAddress}>{t('payslip.companyAddress')}</Text>
+              <Text style={styles.companyAddress}>
+                {t('payslip.companyAddress')}
+              </Text>
             </View>
             <View style={styles.payslipBadge}>
-              <Text style={styles.payslipBadgeText}>{t('payslip.title').toUpperCase()}</Text>
+              <Text style={styles.payslipBadgeText}>
+                {t('payslip.title').toUpperCase()}
+              </Text>
             </View>
           </View>
 
@@ -143,15 +160,26 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           {/* Employee & Period Info */}
           <View style={styles.infoSection}>
             <View style={styles.infoBlock}>
-              <Text style={styles.sectionTitle}>{t('payslip.employeeHeader')}</Text>
-              <Text style={styles.infoValue}>{employee?.name || payroll.name}</Text>
-              <Text style={styles.infoLabel}>{employee?.position || t('roles.employee')}</Text>
+              <Text style={styles.sectionTitle}>
+                {t('payslip.employeeHeader')}
+              </Text>
+              <Text style={styles.infoValue}>
+                {employee?.name || payroll.name}
+              </Text>
+              <Text style={styles.infoLabel}>
+                {employee?.position || t('roles.employee')}
+              </Text>
             </View>
             <View style={[styles.infoBlock, { alignItems: 'flex-end' }]}>
               <Text style={styles.sectionTitle}>{t('payslip.period')}</Text>
               <Text style={styles.infoValue}>
                 {payroll.month && payroll.year
-                  ? `${new Date(0, (parseInt(payroll.month) || 1) - 1).toLocaleString(undefined, { month: 'long' })} ${payroll.year}`
+                  ? `${new Date(
+                      0,
+                      (parseInt(payroll.month) || 1) - 1,
+                    ).toLocaleString(undefined, { month: 'long' })} ${
+                      payroll.year
+                    }`
                   : '-'}
               </Text>
               <Text style={styles.infoLabel}>
@@ -163,22 +191,39 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           {/* Earnings Table */}
           <View style={styles.tableContainer}>
             <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderCell}>{t('payslip.description')}</Text>
-              <Text style={[styles.tableHeaderCell, { textAlign: 'right' }]}>{t('payslip.amount')}</Text>
+              <Text style={styles.tableHeaderCell}>
+                {t('payslip.description')}
+              </Text>
+              <Text style={[styles.tableHeaderCell, { textAlign: 'right' }]}>
+                {t('payslip.amount')}
+              </Text>
             </View>
 
             <View style={styles.tableBody}>
               {renderEarningRow(t('payroll.baseSalary'), totals.base)}
-              {payroll.bonusType !== 'none' && renderEarningRow(
-                payroll.bonusType === '13th_month' ? t('payroll.thirtheenthMonth') : t('payroll.performanceBonus'),
-                totals.bonus
+              {payroll.bonusType !== 'none' &&
+                renderEarningRow(
+                  payroll.bonusType === '13th_month'
+                    ? t('payroll.thirtheenthMonth')
+                    : t('payroll.performanceBonus'),
+                  totals.bonus,
+                )}
+              {renderEarningRow(
+                t('payroll.mealVouchers'),
+                cleanAmount(payroll.mealVouchers),
               )}
-              {renderEarningRow(t('payroll.mealVouchers'), cleanAmount(payroll.mealVouchers))}
-              {renderEarningRow(t('payroll.giftVouchers'), cleanAmount(payroll.giftVouchers))}
+              {renderEarningRow(
+                t('payroll.giftVouchers'),
+                cleanAmount(payroll.giftVouchers),
+              )}
 
               <View style={[styles.tableRow, styles.totalRow]}>
-                <Text style={styles.totalLabel}>{t('payslip.totalEarnings')}</Text>
-                <Text style={styles.totalValue}>{totals.earnings.toFixed(2)} {payroll.currency || '€'}</Text>
+                <Text style={styles.totalLabel}>
+                  {t('payslip.totalEarnings')}
+                </Text>
+                <Text style={styles.totalValue}>
+                  {totals.earnings.toFixed(2)} {payroll.currency || '€'}
+                </Text>
               </View>
             </View>
           </View>
@@ -186,13 +231,19 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           {/* Deductions (Placeholder) */}
           <View style={styles.tableContainer}>
             <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderCell}>{t('payslip.deductions')}</Text>
-              <Text style={[styles.tableHeaderCell, { textAlign: 'right' }]}>{t('payslip.amount')}</Text>
+              <Text style={styles.tableHeaderCell}>
+                {t('payslip.deductions')}
+              </Text>
+              <Text style={[styles.tableHeaderCell, { textAlign: 'right' }]}>
+                {t('payslip.amount')}
+              </Text>
             </View>
             <View style={styles.tableBody}>
               <View style={styles.tableRow}>
                 <Text style={styles.tableCellLabel}>Social Charges (22%)</Text>
-                <Text style={styles.tableCellValue}>-{totals.deductions.toFixed(2)} {payroll.currency || '€'}</Text>
+                <Text style={styles.tableCellValue}>
+                  -{totals.deductions.toFixed(2)} {payroll.currency || '€'}
+                </Text>
               </View>
             </View>
           </View>
@@ -200,15 +251,22 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           {/* Final Totals */}
           <View style={styles.finalTotalsSection}>
             <View style={styles.finalTotalItem}>
-              <Text style={styles.finalTotalLabel}>{t('payslip.grossPay')}</Text>
-              <Text style={styles.finalTotalValue}>{totals.earnings.toFixed(2)} {payroll.currency || '€'}</Text>
+              <Text style={styles.finalTotalLabel}>
+                {t('payslip.grossPay')}
+              </Text>
+              <Text style={styles.finalTotalValue}>
+                {totals.earnings.toFixed(2)} {payroll.currency || '€'}
+              </Text>
             </View>
             <View style={[styles.finalTotalItem, styles.netPayContainer]}>
-              <Text style={[styles.finalTotalLabel, styles.netPayLabel]}>{t('payslip.netPay')}</Text>
-              <Text style={[styles.finalTotalValue, styles.netPayValue]}>{totals.net.toFixed(2)} {payroll.currency || '€'}</Text>
+              <Text style={[styles.finalTotalLabel, styles.netPayLabel]}>
+                {t('payslip.netPay')}
+              </Text>
+              <Text style={[styles.finalTotalValue, styles.netPayValue]}>
+                {totals.net.toFixed(2)} {payroll.currency || '€'}
+              </Text>
             </View>
           </View>
-
         </View>
 
         {/* Action Buttons */}
@@ -236,9 +294,9 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
                         onPress: async () => {
                           await payrollDb.delete(payrollId);
                           navigateBack();
-                        }
-                      }
-                    ]
+                        },
+                      },
+                    ],
                   });
                 }}
               >
@@ -248,7 +306,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 

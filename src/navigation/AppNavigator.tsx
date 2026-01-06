@@ -12,7 +12,10 @@ import {
 import { enableScreens } from 'react-native-screens';
 import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentComponentProps,
+} from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
@@ -212,7 +215,6 @@ const AnalyticsStack = () => {
   );
 };
 
-
 const ClaimsStack = () => {
   const { t } = useTranslation();
   return (
@@ -358,7 +360,6 @@ const SettingsStack = () => {
   );
 };
 
-
 const ProfileStack = () => {
   const { t } = useTranslation();
   return (
@@ -372,7 +373,10 @@ const ProfileStack = () => {
       <Stack.Screen
         name="ManageCurrencies"
         component={ManageCurrenciesScreen}
-        options={{ headerShown: true, title: t('payroll.currency') || 'Currencies' }}
+        options={{
+          headerShown: true,
+          title: t('payroll.currency') || 'Currencies',
+        }}
       />
       <Stack.Screen
         name="Language"
@@ -387,7 +391,10 @@ const ProfileStack = () => {
       <Stack.Screen
         name="MyDevices"
         component={MyDevicesScreen}
-        options={{ headerShown: true, title: t('devices.myMaterial') || 'My Material' }}
+        options={{
+          headerShown: true,
+          title: t('devices.myMaterial') || 'My Material',
+        }}
       />
     </Stack.Navigator>
   );
@@ -417,9 +424,21 @@ const TabNavigator = () => (
     <Tab.Screen name="HomeTab" component={HomeStack} />
     <Tab.Screen name="PayrollTab" component={PayrollStack} />
     <Tab.Screen name="LeavesTab" component={LeavesStack} />
-    <Tab.Screen name="ClaimsTab" component={ClaimsStack} options={{ title: 'Claims' }} />
-    <Tab.Screen name="InvoicesTab" component={InvoicesStack} options={{ title: 'Invoices' }} />
-    <Tab.Screen name="ChatTab" component={CompanyChatScreen} options={{ title: 'Chat' }} />
+    <Tab.Screen
+      name="ClaimsTab"
+      component={ClaimsStack}
+      options={{ title: 'Claims' }}
+    />
+    <Tab.Screen
+      name="InvoicesTab"
+      component={InvoicesStack}
+      options={{ title: 'Invoices' }}
+    />
+    <Tab.Screen
+      name="ChatTab"
+      component={CompanyChatScreen}
+      options={{ title: 'Chat' }}
+    />
   </Tab.Navigator>
 );
 
@@ -435,7 +454,7 @@ const useNavigationSections = () => {
     const sections = [
       {
         title: t('sections.general'),
-        items: [{ key: 'Home', label: t('navigation.home'), icon: '🏠' }]
+        items: [{ key: 'Home', label: t('navigation.home'), icon: '🏠' }],
       },
       {
         title: t('sections.management'),
@@ -445,25 +464,41 @@ const useNavigationSections = () => {
           { key: 'Claims', label: t('navigation.claims'), icon: '📝' },
           { key: 'Invoices', label: t('invoices.title'), icon: '🧾' },
           { key: 'Remote', label: t('remote.title'), icon: '📅' },
-          { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' }
-        ]
+          { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' },
+        ],
       },
     ];
 
     const organizationItems = [];
     if (user?.role !== 'employee') {
-      organizationItems.push({ key: 'Employees', label: t('navigation.employees'), icon: '👥' });
+      organizationItems.push({
+        key: 'Employees',
+        label: t('navigation.employees'),
+        icon: '👥',
+      });
     }
     if (user?.role === 'admin') {
-      organizationItems.push({ key: 'Companies', label: t('navigation.companies'), icon: '🏢' });
-      organizationItems.push({ key: 'Teams', label: t('navigation.teams'), icon: '🤝' });
-      organizationItems.push({ key: 'CompanySettings', label: t('settings.company'), icon: '🏢' });
+      organizationItems.push({
+        key: 'Companies',
+        label: t('navigation.companies'),
+        icon: '🏢',
+      });
+      organizationItems.push({
+        key: 'Teams',
+        label: t('navigation.teams'),
+        icon: '🤝',
+      });
+      organizationItems.push({
+        key: 'CompanySettings',
+        label: t('settings.company'),
+        icon: '🏢',
+      });
     }
 
     if (organizationItems.length > 0) {
       sections.push({
         title: t('sections.organization'),
-        items: organizationItems
+        items: organizationItems,
       });
     }
 
@@ -471,18 +506,26 @@ const useNavigationSections = () => {
       sections.push({
         title: t('sections.analytics'),
         items: [
-          { key: 'Analytics', label: t('navigation.analytics'), icon: '📊' }
-        ]
+          { key: 'Analytics', label: t('navigation.analytics'), icon: '📊' },
+        ],
       });
     }
 
     sections.push({
       title: t('sections.communication'),
       items: [
-        { key: 'Announcements', label: t('navigation.announcements'), icon: '📢' },
+        {
+          key: 'Announcements',
+          label: t('navigation.announcements'),
+          icon: '📢',
+        },
         { key: 'Chat', label: t('navigation.chat'), icon: '💬' },
-        { key: 'Assistant', label: t('common.assistant') || 'Assistant', icon: '🤖' }
-      ]
+        {
+          key: 'Assistant',
+          label: t('common.assistant') || 'Assistant',
+          icon: '🤖',
+        },
+      ],
     });
 
     sections.push({
@@ -491,8 +534,8 @@ const useNavigationSections = () => {
         { key: 'Profile', label: t('navigation.profile'), icon: '👤' },
         { key: 'MyTeam', label: t('teams.myTeam'), icon: '👥' },
         { key: 'Settings', label: t('navigation.settings'), icon: '⚙️' },
-        { key: 'Language', label: t('profile.language'), icon: '🌐' }
-      ]
+        { key: 'Language', label: t('profile.language'), icon: '🌐' },
+      ],
     });
 
     return sections;
@@ -505,55 +548,90 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const { t } = useTranslation();
   const { state, navigation } = props;
   const sections = useNavigationSections();
-  const [collapsedSections, setCollapsedSections] = useState<{ [key: string]: boolean }>({});
+  const [collapsedSections, setCollapsedSections] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const toggleSection = (title: string) => {
     setCollapsedSections(prev => ({
       ...prev,
-      [title]: !prev[title]
+      [title]: !prev[title],
     }));
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.surface }}>
-      <View style={{
-        padding: 24,
-        paddingTop: 60,
-        backgroundColor: theme.colors.primary,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
-        marginBottom: 12,
-        ...theme.shadows.medium,
-        ...(themeMode === 'premium' && {
-          borderBottomWidth: 1,
-          borderBottomColor: '#FFD700',
-        })
-      }}>
+      <View
+        style={{
+          padding: 24,
+          paddingTop: 60,
+          backgroundColor: theme.colors.primary,
+          borderBottomLeftRadius: 24,
+          borderBottomRightRadius: 24,
+          marginBottom: 12,
+          ...theme.shadows.medium,
+          ...(themeMode === 'premium' && {
+            borderBottomWidth: 1,
+            borderBottomColor: '#FFD700',
+          }),
+        }}
+      >
         <Image
           source={require('../../public/logo.png')}
-          style={{ width: 60, height: 60, tintColor: themeMode === 'premium' ? theme.colors.background : '#FFF', marginBottom: 16 }}
+          style={{
+            width: 60,
+            height: 60,
+            tintColor:
+              themeMode === 'premium' ? theme.colors.background : '#FFF',
+            marginBottom: 16,
+          }}
           resizeMode="contain"
         />
-        <Text style={{ color: themeMode === 'premium' ? theme.colors.background : '#FFF', fontSize: 20, fontWeight: 'bold' }}>{user?.name}</Text>
-        <Text style={{ color: themeMode === 'premium' ? 'rgba(11,13,23,0.8)' : 'rgba(255,255,255,0.8)', fontSize: 14 }}>{t(`roles.${user?.role}`)}</Text>
+        <Text
+          style={{
+            color: themeMode === 'premium' ? theme.colors.background : '#FFF',
+            fontSize: 20,
+            fontWeight: 'bold',
+          }}
+        >
+          {user?.name}
+        </Text>
+        <Text
+          style={{
+            color:
+              themeMode === 'premium'
+                ? 'rgba(11,13,23,0.8)'
+                : 'rgba(255,255,255,0.8)',
+            fontSize: 14,
+          }}
+        >
+          {t(`roles.${user?.role}`)}
+        </Text>
       </View>
 
       <ScrollView style={{ flex: 1 }}>
-        {sections.map((section) => (
+        {sections.map(section => (
           <View key={section.title} style={{ marginBottom: 16 }}>
             <TouchableOpacity
               onPress={() => toggleSection(section.title)}
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 16 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingRight: 16,
+              }}
             >
-              <Text style={{
-                marginLeft: 16,
-                marginTop: 8,
-                marginBottom: 4,
-                color: theme.colors.subText,
-                fontWeight: '600',
-                fontSize: 12,
-                textTransform: 'uppercase'
-              }}>
+              <Text
+                style={{
+                  marginLeft: 16,
+                  marginTop: 8,
+                  marginBottom: 4,
+                  color: theme.colors.subText,
+                  fontWeight: '600',
+                  fontSize: 12,
+                  textTransform: 'uppercase',
+                }}
+              >
                 {section.title}
               </Text>
               <Text style={{ color: theme.colors.subText, fontSize: 12 }}>
@@ -561,37 +639,47 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
               </Text>
             </TouchableOpacity>
 
-            {!collapsedSections[section.title] && section.items.map((item) => {
-              const isFocused = state.routes[state.index].name === item.key;
-              return (
-                <TouchableOpacity
-                  key={item.key}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    padding: 12,
-                    marginHorizontal: 12,
-                    marginVertical: 2,
-                    borderRadius: 12,
-                    backgroundColor: isFocused ? `${theme.colors.primary}15` : 'transparent',
-                    ...(isFocused && themeMode === 'premium' && {
-                      borderWidth: 1,
-                      borderColor: theme.colors.primary,
-                    })
-                  }}
-                  onPress={() => navigation.navigate(item.key)}
-                >
-                  <Text style={{ fontSize: 20, marginRight: 16 }}>{item.icon}</Text>
-                  <Text style={{
-                    fontSize: 14,
-                    fontWeight: isFocused ? '700' : '500',
-                    color: isFocused ? theme.colors.primary : theme.colors.text
-                  }}>
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+            {!collapsedSections[section.title] &&
+              section.items.map(item => {
+                const isFocused = state.routes[state.index].name === item.key;
+                return (
+                  <TouchableOpacity
+                    key={item.key}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      padding: 12,
+                      marginHorizontal: 12,
+                      marginVertical: 2,
+                      borderRadius: 12,
+                      backgroundColor: isFocused
+                        ? `${theme.colors.primary}15`
+                        : 'transparent',
+                      ...(isFocused &&
+                        themeMode === 'premium' && {
+                          borderWidth: 1,
+                          borderColor: theme.colors.primary,
+                        }),
+                    }}
+                    onPress={() => navigation.navigate(item.key)}
+                  >
+                    <Text style={{ fontSize: 20, marginRight: 16 }}>
+                      {item.icon}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: isFocused ? '700' : '500',
+                        color: isFocused
+                          ? theme.colors.primary
+                          : theme.colors.text,
+                      }}
+                    >
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
           </View>
         ))}
       </ScrollView>
@@ -602,7 +690,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      drawerContent={props => <CustomDrawerContent {...props} />}
       screenOptions={{ headerShown: false }}
     >
       <Drawer.Screen name="Main" component={TabNavigator} />
@@ -624,9 +712,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Home" component={HomeStack} />
       <Drawer.Screen name="Payroll" component={PayrollStack} />
       <Drawer.Screen name="Leaves" component={LeavesStack} />
-      <Drawer.Screen name="Assistant">
-        {() => <ChatBot />}
-      </Drawer.Screen>
+      <Drawer.Screen name="Assistant">{() => <ChatBot />}</Drawer.Screen>
     </Drawer.Navigator>
   );
 };
@@ -644,14 +730,20 @@ const WebNavigator = () => {
   const [screenParams, setScreenParams] = useState<Record<string, unknown>>({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [collapsedSections, setCollapsedSections] = useState<{ [key: string]: boolean }>({});
+  const [collapsedSections, setCollapsedSections] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const contextValue = useMemo(
     () => ({
       activeTab,
       subScreen,
       screenParams,
-      setActiveTab: (tab: string, screen?: string, params?: Record<string, unknown>) => {
+      setActiveTab: (
+        tab: string,
+        screen?: string,
+        params?: Record<string, unknown>,
+      ) => {
         setActiveTab(tab);
         setSubScreen(screen || '');
         setScreenParams(params || {});
@@ -664,7 +756,9 @@ const WebNavigator = () => {
   const handleSearchSelect = (result: { type: string; id?: string }) => {
     setIsSearchVisible(false);
     if (result.type === 'employee') {
-      contextValue.setActiveTab('Employees', 'EmployeeDetails', { id: Number(result.id) });
+      contextValue.setActiveTab('Employees', 'EmployeeDetails', {
+        id: Number(result.id),
+      });
     } else if (result.type === 'team') {
       contextValue.setActiveTab('Teams');
     } else if (result.type === 'announcement') {
@@ -673,29 +767,45 @@ const WebNavigator = () => {
   };
   const getActiveComponent = () => {
     // Create a mock route object for web screens
-    
-    const mockRoute = { params: screenParams, key: 'mock-key', name: 'mock-name' } as any;
-    const mockNavigation = { navigate: setActiveTab, goBack: () => setSubScreen('') } as any;
-    
+
+    const mockRoute = {
+      params: screenParams,
+      key: 'mock-key',
+      name: 'mock-name',
+    } as any;
+    const mockNavigation = {
+      navigate: setActiveTab,
+      goBack: () => setSubScreen(''),
+    } as any;
 
     switch (activeTab) {
       case 'Home':
         return <HomeStack />;
       case 'Payroll':
         if (subScreen === 'AddPayroll')
-          return <AddPayrollScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <AddPayrollScreen route={mockRoute} navigation={mockNavigation} />
+          );
         if (subScreen === 'PayrollDetails')
-          return <PayrollDetailsScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <PayrollDetailsScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
+          );
         return <PayrollStack />;
       case 'Leaves':
         if (subScreen === 'AddLeave')
-          return <AddLeaveScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <AddLeaveScreen route={mockRoute} navigation={mockNavigation} />
+          );
         if (subScreen === 'LeaveDetails')
-          return <LeaveDetailsScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <LeaveDetailsScreen route={mockRoute} navigation={mockNavigation} />
+          );
         if (subScreen === 'LeaveApprovalList')
           return <LeaveApprovalListScreen />;
-        if (subScreen === 'TeamVacations')
-          return <TeamVacationsScreen />;
+        if (subScreen === 'TeamVacations') return <TeamVacationsScreen />;
         return <LeavesStack />;
       case 'Remote':
         return <RemoteCalendarScreen />;
@@ -705,42 +815,80 @@ const WebNavigator = () => {
         return <AnalyticsStack />;
       case 'Illnesses':
         if (subScreen === 'AddIllness')
-          return <AddIllnessScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <AddIllnessScreen route={mockRoute} navigation={mockNavigation} />
+          );
         if (subScreen === 'IllnessDetails')
-          return <IllnessDetailsScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <IllnessDetailsScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
+          );
         if (subScreen === 'IllnessHistory')
-          return <IllnessHistoryScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <IllnessHistoryScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
+          );
         return <IllnessesStack />;
       case 'Employees':
         if (subScreen === 'AddEmployee')
-          return <AddEmployeeScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <AddEmployeeScreen route={mockRoute} navigation={mockNavigation} />
+          );
         if (subScreen === 'EmployeeDetails')
-          return <EmployeeDetailsScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <EmployeeDetailsScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
+          );
         return <EmployeesStack />;
       case 'Claims':
-        if (subScreen === 'AddClaim') return <AddClaimScreen route={mockRoute} navigation={mockNavigation} />;
-        if (subScreen === 'ClaimDetails') return <ClaimDetailsScreen route={mockRoute} navigation={mockNavigation} />;
+        if (subScreen === 'AddClaim')
+          return (
+            <AddClaimScreen route={mockRoute} navigation={mockNavigation} />
+          );
+        if (subScreen === 'ClaimDetails')
+          return (
+            <ClaimDetailsScreen route={mockRoute} navigation={mockNavigation} />
+          );
         return <ClaimsStack />;
       case 'Invoices':
-        if (subScreen === 'AddInvoice') return <AddInvoiceScreen route={mockRoute} navigation={mockNavigation} />;
+        if (subScreen === 'AddInvoice')
+          return (
+            <AddInvoiceScreen route={mockRoute} navigation={mockNavigation} />
+          );
         return <InvoicesStack />;
       case 'Companies':
         if (subScreen === 'AddCompany')
-          return <AddCompanyScreen route={mockRoute} navigation={mockNavigation} />;
-        if (subScreen === 'OrgChart')
-          return <OrgChartScreen />;
+          return (
+            <AddCompanyScreen route={mockRoute} navigation={mockNavigation} />
+          );
+        if (subScreen === 'OrgChart') return <OrgChartScreen />;
         return <CompanyStack />;
       case 'Teams':
         if (subScreen === 'AddTeam')
-          return <AddTeamScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <AddTeamScreen route={mockRoute} navigation={mockNavigation} />
+          );
         return <TeamListScreen />;
       case 'Departments':
         if (subScreen === 'AddDepartment')
-          return <AddDepartmentScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <AddDepartmentScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
+          );
         return <DepartmentListScreen />;
       case 'Services':
         if (subScreen === 'AddService')
-          return <AddServiceScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <AddServiceScreen route={mockRoute} navigation={mockNavigation} />
+          );
         return <ServiceListScreen />;
       case 'Announcements':
         return <AnnouncementsScreen />;
@@ -755,28 +903,20 @@ const WebNavigator = () => {
       case 'Settings':
         return <PersonalSettingsScreen />;
       case 'CompanySettings':
-        if (subScreen === 'ManageDevices')
-          return <ManageDevicesScreen />;
+        if (subScreen === 'ManageDevices') return <ManageDevicesScreen />;
         if (subScreen === 'CustomThemeColors')
           return <CustomThemeColorsScreen />;
-        if (subScreen === 'Departments')
-          return <DepartmentStack />;
-        if (subScreen === 'Services')
-          return <ServiceStack />;
-        if (subScreen === 'ManageCurrencies')
-          return <ManageCurrenciesScreen />;
+        if (subScreen === 'Departments') return <DepartmentStack />;
+        if (subScreen === 'Services') return <ServiceStack />;
+        if (subScreen === 'ManageCurrencies') return <ManageCurrenciesScreen />;
         return <CompanySettingsScreen />;
       case 'MyTeam':
         return <MyTeamScreen />;
       case 'Profile':
-        if (subScreen === 'CareerHub')
-          return <CareerHubScreen />;
-        if (subScreen === 'ManageCurrencies')
-          return <ManageCurrenciesScreen />;
-        if (subScreen === 'MyTeam')
-          return <MyTeamScreen />;
-        if (subScreen === 'MyDevices')
-          return <MyDevicesScreen />;
+        if (subScreen === 'CareerHub') return <CareerHubScreen />;
+        if (subScreen === 'ManageCurrencies') return <ManageCurrenciesScreen />;
+        if (subScreen === 'MyTeam') return <MyTeamScreen />;
+        if (subScreen === 'MyDevices') return <MyDevicesScreen />;
         return <ProfileStack />;
       default:
         return <HomeStack />;
@@ -788,27 +928,33 @@ const WebNavigator = () => {
   return (
     <WebNavigationContext.Provider value={contextValue}>
       {}
-      <View style={[
-        {
-          flex: 1,
-          backgroundColor: theme.colors.background,
-          minHeight: Platform.OS === 'web' ? '100vh' : '100%',
-          width: '100%',
-        },
-        !isMobile ? { flexDirection: 'row' } : { flexDirection: 'column' }
-      ] as any}>
+      <View
+        style={
+          [
+            {
+              flex: 1,
+              backgroundColor: theme.colors.background,
+              minHeight: Platform.OS === 'web' ? '100vh' : '100%',
+              width: '100%',
+            },
+            !isMobile ? { flexDirection: 'row' } : { flexDirection: 'column' },
+          ] as any
+        }
+      >
         {}
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (
-          <View style={[
-            webStyles.sidebar,
-            {
-              backgroundColor: theme.colors.surface,
-              borderRightColor: theme.colors.border,
-              borderRightWidth: 1,
-            }
-          ]}>
+          <View
+            style={[
+              webStyles.sidebar,
+              {
+                backgroundColor: theme.colors.surface,
+                borderRightColor: theme.colors.border,
+                borderRightWidth: 1,
+              },
+            ]}
+          >
             {/* Brand */}
             <TouchableOpacity
               style={webStyles.sidebarBrand}
@@ -816,34 +962,60 @@ const WebNavigator = () => {
             >
               <Image
                 source={require('../../public/logo.png')}
-                
                 style={webStyles.sidebarLogo as any}
                 resizeMode="contain"
               />
-              <Text style={[webStyles.sidebarTitle, { color: theme.colors.text }]}>
+              <Text
+                style={[webStyles.sidebarTitle, { color: theme.colors.text }]}
+              >
                 {t('home.appName')}
               </Text>
             </TouchableOpacity>
 
             <View style={{ padding: 16, gap: 12 }}>
               <TouchableOpacity
-                style={[webStyles.sidebarNavItem, { backgroundColor: `${theme.colors.primary}10` }]}
+                style={[
+                  webStyles.sidebarNavItem,
+                  { backgroundColor: `${theme.colors.primary}10` },
+                ]}
                 onPress={() => setIsSearchVisible(true)}
               >
                 <Text style={webStyles.navIcon}>🔍</Text>
-                <Text style={[webStyles.navLabel, { color: theme.colors.primary }]}>{t('common.search')}</Text>
+                <Text
+                  style={[webStyles.navLabel, { color: theme.colors.primary }]}
+                >
+                  {t('common.search')}
+                </Text>
               </TouchableOpacity>
               <NotificationBell />
             </View>
 
             {/* Profile Section */}
             <View style={webStyles.sidebarProfile}>
-              <View style={[webStyles.profileAvatar, { backgroundColor: theme.colors.primary }]}>
-                <Text style={webStyles.avatarText}>{user?.name?.charAt(0)}</Text>
+              <View
+                style={[
+                  webStyles.profileAvatar,
+                  { backgroundColor: theme.colors.primary },
+                ]}
+              >
+                <Text style={webStyles.avatarText}>
+                  {user?.name?.charAt(0)}
+                </Text>
               </View>
               <View style={webStyles.profileInfo}>
-                <Text style={[webStyles.profileName, { color: theme.colors.text }]}>{user?.name}</Text>
-                <Text style={[webStyles.profileRole, { color: theme.colors.subText }]}>{t(`roles.${user?.role}`)}</Text>
+                <Text
+                  style={[webStyles.profileName, { color: theme.colors.text }]}
+                >
+                  {user?.name}
+                </Text>
+                <Text
+                  style={[
+                    webStyles.profileRole,
+                    { color: theme.colors.subText },
+                  ]}
+                >
+                  {t(`roles.${user?.role}`)}
+                </Text>
               </View>
             </View>
 
@@ -855,51 +1027,65 @@ const WebNavigator = () => {
                     onPress={() => {
                       setCollapsedSections(prev => ({
                         ...prev,
-                        [section.title]: !prev[section.title]
+                        [section.title]: !prev[section.title],
                       }));
                     }}
-                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 24 }}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingRight: 24,
+                    }}
                   >
-                    <Text style={{
-                      paddingLeft: 24,
-                      marginBottom: 8,
-                      marginTop: 8,
-                      color: theme.colors.subText,
-                      fontSize: 12,
-                      fontWeight: 'bold',
-                      textTransform: 'uppercase'
-                    }}>
+                    <Text
+                      style={{
+                        paddingLeft: 24,
+                        marginBottom: 8,
+                        marginTop: 8,
+                        color: theme.colors.subText,
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                      }}
+                    >
                       {section.title}
                     </Text>
                     <Text style={{ color: theme.colors.subText, fontSize: 12 }}>
                       {collapsedSections[section.title] ? '▼' : '▲'}
                     </Text>
                   </TouchableOpacity>
-                  {!collapsedSections[section.title] && section.items.map((item) => (
-                    <TouchableOpacity
-                      key={item.key}
-                      onPress={() => setActiveTab(item.key)}
-                      style={[
-                        webStyles.sidebarNavItem,
-                        activeTab === item.key && {
-                          backgroundColor: `${theme.colors.primary}10`,
-                          borderRightWidth: 3,
-                          borderRightColor: theme.colors.primary,
-                        }
-                      ]}
-                    >
-                      <Text style={webStyles.navIcon}>{item.icon}</Text>
-                      <Text style={[
-                        webStyles.navLabel,
-                        {
-                          color: activeTab === item.key ? theme.colors.primary : theme.colors.text,
-                          fontWeight: activeTab === item.key ? 'bold' : 'normal'
-                        }
-                      ]}>
-                        {item.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                  {!collapsedSections[section.title] &&
+                    section.items.map(item => (
+                      <TouchableOpacity
+                        key={item.key}
+                        onPress={() => setActiveTab(item.key)}
+                        style={[
+                          webStyles.sidebarNavItem,
+                          activeTab === item.key && {
+                            backgroundColor: `${theme.colors.primary}10`,
+                            borderRightWidth: 3,
+                            borderRightColor: theme.colors.primary,
+                          },
+                        ]}
+                      >
+                        <Text style={webStyles.navIcon}>{item.icon}</Text>
+                        <Text
+                          style={[
+                            webStyles.navLabel,
+                            {
+                              color:
+                                activeTab === item.key
+                                  ? theme.colors.primary
+                                  : theme.colors.text,
+                              fontWeight:
+                                activeTab === item.key ? 'bold' : 'normal',
+                            },
+                          ]}
+                        >
+                          {item.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
                 </View>
               ))}
             </ScrollView>
@@ -907,7 +1093,11 @@ const WebNavigator = () => {
         ) : (
           /* Mobile Header */
           <GlassHeader
-            title={activeTab !== 'Home' ? t(`navigation.${activeTab.toLowerCase()}`) : undefined}
+            title={
+              activeTab !== 'Home'
+                ? t(`navigation.${activeTab.toLowerCase()}`)
+                : undefined
+            }
             onMenuPress={() => setIsMenuOpen(true)}
             onSearchPress={() => setIsSearchVisible(true)}
           />
@@ -917,21 +1107,33 @@ const WebNavigator = () => {
         <View style={{ flex: 1 }}>
           {/* Back button for sub-screens (Internal) */}
           {subScreen && (
-            <View style={[webStyles.subHeader, { backgroundColor: theme.colors.surface, borderBottomWidth: 1, borderBottomColor: theme.colors.border }]}>
+            <View
+              style={[
+                webStyles.subHeader,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderBottomWidth: 1,
+                  borderBottomColor: theme.colors.border,
+                },
+              ]}
+            >
               <TouchableOpacity
                 style={webStyles.backButton}
                 onPress={() => setSubScreen('')}
               >
-                <Text style={[webStyles.backButtonText, { color: theme.colors.primary }]}>
+                <Text
+                  style={[
+                    webStyles.backButtonText,
+                    { color: theme.colors.primary },
+                  ]}
+                >
                   ← {t('common.back')}
                 </Text>
               </TouchableOpacity>
             </View>
           )}
 
-          <View
-            style={{ flex: 1, padding: isMobile ? 12 : 32 }}
-          >
+          <View style={{ flex: 1, padding: isMobile ? 12 : 32 }}>
             {getActiveComponent()}
           </View>
         </View>
@@ -975,7 +1177,9 @@ const WebNavigator = () => {
                   style={{ width: 50, height: 50, marginBottom: 10 }}
                   resizeMode="contain"
                 />
-                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{user?.name}</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
+                  {user?.name}
+                </Text>
               </View>
 
               <ScrollView style={{ flex: 1 }}>
@@ -985,54 +1189,80 @@ const WebNavigator = () => {
                       onPress={() => {
                         setCollapsedSections(prev => ({
                           ...prev,
-                          [section.title]: !prev[section.title]
+                          [section.title]: !prev[section.title],
                         }));
                       }}
-                      style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingRight: 10 }}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingRight: 10,
+                      }}
                     >
-                      <Text style={{
-                        paddingLeft: 10,
-                        marginBottom: 8,
-                        marginTop: 8,
-                        color: theme.colors.subText,
-                        fontSize: 12,
-                        fontWeight: 'bold',
-                        textTransform: 'uppercase'
-                      }}>
+                      <Text
+                        style={{
+                          paddingLeft: 10,
+                          marginBottom: 8,
+                          marginTop: 8,
+                          color: theme.colors.subText,
+                          fontSize: 12,
+                          fontWeight: 'bold',
+                          textTransform: 'uppercase',
+                        }}
+                      >
                         {section.title}
                       </Text>
-                      <Text style={{ color: theme.colors.subText, fontSize: 12, marginRight: 10 }}>
+                      <Text
+                        style={{
+                          color: theme.colors.subText,
+                          fontSize: 12,
+                          marginRight: 10,
+                        }}
+                      >
                         {collapsedSections[section.title] ? '▼' : '▲'}
                       </Text>
                     </TouchableOpacity>
-                    {!collapsedSections[section.title] && section.items.map((item) => (
-                      <TouchableOpacity
-                        key={item.key}
-                        onPress={() => {
-                          setActiveTab(item.key);
-                          setIsMenuOpen(false);
-                        }}
-                        style={[
-                          webStyles.mobileMenuItem,
-                          activeTab === item.key && {
-                            backgroundColor: `${theme.colors.primary}10`,
-                            borderRadius: 8,
-                            paddingLeft: 10,
-                          }
-                        ]}
-                      >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                          <Text style={{ fontSize: 20 }}>{item.icon}</Text>
-                          <Text style={{
-                            fontSize: 16,
-                            color: activeTab === item.key ? theme.colors.primary : theme.colors.text,
-                            fontWeight: activeTab === item.key ? 'bold' : 'normal'
-                          }}>
-                            {item.label}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
+                    {!collapsedSections[section.title] &&
+                      section.items.map(item => (
+                        <TouchableOpacity
+                          key={item.key}
+                          onPress={() => {
+                            setActiveTab(item.key);
+                            setIsMenuOpen(false);
+                          }}
+                          style={[
+                            webStyles.mobileMenuItem,
+                            activeTab === item.key && {
+                              backgroundColor: `${theme.colors.primary}10`,
+                              borderRadius: 8,
+                              paddingLeft: 10,
+                            },
+                          ]}
+                        >
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: 12,
+                            }}
+                          >
+                            <Text style={{ fontSize: 20 }}>{item.icon}</Text>
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                color:
+                                  activeTab === item.key
+                                    ? theme.colors.primary
+                                    : theme.colors.text,
+                                fontWeight:
+                                  activeTab === item.key ? 'bold' : 'normal',
+                              }}
+                            >
+                              {item.label}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      ))}
                   </View>
                 ))}
               </ScrollView>
@@ -1051,7 +1281,6 @@ const WebNavigator = () => {
 
 // ======= Root Export =======
 export const AppNavigator = () => {
-  
   const linking: LinkingOptions<any> = {
     prefixes: [
       'http://localhost:8080',
@@ -1099,17 +1328,17 @@ const AppContent = () => {
 const webStyles = StyleSheet.create({
   sidebar: {
     width: 260,
-    
+
     height: '100vh' as any,
-    
+
     position: 'sticky' as any,
     top: 0,
     paddingVertical: 24,
     ...Platform.select({
       web: {
         boxShadow: '4px 0 10px rgba(0,0,0,0.05)',
-      }
-    })
+      },
+    }),
   },
   sidebarBrand: {
     flexDirection: 'row',

@@ -113,9 +113,15 @@ export const LoginScreen = ({ navigation }: any) => {
         <Text style={styles.tipTitle}>{t('login.tipTitle')}</Text>
         <View style={styles.demoTable}>
           <View style={styles.demoRow}>
-            <Text style={[styles.demoCell, styles.demoHeader]}>{t('login.role')}</Text>
-            <Text style={[styles.demoCell, styles.demoHeader]}>{t('login.emailLabel')}</Text>
-            <Text style={[styles.demoCell, styles.demoHeader]}>{t('login.passwordLabel')}</Text>
+            <Text style={[styles.demoCell, styles.demoHeader]}>
+              {t('login.role')}
+            </Text>
+            <Text style={[styles.demoCell, styles.demoHeader]}>
+              {t('login.emailLabel')}
+            </Text>
+            <Text style={[styles.demoCell, styles.demoHeader]}>
+              {t('login.passwordLabel')}
+            </Text>
           </View>
           <View style={styles.demoRow}>
             <Text style={styles.demoCell}>{t('login.admin')}</Text>

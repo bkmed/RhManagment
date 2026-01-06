@@ -28,7 +28,13 @@ export const SignUpScreen = ({ navigation }: any) => {
   const [password, setPassword] = useState('');
   const [birthDate, setBirthDate] = useState(new Date());
   const [country, setCountry] = useState('');
-  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; country?: string; birthDate?: string }>({});
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+    country?: string;
+    birthDate?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
@@ -84,10 +90,16 @@ export const SignUpScreen = ({ navigation }: any) => {
     setLoading(true);
     try {
       // Register with pending status and additional fields
-      const user = await authService.register(name, email, password, 'employee', {
-        country,
-        birthDate: birthDate.toISOString().split('T')[0]
-      });
+      const user = await authService.register(
+        name,
+        email,
+        password,
+        'employee',
+        {
+          country,
+          birthDate: birthDate.toISOString().split('T')[0],
+        },
+      );
 
       await signUp(user);
     } catch (error: any) {
@@ -101,10 +113,7 @@ export const SignUpScreen = ({ navigation }: any) => {
   };
 
   return (
-    <AuthLayout
-      title={t('signUp.title')}
-      subtitle={t('signUp.subtitle')}
-    >
+    <AuthLayout title={t('signUp.title')} subtitle={t('signUp.subtitle')}>
       <AuthInput
         label={t('signUp.nameLabel')}
         value={name}
@@ -133,13 +142,19 @@ export const SignUpScreen = ({ navigation }: any) => {
             { label: 'Allemagne', value: 'Germany' },
             { label: 'Espagne', value: 'Spain' },
             { label: 'UK', value: 'UK' },
-            { label: 'USA', value: 'USA' }
+            { label: 'USA', value: 'USA' },
           ]}
           value={country}
           onSelect={setCountry}
           placeholder={t('employees.countryPlaceholder')}
         />
-        {errors.country ? <Text style={{ color: theme.colors.error, fontSize: 12, marginTop: 4 }}>{errors.country}</Text> : null}
+        {errors.country ? (
+          <Text
+            style={{ color: theme.colors.error, fontSize: 12, marginTop: 4 }}
+          >
+            {errors.country}
+          </Text>
+        ) : null}
       </View>
 
       <AuthInput

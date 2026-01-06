@@ -21,7 +21,6 @@ import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
-
 export const LeaveDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -69,7 +68,7 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
       await notificationService.notifyLeaveRequestDecision(
         leaveId,
         leave.title,
-        newStatus
+        newStatus,
       );
 
       // Open Email Draft for Employee
@@ -77,11 +76,14 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
         'employee@example.com', // In a real app, this would be the actual employee email
         newStatus,
         leave.title,
-        user?.name || 'HR Manager'
+        user?.name || 'HR Manager',
       );
 
       setLeave({ ...leave, status: newStatus });
-      notificationService.showAlert(t('common.success'), t(`leaves.statusUpdated_${newStatus}`));
+      notificationService.showAlert(
+        t('common.success'),
+        t(`leaves.statusUpdated_${newStatus}`),
+      );
     } catch {
       notificationService.showAlert(t('common.error'), t('leaves.updateError'));
     } finally {
@@ -125,7 +127,9 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
   if (loading || !leave) {
     return (
       <View style={styles.container}>
-        <Text style={{ color: theme.colors.text }}>{t('leaveDetails.loading')}</Text>
+        <Text style={{ color: theme.colors.text }}>
+          {t('leaveDetails.loading')}
+        </Text>
       </View>
     );
   }
@@ -139,21 +143,31 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
         <View style={styles.section}>
           <Text style={styles.title}>{leave.title}</Text>
           <Text style={styles.typeLabel}>{t(`leaveTypes.${leave.type}`)}</Text>
-          <Text style={styles.dateTime}>
-            {startFull}
-          </Text>
+          <Text style={styles.dateTime}>{startFull}</Text>
           {endFull && endFull !== startFull && (
             <Text style={styles.dateTime}>to {endFull}</Text>
           )}
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(leave.status) + '20' }]}>
-            <Text style={[styles.statusText, { color: getStatusColor(leave.status) }]}>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: getStatusColor(leave.status) + '20' },
+            ]}
+          >
+            <Text
+              style={[
+                styles.statusText,
+                { color: getStatusColor(leave.status) },
+              ]}
+            >
               {t(`leaveStatus.${leave.status}`)}
             </Text>
           </View>
         </View>
 
-        {
-          (user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && leave.status === 'pending' && (
+        {(user?.role === 'admin' ||
+          user?.role === 'rh' ||
+          user?.role === 'chef_dequipe') &&
+          leave.status === 'pending' && (
             <View style={styles.approvalActions}>
               <TouchableOpacity
                 style={[styles.button, styles.approveButton]}
@@ -168,72 +182,72 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.buttonText}>{t('leaves.decline')}</Text>
               </TouchableOpacity>
             </View>
-          )
-        }
+          )}
 
-        {
-          leave.employeeName && (
-            <View style={styles.section}>
-              <Text style={styles.label}>{t('leaveDetails.employeeLabel')}</Text>
-              <Text style={styles.value}>{leave.employeeName}</Text>
-              {leave.department && (
-                <View style={{ marginTop: 8 }}>
-                  <Text style={styles.label}>{t('common.service')}</Text>
-                  <Text style={styles.value}>{leave.department}</Text>
-                </View>
-              )}
-            </View>
-          )
-        }
+        {leave.employeeName && (
+          <View style={styles.section}>
+            <Text style={styles.label}>{t('leaveDetails.employeeLabel')}</Text>
+            <Text style={styles.value}>{leave.employeeName}</Text>
+            {leave.department && (
+              <View style={{ marginTop: 8 }}>
+                <Text style={styles.label}>{t('common.service')}</Text>
+                <Text style={styles.value}>{leave.department}</Text>
+              </View>
+            )}
+          </View>
+        )}
 
-        {
-          leave.location && (
-            <View style={styles.section}>
-              <Text style={styles.label}>{t('leaveDetails.locationLabel')}</Text>
-              <Text style={styles.value}>{leave.location}</Text>
-            </View>
-          )
-        }
+        {leave.location && (
+          <View style={styles.section}>
+            <Text style={styles.label}>{t('leaveDetails.locationLabel')}</Text>
+            <Text style={styles.value}>{leave.location}</Text>
+          </View>
+        )}
 
-        {
-          leave.notes && (
-            <View style={styles.section}>
-              <Text style={styles.label}>{t('leaveDetails.notesLabel')}</Text>
-              <Text style={styles.value}>{leave.notes}</Text>
-            </View>
-          )
-        }
+        {leave.notes && (
+          <View style={styles.section}>
+            <Text style={styles.label}>{t('leaveDetails.notesLabel')}</Text>
+            <Text style={styles.value}>{leave.notes}</Text>
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.label}>{t('leaveDetails.reminderLabel')}</Text>
           <Text style={styles.value}>
-            {leave.reminderEnabled ? t('leaveDetails.reminderTimeText') : t('leaveDetails.reminderDisabled')}
+            {leave.reminderEnabled
+              ? t('leaveDetails.reminderTimeText')
+              : t('leaveDetails.reminderDisabled')}
           </Text>
         </View>
 
-        {
-          (user?.role === 'admin' || user?.role === 'rh' || (user?.role === 'employee' && leave.employeeId === user.employeeId)) && (
-            <>
-              <TouchableOpacity
-                style={[styles.button, styles.editButton]}
-                onPress={handleEdit}
-              >
-                <Text style={styles.buttonText}>{t('leaveDetails.editButton')}</Text>
-              </TouchableOpacity>
+        {(user?.role === 'admin' ||
+          user?.role === 'rh' ||
+          (user?.role === 'employee' &&
+            leave.employeeId === user.employeeId)) && (
+          <>
+            <TouchableOpacity
+              style={[styles.button, styles.editButton]}
+              onPress={handleEdit}
+            >
+              <Text style={styles.buttonText}>
+                {t('leaveDetails.editButton')}
+              </Text>
+            </TouchableOpacity>
 
-              {(user?.role === 'admin' || user?.role === 'rh') && (
-                <TouchableOpacity
-                  style={[styles.button, styles.deleteButton]}
-                  onPress={handleDelete}
-                >
-                  <Text style={styles.buttonText}>{t('leaveDetails.deleteButton')}</Text>
-                </TouchableOpacity>
-              )}
-            </>
-          )
-        }
-      </ScrollView >
-    </View >
+            {(user?.role === 'admin' || user?.role === 'rh') && (
+              <TouchableOpacity
+                style={[styles.button, styles.deleteButton]}
+                onPress={handleDelete}
+              >
+                <Text style={styles.buttonText}>
+                  {t('leaveDetails.deleteButton')}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
@@ -323,8 +337,11 @@ const createStyles = (theme: Theme) =>
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'approved': return '#4CAF50';
-    case 'declined': return '#F44336';
-    default: return '#FF9800';
+    case 'approved':
+      return '#4CAF50';
+    case 'declined':
+      return '#F44336';
+    default:
+      return '#FF9800';
   }
 };

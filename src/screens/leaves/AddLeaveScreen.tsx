@@ -34,7 +34,7 @@ import { RouteProp, ParamListBase } from '@react-navigation/native';
 
 export const AddLeaveScreen = ({
   navigation,
-  route
+  route,
 }: {
   navigation: NativeStackNavigationProp<ParamListBase>;
   route: RouteProp<ParamListBase>;
@@ -45,7 +45,9 @@ export const AddLeaveScreen = ({
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const params = route.params as { leaveId?: string; employeeName?: string; employeeId?: number } | undefined;
+  const params = route.params as
+    | { leaveId?: string; employeeName?: string; employeeId?: number }
+    | undefined;
   const leaveId = params?.leaveId;
   const isEdit = !!leaveId;
   const initialEmployeeName = params?.employeeName || '';
@@ -59,20 +61,30 @@ export const AddLeaveScreen = ({
   const [notes, setNotes] = useState('');
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [sendEmail, setSendEmail] = useState(true);
-  const [type, setType] = useState<'leave' | 'sick_leave' | 'carer_leave' | 'permission' | 'authorization'>('leave');
-  const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>('pending');
+  const [type, setType] = useState<
+    'leave' | 'sick_leave' | 'carer_leave' | 'permission' | 'authorization'
+  >('leave');
+  const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>(
+    'pending',
+  );
   const [department, setDepartment] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
-  const allCompanies = useSelector((state: RootState) => selectAllCompanies(state));
+  const allCompanies = useSelector((state: RootState) =>
+    selectAllCompanies(state),
+  );
   const allTeams = useSelector((state: RootState) => selectAllTeams(state));
-  const allEmployees = useSelector((state: RootState) => selectAllEmployees(state));
+  const allEmployees = useSelector((state: RootState) =>
+    selectAllEmployees(state),
+  );
   const allLeaves = useSelector((state: RootState) => selectAllLeaves(state));
 
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(user?.role === 'employee' && user?.id ? Number(user.id) : null);
+  const [employeeId, setEmployeeId] = useState<number | null>(
+    user?.role === 'employee' && user?.id ? Number(user.id) : null,
+  );
 
   // Cascading lists
   const filteredTeams = useMemo(() => {
@@ -92,7 +104,9 @@ export const AddLeaveScreen = ({
   // Permission specific state
   const [permissionDate, setPermissionDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date(new Date().getTime() + 60 * 60 * 1000)); // +1 hour
+  const [endTime, setEndTime] = useState(
+    new Date(new Date().getTime() + 60 * 60 * 1000),
+  ); // +1 hour
   const [maxPermissionHours, setMaxPermissionHours] = useState(2);
 
   // Auto-fill logic for employees
@@ -106,12 +120,13 @@ export const AddLeaveScreen = ({
   }, [user, isEdit]);
 
   const loadConfig = async () => {
-    const savedMax = await storageService.getString('config_max_permission_hours');
+    const savedMax = await storageService.getString(
+      'config_max_permission_hours',
+    );
     if (savedMax) {
       setMaxPermissionHours(parseInt(savedMax, 10));
     }
   };
-
 
   const { setActiveTab } = useContext(WebNavigationContext);
 
@@ -131,8 +146,14 @@ export const AddLeaveScreen = ({
         setEmployeeName(leave.employeeName || '');
         setEmployeeId(leave.employeeId || null);
         setLocation(leave.location || '');
-        setStartDate(leave.startDate ? new Date(leave.startDate) : new Date(leave.dateTime));
-        setEndDate(leave.endDate ? new Date(leave.endDate) : new Date(leave.dateTime));
+        setStartDate(
+          leave.startDate
+            ? new Date(leave.startDate)
+            : new Date(leave.dateTime),
+        );
+        setEndDate(
+          leave.endDate ? new Date(leave.endDate) : new Date(leave.dateTime),
+        );
         setNotes(leave.notes || '');
         setReminderEnabled(!!leave.reminderEnabled);
         setType(leave.type || 'leave');
@@ -147,7 +168,8 @@ export const AddLeaveScreen = ({
   const handleSave = async () => {
     const newErrors: { [key: string]: string } = {};
     if (!title.trim()) newErrors.title = t('common.required');
-    if (!employeeId && user?.role !== 'employee') newErrors.employeeId = t('common.required');
+    if (!employeeId && user?.role !== 'employee')
+      newErrors.employeeId = t('common.required');
 
     let permissionStart: Date | null = null;
     let permissionEnd: Date | null = null;
@@ -160,17 +182,23 @@ export const AddLeaveScreen = ({
         const diffMs = endTime.getTime() - startTime.getTime();
         const diffHours = diffMs / (1000 * 60 * 60);
         if (diffHours > maxPermissionHours) {
-          newErrors.endDate = t('permissions.errorDuration', { hours: maxPermissionHours });
+          newErrors.endDate = t('permissions.errorDuration', {
+            hours: maxPermissionHours,
+          });
         }
       }
 
       // Construct full dates
       permissionStart = new Date(permissionDate);
-      permissionStart.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
+      permissionStart.setHours(
+        startTime.getHours(),
+        startTime.getMinutes(),
+        0,
+        0,
+      );
 
       permissionEnd = new Date(permissionDate);
       permissionEnd.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
-
     } else {
       // Validate Leave
       if (!startDate) newErrors.startDate = t('common.required');
@@ -186,23 +214,36 @@ export const AddLeaveScreen = ({
     }
 
     // Collision Check
-    const finalStartDate = (type === 'permission' || type === 'authorization') ? permissionStart! : startDate!;
-    const finalEndDate = (type === 'permission' || type === 'authorization') ? permissionEnd! : endDate!;
+    const finalStartDate =
+      type === 'permission' || type === 'authorization'
+        ? permissionStart!
+        : startDate!;
+    const finalEndDate =
+      type === 'permission' || type === 'authorization'
+        ? permissionEnd!
+        : endDate!;
 
     const hasCollision = allLeaves.some((l: Leave) => {
       if (l.id === leaveId) return false; // Skip the same leave when editing
-      if (l.employeeId !== (user?.role === 'employee' ? user?.employeeId : employeeId)) return false;
+      if (
+        l.employeeId !==
+        (user?.role === 'employee' ? user?.employeeId : employeeId)
+      )
+        return false;
       if (l.status === 'declined') return false;
 
       const lStart = new Date(l.startDate || l.dateTime);
       const lEnd = new Date(l.endDate || l.dateTime);
 
       // Overlap check: (start1 < end2) and (end1 > start2)
-      return (finalStartDate < lEnd) && (finalEndDate > lStart);
+      return finalStartDate < lEnd && finalEndDate > lStart;
     });
 
     if (hasCollision) {
-      notificationService.showAlert(t('common.error'), t('leaves.collisionError'));
+      notificationService.showAlert(
+        t('common.error'),
+        t('leaves.collisionError'),
+      );
       return;
     }
 
@@ -212,12 +253,25 @@ export const AddLeaveScreen = ({
       const selectedEmp = allEmployees.find(e => e.id === employeeId);
       const leaveData = {
         title: title.trim(),
-        employeeName: (user?.role === 'employee' ? (user?.name || '') : (selectedEmp?.name || employeeName)).trim(),
-        employeeId: (user?.role === 'employee' ? user?.employeeId : employeeId) || 0,
+        employeeName: (user?.role === 'employee'
+          ? user?.name || ''
+          : selectedEmp?.name || employeeName
+        ).trim(),
+        employeeId:
+          (user?.role === 'employee' ? user?.employeeId : employeeId) || 0,
         location: location.trim() || undefined,
-        dateTime: (type === 'permission' || type === 'authorization') ? permissionStart!.toISOString() : startDate!.toISOString(),
-        startDate: (type === 'permission' || type === 'authorization') ? permissionStart!.toISOString() : startDate!.toISOString(),
-        endDate: (type === 'permission' || type === 'authorization') ? permissionEnd!.toISOString() : endDate!.toISOString(),
+        dateTime:
+          type === 'permission' || type === 'authorization'
+            ? permissionStart!.toISOString()
+            : startDate!.toISOString(),
+        startDate:
+          type === 'permission' || type === 'authorization'
+            ? permissionStart!.toISOString()
+            : startDate!.toISOString(),
+        endDate:
+          type === 'permission' || type === 'authorization'
+            ? permissionEnd!.toISOString()
+            : endDate!.toISOString(),
         notes: notes.trim() || undefined,
         reminderEnabled,
         type,
@@ -235,17 +289,24 @@ export const AddLeaveScreen = ({
         id = await leavesDb.add(leaveData);
 
         // Notify HR/Admin (Simulated via local notification for now)
-        await notificationService.notifyNewLeaveRequest(id, leaveData.employeeName, t(`leaveTypes.${type}`));
+        await notificationService.notifyNewLeaveRequest(
+          id,
+          leaveData.employeeName,
+          t(`leaveTypes.${type}`),
+        );
 
         if (sendEmail) {
           // Open Email Draft for HR - Don't await to avoid blocking UI
-          emailService.sendLeaveRequestEmail(
-            leaveData.employeeName,
-            t(`leaveTypes.${type}`),
-            startDate?.toLocaleDateString() || new Date().toLocaleDateString(),
-            endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
-            notes || ''
-          ).catch(err => console.error('Email error:', err));
+          emailService
+            .sendLeaveRequestEmail(
+              leaveData.employeeName,
+              t(`leaveTypes.${type}`),
+              startDate?.toLocaleDateString() ||
+                new Date().toLocaleDateString(),
+              endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
+              notes || '',
+            )
+            .catch(err => console.error('Email error:', err));
         }
       }
 
@@ -262,14 +323,16 @@ export const AddLeaveScreen = ({
       // Show Success Pulse
       showToast(
         isEdit ? t('leaves.updateSuccess') : t('leaves.successMessage'),
-        'success'
+        'success',
       );
 
       // Navigation Logic with a small delay to allow toast/state to settle
       setTimeout(() => {
         if (Platform.OS === 'web') {
           if (initialEmployeeId) {
-            setActiveTab('Employees', 'EmployeeDetails', { employeeId: initialEmployeeId });
+            setActiveTab('Employees', 'EmployeeDetails', {
+              employeeId: initialEmployeeId,
+            });
           } else {
             setActiveTab('Leaves', '', {});
           }
@@ -302,15 +365,26 @@ export const AddLeaveScreen = ({
                 { label: t('leaveTypes.standard_leave'), value: 'leave' },
                 { label: t('leaveTypes.sick_leave'), value: 'sick_leave' },
                 { label: t('leaveTypes.carer_leave'), value: 'carer_leave' },
-                { label: t('leaveTypes.authorization'), value: 'authorization' },
+                {
+                  label: t('leaveTypes.authorization'),
+                  value: 'authorization',
+                },
                 { label: t('leaveTypes.permission'), value: 'permission' },
-              ].map((item) => (
+              ].map(item => (
                 <TouchableOpacity
                   key={item.value}
                   onPress={() => setType(item.value as Leave['type'])}
-                  style={[styles.typeChip, type === item.value && styles.activeTypeChip]}
+                  style={[
+                    styles.typeChip,
+                    type === item.value && styles.activeTypeChip,
+                  ]}
                 >
-                  <Text style={[styles.typeChipText, type === item.value && styles.activeTypeChipText]}>
+                  <Text
+                    style={[
+                      styles.typeChipText,
+                      type === item.value && styles.activeTypeChipText,
+                    ]}
+                  >
                     {item.label}
                   </Text>
                 </TouchableOpacity>
@@ -331,7 +405,9 @@ export const AddLeaveScreen = ({
                 placeholder={t('leaves.titlePlaceholder')}
                 placeholderTextColor={theme.colors.subText}
               />
-              {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
+              {errors.title && (
+                <Text style={styles.errorText}>{errors.title}</Text>
+              )}
             </View>
 
             {(user?.role === 'admin' || user?.role === 'rh') && (
@@ -342,10 +418,13 @@ export const AddLeaveScreen = ({
                       label={t('companies.selectCompany')}
                       data={[
                         { label: t('common.allCompanies'), value: '' },
-                        ...allCompanies.map(c => ({ label: c.name, value: String(c.id) }))
+                        ...allCompanies.map(c => ({
+                          label: c.name,
+                          value: String(c.id),
+                        })),
                       ]}
                       value={companyId ? String(companyId) : ''}
-                      onSelect={(val) => {
+                      onSelect={val => {
                         setCompanyId(val ? Number(val) : null);
                         setTeamId(null);
                         setEmployeeId(null);
@@ -357,10 +436,13 @@ export const AddLeaveScreen = ({
                       label={t('teams.selectTeam')}
                       data={[
                         { label: t('common.noTeam'), value: '' },
-                        ...filteredTeams.map(t => ({ label: t.name, value: String(t.id) }))
+                        ...filteredTeams.map(t => ({
+                          label: t.name,
+                          value: String(t.id),
+                        })),
                       ]}
                       value={teamId ? String(teamId) : ''}
-                      onSelect={(val) => {
+                      onSelect={val => {
                         setTeamId(val ? Number(val) : null);
                         setEmployeeId(null);
                       }}
@@ -371,11 +453,15 @@ export const AddLeaveScreen = ({
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('leaves.employee')}
-                    data={filteredEmployees.map(e => ({ label: e.name, value: String(e.id) }))}
+                    data={filteredEmployees.map(e => ({
+                      label: e.name,
+                      value: String(e.id),
+                    }))}
                     value={employeeId ? String(employeeId) : ''}
-                    onSelect={(val) => {
+                    onSelect={val => {
                       setEmployeeId(Number(val));
-                      if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                      if (errors.employeeId)
+                        setErrors({ ...errors, employeeId: '' });
                     }}
                     error={errors.employeeId}
                   />
@@ -404,7 +490,7 @@ export const AddLeaveScreen = ({
             <Text style={styles.sectionTitle}>{t('leaves.time')}</Text>
 
             <View style={styles.responsiveRow}>
-              {(type === 'permission' || type === 'authorization') ? (
+              {type === 'permission' || type === 'authorization' ? (
                 <>
                   <View style={styles.fieldContainer}>
                     <DateTimePickerField
@@ -495,7 +581,9 @@ export const AddLeaveScreen = ({
             <View style={styles.switchRow}>
               <View>
                 <Text style={styles.label}>{t('leaves.enableReminder')}</Text>
-                <Text style={styles.captionText}>{t('profile.notifications')}</Text>
+                <Text style={styles.captionText}>
+                  {t('profile.notifications')}
+                </Text>
               </View>
               <Switch
                 value={reminderEnabled}
@@ -529,8 +617,20 @@ export const AddLeaveScreen = ({
             <View style={styles.calendarButtonContainer}>
               <CalendarButton
                 title={title || t('leaves.title')}
-                date={startDate ? startDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
-                time={startDate ? startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '12:00'}
+                date={
+                  startDate
+                    ? startDate.toISOString().split('T')[0]
+                    : new Date().toISOString().split('T')[0]
+                }
+                time={
+                  startDate
+                    ? startDate.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })
+                    : '12:00'
+                }
                 location={location}
                 notes={`${t('leaves.employee')}: ${employeeName}\n${notes}`}
               />
@@ -544,7 +644,11 @@ export const AddLeaveScreen = ({
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {loading ? t('common.loading') : isEdit ? t('leaves.update') : t('leaves.save')}
+            {loading
+              ? t('common.loading')
+              : isEdit
+              ? t('leaves.update')
+              : t('leaves.save')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

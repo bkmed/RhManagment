@@ -47,7 +47,10 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
       const data = await illnessesDb.getById(illnessId);
       setIllness(data);
     } catch (error) {
-      notificationService.showAlert(t('common.errorTitle'), t('common.loadFailed'));
+      notificationService.showAlert(
+        t('common.errorTitle'),
+        t('common.loadFailed'),
+      );
       console.error(error);
     } finally {
       setLoading(false);
@@ -69,7 +72,10 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
               await notificationService.cancelIllnessReminder(illnessId);
               navigateBack();
             } catch (error) {
-              notificationService.showAlert(t('common.errorTitle'), t('common.deleteFailed'));
+              notificationService.showAlert(
+                t('common.errorTitle'),
+                t('common.deleteFailed'),
+              );
               console.error(error);
             }
           },
@@ -139,7 +145,9 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
           <Text style={styles.buttonText}>{t('common.viewHistory')}</Text>
         </TouchableOpacity>
 
-        {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && (
+        {(user?.role === 'admin' ||
+          user?.role === 'rh' ||
+          user?.role === 'chef_dequipe') && (
           <>
             <TouchableOpacity
               style={[styles.button, styles.editButton]}

@@ -33,7 +33,7 @@ import { RouteProp, ParamListBase } from '@react-navigation/native';
 
 export const AddIllnessScreen = ({
   navigation,
-  route
+  route,
 }: {
   navigation: NativeStackNavigationProp<ParamListBase>;
   route: RouteProp<ParamListBase>;
@@ -44,7 +44,9 @@ export const AddIllnessScreen = ({
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const params = route.params as { illnessId?: string; employeeName?: string; employeeId?: number } | undefined;
+  const params = route.params as
+    | { illnessId?: string; employeeName?: string; employeeId?: number }
+    | undefined;
   const illnessId = params?.illnessId;
   const isEdit = !!illnessId;
   const initialEmployeeName = params?.employeeName || '';
@@ -61,15 +63,23 @@ export const AddIllnessScreen = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
-  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const companies = useSelector((state: RootState) =>
+    selectAllCompanies(state),
+  );
   const teams = useSelector((state: RootState) => selectAllTeams(state));
-  const employees = useSelector((state: RootState) => selectAllEmployees(state));
+  const employees = useSelector((state: RootState) =>
+    selectAllEmployees(state),
+  );
   const services = useSelector((state: RootState) => selectAllServices(state));
-  const allIllnesses = useSelector((state: RootState) => selectAllIllnesses(state));
+  const allIllnesses = useSelector((state: RootState) =>
+    selectAllIllnesses(state),
+  );
 
   const [companyId, setCompanyId] = useState<number | undefined>(undefined);
   const [teamId, setTeamId] = useState<number | undefined>(undefined);
-  const [employeeId, setEmployeeId] = useState<number | undefined>(user?.role === 'employee' && user?.id ? Number(user.id) : undefined);
+  const [employeeId, setEmployeeId] = useState<number | undefined>(
+    user?.role === 'employee' && user?.id ? Number(user.id) : undefined,
+  );
 
   // Auto-fill logic for employees
   useEffect(() => {
@@ -98,7 +108,9 @@ export const AddIllnessScreen = ({
       if (illness) {
         setPayrollName(illness.payrollName || '');
         setEmployeeName(illness.employeeName || '');
-        setIssueDate(illness.issueDate ? new Date(illness.issueDate) : new Date());
+        setIssueDate(
+          illness.issueDate ? new Date(illness.issueDate) : new Date(),
+        );
         setExpiryDate(illness.expiryDate ? new Date(illness.expiryDate) : null);
         setPhotoUri(illness.photoUri || '');
         setNotes(illness.notes || '');
@@ -106,13 +118,15 @@ export const AddIllnessScreen = ({
         setLocation(illness.location || '');
       }
     } catch {
-      notificationService.showAlert(t('common.error'), t('illnesses.loadError'));
+      notificationService.showAlert(
+        t('common.error'),
+        t('illnesses.loadError'),
+      );
     }
   };
 
   const handleTakePhoto = async () => {
     if (Platform.OS === 'web') {
-      
       const input = (window as any).document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
@@ -124,7 +138,7 @@ export const AddIllnessScreen = ({
           reader.readAsDataURL(file);
         }
       };
-      
+
       input.click();
       return;
     }
@@ -146,11 +160,14 @@ export const AddIllnessScreen = ({
         {
           text: t('illnesses.chooseFromLibrary'),
           onPress: () => {
-            launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
-              if (response.assets && response.assets[0]?.uri) {
-                setPhotoUri(response.assets[0].uri);
-              }
-            });
+            launchImageLibrary(
+              { mediaType: 'photo', quality: 0.8 },
+              response => {
+                if (response.assets && response.assets[0]?.uri) {
+                  setPhotoUri(response.assets[0].uri);
+                }
+              },
+            );
           },
         },
         { text: t('common.cancel'), style: 'cancel' },
@@ -176,17 +193,24 @@ export const AddIllnessScreen = ({
 
     const hasCollision = allIllnesses.some((i: Illness) => {
       if (i.id === illnessId) return false;
-      if (i.employeeId !== (user?.role === 'employee' ? user?.employeeId : employeeId)) return false;
+      if (
+        i.employeeId !==
+        (user?.role === 'employee' ? user?.employeeId : employeeId)
+      )
+        return false;
 
       const iStart = new Date(i.issueDate);
       const iEnd = i.expiryDate ? new Date(i.expiryDate) : iStart;
 
       // Overlap check
-      return (checkStart <= iEnd) && (checkEnd >= iStart);
+      return checkStart <= iEnd && checkEnd >= iStart;
     });
 
     if (hasCollision) {
-      notificationService.showAlert(t('common.error'), t('illnesses.collisionError'));
+      notificationService.showAlert(
+        t('common.error'),
+        t('illnesses.collisionError'),
+      );
       return;
     }
 
@@ -194,10 +218,15 @@ export const AddIllnessScreen = ({
     try {
       const illnessData = {
         payrollName: payrollName.trim(),
-        employeeName: (user?.role === 'employee' ? user.name : employeeName).trim() || undefined,
-        employeeId: user?.role === 'employee' ? user.employeeId : initialEmployeeId,
+        employeeName:
+          (user?.role === 'employee' ? user.name : employeeName).trim() ||
+          undefined,
+        employeeId:
+          user?.role === 'employee' ? user.employeeId : initialEmployeeId,
         issueDate: issueDate!.toISOString().split('T')[0],
-        expiryDate: expiryDate ? expiryDate.toISOString().split('T')[0] : undefined,
+        expiryDate: expiryDate
+          ? expiryDate.toISOString().split('T')[0]
+          : undefined,
         photoUri: photoUri || undefined,
         notes: notes.trim() || undefined,
         department,
@@ -208,7 +237,10 @@ export const AddIllnessScreen = ({
 
       let id: number;
       if (isEdit && illnessId) {
-        await illnessesDb.update(Number(illnessId), illnessData as Partial<Illness>);
+        await illnessesDb.update(
+          Number(illnessId),
+          illnessData as Partial<Illness>,
+        );
         id = Number(illnessId);
       } else {
         id = await illnessesDb.add(illnessData as Omit<Illness, 'id'>);
@@ -233,7 +265,10 @@ export const AddIllnessScreen = ({
       }
     } catch (error) {
       console.error('Error saving illness:', error);
-      notificationService.showAlert(t('common.error'), t('illnesses.saveError'));
+      notificationService.showAlert(
+        t('common.error'),
+        t('illnesses.saveError'),
+      );
     } finally {
       setLoading(false);
     }
@@ -245,17 +280,25 @@ export const AddIllnessScreen = ({
         <View style={styles.formContainer}>
           {/* Section: Medical Case */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('common.generalInfo') || t('navigation.personalInfo')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('common.generalInfo') || t('navigation.personalInfo')}
+            </Text>
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('illnesses.payrollNameLabel')} *</Text>
+                <Text style={styles.label}>
+                  {t('illnesses.payrollNameLabel')} *
+                </Text>
                 <TextInput
-                  style={[styles.input, errors.payrollName && styles.inputError]}
+                  style={[
+                    styles.input,
+                    errors.payrollName && styles.inputError,
+                  ]}
                   value={payrollName}
                   onChangeText={text => {
                     setPayrollName(text);
-                    if (errors.payrollName) setErrors({ ...errors, payrollName: '' });
+                    if (errors.payrollName)
+                      setErrors({ ...errors, payrollName: '' });
                   }}
                   placeholder={t('illnesses.payrollPlaceholder')}
                   placeholderTextColor={theme.colors.subText}
@@ -267,7 +310,9 @@ export const AddIllnessScreen = ({
 
               {user?.role !== 'employee' && (
                 <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>{t('illnesses.employeeNameLabel')}</Text>
+                  <Text style={styles.label}>
+                    {t('illnesses.employeeNameLabel')}
+                  </Text>
                   <TextInput
                     style={styles.input}
                     value={employeeName}
@@ -285,9 +330,12 @@ export const AddIllnessScreen = ({
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('companies.selectCompany')}
-                    data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                    data={companies.map(c => ({
+                      label: c.name,
+                      value: String(c.id),
+                    }))}
                     value={companyId ? String(companyId) : ''}
-                    onSelect={(val) => setCompanyId(Number(val))}
+                    onSelect={val => setCompanyId(Number(val))}
                   />
                 </View>
               )}
@@ -295,9 +343,12 @@ export const AddIllnessScreen = ({
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('teams.selectTeam')}
-                    data={teams.map(t => ({ label: t.name, value: String(t.id) }))}
+                    data={teams.map(t => ({
+                      label: t.name,
+                      value: String(t.id),
+                    }))}
                     value={teamId ? String(teamId) : ''}
-                    onSelect={(val) => setTeamId(Number(val))}
+                    onSelect={val => setTeamId(Number(val))}
                   />
                 </View>
               )}
@@ -307,9 +358,12 @@ export const AddIllnessScreen = ({
               <View style={styles.fieldContainer}>
                 <Dropdown
                   label={t('employees.name')}
-                  data={employees.map(e => ({ label: e.name, value: String(e.id) }))}
+                  data={employees.map(e => ({
+                    label: e.name,
+                    value: String(e.id),
+                  }))}
                   value={employeeId ? String(employeeId) : ''}
-                  onSelect={(val) => setEmployeeId(Number(val))}
+                  onSelect={val => setEmployeeId(Number(val))}
                 />
               </View>
             )}
@@ -341,7 +395,9 @@ export const AddIllnessScreen = ({
 
           {/* Section: Period */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('payroll.freqWeekly') || t('leaves.time')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('payroll.freqWeekly') || t('leaves.time')}
+            </Text>
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
@@ -372,7 +428,10 @@ export const AddIllnessScreen = ({
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t('payroll.notes')}</Text>
 
-            <TouchableOpacity style={styles.photoButton} onPress={handleTakePhoto}>
+            <TouchableOpacity
+              style={styles.photoButton}
+              onPress={handleTakePhoto}
+            >
               {photoUri ? (
                 <Image source={{ uri: photoUri }} style={styles.photo} />
               ) : (
@@ -403,7 +462,11 @@ export const AddIllnessScreen = ({
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {loading ? t('common.loading') : isEdit ? t('illnesses.updateButton') : t('illnesses.saveButton')}
+            {loading
+              ? t('common.loading')
+              : isEdit
+              ? t('illnesses.updateButton')
+              : t('illnesses.saveButton')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

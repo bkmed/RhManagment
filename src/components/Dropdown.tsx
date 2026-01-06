@@ -68,7 +68,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
         onPress={() => setVisible(true)}
       >
         <Text style={[styles.valueText, !value && styles.placeholderText]}>
-          {selectedItem ? selectedItem.label : placeholder || t('common.select')}
+          {selectedItem
+            ? selectedItem.label
+            : placeholder || t('common.select')}
         </Text>
         <Text style={styles.chevron}>▼</Text>
       </TouchableOpacity>

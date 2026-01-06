@@ -19,7 +19,6 @@ import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { formatDate } from '../../utils/dateUtils';
 
-
 export const ClaimsListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -34,16 +33,19 @@ export const ClaimsListScreen = ({ navigation }: any) => {
 
   const loadData = async () => {
     try {
-      const [claimsData, employeesData, companiesData, teamsData] = await Promise.all([
-        claimsDb.getAll(),
-        employeesDb.getAll(),
-        companiesDb.getAll(),
-        teamsDb.getAll(),
-      ]);
+      const [claimsData, employeesData, companiesData, teamsData] =
+        await Promise.all([
+          claimsDb.getAll(),
+          employeesDb.getAll(),
+          companiesDb.getAll(),
+          teamsDb.getAll(),
+        ]);
 
       let filteredClaims = claimsData;
       if (user?.role === 'employee' && user?.employeeId) {
-        filteredClaims = claimsData.filter(c => c.employeeId === user.employeeId);
+        filteredClaims = claimsData.filter(
+          c => c.employeeId === user.employeeId,
+        );
       }
 
       // Sort by urgency and date
@@ -71,7 +73,6 @@ export const ClaimsListScreen = ({ navigation }: any) => {
       return [{ type: 'direct', items: claims }];
     }
 
-    
     const companiesMap = new Map<number | string, any>();
 
     claims.forEach(claim => {
@@ -148,7 +149,8 @@ export const ClaimsListScreen = ({ navigation }: any) => {
         <View style={styles.typeTag}>
           <Text style={styles.typeText}>
             {t(
-              `claims.type${item.type.charAt(0).toUpperCase() + item.type.slice(1)
+              `claims.type${
+                item.type.charAt(0).toUpperCase() + item.type.slice(1)
               }`,
             )}
           </Text>
@@ -163,7 +165,8 @@ export const ClaimsListScreen = ({ navigation }: any) => {
             style={[styles.statusText, { color: getStatusColor(item.status) }]}
           >
             {t(
-              `claims.status${item.status.charAt(0).toUpperCase() + item.status.slice(1)
+              `claims.status${
+                item.status.charAt(0).toUpperCase() + item.status.slice(1)
               }`,
             )}
           </Text>
@@ -175,9 +178,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
       </Text>
 
       <View style={styles.footer}>
-        <Text style={styles.date}>
-          {formatDate(item.createdAt)}
-        </Text>
+        <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
         {item.isUrgent && (
           <View style={styles.urgentTag}>
             <Text style={styles.urgentText}>
@@ -224,33 +225,34 @@ export const ClaimsListScreen = ({ navigation }: any) => {
             </View>
           )}
 
-          {
-            groupedData.map((companyGroup: any) => (
-              <View key={companyGroup.id} style={styles.companySection}>
-                {companyGroup.name !== 'direct' && (
-                  <View style={styles.companyHeader}>
-                    <Text style={styles.companyName}>{companyGroup.name}</Text>
-                  </View>
-                )}
+          {groupedData.map((companyGroup: any) => (
+            <View key={companyGroup.id} style={styles.companySection}>
+              {companyGroup.name !== 'direct' && (
+                <View style={styles.companyHeader}>
+                  <Text style={styles.companyName}>{companyGroup.name}</Text>
+                </View>
+              )}
 
-                {
-                  (companyGroup.teams || []).map((teamGroup: any) => (
-                    <View key={teamGroup.id} style={styles.teamSection}>
-                      {teamGroup.name && (
-                        <View style={styles.teamHeader}>
-                          <View style={styles.teamInfo}>
-                            <Text style={styles.teamName}>{teamGroup.name}</Text>
-                            <Text style={styles.teamManager}>Chef: {teamGroup.managerName}</Text>
-                          </View>
-                        </View>
-                      )}
-                      {teamGroup.items.map((claim: Claim) => renderClaim(claim))}
+              {(companyGroup.teams || []).map((teamGroup: any) => (
+                <View key={teamGroup.id} style={styles.teamSection}>
+                  {teamGroup.name && (
+                    <View style={styles.teamHeader}>
+                      <View style={styles.teamInfo}>
+                        <Text style={styles.teamName}>{teamGroup.name}</Text>
+                        <Text style={styles.teamManager}>
+                          Chef: {teamGroup.managerName}
+                        </Text>
+                      </View>
                     </View>
-                  ))}
+                  )}
+                  {teamGroup.items.map((claim: Claim) => renderClaim(claim))}
+                </View>
+              ))}
 
-                {companyGroup.type === 'direct' && companyGroup.items.map((claim: Claim) => renderClaim(claim))}
-              </View>
-            ))}
+              {companyGroup.type === 'direct' &&
+                companyGroup.items.map((claim: Claim) => renderClaim(claim))}
+            </View>
+          ))}
         </ScrollView>
       )}
 

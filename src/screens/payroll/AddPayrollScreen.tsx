@@ -35,7 +35,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('Daily');
-  const [times, setTimes] = useState<Date[]>([new Date(new Date().setHours(8, 0, 0, 0)), new Date(new Date().setHours(20, 0, 0, 0))]);
+  const [times, setTimes] = useState<Date[]>([
+    new Date(new Date().setHours(8, 0, 0, 0)),
+    new Date(new Date().setHours(20, 0, 0, 0)),
+  ]);
   const [mealVouchers, setMealVouchers] = useState('');
   const [giftVouchers, setGiftVouchers] = useState('');
   const [bonusAmount, setBonusAmount] = useState('');
@@ -43,7 +46,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [department, setDepartment] = useState('');
   const [location, setLocation] = useState('');
   const [currency, setCurrency] = useState('€'); // Default currency
-  const [availableCurrencies, setAvailableCurrencies] = useState<Currency[]>([]);
+  const [availableCurrencies, setAvailableCurrencies] = useState<Currency[]>(
+    [],
+  );
 
   // New fields
   const [month, setMonth] = useState(new Date().getMonth() + 1 + '');
@@ -54,15 +59,21 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [loading, setLoading] = useState(false);
 
   const services = useSelector((state: RootState) => selectAllServices(state));
-  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const companies = useSelector((state: RootState) =>
+    selectAllCompanies(state),
+  );
   const teams = useSelector((state: RootState) => selectAllTeams(state));
-  const employees = useSelector((state: RootState) => selectAllEmployees(state));
+  const employees = useSelector((state: RootState) =>
+    selectAllEmployees(state),
+  );
   const { user } = useAuth();
 
   // New state for company/team/employee
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(user?.role === 'employee' && user?.id ? Number(user.id) : null);
+  const [employeeId, setEmployeeId] = useState<number | null>(
+    user?.role === 'employee' && user?.id ? Number(user.id) : null,
+  );
 
   useEffect(() => {
     loadInitialData();
@@ -84,7 +95,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
       await currenciesDb.init(); // Ensure defaults exist
       const currencies = await currenciesDb.getAll();
       setAvailableCurrencies(currencies);
-      if (currencies.length > 0 && !payrollId) { // Use payrollId to check if it's an edit
+      if (currencies.length > 0 && !payrollId) {
+        // Use payrollId to check if it's an edit
         setCurrency(currencies[0].symbol);
       }
 
@@ -98,7 +110,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
           let parsedTimes: Date[] = [];
           try {
-            const timeStrings = item.times ? JSON.parse(item.times) : ['08:00', '20:00'];
+            const timeStrings = item.times
+              ? JSON.parse(item.times)
+              : ['08:00', '20:00'];
             parsedTimes = timeStrings.map((ts: string) => {
               const [h, m] = ts.split(':').map(Number);
               const d = new Date();
@@ -107,13 +121,20 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               return d;
             });
           } catch (error) {
-            parsedTimes = [new Date(new Date().setHours(8, 0)), new Date(new Date().setHours(20, 0))];
+            parsedTimes = [
+              new Date(new Date().setHours(8, 0)),
+              new Date(new Date().setHours(20, 0)),
+            ];
             console.error(error);
           }
           setTimes(parsedTimes);
 
-          setMealVouchers(item.mealVouchers ? item.mealVouchers.toString() : '');
-          setGiftVouchers(item.giftVouchers ? item.giftVouchers.toString() : '');
+          setMealVouchers(
+            item.mealVouchers ? item.mealVouchers.toString() : '',
+          );
+          setGiftVouchers(
+            item.giftVouchers ? item.giftVouchers.toString() : '',
+          );
           setBonusAmount(item.bonusAmount ? item.bonusAmount.toString() : '');
           setBonusType(item.bonusType || 'none');
           setDepartment(item.department || '');
@@ -139,7 +160,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
     if (!amount.trim()) {
       newErrors.amount = t('common.required');
     } else if (isNaN(Number(amount))) {
-      newErrors.amount = t('common.invalidAmount') || "Invalid amount";
+      newErrors.amount = t('common.invalidAmount') || 'Invalid amount';
     }
 
     setErrors(newErrors);
@@ -148,7 +169,11 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
     setLoading(true);
     try {
       const timeStrings = times.map(t =>
-        t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+        t.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }),
       );
 
       const payrollData: Omit<Payroll, 'id' | 'createdAt' | 'updatedAt'> = {
@@ -162,7 +187,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         isUrgent: false,
         mealVouchers: (() => {
           if (!mealVouchers) return undefined;
-          const clean = mealVouchers.toLowerCase().replace(/,/g, '.').replace(/\s/g, '');
+          const clean = mealVouchers
+            .toLowerCase()
+            .replace(/,/g, '.')
+            .replace(/\s/g, '');
           if (clean.includes('x') || clean.includes('*')) {
             const parts = clean.split(/[x*]/);
             if (parts.length === 2) {
@@ -182,15 +210,15 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         hoursWorked: hoursWorked ? parseFloat(hoursWorked) : undefined,
         companyId: companyId ?? undefined,
         teamId: teamId ?? undefined,
-        employeeId: (employeeId ?? undefined) || (user?.role === 'employee' ? Number(user.id) : undefined),
+        employeeId:
+          (employeeId ?? undefined) ||
+          (user?.role === 'employee' ? Number(user.id) : undefined),
       };
 
-      let id: number;
       if (isEdit && payrollId) {
         await payrollDb.update(payrollId, payrollData);
-        id = payrollId;
       } else {
-        id = await payrollDb.add(payrollData);
+        await payrollDb.add(payrollData);
       }
 
       /* Reminders removed */
@@ -208,34 +236,41 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const handleAddTime = () => setTimes([...times, new Date(new Date().setHours(12, 0))]);
-  const handleRemoveTime = (index: number) =>
-    setTimes(times.filter((_, i) => i !== index));
-
-  const handleTimeChange = (index: number, newDate: Date) => {
-    const newTimes = [...times];
-    newTimes[index] = newDate;
-    setTimes(newTimes);
-  };
-
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.formContainer}>
           {/* Section: Payment Information */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('common.generalInfo') || t('navigation.personalInfo')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('common.generalInfo') || t('navigation.personalInfo')}
+            </Text>
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
                 <Dropdown
                   label={t('payroll.name') + ' *'}
                   data={[
-                    { label: t('payroll.items.baseSalary'), value: 'baseSalary' },
-                    { label: t('payroll.items.mealTicket'), value: 'mealTicket' },
-                    { label: t('payroll.items.transportAllowance'), value: 'transportAllowance' },
-                    { label: t('payroll.items.performanceBonus'), value: 'performanceBonus' },
-                    { label: t('payroll.items.thirteenthMonth'), value: 'thirteenthMonth' },
+                    {
+                      label: t('payroll.items.baseSalary'),
+                      value: 'baseSalary',
+                    },
+                    {
+                      label: t('payroll.items.mealTicket'),
+                      value: 'mealTicket',
+                    },
+                    {
+                      label: t('payroll.items.transportAllowance'),
+                      value: 'transportAllowance',
+                    },
+                    {
+                      label: t('payroll.items.performanceBonus'),
+                      value: 'performanceBonus',
+                    },
+                    {
+                      label: t('payroll.items.thirteenthMonth'),
+                      value: 'thirteenthMonth',
+                    },
                     { label: t('payroll.items.bonus'), value: 'bonus' },
                     { label: t('payroll.items.indemnity'), value: 'indemnity' },
                     { label: t('payroll.items.overtime'), value: 'overtime' },
@@ -243,7 +278,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                   value={name}
                   onSelect={setName}
                 />
-                {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+                {errors.name && (
+                  <Text style={styles.errorText}>{errors.name}</Text>
+                )}
               </View>
 
               <View style={styles.fieldContainer}>
@@ -274,7 +311,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                     />
                   </View>
                 </View>
-                {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
+                {errors.amount && (
+                  <Text style={styles.errorText}>{errors.amount}</Text>
+                )}
               </View>
             </View>
 
@@ -284,9 +323,12 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('companies.selectCompany')}
-                    data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                    data={companies.map(c => ({
+                      label: c.name,
+                      value: String(c.id),
+                    }))}
                     value={companyId ? String(companyId) : ''}
-                    onSelect={(val) => setCompanyId(Number(val))}
+                    onSelect={val => setCompanyId(Number(val))}
                   />
                 </View>
               )}
@@ -294,9 +336,12 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('teams.selectTeam')}
-                    data={teams.map(t => ({ label: t.name, value: String(t.id) }))}
+                    data={teams.map(t => ({
+                      label: t.name,
+                      value: String(t.id),
+                    }))}
                     value={teamId ? String(teamId) : ''}
-                    onSelect={(val) => setTeamId(Number(val))}
+                    onSelect={val => setTeamId(Number(val))}
                   />
                 </View>
               )}
@@ -306,9 +351,12 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               <View style={styles.fieldContainer}>
                 <Dropdown
                   label={t('employees.name')}
-                  data={employees.map(e => ({ label: e.name, value: String(e.id) }))}
+                  data={employees.map(e => ({
+                    label: e.name,
+                    value: String(e.id),
+                  }))}
                   value={employeeId ? String(employeeId) : ''}
-                  onSelect={(val) => setEmployeeId(Number(val))}
+                  onSelect={val => setEmployeeId(Number(val))}
                 />
               </View>
             )}
@@ -336,7 +384,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             </View>
 
             <View style={styles.divider} />
-            <Text style={styles.sectionTitle}>{t('common.details') || 'Benefits & Bonuses'}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('common.details') || 'Benefits & Bonuses'}
+            </Text>
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
@@ -361,14 +411,19 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               </View>
             </View>
 
-            <View style={[styles.responsiveRow, { marginTop: theme.spacing.m }]}>
+            <View
+              style={[styles.responsiveRow, { marginTop: theme.spacing.m }]}
+            >
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>{t('payroll.bonusType')}</Text>
                 <View style={styles.frequencyContainer}>
                   {[
                     { key: 'none', label: t('payroll.none') },
                     { key: '13th_month', label: t('payroll.thirtheenthMonth') },
-                    { key: 'performance', label: t('payroll.performanceBonus') }
+                    {
+                      key: 'performance',
+                      label: t('payroll.performanceBonus'),
+                    },
                   ].map(bonus => (
                     <TouchableOpacity
                       key={bonus.key}
@@ -409,13 +464,17 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             </View>
 
             {/* New Section: Period & Worked Hours */}
-            <View style={[styles.responsiveRow, { marginTop: theme.spacing.m }]}>
+            <View
+              style={[styles.responsiveRow, { marginTop: theme.spacing.m }]}
+            >
               <View style={styles.fieldContainer}>
                 <Dropdown
                   label={t('payroll.month')}
                   data={Array.from({ length: 12 }, (_, i) => ({
-                    label: new Date(0, i).toLocaleString(undefined, { month: 'long' }),
-                    value: (i + 1).toString()
+                    label: new Date(0, i).toLocaleString(undefined, {
+                      month: 'long',
+                    }),
+                    value: (i + 1).toString(),
                   }))}
                   value={month}
                   onSelect={setMonth}
@@ -453,8 +512,12 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {loading ? t('common.loading') : isEdit ? t('payroll.update') : t('common.save')}
-            {' '}{t('payroll.payroll')}
+            {loading
+              ? t('common.loading')
+              : isEdit
+              ? t('payroll.update')
+              : t('common.save')}{' '}
+            {t('payroll.payroll')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -549,7 +612,7 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.error,
       justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 20
+      marginTop: 20,
     },
     removeButtonText: {
       color: theme.colors.surface,

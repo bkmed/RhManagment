@@ -27,7 +27,6 @@ export interface Currency {
   updatedAt: string;
 }
 
-
 export interface Payroll {
   id?: number;
   name: string;
@@ -48,9 +47,9 @@ export interface Payroll {
   createdAt: string;
   updatedAt: string;
   department?: string; // Service
-  location?: string;   // Local
-  month?: string;      // e.g., "1" for January
-  year?: string;       // e.g., "2024"
+  location?: string; // Local
+  month?: string; // e.g., "1" for January
+  year?: string; // e.g., "2024"
   hoursWorked?: number;
   companyId?: number;
   teamId?: number;
@@ -104,7 +103,7 @@ export interface Illness {
   createdAt: string;
   updatedAt: string;
   department?: string; // Service
-  location?: string;   // Local
+  location?: string; // Local
   companyId?: number;
   teamId?: number;
 }

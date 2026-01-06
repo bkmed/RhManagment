@@ -53,7 +53,10 @@ export const IllnessListScreen = ({ navigation }: any) => {
       setTeams(teamData);
     } catch (error) {
       console.error('Error loading data:', error);
-      notificationService.showAlert(t('common.error'), t('illnesses.loadError'));
+      notificationService.showAlert(
+        t('common.error'),
+        t('illnesses.loadError'),
+      );
     } finally {
       setLoading(false);
     }
@@ -72,7 +75,9 @@ export const IllnessListScreen = ({ navigation }: any) => {
       data = data.filter(ill => ill.employeeId === user?.employeeId);
     } else {
       if (user?.role === 'chef_dequipe') {
-        const teamMembers = employees.filter(e => e.teamId === user?.teamId).map(e => e.id);
+        const teamMembers = employees
+          .filter(e => e.teamId === user?.teamId)
+          .map(e => e.id);
         data = data.filter(ill => teamMembers.includes(ill.employeeId));
       } else if (user?.role === 'employee') {
         data = data.filter(ill => ill.employeeId === user?.employeeId);
@@ -81,13 +86,17 @@ export const IllnessListScreen = ({ navigation }: any) => {
         if (filterCompanyId !== null) {
           data = data.filter(ill => {
             const emp = employees.find(e => e.id === ill.employeeId);
-            return filterCompanyId === -1 ? !emp?.companyId : emp?.companyId === filterCompanyId;
+            return filterCompanyId === -1
+              ? !emp?.companyId
+              : emp?.companyId === filterCompanyId;
           });
         }
         if (filterTeamId !== null) {
           data = data.filter(ill => {
             const emp = employees.find(e => e.id === ill.employeeId);
-            return filterTeamId === -1 ? !emp?.teamId : emp?.teamId === filterTeamId;
+            return filterTeamId === -1
+              ? !emp?.teamId
+              : emp?.teamId === filterTeamId;
           });
         }
       }
@@ -98,13 +107,28 @@ export const IllnessListScreen = ({ navigation }: any) => {
     return data.filter(
       illness =>
         illness.payrollName.toLowerCase().includes(lowerQuery) ||
-        (illness.employeeName && illness.employeeName.toLowerCase().includes(lowerQuery)),
+        (illness.employeeName &&
+          illness.employeeName.toLowerCase().includes(lowerQuery)),
     );
-  }, [illnesses, searchQuery, activeTab, user, employees, filterCompanyId, filterTeamId]);
+  }, [
+    illnesses,
+    searchQuery,
+    activeTab,
+    user,
+    employees,
+    filterCompanyId,
+    filterTeamId,
+  ]);
 
   const groupedData = useMemo(() => {
     if (activeTab === 'mine') {
-      return [{ id: 'mine', title: t('illnesses.myIllnesses'), items: filteredIllnesses }];
+      return [
+        {
+          id: 'mine',
+          title: t('illnesses.myIllnesses'),
+          items: filteredIllnesses,
+        },
+      ];
     }
 
     const compMap = new Map<number | string, any>();
@@ -119,7 +143,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
         compMap.set(compId, {
           id: compId,
           name: comp?.name || t('common.none'),
-          teams: new Map()
+          teams: new Map(),
         });
       }
 
@@ -129,7 +153,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
         compGroup.teams.set(teamId, {
           id: teamId,
           name: team?.name || t('payroll.none'),
-          items: []
+          items: [],
         });
       }
       compGroup.teams.get(teamId).items.push(ill);
@@ -137,7 +161,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
 
     return Array.from(compMap.values()).map(c => ({
       ...c,
-      teams: Array.from(c.teams.values())
+      teams: Array.from(c.teams.values()),
     }));
   }, [filteredIllnesses, activeTab, user, employees, companies, teams, t]);
 
@@ -202,13 +226,20 @@ export const IllnessListScreen = ({ navigation }: any) => {
           placeholder={t('common.searchPlaceholder')}
         />
 
-        {(user?.role === 'admin' || user?.role === 'rh' || user?.role === 'chef_dequipe') && (
+        {(user?.role === 'admin' ||
+          user?.role === 'rh' ||
+          user?.role === 'chef_dequipe') && (
           <View style={styles.tabContainer}>
             <TouchableOpacity
               style={[styles.tab, activeTab === 'mine' && styles.activeTab]}
               onPress={() => setActiveTab('mine')}
             >
-              <Text style={[styles.tabText, activeTab === 'mine' && styles.activeTabText]}>
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === 'mine' && styles.activeTabText,
+                ]}
+              >
                 {t('illnesses.myIllnesses')}
               </Text>
             </TouchableOpacity>
@@ -216,79 +247,169 @@ export const IllnessListScreen = ({ navigation }: any) => {
               style={[styles.tab, activeTab === 'all' && styles.activeTab]}
               onPress={() => setActiveTab('all')}
             >
-              <Text style={[styles.tabText, activeTab === 'all' && styles.activeTabText]}>
-                {user?.role === 'chef_dequipe' ? t('illnesses.teamIllnesses') : t('illnesses.allIllnesses')}
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === 'all' && styles.activeTabText,
+                ]}
+              >
+                {user?.role === 'chef_dequipe'
+                  ? t('illnesses.teamIllnesses')
+                  : t('illnesses.allIllnesses')}
               </Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {activeTab === 'all' && (user?.role === 'admin' || user?.role === 'rh') && (
-          <View style={styles.filterWrapper}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
-              <TouchableOpacity
-                onPress={() => { setFilterCompanyId(null); setFilterTeamId(null); }}
-                style={[styles.filterChip, filterCompanyId === null && styles.activeFilterChip]}
+        {activeTab === 'all' &&
+          (user?.role === 'admin' || user?.role === 'rh') && (
+            <View style={styles.filterWrapper}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.filterScroll}
               >
-                <Text style={[styles.filterChipText, filterCompanyId === null && styles.activeFilterChipText]}>{t('common.allCompanies')}</Text>
-              </TouchableOpacity>
-              {companies.map(c => (
                 <TouchableOpacity
-                  key={c.id}
-                  onPress={() => { setFilterCompanyId(c.id); setFilterTeamId(null); }}
-                  style={[styles.filterChip, filterCompanyId === c.id && styles.activeFilterChip]}
+                  onPress={() => {
+                    setFilterCompanyId(null);
+                    setFilterTeamId(null);
+                  }}
+                  style={[
+                    styles.filterChip,
+                    filterCompanyId === null && styles.activeFilterChip,
+                  ]}
                 >
-                  <Text style={[styles.filterChipText, filterCompanyId === c.id && styles.activeFilterChipText]}>{c.name}</Text>
-                </TouchableOpacity>
-              ))}
-              <TouchableOpacity
-                onPress={() => { setFilterCompanyId(-1); setFilterTeamId(null); }}
-                style={[styles.filterChip, filterCompanyId === -1 && styles.activeFilterChip]}
-              >
-                <Text style={[styles.filterChipText, filterCompanyId === -1 && styles.activeFilterChipText]}>{t('common.none')}</Text>
-              </TouchableOpacity>
-            </ScrollView>
-
-            {filterCompanyId !== null && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll} style={{ marginTop: 8 }}>
-                <TouchableOpacity
-                  onPress={() => setFilterTeamId(null)}
-                  style={[styles.filterChip, filterTeamId === null && styles.activeFilterChip]}
-                >
-                  <Text style={[styles.filterChipText, filterTeamId === null && styles.activeFilterChipText]}>{t('common.noTeam')}</Text>
-                </TouchableOpacity>
-                {teams.filter(t => t.companyId === filterCompanyId).map(team => (
-                  <TouchableOpacity
-                    key={team.id}
-                    onPress={() => setFilterTeamId(team.id)}
-                    style={[styles.filterChip, filterTeamId === team.id && styles.activeFilterChip]}
+                  <Text
+                    style={[
+                      styles.filterChipText,
+                      filterCompanyId === null && styles.activeFilterChipText,
+                    ]}
                   >
-                    <Text style={[styles.filterChipText, filterTeamId === team.id && styles.activeFilterChipText]}>{team.name}</Text>
+                    {t('common.allCompanies')}
+                  </Text>
+                </TouchableOpacity>
+                {companies.map(c => (
+                  <TouchableOpacity
+                    key={c.id}
+                    onPress={() => {
+                      setFilterCompanyId(c.id);
+                      setFilterTeamId(null);
+                    }}
+                    style={[
+                      styles.filterChip,
+                      filterCompanyId === c.id && styles.activeFilterChip,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.filterChipText,
+                        filterCompanyId === c.id && styles.activeFilterChipText,
+                      ]}
+                    >
+                      {c.name}
+                    </Text>
                   </TouchableOpacity>
                 ))}
+                <TouchableOpacity
+                  onPress={() => {
+                    setFilterCompanyId(-1);
+                    setFilterTeamId(null);
+                  }}
+                  style={[
+                    styles.filterChip,
+                    filterCompanyId === -1 && styles.activeFilterChip,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.filterChipText,
+                      filterCompanyId === -1 && styles.activeFilterChipText,
+                    ]}
+                  >
+                    {t('common.none')}
+                  </Text>
+                </TouchableOpacity>
               </ScrollView>
-            )}
-          </View>
-        )}
+
+              {filterCompanyId !== null && (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.filterScroll}
+                  style={{ marginTop: 8 }}
+                >
+                  <TouchableOpacity
+                    onPress={() => setFilterTeamId(null)}
+                    style={[
+                      styles.filterChip,
+                      filterTeamId === null && styles.activeFilterChip,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.filterChipText,
+                        filterTeamId === null && styles.activeFilterChipText,
+                      ]}
+                    >
+                      {t('common.noTeam')}
+                    </Text>
+                  </TouchableOpacity>
+                  {teams
+                    .filter(t => t.companyId === filterCompanyId)
+                    .map(team => (
+                      <TouchableOpacity
+                        key={team.id}
+                        onPress={() => setFilterTeamId(team.id)}
+                        style={[
+                          styles.filterChip,
+                          filterTeamId === team.id && styles.activeFilterChip,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.filterChipText,
+                            filterTeamId === team.id &&
+                              styles.activeFilterChipText,
+                          ]}
+                        >
+                          {team.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                </ScrollView>
+              )}
+            </View>
+          )}
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 20 }} />
+        <ActivityIndicator
+          size="large"
+          color={theme.colors.primary}
+          style={{ marginTop: 20 }}
+        />
       ) : (
         <ScrollView contentContainerStyle={styles.listContent}>
-          {groupedData.length === 0 || (groupedData[0].items && groupedData[0].items.length === 0 && groupedData[0].id === 'mine') ? (
+          {groupedData.length === 0 ||
+          (groupedData[0].items &&
+            groupedData[0].items.length === 0 &&
+            groupedData[0].id === 'mine') ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyIcon}>🏥</Text>
               <Text style={styles.emptyText}>{t('illnesses.empty')}</Text>
               <Text style={styles.emptySubText}>
-                {activeTab === 'mine' ? t('illnesses.addFirst') : t('common.noData')}
+                {activeTab === 'mine'
+                  ? t('illnesses.addFirst')
+                  : t('common.noData')}
               </Text>
               {activeTab === 'mine' && (
                 <TouchableOpacity
                   style={styles.emptyAddButton}
                   onPress={() => navigation.navigate('AddIllness')}
                 >
-                  <Text style={styles.emptyAddButtonText}>+ {t('illnesses.add')}</Text>
+                  <Text style={styles.emptyAddButtonText}>
+                    + {t('illnesses.add')}
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -298,12 +419,14 @@ export const IllnessListScreen = ({ navigation }: any) => {
                 {group.id !== 'mine' && group.id !== 'team' && (
                   <Text style={styles.sectionTitle}>{group.name}</Text>
                 )}
-                {group.teams ? group.teams.map((tGroup: any) => (
-                  <View key={tGroup.id} style={styles.teamSection}>
-                    <Text style={styles.teamTitle}>{tGroup.name}</Text>
-                    {tGroup.items.map((ill: Illness) => renderIllness(ill))}
-                  </View>
-                )) : group.items.map((ill: Illness) => renderIllness(ill))}
+                {group.teams
+                  ? group.teams.map((tGroup: any) => (
+                      <View key={tGroup.id} style={styles.teamSection}>
+                        <Text style={styles.teamTitle}>{tGroup.name}</Text>
+                        {tGroup.items.map((ill: Illness) => renderIllness(ill))}
+                      </View>
+                    ))
+                  : group.items.map((ill: Illness) => renderIllness(ill))}
               </View>
             ))
           )}

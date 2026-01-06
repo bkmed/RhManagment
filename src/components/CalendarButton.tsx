@@ -37,7 +37,7 @@ export const CalendarButton: React.FC<CalendarButtonProps> = ({
       if (permission !== 'granted') {
         notificationService.showAlert(
           t('common.error'),
-          t('leaves.calendarPermissionRequired')
+          t('leaves.calendarPermissionRequired'),
         );
         return;
       }
@@ -52,15 +52,24 @@ export const CalendarButton: React.FC<CalendarButtonProps> = ({
       });
 
       if (success) {
-        notificationService.showAlert(t('common.success'), t('leaves.addedToCalendar'));
+        notificationService.showAlert(
+          t('common.success'),
+          t('leaves.addedToCalendar'),
+        );
         onSuccess?.();
       } else {
-        notificationService.showAlert(t('common.error'), t('leaves.calendarError'));
+        notificationService.showAlert(
+          t('common.error'),
+          t('leaves.calendarError'),
+        );
         onError?.();
       }
     } catch (error) {
       console.error('Error adding to calendar:', error);
-      notificationService.showAlert(t('common.error'), t('leaves.calendarError'));
+      notificationService.showAlert(
+        t('common.error'),
+        t('leaves.calendarError'),
+      );
       onError?.();
     }
   };

@@ -11,7 +11,10 @@ export const OfflineIndicator = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const styles = React.useMemo(() => createStyles(theme, insets), [theme, insets]);
+  const styles = React.useMemo(
+    () => createStyles(theme, insets),
+    [theme, insets],
+  );
   const slideAnim = useRef(new Animated.Value(-100)).current;
   const isNative = Platform.OS === 'ios' || Platform.OS === 'android';
   useEffect(() => {

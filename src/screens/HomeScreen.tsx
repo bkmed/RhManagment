@@ -44,16 +44,26 @@ interface StatCardProps {
   styles: Record<string, any>;
 }
 
-const StatCard = ({ title, value, icon, color, onPress, styles }: StatCardProps) => {
+const StatCard = ({
+  title,
+  value,
+  icon,
+  color,
+  onPress,
+  styles,
+}: StatCardProps) => {
   const { theme } = useTheme();
   return (
     <TouchableOpacity
       style={[
         styles.statCard,
         {
-          backgroundColor: Platform.OS === 'web' ? (theme.colors.surface + 'B3') : theme.colors.surface + 'E6',
+          backgroundColor:
+            Platform.OS === 'web'
+              ? theme.colors.surface + 'B3'
+              : theme.colors.surface + 'E6',
           borderColor: color + '40',
-        }
+        },
       ]}
       onPress={onPress}
     >
@@ -61,8 +71,12 @@ const StatCard = ({ title, value, icon, color, onPress, styles }: StatCardProps)
         <Text style={[styles.statIcon, { color: color }]}>{icon}</Text>
       </View>
       <View style={styles.statInfo}>
-        <Text style={[styles.statNumber, { color: theme.colors.text }]}>{value}</Text>
-        <Text style={[styles.statLabel, { color: theme.colors.subText }]}>{title}</Text>
+        <Text style={[styles.statNumber, { color: theme.colors.text }]}>
+          {value}
+        </Text>
+        <Text style={[styles.statLabel, { color: theme.colors.subText }]}>
+          {title}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -77,16 +91,38 @@ interface ActivityItemProps {
   styles: Record<string, any>;
 }
 
-const ActivityItem = ({ icon, title, subtitle, time, theme, styles }: ActivityItemProps) => {
+const ActivityItem = ({
+  icon,
+  title,
+  subtitle,
+  time,
+  theme,
+  styles,
+}: ActivityItemProps) => {
   return (
-    <View style={[styles.activityItem, { borderBottomColor: theme.colors.border }]}>
-      <View style={[styles.activityIconWrapper, { backgroundColor: theme.colors.primary + '15' }]}>
+    <View
+      style={[styles.activityItem, { borderBottomColor: theme.colors.border }]}
+    >
+      <View
+        style={[
+          styles.activityIconWrapper,
+          { backgroundColor: theme.colors.primary + '15' },
+        ]}
+      >
         <Text style={styles.activityIcon}>{icon}</Text>
       </View>
       <View style={styles.activityContent}>
-        <Text style={[styles.activityTitle, { color: theme.colors.text }]}>{title}</Text>
-        <Text style={[styles.activitySubtitle, { color: theme.colors.subText }]}>{subtitle}</Text>
-        <Text style={[styles.activityTime, { color: theme.colors.subText }]}>{time}</Text>
+        <Text style={[styles.activityTitle, { color: theme.colors.text }]}>
+          {title}
+        </Text>
+        <Text
+          style={[styles.activitySubtitle, { color: theme.colors.subText }]}
+        >
+          {subtitle}
+        </Text>
+        <Text style={[styles.activityTime, { color: theme.colors.subText }]}>
+          {time}
+        </Text>
       </View>
     </View>
   );
@@ -102,15 +138,28 @@ interface AdminDashboardProps {
   theme: Theme;
 }
 
-const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme }: AdminDashboardProps) => {
+const AdminDashboard = ({
+  summary,
+  recentActivity,
+  navigateToTab,
+  styles,
+  theme,
+}: AdminDashboardProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
 
   return (
     <View style={styles.dashboardContainer}>
-      <View style={[styles.welcomeSection, { backgroundColor: theme.colors.primary }]}>
+      <View
+        style={[
+          styles.welcomeSection,
+          { backgroundColor: theme.colors.primary },
+        ]}
+      >
         <View>
-          <Text style={styles.welcomeTitle}>{t('home.greeting')}, {user?.name}! 👋</Text>
+          <Text style={styles.welcomeTitle}>
+            {t('home.greeting')}, {user?.name}! 👋
+          </Text>
           <Text style={styles.welcomeSubtitle}>{t('home.manageCareer')}</Text>
         </View>
         <Text style={{ fontSize: 44 }}>🏢</Text>
@@ -159,7 +208,12 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme 
           style={styles.actionButton}
           onPress={() => navigateToTab('Employees', 'AddEmployee')}
         >
-          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.primary + '15' }]}>
+          <View
+            style={[
+              styles.actionIconWrapper,
+              { backgroundColor: theme.colors.primary + '15' },
+            ]}
+          >
             <Text style={styles.actionIcon}>➕</Text>
           </View>
           <Text style={styles.actionLabel}>{t('employees.add')}</Text>
@@ -168,7 +222,12 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme 
           style={styles.actionButton}
           onPress={() => navigateToTab('Companies')}
         >
-          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.secondary + '15' }]}>
+          <View
+            style={[
+              styles.actionIconWrapper,
+              { backgroundColor: theme.colors.secondary + '15' },
+            ]}
+          >
             <Text style={styles.actionIcon}>🏢</Text>
           </View>
           <Text style={styles.actionLabel}>{t('home.companies')}</Text>
@@ -177,7 +236,12 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme 
           style={styles.actionButton}
           onPress={() => navigateToTab('Teams')}
         >
-          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.success + '15' }]}>
+          <View
+            style={[
+              styles.actionIconWrapper,
+              { backgroundColor: theme.colors.success + '15' },
+            ]}
+          >
             <Text style={styles.actionIcon}>🚀</Text>
           </View>
           <Text style={styles.actionLabel}>{t('home.teams')}</Text>
@@ -186,7 +250,12 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme 
           style={styles.actionButton}
           onPress={() => navigateToTab('Leaves', 'TeamVacations')}
         >
-          <View style={[styles.actionIconWrapper, { backgroundColor: theme.colors.accent + '15' }]}>
+          <View
+            style={[
+              styles.actionIconWrapper,
+              { backgroundColor: theme.colors.accent + '15' },
+            ]}
+          >
             <Text style={styles.actionIcon}>🏖️</Text>
           </View>
           <Text style={styles.actionLabel}>{t('navigation.leaves')}</Text>
@@ -262,8 +331,15 @@ const EmployeeDashboard = ({
       <View style={styles.balanceCard}>
         <View style={styles.balanceHeader}>
           <Text style={styles.balanceTitle}>{t('leavePolicy.title')}</Text>
-          <View style={[styles.managedBadge, { backgroundColor: theme.colors.primary + '15' }]}>
-            <Text style={[styles.balanceManaged, { color: theme.colors.primary }]}>
+          <View
+            style={[
+              styles.managedBadge,
+              { backgroundColor: theme.colors.primary + '15' },
+            ]}
+          >
+            <Text
+              style={[styles.balanceManaged, { color: theme.colors.primary }]}
+            >
               {t('leavePolicy.managedBy')}
             </Text>
           </View>
@@ -276,14 +352,28 @@ const EmployeeDashboard = ({
               {user?.vacationDaysPerYear || 25}
             </Text>
           </View>
-          <View style={[styles.balanceDivider, { backgroundColor: theme.colors.border }]} />
+          <View
+            style={[
+              styles.balanceDivider,
+              { backgroundColor: theme.colors.border },
+            ]}
+          />
           <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>{t('leavePolicy.remaining')}</Text>
-            <Text style={[styles.balanceValue, { color: theme.colors.primary }]}>
+            <Text style={styles.balanceLabel}>
+              {t('leavePolicy.remaining')}
+            </Text>
+            <Text
+              style={[styles.balanceValue, { color: theme.colors.primary }]}
+            >
               {user?.remainingVacationDays ?? 25}
             </Text>
           </View>
-          <View style={[styles.balanceDivider, { backgroundColor: theme.colors.border }]} />
+          <View
+            style={[
+              styles.balanceDivider,
+              { backgroundColor: theme.colors.border },
+            ]}
+          />
           <View style={styles.balanceItem}>
             <Text style={styles.balanceLabel}>{t('home.statePaidLeaves')}</Text>
             <Text style={styles.balanceValue}>
@@ -316,16 +406,18 @@ const EmployeeDashboard = ({
                     const parts = [];
                     if (years > 0)
                       parts.push(
-                        `${years} ${years > 1
-                          ? t('common.yearsUnit')
-                          : t('common.yearUnit')
+                        `${years} ${
+                          years > 1
+                            ? t('common.yearsUnit')
+                            : t('common.yearUnit')
                         }`,
                       );
                     if (months > 0)
                       parts.push(
-                        `${months} ${months > 1
-                          ? t('common.monthsUnit')
-                          : t('common.monthUnit')
+                        `${months} ${
+                          months > 1
+                            ? t('common.monthsUnit')
+                            : t('common.monthUnit')
                         }`,
                       );
                     return parts.join(', ') || `0 ${t('common.monthUnit')}`;
@@ -343,7 +435,12 @@ const EmployeeDashboard = ({
           style={styles.quickActionItem}
           onPress={() => navigateToTab('Claims', 'AddClaim')}
         >
-          <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.secondary + '15' }]}>
+          <View
+            style={[
+              styles.quickActionIcon,
+              { backgroundColor: theme.colors.secondary + '15' },
+            ]}
+          >
             <Text style={{ fontSize: 20 }}>📝</Text>
           </View>
           <Text style={styles.quickActionText}>{t('claims.newClaim')}</Text>
@@ -354,7 +451,12 @@ const EmployeeDashboard = ({
           style={styles.quickActionItem}
           onPress={() => navigateToTab('Leaves', 'AddLeave')}
         >
-          <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.success + '15' }]}>
+          <View
+            style={[
+              styles.quickActionIcon,
+              { backgroundColor: theme.colors.success + '15' },
+            ]}
+          >
             <Text style={{ fontSize: 20 }}>📅</Text>
           </View>
           <Text style={styles.quickActionText}>{t('home.scheduleLeave')}</Text>
@@ -365,10 +467,17 @@ const EmployeeDashboard = ({
           style={styles.quickActionItem}
           onPress={() => navigateToTab('Profile', 'CareerHub')}
         >
-          <View style={[styles.quickActionIcon, { backgroundColor: theme.colors.primary + '15' }]}>
+          <View
+            style={[
+              styles.quickActionIcon,
+              { backgroundColor: theme.colors.primary + '15' },
+            ]}
+          >
             <Text style={{ fontSize: 20 }}>🚀</Text>
           </View>
-          <Text style={styles.quickActionText}>{t('navigation.careerHub')}</Text>
+          <Text style={styles.quickActionText}>
+            {t('navigation.careerHub')}
+          </Text>
           <Text style={{ color: theme.colors.subText }}>›</Text>
         </TouchableOpacity>
       </View>
@@ -413,12 +522,14 @@ export const HomeScreen = () => {
   const loadData = async () => {
     try {
       if (user?.role === 'admin' || user?.role === 'rh') {
-        const [employees, allLeaves, allClaims, allPayroll] = await Promise.all([
-          employeesDb.getAll(),
-          leavesDb.getAll(),
-          claimsDb.getAll(),
-          payrollDb.getAll(),
-        ]);
+        const [employees, allLeaves, allClaims, allPayroll] = await Promise.all(
+          [
+            employeesDb.getAll(),
+            leavesDb.getAll(),
+            claimsDb.getAll(),
+            payrollDb.getAll(),
+          ],
+        );
 
         const pendingLeaves = allLeaves.filter(l => l.status === 'pending');
         const pendingClaims = allClaims.filter(c => c.status === 'pending');
@@ -434,7 +545,9 @@ export const HomeScreen = () => {
         const activity = [
           ...pendingLeaves.map(l => ({
             icon: '📅',
-            title: `${t('leaves.approvals')}: ${l.employeeName || t('common.unknown')}`,
+            title: `${t('leaves.approvals')}: ${
+              l.employeeName || t('common.unknown')
+            }`,
             subtitle: l.title,
             date: l.createdAt,
           })),
@@ -456,21 +569,30 @@ export const HomeScreen = () => {
             subtitle: `${p.employeeId}: ${p.amount} ${p.currency || ''}`,
             date: p.createdAt || new Date().toISOString(),
           })),
-        ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        ]
+          .sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          )
           .slice(0, 10);
 
         setRecentActivity(activity);
       } else {
-        let [allPayroll, upcomingLeaves, expiringIllnesses] = await Promise.all([
-          payrollDb.getAll(),
-          leavesDb.getUpcoming(),
-          illnessesDb.getExpiringSoon(),
-        ]);
+        let [allPayroll, upcomingLeaves, expiringIllnesses] = await Promise.all(
+          [
+            payrollDb.getAll(),
+            leavesDb.getUpcoming(),
+            illnessesDb.getExpiringSoon(),
+          ],
+        );
 
         if (user?.employeeId) {
           allPayroll = allPayroll.filter(p => p.employeeId === user.employeeId);
-          upcomingLeaves = upcomingLeaves.filter(l => l.employeeId === user.employeeId);
-          expiringIllnesses = expiringIllnesses.filter(i => i.employeeId === user.employeeId);
+          upcomingLeaves = upcomingLeaves.filter(
+            l => l.employeeId === user.employeeId,
+          );
+          expiringIllnesses = expiringIllnesses.filter(
+            i => i.employeeId === user.employeeId,
+          );
         }
 
         setSummary(prev => ({
@@ -509,14 +631,14 @@ export const HomeScreen = () => {
         tab === 'Payroll'
           ? 'PayrollTab'
           : tab === 'Leaves'
-            ? 'LeavesTab'
-            : tab === 'Analytics'
-              ? 'Analytics'
-              : tab === 'Employees'
-                ? 'Employees'
-                : tab === 'Claims'
-                  ? 'Claims'
-                  : undefined;
+          ? 'LeavesTab'
+          : tab === 'Analytics'
+          ? 'Analytics'
+          : tab === 'Employees'
+          ? 'Employees'
+          : tab === 'Claims'
+          ? 'Claims'
+          : undefined;
 
       if (stackScreen) {
         navigation.navigate('Main', {
@@ -584,11 +706,11 @@ const createStyles = (theme: Theme) =>
       borderRadius: 24,
       marginVertical: 24,
       ...theme.shadows.medium,
-      ...(Platform.OS === 'web' && {
-
-        backgroundImage: 'linear-gradient(135deg, #0052CC 0%, #00A3BF 100%)' as any,
-
-      } as any),
+      ...(Platform.OS === 'web' &&
+        ({
+          backgroundImage:
+            'linear-gradient(135deg, #0052CC 0%, #00A3BF 100%)' as any,
+        } as any)),
     },
     welcomeTitle: {
       fontSize: 24,
@@ -614,18 +736,18 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       borderWidth: 1,
       ...theme.shadows.small,
-      ...(Platform.OS === 'web' && {
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        transition: 'all 0.3s ease',
-        cursor: 'pointer',
-        background: theme.colors.surface + 'B3', // 70% opacity
-        '&:hover': {
-          transform: 'translateY(-5px)',
-          boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
-        }
-
-      } as any),
+      ...(Platform.OS === 'web' &&
+        ({
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          transition: 'all 0.3s ease',
+          cursor: 'pointer',
+          background: theme.colors.surface + 'B3', // 70% opacity
+          '&:hover': {
+            transform: 'translateY(-5px)',
+            boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+          },
+        } as any)),
     },
     statIconWrapper: {
       width: 48,
@@ -671,14 +793,14 @@ const createStyles = (theme: Theme) =>
       borderColor: theme.colors.border,
       gap: 12,
       ...theme.shadows.small,
-      ...(Platform.OS === 'web' && {
-        transition: 'all 0.2s ease',
-        '&:hover': {
-          borderColor: theme.colors.primary,
-          transform: 'scale(1.02)',
-        }
-
-      } as any),
+      ...(Platform.OS === 'web' &&
+        ({
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            borderColor: theme.colors.primary,
+            transform: 'scale(1.02)',
+          },
+        } as any)),
     },
     actionIconWrapper: {
       width: 48,

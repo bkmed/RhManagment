@@ -1,10 +1,9 @@
-/// <reference types="cypress" />
 import { defineConfig } from 'cypress';
 
 export default defineConfig({
     e2e: {
         baseUrl: 'http://localhost:3000',
-        setupNodeEvents(on: any, config: any) {
+        setupNodeEvents() {
             // implement node event listeners here
         },
         viewportWidth: 1280,
@@ -14,3 +13,6 @@ export default defineConfig({
         screenshotOnRunFailure: true,
     },
 });
+
+
+

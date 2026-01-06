@@ -27,7 +27,7 @@ export const RemoteCalendarScreen = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [remoteDays, setRemoteDays] = useState<Record<string, string>>({});
-  
+
   const [approvedLeaves, setApprovedLeaves] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -36,7 +36,10 @@ export const RemoteCalendarScreen = () => {
 
   // New state for viewing other employees
   const [viewMode, setViewMode] = useState<'mine' | 'other'>('mine');
-  const [selectedEmployee, setSelectedEmployee] = useState<{ id: number; name: string } | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   useEffect(() => {
@@ -47,7 +50,8 @@ export const RemoteCalendarScreen = () => {
     try {
       setLoading(true);
       // Determine whose data to fetch
-      const employeeId = viewMode === 'mine' ? user?.employeeId : selectedEmployee?.id;
+      const employeeId =
+        viewMode === 'mine' ? user?.employeeId : selectedEmployee?.id;
 
       if (!employeeId) {
         setLoading(false);
@@ -61,10 +65,13 @@ export const RemoteCalendarScreen = () => {
         leavesDb.getApprovedByEmployeeId(employeeId),
       ]);
 
-      const mappedRemote = remoteData.reduce((acc: Record<string, string>, curr) => {
-        acc[curr.date] = curr.status;
-        return acc;
-      }, {});
+      const mappedRemote = remoteData.reduce(
+        (acc: Record<string, string>, curr) => {
+          acc[curr.date] = curr.status;
+          return acc;
+        },
+        {},
+      );
 
       setRemoteDays(mappedRemote);
       setApprovedLeaves(leavesData);
@@ -81,7 +88,10 @@ export const RemoteCalendarScreen = () => {
 
     try {
       if (!user?.employeeId) {
-        notificationService.showAlert(t('common.error'), t('employees.notFound'));
+        notificationService.showAlert(
+          t('common.error'),
+          t('employees.notFound'),
+        );
         return;
       }
 
@@ -102,7 +112,10 @@ export const RemoteCalendarScreen = () => {
           date: selectedDay,
           status,
         });
-        setRemoteDays((prev: { [key: string]: string }) => ({ ...prev, [selectedDay]: status }));
+        setRemoteDays((prev: { [key: string]: string }) => ({
+          ...prev,
+          [selectedDay]: status,
+        }));
       }
     } catch (error) {
       console.error('Error updating remote status:', error);
@@ -134,18 +147,30 @@ export const RemoteCalendarScreen = () => {
     // Read-only logic for 'other' mode
     if (viewMode === 'other') {
       if (isDayOnLeave(dateStr)) {
-        notificationService.showAlert(t('remote.onLeave'), getLeaveTitle(dateStr));
+        notificationService.showAlert(
+          t('remote.onLeave'),
+          getLeaveTitle(dateStr),
+        );
       }
       return;
     }
 
     if (isDayOnLeave(dateStr)) {
-      notificationService.showAlert(t('remote.onLeave'), getLeaveTitle(dateStr));
+      notificationService.showAlert(
+        t('remote.onLeave'),
+        getLeaveTitle(dateStr),
+      );
       return;
     }
-    const holiday = holidaysService.getHolidayOnDate(dateStr, user?.country || 'France');
+    const holiday = holidaysService.getHolidayOnDate(
+      dateStr,
+      user?.country || 'France',
+    );
     if (holiday) {
-      notificationService.showAlert(t('common.holiday'), holiday.name[t('languages.en') === 'English' ? 'en' : 'fr']);
+      notificationService.showAlert(
+        t('common.holiday'),
+        holiday.name[t('languages.en') === 'English' ? 'en' : 'fr'],
+      );
       return;
     }
     setSelectedDay(dateStr);
@@ -162,7 +187,11 @@ export const RemoteCalendarScreen = () => {
     setCurrentMonth(new Date());
   };
 
-  const handleSearchSelect = (result: { type: string; id: string; title: string }) => {
+  const handleSearchSelect = (result: {
+    type: string;
+    id: string;
+    title: string;
+  }) => {
     if (result.type === 'employee') {
       setSelectedEmployee({ id: Number(result.id), name: result.title });
       setIsSearchVisible(false);
@@ -183,51 +212,70 @@ export const RemoteCalendarScreen = () => {
 
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(year, month, d);
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(
+        d,
+      ).padStart(2, '0')}`;
       const status = remoteDays[dateStr];
       const onLeave = isDayOnLeave(dateStr);
-      const holiday = holidaysService.getHolidayOnDate(dateStr, user?.country || 'France');
+      const holiday = holidaysService.getHolidayOnDate(
+        dateStr,
+        user?.country || 'France',
+      );
       const isWeekend = holidaysService.isWeekend(date, user?.country);
       const isToday = new Date().toISOString().split('T')[0] === dateStr;
 
       days.push(
         <TouchableOpacity
           key={d}
-          style={[
-            styles.dayCell,
-            isToday && styles.todayCell,
-          ]}
+          style={[styles.dayCell, isToday && styles.todayCell]}
           onPress={() => onDayPress(dateStr)}
           disabled={viewMode === 'other' && !status && !onLeave} // Disable taps on empty days in 'other' mode
         >
-          <Text style={[
-            styles.dayText,
-            isWeekend && !status && !onLeave && styles.weekendText,
-            isToday && styles.todayText,
-          ]}>
+          <Text
+            style={[
+              styles.dayText,
+              isWeekend && !status && !onLeave && styles.weekendText,
+              isToday && styles.todayText,
+            ]}
+          >
             {d}
           </Text>
 
           <View style={styles.statusContainer}>
             {status && (
-              <View style={[
-                styles.statusBadge,
-                status.toLowerCase() === 'remote' ? styles.remoteBadge : styles.officeBadge
-              ]}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  status.toLowerCase() === 'remote'
+                    ? styles.remoteBadge
+                    : styles.officeBadge,
+                ]}
+              >
                 <Text style={styles.statusBadgeText}>
-                  {status.toLowerCase() === 'remote' ? '🏠 ' + t('remote.remote') : '🏢 ' + t('remote.office')}
+                  {status.toLowerCase() === 'remote'
+                    ? '🏠 ' + t('remote.remote')
+                    : '🏢 ' + t('remote.office')}
                 </Text>
               </View>
             )}
             {onLeave && (
               <View style={[styles.statusBadge, styles.leaveBadge]}>
-                <Text style={styles.statusBadgeText}>🏖️ {t('remote.onLeave')}</Text>
+                <Text style={styles.statusBadgeText}>
+                  🏖️ {t('remote.onLeave')}
+                </Text>
               </View>
             )}
             {holiday && (
               <View style={[styles.statusBadge, styles.holidayBadge]}>
                 <Text style={styles.statusBadgeText}>
-                  📅 {holiday.name[i18n.language.startsWith('ar') ? 'fr' : (i18n.language.startsWith('fr') ? 'fr' : 'en')] || holiday.name.fr}
+                  📅{' '}
+                  {holiday.name[
+                    i18n.language.startsWith('ar')
+                      ? 'fr'
+                      : i18n.language.startsWith('fr')
+                      ? 'fr'
+                      : 'en'
+                  ] || holiday.name.fr}
                 </Text>
               </View>
             )}
@@ -243,22 +291,37 @@ export const RemoteCalendarScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <ScrollView contentContainerStyle={styles.container}>
-
         {/* Toggle View Mode */}
         <View style={styles.toggleContainer}>
           <TouchableOpacity
-            style={[styles.toggleButton, viewMode === 'mine' && styles.toggleButtonActive]}
+            style={[
+              styles.toggleButton,
+              viewMode === 'mine' && styles.toggleButtonActive,
+            ]}
             onPress={() => setViewMode('mine')}
           >
-            <Text style={[styles.toggleText, viewMode === 'mine' && styles.toggleTextActive]}>
+            <Text
+              style={[
+                styles.toggleText,
+                viewMode === 'mine' && styles.toggleTextActive,
+              ]}
+            >
               {t('remote.myPlanning') || 'My Planning'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.toggleButton, viewMode === 'other' && styles.toggleButtonActive]}
+            style={[
+              styles.toggleButton,
+              viewMode === 'other' && styles.toggleButtonActive,
+            ]}
             onPress={() => setViewMode('other')}
           >
-            <Text style={[styles.toggleText, viewMode === 'other' && styles.toggleTextActive]}>
+            <Text
+              style={[
+                styles.toggleText,
+                viewMode === 'other' && styles.toggleTextActive,
+              ]}
+            >
               {t('remote.employeePlanning') || 'Employee Planning'}
             </Text>
           </TouchableOpacity>
@@ -271,15 +334,18 @@ export const RemoteCalendarScreen = () => {
             onPress={() => setIsSearchVisible(true)}
           >
             <Text style={styles.searchText}>
-              {selectedEmployee ? `👤 ${selectedEmployee.name}` : `🔍 ${t('common.search') || 'Search Employee'}`}
+              {selectedEmployee
+                ? `👤 ${selectedEmployee.name}`
+                : `🔍 ${t('common.search') || 'Search Employee'}`}
             </Text>
           </TouchableOpacity>
         )}
 
-        {(viewMode === 'mine' && !user?.employeeId) && (
+        {viewMode === 'mine' && !user?.employeeId && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
-              ℹ️ {t('employees.notFound')} - {t('profile.professionalProfile')} required
+              ℹ️ {t('employees.notFound')} - {t('profile.professionalProfile')}{' '}
+              required
             </Text>
           </View>
         )}
@@ -293,8 +359,11 @@ export const RemoteCalendarScreen = () => {
 
         {/* Month Navigation Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigateMonth(-1)} style={styles.navButton}>
-            <Text style={styles.navButtonText}>{"<"}</Text>
+          <TouchableOpacity
+            onPress={() => navigateMonth(-1)}
+            style={styles.navButton}
+          >
+            <Text style={styles.navButtonText}>{'<'}</Text>
           </TouchableOpacity>
           <View style={styles.headerTitleContainer}>
             <Text style={styles.monthTitle}>
@@ -307,8 +376,11 @@ export const RemoteCalendarScreen = () => {
               <Text style={styles.todayButtonText}>TODAY</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => navigateMonth(1)} style={styles.navButton}>
-            <Text style={styles.navButtonText}>{">"}</Text>
+          <TouchableOpacity
+            onPress={() => navigateMonth(1)}
+            style={styles.navButton}
+          >
+            <Text style={styles.navButtonText}>{'>'}</Text>
           </TouchableOpacity>
         </View>
 
@@ -453,7 +525,7 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: theme.spacing.l
+      marginBottom: theme.spacing.l,
     },
     headerTitleContainer: {
       alignItems: 'center',
@@ -627,7 +699,11 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.background,
     },
     optionIcon: { fontSize: 20, marginRight: theme.spacing.m },
-    optionText: { ...theme.textVariants.body, fontWeight: '600', color: theme.colors.text },
+    optionText: {
+      ...theme.textVariants.body,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
     noneOption: {
       marginTop: theme.spacing.m,
       borderWidth: 1,

@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-import { lightTheme, darkTheme, premiumTheme, Theme, createCustomTheme } from '../theme';
+import {
+  lightTheme,
+  darkTheme,
+  premiumTheme,
+  Theme,
+  createCustomTheme,
+} from '../theme';
 import { storageService } from '../services/storage';
 
 const THEME_KEY = 'user_theme_preference';
@@ -26,15 +32,15 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType>({
   theme: lightTheme,
   themeMode: 'light',
-  setThemeMode: () => { },
+  setThemeMode: () => {},
   customColors: {
     primary: '#0052CC',
     secondary: '#00A3BF',
     background: '#121212',
     surface: '#1D1D1F',
   },
-  setCustomColor: () => { },
-  toggleTheme: () => { },
+  setCustomColor: () => {},
+  toggleTheme: () => {},
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -55,7 +61,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const loadThemePreference = async () => {
     const savedTheme = (await storageService.getString(THEME_KEY)) as ThemeMode;
-    if (savedTheme && ['light', 'dark', 'premium', 'custom'].includes(savedTheme)) {
+    if (
+      savedTheme &&
+      ['light', 'dark', 'premium', 'custom'].includes(savedTheme)
+    ) {
       setThemeModeState(savedTheme);
     } else {
       setThemeModeState(systemScheme === 'dark' ? 'dark' : 'light');
@@ -88,23 +97,26 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     storageService.setString(CUSTOM_COLORS_KEY, JSON.stringify(nextColors));
   };
 
-  const theme = themeMode === 'premium'
-    ? premiumTheme
-    : (themeMode === 'dark'
+  const theme =
+    themeMode === 'premium'
+      ? premiumTheme
+      : themeMode === 'dark'
       ? darkTheme
-      : (themeMode === 'custom'
-        ? createCustomTheme(customColors)
-        : lightTheme));
+      : themeMode === 'custom'
+      ? createCustomTheme(customColors)
+      : lightTheme;
 
   return (
-    <ThemeContext.Provider value={{
-      theme,
-      themeMode,
-      setThemeMode,
-      customColors,
-      setCustomColor,
-      toggleTheme
-    }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        themeMode,
+        setThemeMode,
+        customColors,
+        setCustomColor,
+        toggleTheme,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

@@ -36,7 +36,11 @@ import { formatDate } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
-export const LeaveListScreen = ({ navigation }: { navigation: NativeStackNavigationProp<ParamListBase> }) => {
+export const LeaveListScreen = ({
+  navigation,
+}: {
+  navigation: NativeStackNavigationProp<ParamListBase>;
+}) => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -52,16 +56,19 @@ export const LeaveListScreen = ({ navigation }: { navigation: NativeStackNavigat
 
   const loadData = async () => {
     try {
-      const [leavesData, employeesData, companiesData, teamsData] = await Promise.all([
-        leavesDb.getUpcoming(),
-        employeesDb.getAll(),
-        companiesDb.getAll(),
-        teamsDb.getAll(),
-      ]);
+      const [leavesData, employeesData, companiesData, teamsData] =
+        await Promise.all([
+          leavesDb.getUpcoming(),
+          employeesDb.getAll(),
+          companiesDb.getAll(),
+          teamsDb.getAll(),
+        ]);
 
       let filteredLeaves = leavesData;
       if (user?.role === 'employee' && user?.employeeId) {
-        filteredLeaves = leavesData.filter(leave => leave.employeeId === user.employeeId);
+        filteredLeaves = leavesData.filter(
+          leave => leave.employeeId === user.employeeId,
+        );
       }
 
       setLeaves(filteredLeaves);
@@ -87,7 +94,8 @@ export const LeaveListScreen = ({ navigation }: { navigation: NativeStackNavigat
     const filtered = leaves.filter(
       leave =>
         leave.title.toLowerCase().includes(lowerQuery) ||
-        (leave.employeeName && leave.employeeName.toLowerCase().includes(lowerQuery)),
+        (leave.employeeName &&
+          leave.employeeName.toLowerCase().includes(lowerQuery)),
     );
 
     if (user?.role !== 'admin' && user?.role !== 'rh') {
@@ -141,12 +149,18 @@ export const LeaveListScreen = ({ navigation }: { navigation: NativeStackNavigat
       <TouchableOpacity
         key={item.id}
         style={styles.card}
-        onPress={() => navigation.navigate('LeaveDetails', { leaveId: item.id })}
+        onPress={() =>
+          navigation.navigate('LeaveDetails', { leaveId: item.id })
+        }
       >
         <View style={styles.dateColumn}>
           <Text style={styles.dateText}>{startStr}</Text>
-          {endStr && endStr !== startStr && <Text style={styles.rangeDivider}>{t('common.to')}</Text>}
-          {endStr && endStr !== startStr && <Text style={styles.dateText}>{endStr}</Text>}
+          {endStr && endStr !== startStr && (
+            <Text style={styles.rangeDivider}>{t('common.to')}</Text>
+          )}
+          {endStr && endStr !== startStr && (
+            <Text style={styles.dateText}>{endStr}</Text>
+          )}
         </View>
 
         <View style={styles.detailsColumn}>
@@ -154,8 +168,18 @@ export const LeaveListScreen = ({ navigation }: { navigation: NativeStackNavigat
           {item.employeeName && (
             <Text style={styles.employee}>{item.employeeName}</Text>
           )}
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status, theme) + '20' }]}>
-            <Text style={[styles.statusText, { color: getStatusColor(item.status, theme) }]}>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: getStatusColor(item.status, theme) + '20' },
+            ]}
+          >
+            <Text
+              style={[
+                styles.statusText,
+                { color: getStatusColor(item.status, theme) },
+              ]}
+            >
               {t(`leaveStatus.${item.status}`)}
             </Text>
           </View>
@@ -179,7 +203,9 @@ export const LeaveListScreen = ({ navigation }: { navigation: NativeStackNavigat
           style={styles.approvalLink}
           onPress={() => navigation.navigate('LeaveApprovalList')}
         >
-          <Text style={styles.approvalLinkText}>🔔 {t('leaves.approvals')}</Text>
+          <Text style={styles.approvalLinkText}>
+            🔔 {t('leaves.approvals')}
+          </Text>
         </TouchableOpacity>
       )}
 
@@ -190,33 +216,34 @@ export const LeaveListScreen = ({ navigation }: { navigation: NativeStackNavigat
           </View>
         )}
 
-        {
-          groupedData.map((companyGroup: CompanyGroup) => (
-            <View key={companyGroup.id} style={styles.companySection}>
-              {companyGroup.name !== 'direct' && (
-                <View style={styles.companyHeader}>
-                  <Text style={styles.companyName}>{companyGroup.name}</Text>
-                </View>
-              )}
+        {groupedData.map((companyGroup: CompanyGroup) => (
+          <View key={companyGroup.id} style={styles.companySection}>
+            {companyGroup.name !== 'direct' && (
+              <View style={styles.companyHeader}>
+                <Text style={styles.companyName}>{companyGroup.name}</Text>
+              </View>
+            )}
 
-              {
-                (companyGroup.teams || []).map((teamGroup: any) => (
-                  <View key={teamGroup.id} style={styles.teamSection}>
-                    {teamGroup.name && (
-                      <View style={styles.teamHeader}>
-                        <View style={styles.teamInfo}>
-                          <Text style={styles.teamName}>{teamGroup.name}</Text>
-                          <Text style={styles.teamManager}>{t('roles.chef_dequipe')}: {teamGroup.managerName}</Text>
-                        </View>
-                      </View>
-                    )}
-                    {teamGroup.items.map((leave: Leave) => renderLeave(leave))}
+            {(companyGroup.teams || []).map((teamGroup: any) => (
+              <View key={teamGroup.id} style={styles.teamSection}>
+                {teamGroup.name && (
+                  <View style={styles.teamHeader}>
+                    <View style={styles.teamInfo}>
+                      <Text style={styles.teamName}>{teamGroup.name}</Text>
+                      <Text style={styles.teamManager}>
+                        {t('roles.chef_dequipe')}: {teamGroup.managerName}
+                      </Text>
+                    </View>
                   </View>
-                ))}
+                )}
+                {teamGroup.items.map((leave: Leave) => renderLeave(leave))}
+              </View>
+            ))}
 
-              {companyGroup.type === 'direct' && companyGroup.items.map((leave: Leave) => renderLeave(leave))}
-            </View>
-          ))}
+            {companyGroup.type === 'direct' &&
+              companyGroup.items.map((leave: Leave) => renderLeave(leave))}
+          </View>
+        ))}
       </ScrollView>
 
       <TouchableOpacity
@@ -402,8 +429,11 @@ const createStyles = (theme: Theme) =>
 
 const getStatusColor = (status: string, theme: Theme) => {
   switch (status) {
-    case 'approved': return theme.colors.success;
-    case 'declined': return theme.colors.error;
-    default: return theme.colors.warning;
+    case 'approved':
+      return theme.colors.success;
+    case 'declined':
+      return theme.colors.error;
+    default:
+      return theme.colors.warning;
   }
 };

@@ -114,25 +114,21 @@ export const AnalyticsScreen = () => {
           </View>
 
           <View style={[styles.card, styles.cardGreen]}>
-            <Text style={styles.cardNumber}>
-              {analytics.upcomingLeaves}
-            </Text>
+            <Text style={styles.cardNumber}>{analytics.upcomingLeaves}</Text>
             <Text style={styles.cardLabel}>{t('analytics.leaves')}</Text>
           </View>
         </View>
 
         <View style={styles.cardsRow}>
           <View style={[styles.card, styles.cardOrange]}>
-            <Text style={styles.cardNumber}>
-              {analytics.expiringIllness}
+            <Text style={styles.cardNumber}>{analytics.expiringIllness}</Text>
+            <Text style={styles.cardLabel}>
+              {t('analytics.illnessExpiring')}
             </Text>
-            <Text style={styles.cardLabel}>{t('analytics.illnessExpiring')}</Text>
           </View>
 
           <View style={[styles.card, styles.cardPurple]}>
-            <Text style={styles.cardNumber}>
-              {analytics.payrollAdherence}%
-            </Text>
+            <Text style={styles.cardNumber}>{analytics.payrollAdherence}%</Text>
             <Text style={styles.cardLabel}>{t('analytics.adherence')}</Text>
           </View>
         </View>
@@ -189,9 +185,7 @@ export const AnalyticsScreen = () => {
 
         {/* HR Insights */}
         <View style={styles.insightsSection}>
-          <Text style={styles.sectionTitle}>
-            {t('analytics.hrInsights')}
-          </Text>
+          <Text style={styles.sectionTitle}>{t('analytics.hrInsights')}</Text>
 
           {analytics.payrollAdherence >= 90 && (
             <View style={[styles.insightCard, styles.insightGood]}>
@@ -228,35 +222,64 @@ export const AnalyticsScreen = () => {
         </View>
 
         {/* AI Question Analytics Section (Admin only) */}
-        {(user?.role === 'admin' || user?.role === 'rh') && questionOccurrences.length > 0 && (
-          <View style={styles.insightsSection}>
-            <Text style={styles.sectionTitle}>
-              {t('analytics.questionOccurrences') || 'Question Occurrences'}
-            </Text>
-            {questionOccurrences.map((occurrence, index) => (
-              <View key={index} style={[styles.insightCard, { backgroundColor: theme.colors.surface, justifyContent: 'space-between' }]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                  <Text style={styles.insightEmoji}>📊</Text>
-                  <Text style={[styles.insightText, { fontStyle: 'italic' }]}>"{occurrence.text}"</Text>
+        {(user?.role === 'admin' || user?.role === 'rh') &&
+          questionOccurrences.length > 0 && (
+            <View style={styles.insightsSection}>
+              <Text style={styles.sectionTitle}>
+                {t('analytics.questionOccurrences') || 'Question Occurrences'}
+              </Text>
+              {questionOccurrences.map((occurrence, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.insightCard,
+                    {
+                      backgroundColor: theme.colors.surface,
+                      justifyContent: 'space-between',
+                    },
+                  ]}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      flex: 1,
+                    }}
+                  >
+                    <Text style={styles.insightEmoji}>📊</Text>
+                    <Text style={[styles.insightText, { fontStyle: 'italic' }]}>
+                      "{occurrence.text}"
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.occurrenceBadge,
+                      { backgroundColor: theme.colors.primary },
+                    ]}
+                  >
+                    <Text style={styles.occurrenceText}>
+                      {occurrence.count}
+                    </Text>
+                  </View>
                 </View>
-                <View style={[styles.occurrenceBadge, { backgroundColor: theme.colors.primary }]}>
-                  <Text style={styles.occurrenceText}>{occurrence.count}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
+              ))}
+            </View>
+          )}
 
         {/* Material Distribution (Admin only) */}
         {(user?.role === 'admin' || user?.role === 'rh') && (
           <View style={styles.insightsSection}>
             <Text style={styles.sectionTitle}>Material Distribution</Text>
             <View style={styles.cardsRow}>
-              <View style={[styles.card, { backgroundColor: theme.colors.success }]}>
+              <View
+                style={[styles.card, { backgroundColor: theme.colors.success }]}
+              >
                 <Text style={styles.cardNumber}>{allDevices.length}</Text>
                 <Text style={styles.cardLabel}>Total Material</Text>
               </View>
-              <View style={[styles.card, { backgroundColor: theme.colors.error }]}>
+              <View
+                style={[styles.card, { backgroundColor: theme.colors.error }]}
+              >
                 <Text style={styles.cardNumber}>
                   {allDevices.filter(d => d.condition === 'faulty').length}
                 </Text>
@@ -265,8 +288,8 @@ export const AnalyticsScreen = () => {
             </View>
           </View>
         )}
-      </ScrollView >
-    </View >
+      </ScrollView>
+    </View>
   );
 };
 

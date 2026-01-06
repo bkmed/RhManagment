@@ -30,7 +30,6 @@ import { RootState } from '../../store';
 import { servicesDb } from '../../database/servicesDb';
 import { Service } from '../../database/schema';
 
-
 export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -75,7 +74,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [teamId, setTeamId] = useState<number | null>(null);
 
-  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const companies = useSelector((state: RootState) =>
+    selectAllCompanies(state),
+  );
   const teams = useSelector((state: RootState) => selectAllTeams(state));
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -141,21 +142,19 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
     }
   };
 
-
   const validatePhone = (phone: string, country: string) => {
     // Simple regex patterns for demonstration
     const patterns: Record<string, RegExp> = {
-      'France': /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
-      'Tunisia': /^(?:(?:\+|00)216|0)?\s*[2459]\d{7}$/, // Starts with 216 optional, then 8 digits
-      'Germany': /^(?:(?:\+|00)49|0)\s*[1-9]\d{1,14}$/,
-      'Spain': /^(?:(?:\+|00)34|0)\s*[679]\d{8}$/,
+      France: /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
+      Tunisia: /^(?:(?:\+|00)216|0)?\s*[2459]\d{7}$/, // Starts with 216 optional, then 8 digits
+      Germany: /^(?:(?:\+|00)49|0)\s*[1-9]\d{1,14}$/,
+      Spain: /^(?:(?:\+|00)34|0)\s*[679]\d{8}$/,
     };
 
     // Default to a generous generic pattern if country not found or strictly empty
     const pattern = patterns[country] || /^\+?\d{8,15}$/;
     return pattern.test(phone.replace(/\s/g, ''));
   };
-
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -207,7 +206,10 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const handleTakePhoto = async () => {
     const status = await permissionsService.requestCameraPermission();
     if (status !== 'granted') {
-      notificationService.showAlert(t('profile.permissionDenied'), t('profile.permissionBlockedMessage'));
+      notificationService.showAlert(
+        t('profile.permissionDenied'),
+        t('profile.permissionBlockedMessage'),
+      );
       return;
     }
     showToast('Camera integration would go here', 'info');
@@ -242,17 +244,27 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         lastName,
         age: parseInt(age) || undefined,
         gender,
-        emergencyContact: emergencyName ? {
-          name: emergencyName,
-          phone: emergencyPhone,
-          relationship: emergencyRelationship
-        } : undefined,
-        socialLinks: (linkedin || skype || website) ? {
-          linkedin,
-          skype,
-          website
-        } : undefined,
-        skills: skills ? skills.split(',').map(s => s.trim()).filter(s => s) : undefined,
+        emergencyContact: emergencyName
+          ? {
+              name: emergencyName,
+              phone: emergencyPhone,
+              relationship: emergencyRelationship,
+            }
+          : undefined,
+        socialLinks:
+          linkedin || skype || website
+            ? {
+                linkedin,
+                skype,
+                website,
+              }
+            : undefined,
+        skills: skills
+          ? skills
+              .split(',')
+              .map(s => s.trim())
+              .filter(s => s)
+          : undefined,
       };
 
       if (employeeId) {
@@ -309,9 +321,14 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         <View style={styles.formContainer}>
           {/* Section: Personal Information */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('navigation.personalInfo')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('navigation.personalInfo')}
+            </Text>
 
-            <TouchableOpacity style={styles.photoButton} onPress={handleTakePhoto}>
+            <TouchableOpacity
+              style={styles.photoButton}
+              onPress={handleTakePhoto}
+            >
               {photoUri ? (
                 <Image source={{ uri: photoUri }} style={styles.photo} />
               ) : (
@@ -332,7 +349,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 placeholder={t('employees.namePlaceholder')}
                 placeholderTextColor={theme.colors.subText}
               />
-              {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+              {errors.name && (
+                <Text style={styles.errorText}>{errors.name}</Text>
+              )}
             </View>
 
             <View style={styles.responsiveRow}>
@@ -343,7 +362,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   value={firstName}
                   onChangeText={text => {
                     setFirstName(text);
-                    if (!name && text && lastName) setName(`${text} ${lastName}`);
+                    if (!name && text && lastName)
+                      setName(`${text} ${lastName}`);
                   }}
                   placeholder={t('employees.firstName')}
                   placeholderTextColor={theme.colors.subText}
@@ -356,7 +376,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   value={lastName}
                   onChangeText={text => {
                     setLastName(text);
-                    if (!name && firstName && text) setName(`${firstName} ${text}`);
+                    if (!name && firstName && text)
+                      setName(`${firstName} ${text}`);
                   }}
                   placeholder={t('employees.lastName')}
                   placeholderTextColor={theme.colors.subText}
@@ -370,7 +391,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 <TextInput
                   style={[styles.input, errors.age && styles.inputError]}
                   value={age}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setAge(text);
                     if (errors.age) setErrors({ ...errors, age: '' });
                   }}
@@ -378,7 +399,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   keyboardType="numeric"
                   placeholderTextColor={theme.colors.subText}
                 />
-                {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
+                {errors.age && (
+                  <Text style={styles.errorText}>{errors.age}</Text>
+                )}
               </View>
               <View style={styles.fieldContainer}>
                 <Dropdown
@@ -389,7 +412,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                     { label: t('employees.genderOther'), value: 'other' },
                   ]}
                   value={gender}
-                  onSelect={(val) => setGender(val as 'male' | 'female' | 'other')}
+                  onSelect={val =>
+                    setGender(val as 'male' | 'female' | 'other')
+                  }
                 />
               </View>
             </View>
@@ -409,14 +434,16 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   keyboardType="email-address"
                   autoCapitalize="none"
                 />
-                {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+                {errors.email && (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                )}
               </View>
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>{t('employees.phone')}</Text>
                 <TextInput
                   style={[styles.input, errors.phone && styles.inputError]}
                   value={phone}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setPhone(text);
                     if (errors.phone) setErrors({ ...errors, phone: '' });
                   }}
@@ -424,7 +451,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   placeholderTextColor={theme.colors.subText}
                   keyboardType="phone-pad"
                 />
-                {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+                {errors.phone && (
+                  <Text style={styles.errorText}>{errors.phone}</Text>
+                )}
               </View>
             </View>
 
@@ -468,17 +497,28 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
 
           {/* Section: Employment Details */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('navigation.employmentDetails')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('navigation.employmentDetails')}
+            </Text>
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'flex-end',
+                    gap: 10,
+                  }}
+                >
                   <View style={{ flex: 1 }}>
                     <Dropdown
                       label={t('companies.title')}
-                      data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                      data={companies.map(c => ({
+                        label: c.name,
+                        value: String(c.id),
+                      }))}
                       value={companyId ? String(companyId) : ''}
-                      onSelect={(val) => setCompanyId(Number(val))}
+                      onSelect={val => setCompanyId(Number(val))}
                       placeholder={t('companies.selectCompany')}
                     />
                   </View>
@@ -498,13 +538,21 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               </View>
 
               <View style={styles.fieldContainer}>
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 10 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'flex-end',
+                    gap: 10,
+                  }}
+                >
                   <View style={{ flex: 1 }}>
                     <Dropdown
                       label={t('teams.title')}
-                      data={teams.filter(t => !companyId || t.companyId === companyId).map(t => ({ label: t.name, value: String(t.id) }))}
+                      data={teams
+                        .filter(t => !companyId || t.companyId === companyId)
+                        .map(t => ({ label: t.name, value: String(t.id) }))}
                       value={teamId ? String(teamId) : ''}
-                      onSelect={(val) => setTeamId(Number(val))}
+                      onSelect={val => setTeamId(Number(val))}
                       placeholder={t('teams.selectTeam')}
                     />
                   </View>
@@ -539,9 +587,12 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 {currentUser?.role === 'admin' && (
                   <Dropdown
                     label={t('signUp.roleLabel')}
-                    data={ROLES.map((r: UserRole) => ({ label: t(`roles.${r}`), value: r }))}
+                    data={ROLES.map((r: UserRole) => ({
+                      label: t(`roles.${r}`),
+                      value: r,
+                    }))}
                     value={role}
-                    onSelect={(val) => setRole(val as UserRole)}
+                    onSelect={val => setRole(val as UserRole)}
                     placeholder={t('signUp.roleLabel')}
                   />
                 )}
@@ -554,7 +605,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   label={t('common.service')}
                   data={services.map(s => ({ label: s.name, value: s.name }))}
                   value={department}
-                  onSelect={(val) => setDepartment(String(val))}
+                  onSelect={val => setDepartment(String(val))}
                   placeholder={t('common.service')}
                 />
               </View>
@@ -602,7 +653,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
 
           {/* Section: Emergency Contact */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('employees.emergencyContact')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('employees.emergencyContact')}
+            </Text>
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>{t('employees.emergencyName')}</Text>
               <TextInput
@@ -615,7 +668,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
             </View>
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('employees.emergencyPhone')}</Text>
+                <Text style={styles.label}>
+                  {t('employees.emergencyPhone')}
+                </Text>
                 <TextInput
                   style={styles.input}
                   value={emergencyPhone}
@@ -626,7 +681,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 />
               </View>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('employees.emergencyRelationship')}</Text>
+                <Text style={styles.label}>
+                  {t('employees.emergencyRelationship')}
+                </Text>
                 <TextInput
                   style={styles.input}
                   value={emergencyRelationship}
@@ -655,7 +712,11 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
           disabled={loading}
         >
           <Text style={styles.saveButtonText}>
-            {loading ? t('common.loading') : employeeId ? t('common.save') : t('common.add')}
+            {loading
+              ? t('common.loading')
+              : employeeId
+              ? t('common.save')
+              : t('common.add')}
           </Text>
         </TouchableOpacity>
 
@@ -789,5 +850,5 @@ const createStyles = (theme: Theme) =>
     addButtonText: {
       fontSize: 20,
       color: theme.colors.surface,
-    }
+    },
   });

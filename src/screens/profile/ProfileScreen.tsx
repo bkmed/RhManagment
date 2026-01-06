@@ -47,17 +47,27 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [photoUri, setPhotoUri] = useState(user?.photoUri || '');
-  const [backgroundPhotoUri, setBackgroundPhotoUri] = useState(user?.backgroundPhotoUri || '');
+  const [backgroundPhotoUri, setBackgroundPhotoUri] = useState(
+    user?.backgroundPhotoUri || '',
+  );
   const [loading, setLoading] = useState(false);
 
   // Extended fields
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [age, setAge] = useState(user?.age ? String(user.age) : '');
-  const [gender, setGender] = useState<'male' | 'female' | 'other'>(user?.gender || 'male');
-  const [emergencyName, setEmergencyName] = useState(user?.emergencyContact?.name || '');
-  const [emergencyPhone, setEmergencyPhone] = useState(user?.emergencyContact?.phone || '');
-  const [emergencyRelationship, setEmergencyRelationship] = useState(user?.emergencyContact?.relationship || '');
+  const [gender, setGender] = useState<'male' | 'female' | 'other'>(
+    user?.gender || 'male',
+  );
+  const [emergencyName, setEmergencyName] = useState(
+    user?.emergencyContact?.name || '',
+  );
+  const [emergencyPhone, setEmergencyPhone] = useState(
+    user?.emergencyContact?.phone || '',
+  );
+  const [emergencyRelationship, setEmergencyRelationship] = useState(
+    user?.emergencyContact?.relationship || '',
+  );
   const [linkedin, setLinkedin] = useState(user?.socialLinks?.linkedin || '');
   const [skype, setSkype] = useState(user?.socialLinks?.skype || '');
   const [website, setWebsite] = useState(user?.socialLinks?.website || '');
@@ -72,7 +82,8 @@ export const ProfileScreen = ({ navigation }: any) => {
   const companies = useSelector(selectAllCompanies);
 
   const myDevicesCount = useMemo(() => {
-    return devices.filter((d: Device) => d.assignedToId === user?.employeeId).length;
+    return devices.filter((d: Device) => d.assignedToId === user?.employeeId)
+      .length;
   }, [devices, user?.employeeId]);
 
   const userTeam = useMemo(() => {
@@ -154,11 +165,14 @@ export const ProfileScreen = ({ navigation }: any) => {
         {
           text: t('illnesses.chooseFromLibrary'),
           onPress: () => {
-            launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
-              if (response.assets && response.assets[0]?.uri) {
-                setPhotoUri(response.assets[0].uri);
-              }
-            });
+            launchImageLibrary(
+              { mediaType: 'photo', quality: 0.8 },
+              response => {
+                if (response.assets && response.assets[0]?.uri) {
+                  setPhotoUri(response.assets[0].uri);
+                }
+              },
+            );
           },
         },
         { text: t('common.cancel'), style: 'cancel' },
@@ -175,7 +189,8 @@ export const ProfileScreen = ({ navigation }: any) => {
         const file = e.target.files[0];
         if (file) {
           const reader = new FileReader();
-          reader.onload = (event: any) => setBackgroundPhotoUri(event.target.result);
+          reader.onload = (event: any) =>
+            setBackgroundPhotoUri(event.target.result);
           reader.readAsDataURL(file);
         }
       };
@@ -217,11 +232,14 @@ export const ProfileScreen = ({ navigation }: any) => {
         {
           text: t('illnesses.chooseFromLibrary'),
           onPress: () => {
-            launchImageLibrary({ mediaType: 'photo', quality: 0.8 }, response => {
-              if (response.assets && response.assets[0]?.uri) {
-                setBackgroundPhotoUri(response.assets[0].uri);
-              }
-            });
+            launchImageLibrary(
+              { mediaType: 'photo', quality: 0.8 },
+              response => {
+                if (response.assets && response.assets[0]?.uri) {
+                  setBackgroundPhotoUri(response.assets[0].uri);
+                }
+              },
+            );
           },
         },
         { text: t('common.cancel'), style: 'cancel' },
@@ -231,7 +249,10 @@ export const ProfileScreen = ({ navigation }: any) => {
 
   const handleSaveProfile = async () => {
     if (!name.trim() || !email.trim()) {
-      showModal({ title: t('common.error'), message: t('signUp.errorEmptyFields') });
+      showModal({
+        title: t('common.error'),
+        message: t('signUp.errorEmptyFields'),
+      });
       return;
     }
 
@@ -246,23 +267,36 @@ export const ProfileScreen = ({ navigation }: any) => {
         lastName,
         age: parseInt(age) || undefined,
         gender,
-        emergencyContact: emergencyName ? {
-          name: emergencyName,
-          phone: emergencyPhone,
-          relationship: emergencyRelationship
-        } : undefined,
-        socialLinks: (linkedin || skype || website) ? {
-          linkedin,
-          skype,
-          website
-        } : undefined,
-        skills: skills ? skills.split(',').map(s => s.trim()).filter(s => s) : undefined,
+        emergencyContact: emergencyName
+          ? {
+              name: emergencyName,
+              phone: emergencyPhone,
+              relationship: emergencyRelationship,
+            }
+          : undefined,
+        socialLinks:
+          linkedin || skype || website
+            ? {
+                linkedin,
+                skype,
+                website,
+              }
+            : undefined,
+        skills: skills
+          ? skills
+              .split(',')
+              .map(s => s.trim())
+              .filter(s => s)
+          : undefined,
       });
       setIsEditing(false);
-      showModal({ title: t('common.success'), message: t('profile.updatedSuccessfully') });
+      showModal({
+        title: t('common.success'),
+        message: t('profile.updatedSuccessfully'),
+      });
     } catch (error) {
       showModal({ title: t('common.error'), message: t('common.loadFailed') });
-      console.error(error)
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -299,33 +333,47 @@ export const ProfileScreen = ({ navigation }: any) => {
     try {
       await signOut(navigation);
     } catch (error) {
-      notificationService.showAlert(t('common.error'), t('profile.logoutError'));
-      console.error(error)
+      notificationService.showAlert(
+        t('common.error'),
+        t('profile.logoutError'),
+      );
+      console.error(error);
     }
   };
 
   const getPermissionStatusText = (status: PermissionStatus) => {
     switch (status) {
-      case 'granted': return t('profile.permissionGranted');
-      case 'denied': return t('profile.permissionDenied');
-      case 'blocked': return t('profile.permissionBlocked');
-      case 'limited': return t('profile.permissionLimited');
-      default: return t('profile.permissionUnavailable');
+      case 'granted':
+        return t('profile.permissionGranted');
+      case 'denied':
+        return t('profile.permissionDenied');
+      case 'blocked':
+        return t('profile.permissionBlocked');
+      case 'limited':
+        return t('profile.permissionLimited');
+      default:
+        return t('profile.permissionUnavailable');
     }
   };
 
   const getPermissionStatusColor = (status: PermissionStatus) => {
     switch (status) {
-      case 'granted': return theme.colors.success;
-      case 'denied': return theme.colors.warning;
-      case 'blocked': return theme.colors.error;
-      default: return theme.colors.subText;
+      case 'granted':
+        return theme.colors.success;
+      case 'denied':
+        return theme.colors.warning;
+      case 'blocked':
+        return theme.colors.error;
+      default:
+        return theme.colors.subText;
     }
   };
 
   const DashboardStat = ({ label, value, icon, color }: any) => (
     <View style={styles.statCard}>
-      <View style={[styles.statIconContainer, { backgroundColor: color + '15' }]}>
+      <View
+        style={[styles.statIconContainer, { backgroundColor: color + '15' }]}
+      >
         <Text style={[styles.statIcon, { color }]}>{icon}</Text>
       </View>
       <View>
@@ -341,7 +389,10 @@ export const ProfileScreen = ({ navigation }: any) => {
         {/* Header Background */}
         <View style={styles.headerBackground}>
           {backgroundPhotoUri ? (
-            <Image source={{ uri: backgroundPhotoUri }} style={styles.backgroundImage} />
+            <Image
+              source={{ uri: backgroundPhotoUri }}
+              style={styles.backgroundImage}
+            />
           ) : null}
           {isEditing && (
             <TouchableOpacity
@@ -362,9 +413,17 @@ export const ProfileScreen = ({ navigation }: any) => {
                 onPress={isEditing ? handlePickPhoto : undefined}
                 disabled={!isEditing}
               >
-                <View style={[styles.avatar, { borderColor: theme.colors.surface, borderWidth: 4 }]}>
+                <View
+                  style={[
+                    styles.avatar,
+                    { borderColor: theme.colors.surface, borderWidth: 4 },
+                  ]}
+                >
                   {photoUri ? (
-                    <Image source={{ uri: photoUri }} style={styles.avatarImage} />
+                    <Image
+                      source={{ uri: photoUri }}
+                      style={styles.avatarImage}
+                    />
                   ) : (
                     <Text style={styles.avatarText}>
                       {user?.name?.charAt(0).toUpperCase() || 'U'}
@@ -387,10 +446,32 @@ export const ProfileScreen = ({ navigation }: any) => {
                 <Text style={styles.userName}>{user?.name}</Text>
                 <Text style={styles.userEmail}>{user?.email}</Text>
                 <View style={styles.teamContainer}>
-                  <Text style={styles.teamText}>🏢 {userCompany?.name || t('companies.noCompanyAssigned')}</Text>
+                  <Text style={styles.teamText}>
+                    🏢 {userCompany?.name || t('companies.noCompanyAssigned')}
+                  </Text>
                 </View>
-                <View style={[styles.teamContainer, { marginTop: 4, backgroundColor: (userTeam ? theme.colors.secondary : theme.colors.border) + '10' }]}>
-                  <Text style={[styles.teamText, { color: userTeam ? theme.colors.secondary : theme.colors.subText }]}>
+                <View
+                  style={[
+                    styles.teamContainer,
+                    {
+                      marginTop: 4,
+                      backgroundColor:
+                        (userTeam
+                          ? theme.colors.secondary
+                          : theme.colors.border) + '10',
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.teamText,
+                      {
+                        color: userTeam
+                          ? theme.colors.secondary
+                          : theme.colors.subText,
+                      },
+                    ]}
+                  >
                     👥 {userTeam?.name || t('teams.noTeamAssigned')}
                   </Text>
                 </View>
@@ -457,7 +538,12 @@ export const ProfileScreen = ({ navigation }: any) => {
                 />
 
                 <View style={styles.responsiveRow}>
-                  <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
+                  <View
+                    style={[
+                      styles.fieldContainerFlex,
+                      { marginRight: theme.spacing.m },
+                    ]}
+                  >
                     <AuthInput
                       label={t('employees.firstName')}
                       value={firstName}
@@ -476,7 +562,12 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </View>
 
                 <View style={styles.responsiveRow}>
-                  <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
+                  <View
+                    style={[
+                      styles.fieldContainerFlex,
+                      { marginRight: theme.spacing.m },
+                    ]}
+                  >
                     <AuthInput
                       label={t('employees.age')}
                       value={age}
@@ -494,14 +585,16 @@ export const ProfileScreen = ({ navigation }: any) => {
                         { label: t('employees.genderOther'), value: 'other' },
                       ]}
                       value={gender}
-                      onSelect={(val) => setGender(val as any)}
+                      onSelect={val => setGender(val as any)}
                     />
                   </View>
                 </View>
 
                 <View style={styles.divider} />
 
-                <Text style={styles.subSectionTitle}>🚑 {t('employees.emergencyContact')}</Text>
+                <Text style={styles.subSectionTitle}>
+                  🚑 {t('employees.emergencyContact')}
+                </Text>
                 <AuthInput
                   label={t('employees.emergencyName')}
                   value={emergencyName}
@@ -509,7 +602,12 @@ export const ProfileScreen = ({ navigation }: any) => {
                   placeholder={t('employees.emergencyName')}
                 />
                 <View style={styles.responsiveRow}>
-                  <View style={[styles.fieldContainerFlex, { marginRight: theme.spacing.m }]}>
+                  <View
+                    style={[
+                      styles.fieldContainerFlex,
+                      { marginRight: theme.spacing.m },
+                    ]}
+                  >
                     <AuthInput
                       label={t('employees.emergencyPhone')}
                       value={emergencyPhone}
@@ -530,7 +628,9 @@ export const ProfileScreen = ({ navigation }: any) => {
 
                 <View style={styles.divider} />
 
-                <Text style={styles.subSectionTitle}>🔗 {t('employees.socialLinks')}</Text>
+                <Text style={styles.subSectionTitle}>
+                  🔗 {t('employees.socialLinks')}
+                </Text>
                 <AuthInput
                   label={t('employees.linkedin')}
                   value={linkedin}
@@ -570,7 +670,9 @@ export const ProfileScreen = ({ navigation }: any) => {
                       setBackgroundPhotoUri(user?.backgroundPhotoUri || '');
                     }}
                   >
-                    <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
+                    <Text style={styles.cancelButtonText}>
+                      {t('common.cancel')}
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.actionButton, styles.saveButton]}
@@ -588,18 +690,32 @@ export const ProfileScreen = ({ navigation }: any) => {
             <>
               {/* Professional Profile View */}
               <View style={styles.card}>
-                <Text style={styles.cardTitle}>🎯 {t('profile.professionalProfile')}</Text>
+                <Text style={styles.cardTitle}>
+                  🎯 {t('profile.professionalProfile')}
+                </Text>
 
                 <View style={styles.responsiveRow}>
                   <View style={styles.fieldContainerFlex}>
-                    <Text style={styles.fieldLabel}>{t('employees.company')}</Text>
-                    <Text style={[styles.userName, { fontSize: 16, marginBottom: theme.spacing.m }]}>
+                    <Text style={styles.fieldLabel}>
+                      {t('employees.company')}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.userName,
+                        { fontSize: 16, marginBottom: theme.spacing.m },
+                      ]}
+                    >
                       🏢 {userCompany?.name || t('companies.noCompanyAssigned')}
                     </Text>
                   </View>
                   <View style={styles.fieldContainerFlex}>
                     <Text style={styles.fieldLabel}>{t('teams.title')}</Text>
-                    <Text style={[styles.userName, { fontSize: 16, marginBottom: theme.spacing.m }]}>
+                    <Text
+                      style={[
+                        styles.userName,
+                        { fontSize: 16, marginBottom: theme.spacing.m },
+                      ]}
+                    >
                       👥 {userTeam?.name || t('teams.noTeamAssigned')}
                     </Text>
                   </View>
@@ -613,47 +729,78 @@ export const ProfileScreen = ({ navigation }: any) => {
                     <View key={index} style={styles.tag}>
                       <Text style={styles.tagText}>{skill}</Text>
                     </View>
-                  )) || <Text style={styles.emptyText}>{t('common.noData')}</Text>}
+                  )) || (
+                    <Text style={styles.emptyText}>{t('common.noData')}</Text>
+                  )}
                 </View>
 
                 <View style={styles.divider} />
 
-                <Text style={styles.fieldLabel}>{t('employees.socialLinks')}</Text>
+                <Text style={styles.fieldLabel}>
+                  {t('employees.socialLinks')}
+                </Text>
                 <View style={styles.socialRows}>
                   {user?.socialLinks?.linkedin && (
                     <View style={styles.socialItem}>
                       <Text style={styles.socialIcon}>💼</Text>
-                      <Text style={styles.socialValue}>{user.socialLinks.linkedin}</Text>
+                      <Text style={styles.socialValue}>
+                        {user.socialLinks.linkedin}
+                      </Text>
                     </View>
                   )}
                   {user?.socialLinks?.website && (
                     <View style={styles.socialItem}>
                       <Text style={styles.socialIcon}>🌐</Text>
-                      <Text style={styles.socialValue}>{user.socialLinks.website}</Text>
+                      <Text style={styles.socialValue}>
+                        {user.socialLinks.website}
+                      </Text>
                     </View>
                   )}
                   {user?.socialLinks?.skype && (
                     <View style={styles.socialItem}>
                       <Text style={styles.socialIcon}>💬</Text>
-                      <Text style={styles.socialValue}>{user.socialLinks.skype}</Text>
+                      <Text style={styles.socialValue}>
+                        {user.socialLinks.skype}
+                      </Text>
                     </View>
                   )}
-                  {!user?.socialLinks && <Text style={styles.emptyText}>{t('common.noData')}</Text>}
+                  {!user?.socialLinks && (
+                    <Text style={styles.emptyText}>{t('common.noData')}</Text>
+                  )}
                 </View>
               </View>
 
               {/* Security & Permissions */}
               <View style={styles.card}>
-                <Text style={styles.cardTitle}>🔒 {t('profile.securityPermissions')}</Text>
+                <Text style={styles.cardTitle}>
+                  🔒 {t('profile.securityPermissions')}
+                </Text>
                 {[
-                  { label: t('profile.camera'), status: cameraPermission, onValueChange: handleCameraPermission },
-                  { label: t('profile.notifications'), status: notificationPermission, onValueChange: handleNotificationPermission },
-                  { label: t('profile.calendar'), status: calendarPermission, onValueChange: handleCalendarPermission },
+                  {
+                    label: t('profile.camera'),
+                    status: cameraPermission,
+                    onValueChange: handleCameraPermission,
+                  },
+                  {
+                    label: t('profile.notifications'),
+                    status: notificationPermission,
+                    onValueChange: handleNotificationPermission,
+                  },
+                  {
+                    label: t('profile.calendar'),
+                    status: calendarPermission,
+                    onValueChange: handleCalendarPermission,
+                  },
                 ].map((perm, index) => (
                   <View key={index} style={styles.permissionRow}>
                     <View style={styles.permissionInfo}>
                       <Text style={styles.permissionLabel}>{perm.label}</Text>
-                      <Text style={[styles.permissionStatus, { color: getPermissionStatusColor(perm.status) }]}>
+                      <Text
+                        style={[
+                          styles.permissionStatus,
+                          { color: getPermissionStatusColor(perm.status) },
+                        ]}
+                      >
                         {getPermissionStatusText(perm.status)}
                       </Text>
                     </View>
@@ -661,7 +808,10 @@ export const ProfileScreen = ({ navigation }: any) => {
                       <Switch
                         value={perm.status === 'granted'}
                         onValueChange={perm.onValueChange}
-                        trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+                        trackColor={{
+                          false: theme.colors.border,
+                          true: theme.colors.primary,
+                        }}
                         thumbColor={theme.colors.surface}
                       />
                     )}
@@ -671,7 +821,14 @@ export const ProfileScreen = ({ navigation }: any) => {
 
               {/* My Material Link */}
               <TouchableOpacity
-                style={[styles.card, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
+                style={[
+                  styles.card,
+                  {
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  },
+                ]}
                 onPress={() => {
                   if (Platform.OS === 'web') {
                     setActiveTab('Profile', 'MyDevices');
@@ -681,13 +838,21 @@ export const ProfileScreen = ({ navigation }: any) => {
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={{ fontSize: 24, marginRight: theme.spacing.m }}>💻</Text>
+                  <Text style={{ fontSize: 24, marginRight: theme.spacing.m }}>
+                    💻
+                  </Text>
                   <View>
-                    <Text style={styles.cardTitle}>{t('devices.myMaterial')}</Text>
-                    <Text style={styles.emptyText}>{myDevicesCount} {t('devices.assigned')}</Text>
+                    <Text style={styles.cardTitle}>
+                      {t('devices.myMaterial')}
+                    </Text>
+                    <Text style={styles.emptyText}>
+                      {myDevicesCount} {t('devices.assigned')}
+                    </Text>
                   </View>
                 </View>
-                <Text style={{ fontSize: 20, color: theme.colors.subText }}>›</Text>
+                <Text style={{ fontSize: 20, color: theme.colors.subText }}>
+                  ›
+                </Text>
               </TouchableOpacity>
             </>
           )}
@@ -697,18 +862,18 @@ export const ProfileScreen = ({ navigation }: any) => {
           </TouchableOpacity>
           <Text style={styles.versionText}>{t('profile.version')} 1.0.0</Text>
         </View>
-      </ScrollView >
-    </View >
+      </ScrollView>
+    </View>
   );
 };
 
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      backgroundColor: theme.colors.background
+      backgroundColor: theme.colors.background,
     },
     content: {
-      paddingBottom: theme.spacing.xl
+      paddingBottom: theme.spacing.xl,
     },
     headerBackground: {
       position: 'absolute',
@@ -756,7 +921,8 @@ const createStyles = (theme: Theme) =>
     headerMainInfo: {
       marginLeft: Platform.OS === 'web' && width > 600 ? theme.spacing.l : 0,
       marginTop: Platform.OS === 'web' && width > 600 ? 0 : theme.spacing.m,
-      alignItems: Platform.OS === 'web' && width > 600 ? 'flex-start' : 'center',
+      alignItems:
+        Platform.OS === 'web' && width > 600 ? 'flex-start' : 'center',
     },
     avatarContainer: {
       position: 'relative',
@@ -790,9 +956,23 @@ const createStyles = (theme: Theme) =>
       borderWidth: 3,
       borderColor: theme.colors.surface,
     },
-    roleBadgeText: { fontSize: 12, fontWeight: 'bold', color: theme.colors.text },
-    userName: { ...theme.textVariants.header, fontSize: 26, color: theme.colors.text, marginBottom: 4 },
-    userEmail: { ...theme.textVariants.body, color: theme.colors.subText, fontSize: 16, marginBottom: 8 },
+    roleBadgeText: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+    },
+    userName: {
+      ...theme.textVariants.header,
+      fontSize: 26,
+      color: theme.colors.text,
+      marginBottom: 4,
+    },
+    userEmail: {
+      ...theme.textVariants.body,
+      color: theme.colors.subText,
+      fontSize: 16,
+      marginBottom: 8,
+    },
     teamContainer: {
       backgroundColor: theme.colors.primary + '10',
       paddingHorizontal: theme.spacing.m,
@@ -808,7 +988,11 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.primary + '10',
       alignItems: 'center',
     },
-    editButtonText: { color: theme.colors.primary, fontWeight: 'bold', fontSize: 16 },
+    editButtonText: {
+      color: theme.colors.primary,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
     statsRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -846,7 +1030,7 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.subheader,
       color: theme.colors.text,
       fontSize: 18,
-      marginBottom: theme.spacing.l
+      marginBottom: theme.spacing.l,
     },
     fieldLabel: {
       fontSize: 14,
@@ -878,13 +1062,26 @@ const createStyles = (theme: Theme) =>
     socialValue: { color: theme.colors.text, fontSize: 14, flex: 1 },
     emptyText: { color: theme.colors.subText, fontStyle: 'italic' },
     editForm: { width: '100%' },
-    editActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: theme.spacing.l, gap: theme.spacing.m },
-    actionButton: { paddingHorizontal: theme.spacing.xl, paddingVertical: theme.spacing.m, borderRadius: theme.spacing.m },
+    editActions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      marginTop: theme.spacing.l,
+      gap: theme.spacing.m,
+    },
+    actionButton: {
+      paddingHorizontal: theme.spacing.xl,
+      paddingVertical: theme.spacing.m,
+      borderRadius: theme.spacing.m,
+    },
     cancelButton: { backgroundColor: theme.colors.border },
     cancelButtonText: { color: theme.colors.text, fontWeight: '600' },
     saveButton: { backgroundColor: theme.colors.primary },
     saveButtonText: { color: '#FFFFFF', fontWeight: 'bold' },
-    divider: { height: 1, backgroundColor: theme.colors.border, marginVertical: theme.spacing.l },
+    divider: {
+      height: 1,
+      backgroundColor: theme.colors.border,
+      marginVertical: theme.spacing.l,
+    },
     permissionRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -894,7 +1091,11 @@ const createStyles = (theme: Theme) =>
       borderBottomColor: theme.colors.border,
     },
     permissionInfo: { flex: 1 },
-    permissionLabel: { ...theme.textVariants.body, color: theme.colors.text, marginBottom: theme.spacing.xs },
+    permissionLabel: {
+      ...theme.textVariants.body,
+      color: theme.colors.text,
+      marginBottom: theme.spacing.xs,
+    },
     permissionStatus: { ...theme.textVariants.caption, fontSize: 12 },
     logoutButton: {
       backgroundColor: theme.colors.surface,
@@ -905,8 +1106,16 @@ const createStyles = (theme: Theme) =>
       borderWidth: 1,
       borderColor: theme.colors.error,
     },
-    logoutText: { ...theme.textVariants.button, color: theme.colors.error, fontSize: 16 },
-    versionText: { ...theme.textVariants.caption, color: theme.colors.subText, textAlign: 'center' },
+    logoutText: {
+      ...theme.textVariants.button,
+      color: theme.colors.error,
+      fontSize: 16,
+    },
+    versionText: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      textAlign: 'center',
+    },
     responsiveRow: {
       flexDirection: 'row',
       alignItems: 'center',
