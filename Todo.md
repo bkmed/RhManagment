@@ -105,3 +105,22 @@ rajouter manage notification ou on peu envoyer une notification a tt les employe
 remplace title: 'Welcome to RhManagment!',
 message: 'Explore the new Phase 3 features like Search and Chat.',
 avec un welcome pro in all lang
+
+
+
+update all mocked data to have a good exemple
+
+
+
+ with 2 entreprise every entreprise have 4 equipe marketing ... with 4 employee et un chef dequipedans chaque equipe un seul rh par entreprise
+
+
+ 2 entreprise
+ 2 role rh
+ un role admin
+ 80 role employee 
+ 8 role chef equipe
+
+ 90 user 8 equipe 2 entreprise, ou chauqe 4 equipe on une seul entreprise et un seul rh et chaque equipe un seul che equipe
+ test cypress 
+ test detox et cree mois un index template pour voir leur resultat et capture si defallant
