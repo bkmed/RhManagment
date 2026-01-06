@@ -7,7 +7,6 @@ import {
     TouchableOpacity,
     Modal,
     TextInput,
-    Platform,
     ScrollView,
     ActivityIndicator,
 } from 'react-native';
@@ -23,7 +22,6 @@ import {
 } from '../../store/slices/announcementsSlice';
 import { Announcement } from '../../database/schema';
 import { formatDate } from '../../utils/dateUtils';
-import { RootState } from '../../store';
 import { selectAllCompanies, selectSelectedCompanyId, setSelectedCompanyId } from '../../store/slices/companiesSlice';
 
 export const AnnouncementsScreen = () => {
@@ -301,7 +299,7 @@ const createStyles = (theme: Theme) =>
         },
         categoryText: {
             fontSize: 10,
-            fontWeight: 'bold',
+            fontWeight: "bold", color: theme.colors.text,
             letterSpacing: 0.5,
         },
         dateText: {
@@ -309,7 +307,7 @@ const createStyles = (theme: Theme) =>
         },
         title: {
             fontSize: 18,
-            fontWeight: 'bold',
+            fontWeight: "bold", color: theme.colors.text,
             marginBottom: 8,
         },
         content: {
@@ -364,7 +362,7 @@ const createStyles = (theme: Theme) =>
         },
         modalTitle: {
             fontSize: 22,
-            fontWeight: 'bold',
+            fontWeight: "bold", color: theme.colors.text,
             marginBottom: 20,
         },
         label: {
@@ -397,7 +395,7 @@ const createStyles = (theme: Theme) =>
         },
         categoryOptionText: {
             fontSize: 10,
-            fontWeight: 'bold',
+            fontWeight: "bold", color: theme.colors.text,
         },
         modalFooter: {
             flexDirection: 'row',
@@ -431,7 +429,7 @@ const createStyles = (theme: Theme) =>
         },
         headerTitle: {
             fontSize: 18,
-            fontWeight: 'bold',
+            fontWeight: "bold", color: theme.colors.text,
         },
         centered: {
             flex: 1,
@@ -460,6 +458,6 @@ const createStyles = (theme: Theme) =>
         },
         backIcon: {
             fontSize: 24,
-            fontWeight: 'bold',
+            fontWeight: "bold", color: theme.colors.text,
         },
     });

@@ -6,16 +6,15 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
-  Switch,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
-import { payrollDb, employeesDb, companiesDb, teamsDb, servicesDb, currenciesDb, Currency } from '../../database';
+import { payrollDb, currenciesDb, Currency } from '../../database';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { Employee, Leave, Claim, Payroll } from '../../database/schema';
+import { Payroll } from '../../database/schema';
 import { Dropdown } from '../../components/Dropdown';
 import { useSelector } from 'react-redux';
 import { selectAllServices } from '../../store/slices/servicesSlice';
@@ -107,8 +106,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               d.setMinutes(m);
               return d;
             });
-          } catch (e) {
+          } catch (error) {
             parsedTimes = [new Date(new Date().setHours(8, 0)), new Date(new Date().setHours(20, 0))];
+            console.error(error);
           }
           setTimes(parsedTimes);
 
@@ -129,6 +129,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
       }
     } catch (error) {
       notificationService.showAlert(t('common.error'), t('payroll.loadError'));
+      console.error(error);
     }
   };
 

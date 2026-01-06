@@ -19,7 +19,6 @@ import { useAuth } from '../../context/AuthContext';
 import { useModal } from '../../context/ModalContext';
 import { notificationService } from '../../services/notificationService';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
 import { selectAllCurrencies } from '../../store/slices/currenciesSlice';
 import { Dropdown } from '../../components/Dropdown';
 import { selectAllServices } from '../../store/slices/servicesSlice';
@@ -246,5 +245,5 @@ const createStyles = (theme: Theme) =>
             alignItems: 'center',
             marginTop: 24,
         },
-        saveButtonText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
+        saveButtonText: { color: theme.textVariants.button.color, fontWeight: 'bold', fontSize: 16 },
     });

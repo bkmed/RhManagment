@@ -30,6 +30,7 @@ import { RootState } from '../../store';
 import { servicesDb } from '../../database/servicesDb';
 import { Service } from '../../database/schema';
 
+
 export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -136,6 +137,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
       }
     } catch (error) {
       showToast(t('employees.loadError'));
+      console.error(error);
     }
   };
 
@@ -171,7 +173,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
     // Phone validation
     if (phone) {
       // Check if phone contains only allowed characters (digits, spaces, +, -)
-      if (!/^[\d\s\-\+]+$/.test(phone)) {
+      if (!/^[\d\s\-+]+$/.test(phone)) {
         newErrors.phone = t('common.invalidPhone'); // "Must be a number" implicitly
       } else if (!validatePhone(phone, country)) {
         newErrors.phone = t('common.invalidPhone');
@@ -264,6 +266,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
       navigateBack();
     } catch (error) {
       showToast(t('employees.saveError'));
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -285,7 +288,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 showToast(t('employees.deletedSuccessfully'), 'success');
                 navigateBack();
               }
-            } catch (error) {
+            } catch {
               showToast(t('common.error'), 'info');
             }
           },
@@ -386,7 +389,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                     { label: t('employees.genderOther'), value: 'other' },
                   ]}
                   value={gender}
-                  onSelect={(val) => setGender(val as any)}
+                  onSelect={(val) => setGender(val as 'male' | 'female' | 'other')}
                 />
               </View>
             </View>

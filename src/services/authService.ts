@@ -1,4 +1,5 @@
 import { storageService } from './storage';
+import { Employee } from '../database/schema';
 
 const AUTH_KEY = 'auth_session';
 const USERS_KEY = 'auth_users';
@@ -69,7 +70,7 @@ export const authService = {
             try {
                 const { employeesDb } = require('../database/employeesDb');
                 const allEmployees = await employeesDb.getAll();
-                const matchedEmp = allEmployees.find((e: any) => e.email === email);
+                const matchedEmp = allEmployees.find((e: Employee) => e.email === email);
                 if (matchedEmp) {
                     demoUser = { ...demoUser, employeeId: matchedEmp.id };
                 }
@@ -91,7 +92,7 @@ export const authService = {
         const usersJson = storageService.getString(USERS_KEY);
         const users = usersJson ? JSON.parse(usersJson) : [];
 
-        const user = users.find((u: any) => u.email === email && u.password === password);
+        const user = users.find((u: User & { password?: string }) => u.email === email && u.password === password);
 
         if (user) {
             const sessionUser: User = {
@@ -123,7 +124,7 @@ export const authService = {
         const usersJson = storageService.getString(USERS_KEY);
         const users = usersJson ? JSON.parse(usersJson) : [];
 
-        if (users.find((u: any) => u.email === email)) {
+        if (users.find((u: User & { password?: string }) => u.email === email)) {
             throw new Error('Email already exists');
         }
 
@@ -170,7 +171,7 @@ export const authService = {
         const usersJson = storageService.getString(USERS_KEY);
         if (usersJson) {
             const users = JSON.parse(usersJson);
-            const userIndex = users.findIndex((u: any) => u.id === newUser.id);
+            const userIndex = users.findIndex((u: User & { password?: string }) => u.id === newUser.id);
             if (userIndex !== -1) {
                 users[userIndex] = { ...users[userIndex], ...updatedData };
                 storageService.setString(USERS_KEY, JSON.stringify(users));
@@ -198,7 +199,7 @@ const seedDemoData = async () => {
     const { payrollDb } = require('../database/payrollDb');
 
     // Create Employees
-    const empAdminId = await employeesDb.add({
+    await employeesDb.add({
         name: 'Demo Admin',
         position: 'Administrator',
         email: 'admin@demo.com',
@@ -226,7 +227,7 @@ const seedDemoData = async () => {
         notes: 'Demo account',
     });
 
-    const managerId = await employeesDb.add({
+    await employeesDb.add({
         name: 'Demo Manager',
         position: 'Team Lead',
         email: 'manager@demo.com',
@@ -240,7 +241,7 @@ const seedDemoData = async () => {
         notes: 'Demo manager account',
     });
 
-    const hrId = await employeesDb.add({
+    await employeesDb.add({
         name: 'Demo HR',
         position: 'HR Manager',
         email: 'hr@demo.com',

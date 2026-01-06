@@ -15,13 +15,11 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const IllnessDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
-  const { showToast } = useToast();
   const { illnessId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -50,6 +48,7 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
       setIllness(data);
     } catch (error) {
       notificationService.showAlert(t('common.errorTitle'), t('common.loadFailed'));
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -71,6 +70,7 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
               navigateBack();
             } catch (error) {
               notificationService.showAlert(t('common.errorTitle'), t('common.deleteFailed'));
+              console.error(error);
             }
           },
         },

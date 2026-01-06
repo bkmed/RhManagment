@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Image,
   ActivityIndicator,
@@ -108,7 +107,6 @@ export const IllnessListScreen = ({ navigation }: any) => {
       return [{ id: 'mine', title: t('illnesses.myIllnesses'), items: filteredIllnesses }];
     }
 
-    const companyGroups: any[] = [];
     const compMap = new Map<number | string, any>();
 
     filteredIllnesses.forEach(ill => {

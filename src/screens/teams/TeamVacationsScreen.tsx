@@ -4,8 +4,6 @@ import {
     Text,
     StyleSheet,
     FlatList,
-    TouchableOpacity,
-    Platform,
 } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +14,7 @@ import { Theme } from '../../theme';
 import { Employee, Leave } from '../../database/schema';
 import { formatDate } from '../../utils/dateUtils';
 
-export const TeamVacationsScreen = ({ navigation }: any) => {
+export const TeamVacationsScreen = () => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const { user } = useAuth();

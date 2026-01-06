@@ -11,7 +11,6 @@ import { authService } from '../../services/authService';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { Theme } from '../../theme';
 import { isValidEmail } from '../../utils/validation';
 import { AuthLayout } from '../../components/auth/AuthLayout';
@@ -19,7 +18,6 @@ import { AuthInput } from '../../components/auth/AuthInput';
 
 export const LoginScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
-  const { showToast } = useToast();
   const { t } = useTranslation();
   const { signIn } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);

@@ -11,7 +11,6 @@ import { authService } from '../../services/authService';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { Theme } from '../../theme';
 import { isValidEmail, isValidPassword } from '../../utils/validation';
 import { AuthLayout } from '../../components/auth/AuthLayout';
@@ -21,7 +20,6 @@ import { DateTimePickerField } from '../../components/DateTimePickerField';
 
 export const SignUpScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
-  const { showToast } = useToast();
   const { t } = useTranslation();
   const { signUp } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);

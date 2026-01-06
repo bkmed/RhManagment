@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { View, Image, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { Theme } from '../theme';
 

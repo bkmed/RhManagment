@@ -8,29 +8,26 @@ import {
   ActivityIndicator,
   Modal,
   Pressable,
-  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { remoteDb } from '../../database/remoteDb';
 import { notificationService } from '../../services/notificationService';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { holidaysService } from '../../services/holidaysService';
 import { leavesDb } from '../../database/leavesDb';
-import { formatDate } from '../../utils/dateUtils';
 import { SearchOverlay } from '../../components/common/SearchOverlay';
 
 export const RemoteCalendarScreen = () => {
   const { theme } = useTheme();
-  const { showToast } = useToast();
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [remoteDays, setRemoteDays] = useState<any>({});
+  const [remoteDays, setRemoteDays] = useState<Record<string, string>>({});
+  
   const [approvedLeaves, setApprovedLeaves] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -64,14 +61,14 @@ export const RemoteCalendarScreen = () => {
         leavesDb.getApprovedByEmployeeId(employeeId),
       ]);
 
-      const mappedRemote = remoteData.reduce((acc: any, curr) => {
+      const mappedRemote = remoteData.reduce((acc: Record<string, string>, curr) => {
         acc[curr.date] = curr.status;
         return acc;
       }, {});
 
       setRemoteDays(mappedRemote);
       setApprovedLeaves(leavesData);
-    } catch (error) {
+    } catch {
       notificationService.showAlert(t('common.error'), t('common.loadFailed'));
     } finally {
       setLoading(false);
@@ -165,7 +162,7 @@ export const RemoteCalendarScreen = () => {
     setCurrentMonth(new Date());
   };
 
-  const handleSearchSelect = (result: any) => {
+  const handleSearchSelect = (result: { type: string; id: string; title: string }) => {
     if (result.type === 'employee') {
       setSelectedEmployee({ id: Number(result.id), name: result.title });
       setIsSearchVisible(false);

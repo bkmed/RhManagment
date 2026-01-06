@@ -33,7 +33,6 @@ export const notificationService = {
     checkPermissions: async () => {
         if (Platform.OS === 'web') {
             try {
-                // @ts-ignore - navigator.permissions might need polyfill types or specific env setup
                 const nav = (window as any).navigator;
                 if (nav && nav.permissions && nav.permissions.query) {
                     const status = await nav.permissions.query({ name: 'notifications' });

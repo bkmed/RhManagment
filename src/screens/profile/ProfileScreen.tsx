@@ -262,6 +262,7 @@ export const ProfileScreen = ({ navigation }: any) => {
       showModal({ title: t('common.success'), message: t('profile.updatedSuccessfully') });
     } catch (error) {
       showModal({ title: t('common.error'), message: t('common.loadFailed') });
+      console.error(error)
     } finally {
       setLoading(false);
     }
@@ -299,6 +300,7 @@ export const ProfileScreen = ({ navigation }: any) => {
       await signOut(navigation);
     } catch (error) {
       notificationService.showAlert(t('common.error'), t('profile.logoutError'));
+      console.error(error)
     }
   };
 
@@ -534,6 +536,13 @@ export const ProfileScreen = ({ navigation }: any) => {
                   value={linkedin}
                   onChangeText={setLinkedin}
                   placeholder="https://linkedin.com/in/..."
+                />
+
+                <AuthInput
+                  label={t('employees.skype')}
+                  value={linkedin}
+                  onChangeText={setSkype}
+                  placeholder="https://skype.com/..."
                 />
 
                 <AuthInput

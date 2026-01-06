@@ -5,8 +5,6 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Image,
-    Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -16,7 +14,6 @@ import { Employee } from '../../database/schema';
 import { useNavigation } from '@react-navigation/native';
 import { Theme } from '../../theme';
 
-const { width } = Dimensions.get('window');
 
 export const OrgChartScreen = () => {
     const { theme } = useTheme();

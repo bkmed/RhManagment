@@ -12,23 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { Theme } from '../../theme';
-import { Dropdown } from '../../components/Dropdown';
-import crashlytics from '@react-native-firebase/crashlytics';
 
 export const PersonalSettingsScreen = ({ navigation }: any) => {
     const { theme, themeMode, setThemeMode, customColors, setCustomColor } = useTheme() as any;
     const { setActiveTab } = React.useContext(WebNavigationContext) as any;
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
-
-    const handleTestCrash = () => {
-        if (Platform.OS === 'web') {
-            throw new Error('Sentry Test Crash: ' + new Date().toISOString());
-        } else {
-            crashlytics().log('Testing crashlytics');
-            crashlytics().crash();
-        }
-    };
 
 
     const themes = [

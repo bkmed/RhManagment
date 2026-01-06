@@ -35,7 +35,7 @@ interface Message {
     };
 }
 
-export const ChatBot = ({ isScreen = true }: { isScreen?: boolean }) => {
+export const ChatBot = () => {
     const { t } = useTranslation();
     const { theme } = useTheme();
     const { user } = useAuth();
@@ -217,7 +217,7 @@ export const ChatBot = ({ isScreen = true }: { isScreen?: boolean }) => {
     const renderItem = ({ item }: { item: Message }) => (
         <View style={[styles.messageWrapper, item.sender === 'user' ? styles.userWrapper : styles.botWrapper]}>
             <View style={[styles.bubble, item.sender === 'user' ? { backgroundColor: theme.colors.primary } : { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, borderWidth: 1 }]}>
-                <Text style={[styles.messageText, { color: item.sender === 'user' ? '#FFF' : theme.colors.text }]}>
+                <Text style={[styles.messageText, { color: item.sender === 'user' ? theme.colors.surface : theme.colors.text }]}>
                     {item.text}
                 </Text>
                 {item.action && (
@@ -289,7 +289,7 @@ const createStyles = (theme: Theme) =>
             flex: 1,
         },
         headerTitle: {
-            color: '#FFF',
+            color: theme.colors.surface,
             fontSize: 18,
             fontWeight: 'bold',
         },
@@ -354,7 +354,7 @@ const createStyles = (theme: Theme) =>
         },
         sendIcon: {
             fontSize: 22,
-            color: '#FFF',
+            color: theme.colors.surface,
         },
         actionButton: {
             marginTop: 10,

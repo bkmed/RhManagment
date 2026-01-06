@@ -139,6 +139,7 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
               navigationBack();
             } catch (error) {
               showToast(t('common.error'), 'info');
+              console.error(error);
             }
           },
         },

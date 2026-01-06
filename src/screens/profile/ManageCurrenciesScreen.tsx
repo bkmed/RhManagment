@@ -15,7 +15,7 @@ import { currenciesDb } from '../../database/currenciesDb';
 import { Currency } from '../../database/schema';
 import { Theme } from '../../theme';
 
-export const ManageCurrenciesScreen = ({ navigation }: any) => {
+export const ManageCurrenciesScreen = () => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const { showModal } = useModal();
@@ -74,6 +74,7 @@ export const ManageCurrenciesScreen = ({ navigation }: any) => {
                             showToast(t('common.success'), 'success');
                         } catch (error) {
                             showToast(t('common.error'), 'error');
+                            console.error(error);
                         }
                     }
                 },

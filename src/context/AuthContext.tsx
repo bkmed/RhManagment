@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setUser, logout } from '../store/slices/authSlice';
 import { authService, User } from '../services/authService';
+export type { User };
 
 interface AuthContextType {
     user: User | null;

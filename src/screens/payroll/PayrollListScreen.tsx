@@ -17,12 +17,9 @@ import { SearchInput } from '../../components/SearchInput';
 import { notificationService } from '../../services/notificationService';
 
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
-import { useModal } from '../../context/ModalContext';
 
 export const PayrollListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
-  const { showToast } = useToast();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);

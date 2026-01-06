@@ -1,6 +1,5 @@
 import { store } from '../store';
 import {
-    setCompanySettings,
     updateCompanySettings as updateCompanySettingsAction,
     selectCompanySettingsByCompanyId,
 } from '../store/slices/companySettingsSlice';

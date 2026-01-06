@@ -58,7 +58,7 @@ export const DepartmentListScreen = ({ navigation, route }: any) => {
         }
     };
 
-    const handleEdit = (id: number, name: string) => {
+    const handleEdit = (id: number) => {
         if (Platform.OS === 'web') {
             setActiveTab?.('Departments', 'AddDepartment', { departmentId: id, companyId });
         } else {
@@ -82,6 +82,7 @@ export const DepartmentListScreen = ({ navigation, route }: any) => {
                             showToast(t('common.success'), 'success');
                         } catch (error) {
                             showToast(t('common.error'), 'error');
+                            console.error(error);
                         }
                     }
                 },
@@ -114,7 +115,7 @@ export const DepartmentListScreen = ({ navigation, route }: any) => {
                             <View style={styles.row}>
                                 <Text style={styles.name}>{dept.name}</Text>
                                 <View style={styles.actions}>
-                                    <TouchableOpacity onPress={() => handleEdit(dept.id, dept.name)}>
+                                    <TouchableOpacity onPress={() => handleEdit(dept.id)}>
                                         <Text style={styles.editText}>{t('common.edit')}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleDelete(dept.id)}>

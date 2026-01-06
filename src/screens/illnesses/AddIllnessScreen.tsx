@@ -112,7 +112,7 @@ export const AddIllnessScreen = ({
 
   const handleTakePhoto = async () => {
     if (Platform.OS === 'web') {
-      /* eslint-disable @typescript-eslint/no-explicit-any */
+      
       const input = (window as any).document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
@@ -124,7 +124,7 @@ export const AddIllnessScreen = ({
           reader.readAsDataURL(file);
         }
       };
-      /* eslint-enable @typescript-eslint/no-explicit-any */
+      
       input.click();
       return;
     }

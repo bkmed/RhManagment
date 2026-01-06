@@ -58,7 +58,7 @@ export const ServiceListScreen = ({ navigation, route }: any) => {
         }
     };
 
-    const handleEdit = (id: number, name: string) => {
+    const handleEdit = (id: number) => {
         if (Platform.OS === 'web') {
             setActiveTab?.('Services', 'AddService', { serviceId: id, companyId });
         } else {
@@ -82,6 +82,7 @@ export const ServiceListScreen = ({ navigation, route }: any) => {
                             showToast(t('common.success'), 'success');
                         } catch (error) {
                             showToast(t('common.error'), 'error');
+                            console.error(error);
                         }
                     }
                 },
@@ -114,7 +115,7 @@ export const ServiceListScreen = ({ navigation, route }: any) => {
                             <View style={styles.row}>
                                 <Text style={styles.name}>{service.name}</Text>
                                 <View style={styles.actions}>
-                                    <TouchableOpacity onPress={() => handleEdit(service.id, service.name)}>
+                                    <TouchableOpacity onPress={() => handleEdit(service.id)}>
                                         <Text style={styles.editText}>{t('common.edit')}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleDelete(service.id)}>

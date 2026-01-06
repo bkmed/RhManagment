@@ -15,7 +15,7 @@ import { servicesDb } from '../../database/servicesDb';
 import { Service } from '../../database/schema';
 import { Theme } from '../../theme';
 
-export const ManageServicesScreen = ({ navigation }: any) => {
+export const ManageServicesScreen = () => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const { showModal } = useModal();
@@ -67,6 +67,7 @@ export const ManageServicesScreen = ({ navigation }: any) => {
                             showToast(t('common.success'), 'success');
                         } catch (error) {
                             showToast(t('common.error'), 'error');
+                            console.error(error);
                         }
                     }
                 },

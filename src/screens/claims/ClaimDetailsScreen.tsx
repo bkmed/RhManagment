@@ -5,7 +5,6 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Platform,
     Image,
 } from 'react-native';
 import { claimsDb } from '../../database/claimsDb';
@@ -18,7 +17,7 @@ import { formatDateTime } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
-export const ClaimDetailsScreen = ({ navigation, route }: any) => {
+export const ClaimDetailsScreen = ({ route }: any) => {
     const { user } = useAuth();
     const { showToast } = useToast();
     const { claimId } = route.params;
@@ -38,6 +37,7 @@ export const ClaimDetailsScreen = ({ navigation, route }: any) => {
             setClaim(data);
         } catch (error) {
             showToast(t('claims.loadError'), 'error');
+            console.error(error);
         } finally {
             setLoading(false);
         }
@@ -52,6 +52,7 @@ export const ClaimDetailsScreen = ({ navigation, route }: any) => {
             notificationService.showAlert(t('common.success'), t('claims.statusUpdated'));
         } catch (error) {
             notificationService.showAlert(t('common.error'), t('claims.updateError'));
+            console.error(error);
         } finally {
             setLoading(false);
         }

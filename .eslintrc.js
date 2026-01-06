@@ -18,6 +18,7 @@ module.exports = {
       'ignoreRestSiblings': false,
     }],
     '@typescript-eslint/no-require-imports': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-var-requires': 'off',
     'no-undef': 'off', // TypeScript takes care of this
   },

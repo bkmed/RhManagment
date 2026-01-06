@@ -15,7 +15,7 @@ import { departmentsDb } from '../../database/departmentsDb';
 import { Department } from '../../database/schema';
 import { Theme } from '../../theme';
 
-export const ManageDepartmentsScreen = ({ navigation }: any) => {
+export const ManageDepartmentsScreen = () => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const { showModal } = useModal();
@@ -67,6 +67,7 @@ export const ManageDepartmentsScreen = ({ navigation }: any) => {
                             showToast(t('common.success'), 'success');
                         } catch (error) {
                             showToast(t('common.error'), 'error');
+                            console.error(error);
                         }
                     }
                 },

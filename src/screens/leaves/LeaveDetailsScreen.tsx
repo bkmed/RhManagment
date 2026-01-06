@@ -14,12 +14,13 @@ import { Leave } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { formatDate, formatDateTime } from '../../utils/dateUtils';
+import { formatDateTime } from '../../utils/dateUtils';
 
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+
 
 export const LeaveDetailsScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
@@ -50,7 +51,7 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
     try {
       const data = await leavesDb.getById(leaveId);
       setLeave(data);
-    } catch (error) {
+    } catch {
       showToast(t('leaveDetails.errorLoadFailed'), 'info');
     } finally {
       setLoading(false);
@@ -81,7 +82,7 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
 
       setLeave({ ...leave, status: newStatus });
       notificationService.showAlert(t('common.success'), t(`leaves.statusUpdated_${newStatus}`));
-    } catch (error) {
+    } catch {
       notificationService.showAlert(t('common.error'), t('leaves.updateError'));
     } finally {
       setLoading(false);
@@ -108,7 +109,7 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
       await leavesDb.delete(leaveId);
       await notificationService.cancelLeaveReminder(leaveId);
       navigateBack();
-    } catch (error) {
+    } catch {
       showToast(t('leaveDetails.errorDeleteFailed'), 'info');
     }
   };
@@ -129,8 +130,6 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
     );
   }
 
-  const start = formatDate(leave.startDate || leave.dateTime);
-  const end = leave.endDate ? formatDate(leave.endDate) : null;
   const startFull = formatDateTime(leave.startDate || leave.dateTime);
   const endFull = leave.endDate ? formatDateTime(leave.endDate) : null;
 

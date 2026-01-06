@@ -1,8 +1,9 @@
-import React, { createContext } from 'react';
+import { createContext } from 'react';
 
 export const WebNavigationContext = createContext({
     activeTab: 'Home',
     subScreen: '',
-    screenParams: {} as any,
-    setActiveTab: (tab: string, subScreen?: string, params?: any) => { },
+    screenParams: {} as Record<string, unknown>,
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    setActiveTab: (_tab: string, _subScreen?: string, _params?: Record<string, unknown>) => { },
 });

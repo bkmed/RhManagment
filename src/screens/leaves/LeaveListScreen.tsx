@@ -3,11 +3,10 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, ParamListBase } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
 import { employeesDb } from '../../database/employeesDb';
@@ -16,12 +15,28 @@ import { teamsDb } from '../../database/teamsDb';
 import { Leave, Employee, Company, Team } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+interface TeamGroup {
+  id: number | string;
+  name: string;
+  managerName: string;
+  items: Leave[];
+}
+
+interface CompanyGroup {
+  id: number | string;
+  name: string;
+  teams: TeamGroup[];
+  items: Leave[];
+  type?: string;
+}
 import { SearchInput } from '../../components/SearchInput';
 import { formatDate } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
-export const LeaveListScreen = ({ navigation }: any) => {
+export const LeaveListScreen = ({ navigation }: { navigation: NativeStackNavigationProp<ParamListBase> }) => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -80,7 +95,6 @@ export const LeaveListScreen = ({ navigation }: any) => {
     }
 
     // Grouping logic for Admin
-    const groups: any[] = [];
     const companiesMap = new Map<number | string, any>();
 
     filtered.forEach(leave => {
@@ -176,31 +190,33 @@ export const LeaveListScreen = ({ navigation }: any) => {
           </View>
         )}
 
-        {groupedData.map((companyGroup: any) => (
-          <View key={companyGroup.id} style={styles.companySection}>
-            {companyGroup.name !== 'direct' && (
-              <View style={styles.companyHeader}>
-                <Text style={styles.companyName}>{companyGroup.name}</Text>
-              </View>
-            )}
+        {
+          groupedData.map((companyGroup: CompanyGroup) => (
+            <View key={companyGroup.id} style={styles.companySection}>
+              {companyGroup.name !== 'direct' && (
+                <View style={styles.companyHeader}>
+                  <Text style={styles.companyName}>{companyGroup.name}</Text>
+                </View>
+              )}
 
-            {(companyGroup.teams || []).map((teamGroup: any) => (
-              <View key={teamGroup.id} style={styles.teamSection}>
-                {teamGroup.name && (
-                  <View style={styles.teamHeader}>
-                    <View style={styles.teamInfo}>
-                      <Text style={styles.teamName}>{teamGroup.name}</Text>
-                      <Text style={styles.teamManager}>{t('roles.chef_dequipe')}: {teamGroup.managerName}</Text>
-                    </View>
+              {
+                (companyGroup.teams || []).map((teamGroup: any) => (
+                  <View key={teamGroup.id} style={styles.teamSection}>
+                    {teamGroup.name && (
+                      <View style={styles.teamHeader}>
+                        <View style={styles.teamInfo}>
+                          <Text style={styles.teamName}>{teamGroup.name}</Text>
+                          <Text style={styles.teamManager}>{t('roles.chef_dequipe')}: {teamGroup.managerName}</Text>
+                        </View>
+                      </View>
+                    )}
+                    {teamGroup.items.map((leave: Leave) => renderLeave(leave))}
                   </View>
-                )}
-                {teamGroup.items.map((leave: Leave) => renderLeave(leave))}
-              </View>
-            ))}
+                ))}
 
-            {companyGroup.type === 'direct' && companyGroup.items.map((leave: Leave) => renderLeave(leave))}
-          </View>
-        ))}
+              {companyGroup.type === 'direct' && companyGroup.items.map((leave: Leave) => renderLeave(leave))}
+            </View>
+          ))}
       </ScrollView>
 
       <TouchableOpacity
@@ -297,7 +313,7 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.subText,
     },
     fab: {
-      position: 'absolute' as any,
+      position: 'absolute',
       right: theme.spacing.l,
       bottom: theme.spacing.l,
       width: 56,
@@ -308,7 +324,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       ...theme.shadows.medium,
       zIndex: 999,
-    } as any,
+    },
     fabText: {
       fontSize: 32,
       color: theme.colors.background,

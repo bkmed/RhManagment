@@ -54,8 +54,9 @@ export const AddServiceScreen = ({ navigation, route }: any) => {
                 setName(service.name);
                 setSelectedCompanyId(service.companyId);
             }
-        } catch (err) {
+        } catch (error) {
             showToast(t('common.error'), 'error');
+            console.error(error);
         }
     };
 
@@ -80,8 +81,9 @@ export const AddServiceScreen = ({ navigation, route }: any) => {
             } else {
                 navigation.goBack();
             }
-        } catch (err) {
+        } catch (error) {
             showToast(t('common.saveError'), 'error');
+            console.error(error);
         }
     };
 

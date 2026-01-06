@@ -54,8 +54,9 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
                 setName(dept.name);
                 setSelectedCompanyId(dept.companyId);
             }
-        } catch (err) {
+        } catch (error) {
             showToast(t('common.error'), 'error');
+            console.error(error);
         }
     };
 
@@ -80,8 +81,9 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
             } else {
                 navigation.goBack();
             }
-        } catch (err) {
+        } catch (error) {
             showToast(t('common.saveError'), 'error');
+            console.error(error);
         }
     };
 

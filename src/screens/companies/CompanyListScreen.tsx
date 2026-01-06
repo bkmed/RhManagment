@@ -5,7 +5,6 @@ import {
     FlatList,
     TouchableOpacity,
     ActivityIndicator,
-    Image,
     Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -15,7 +14,6 @@ import { Company } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useContext, useMemo, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { useModal } from '../../context/ModalContext';
 import { useToast } from '../../context/ToastContext';

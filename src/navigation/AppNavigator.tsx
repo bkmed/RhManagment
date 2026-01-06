@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Platform,
   View,
@@ -12,7 +12,7 @@ import {
 import { enableScreens } from 'react-native-screens';
 import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
@@ -68,6 +68,7 @@ import { NotificationBell } from '../components/common/NotificationBell';
 import { SearchOverlay } from '../components/common/SearchOverlay';
 import { ChatBot } from '../components/common/ChatBot';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import { GlassHeader } from '../components/common/GlassHeader';
 
 enableScreens();
 
@@ -498,7 +499,7 @@ const useNavigationSections = () => {
   }, [t, user?.role]);
 };
 
-const CustomDrawerContent = (props: any) => {
+const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const { user } = useAuth();
   const { theme, themeMode } = useTheme();
   const { t } = useTranslation();
@@ -538,7 +539,7 @@ const CustomDrawerContent = (props: any) => {
       </View>
 
       <ScrollView style={{ flex: 1 }}>
-        {sections.map((section, index) => (
+        {sections.map((section) => (
           <View key={section.title} style={{ marginBottom: 16 }}>
             <TouchableOpacity
               onPress={() => toggleSection(section.title)}
@@ -624,7 +625,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Payroll" component={PayrollStack} />
       <Drawer.Screen name="Leaves" component={LeavesStack} />
       <Drawer.Screen name="Assistant">
-        {() => <ChatBot isScreen={true} />}
+        {() => <ChatBot />}
       </Drawer.Screen>
     </Drawer.Navigator>
   );
@@ -633,25 +634,24 @@ const DrawerNavigator = () => {
 // ======= Web Navigator avec subScreen =======
 const WebNavigator = () => {
   const { t } = useTranslation();
-  const { theme, themeMode } = useTheme();
+  const { theme } = useTheme();
   const { user } = useAuth();
   const { width, height } = useWindowDimensions();
   const isMobile = width < 1045;
 
   const [activeTab, setActiveTab] = useState('Home');
   const [subScreen, setSubScreen] = useState('');
-  const [screenParams, setScreenParams] = useState<any>({});
+  const [screenParams, setScreenParams] = useState<Record<string, unknown>>({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState<{ [key: string]: boolean }>({});
-  const scrollViewRef = useRef<any>(null);
 
   const contextValue = useMemo(
     () => ({
       activeTab,
       subScreen,
       screenParams,
-      setActiveTab: (tab: string, screen?: string, params?: any) => {
+      setActiveTab: (tab: string, screen?: string, params?: Record<string, unknown>) => {
         setActiveTab(tab);
         setSubScreen(screen || '');
         setScreenParams(params || {});
@@ -661,7 +661,7 @@ const WebNavigator = () => {
     [activeTab, subScreen, screenParams],
   );
 
-  const handleSearchSelect = (result: any) => {
+  const handleSearchSelect = (result: { type: string; id?: string }) => {
     setIsSearchVisible(false);
     if (result.type === 'employee') {
       contextValue.setActiveTab('Employees', 'EmployeeDetails', { id: Number(result.id) });
@@ -673,22 +673,25 @@ const WebNavigator = () => {
   };
   const getActiveComponent = () => {
     // Create a mock route object for web screens
-    const mockRoute = { params: screenParams };
+    
+    const mockRoute = { params: screenParams, key: 'mock-key', name: 'mock-name' } as any;
+    const mockNavigation = { navigate: setActiveTab, goBack: () => setSubScreen('') } as any;
+    
 
     switch (activeTab) {
       case 'Home':
         return <HomeStack />;
       case 'Payroll':
         if (subScreen === 'AddPayroll')
-          return <AddPayrollScreen route={mockRoute} />;
+          return <AddPayrollScreen route={mockRoute} navigation={mockNavigation} />;
         if (subScreen === 'PayrollDetails')
-          return <PayrollDetailsScreen route={mockRoute} />;
+          return <PayrollDetailsScreen route={mockRoute} navigation={mockNavigation} />;
         return <PayrollStack />;
       case 'Leaves':
         if (subScreen === 'AddLeave')
-          return <AddLeaveScreen route={mockRoute} />;
+          return <AddLeaveScreen route={mockRoute} navigation={mockNavigation} />;
         if (subScreen === 'LeaveDetails')
-          return <LeaveDetailsScreen route={mockRoute} />;
+          return <LeaveDetailsScreen route={mockRoute} navigation={mockNavigation} />;
         if (subScreen === 'LeaveApprovalList')
           return <LeaveApprovalListScreen />;
         if (subScreen === 'TeamVacations')
@@ -702,49 +705,49 @@ const WebNavigator = () => {
         return <AnalyticsStack />;
       case 'Illnesses':
         if (subScreen === 'AddIllness')
-          return <AddIllnessScreen route={mockRoute} />;
+          return <AddIllnessScreen route={mockRoute} navigation={mockNavigation} />;
         if (subScreen === 'IllnessDetails')
-          return <IllnessDetailsScreen route={mockRoute} />;
+          return <IllnessDetailsScreen route={mockRoute} navigation={mockNavigation} />;
         if (subScreen === 'IllnessHistory')
-          return <IllnessHistoryScreen route={mockRoute} />;
+          return <IllnessHistoryScreen route={mockRoute} navigation={mockNavigation} />;
         return <IllnessesStack />;
       case 'Employees':
         if (subScreen === 'AddEmployee')
-          return <AddEmployeeScreen route={mockRoute} />;
+          return <AddEmployeeScreen route={mockRoute} navigation={mockNavigation} />;
         if (subScreen === 'EmployeeDetails')
-          return <EmployeeDetailsScreen route={mockRoute} />;
+          return <EmployeeDetailsScreen route={mockRoute} navigation={mockNavigation} />;
         return <EmployeesStack />;
       case 'Claims':
-        if (subScreen === 'AddClaim') return <AddClaimScreen route={mockRoute} />;
-        if (subScreen === 'ClaimDetails') return <ClaimDetailsScreen route={mockRoute} />;
+        if (subScreen === 'AddClaim') return <AddClaimScreen route={mockRoute} navigation={mockNavigation} />;
+        if (subScreen === 'ClaimDetails') return <ClaimDetailsScreen route={mockRoute} navigation={mockNavigation} />;
         return <ClaimsStack />;
       case 'Invoices':
-        if (subScreen === 'AddInvoice') return <AddInvoiceScreen route={mockRoute} />;
+        if (subScreen === 'AddInvoice') return <AddInvoiceScreen route={mockRoute} navigation={mockNavigation} />;
         return <InvoicesStack />;
       case 'Companies':
         if (subScreen === 'AddCompany')
-          return <AddCompanyScreen route={mockRoute} />;
+          return <AddCompanyScreen route={mockRoute} navigation={mockNavigation} />;
         if (subScreen === 'OrgChart')
           return <OrgChartScreen />;
         return <CompanyStack />;
       case 'Teams':
         if (subScreen === 'AddTeam')
-          return <AddTeamScreen route={mockRoute} />;
+          return <AddTeamScreen route={mockRoute} navigation={mockNavigation} />;
         return <TeamListScreen />;
       case 'Departments':
         if (subScreen === 'AddDepartment')
-          return <AddDepartmentScreen route={mockRoute} />;
+          return <AddDepartmentScreen route={mockRoute} navigation={mockNavigation} />;
         return <DepartmentListScreen />;
       case 'Services':
         if (subScreen === 'AddService')
-          return <AddServiceScreen route={mockRoute} />;
+          return <AddServiceScreen route={mockRoute} navigation={mockNavigation} />;
         return <ServiceListScreen />;
       case 'Announcements':
         return <AnnouncementsScreen />;
       case 'Chat':
         return <CompanyChatScreen />;
       case 'Assistant':
-        return <ChatBot isScreen={true} />;
+        return <ChatBot />;
       case 'Language':
         return <LanguageSelectionScreen />;
       case 'CustomThemeColors':
@@ -784,6 +787,7 @@ const WebNavigator = () => {
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
+      {}
       <View style={[
         {
           flex: 1,
@@ -793,6 +797,7 @@ const WebNavigator = () => {
         },
         !isMobile ? { flexDirection: 'row' } : { flexDirection: 'column' }
       ] as any}>
+        {}
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (
@@ -811,6 +816,7 @@ const WebNavigator = () => {
             >
               <Image
                 source={require('../../public/logo.png')}
+                
                 style={webStyles.sidebarLogo as any}
                 resizeMode="contain"
               />
@@ -900,42 +906,11 @@ const WebNavigator = () => {
           </View>
         ) : (
           /* Mobile Header */
-          <View
-            style={[
-              webStyles.mobileHeader,
-              {
-                backgroundColor: theme.colors.surface,
-                borderBottomColor: theme.colors.border,
-                borderBottomWidth: 1,
-              },
-            ]}
-          >
-            <TouchableOpacity
-              style={webStyles.brandContainer}
-              onPress={() => setActiveTab('Home')}
-            >
-              <Image
-                source={require('../../public/logo.png')}
-                style={webStyles.logo as any}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingRight: 16 }}>
-              <TouchableOpacity onPress={() => setIsSearchVisible(true)}>
-                <Text style={{ fontSize: 20 }}>🔍</Text>
-              </TouchableOpacity>
-              <NotificationBell />
-              <TouchableOpacity
-                style={webStyles.hamburgerButton}
-                onPress={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                <Text style={[webStyles.hamburgerText, { color: theme.colors.text }]}>
-                  ☰
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <GlassHeader
+            title={activeTab !== 'Home' ? t(`navigation.${activeTab.toLowerCase()}`) : undefined}
+            onMenuPress={() => setIsMenuOpen(true)}
+            onSearchPress={() => setIsSearchVisible(true)}
+          />
         )}
 
         {/* Main Content Area */}
@@ -1076,6 +1051,7 @@ const WebNavigator = () => {
 
 // ======= Root Export =======
 export const AppNavigator = () => {
+  
   const linking: LinkingOptions<any> = {
     prefixes: [
       'http://localhost:8080',
@@ -1123,7 +1099,9 @@ const AppContent = () => {
 const webStyles = StyleSheet.create({
   sidebar: {
     width: 260,
+    
     height: '100vh' as any,
+    
     position: 'sticky' as any,
     top: 0,
     paddingVertical: 24,

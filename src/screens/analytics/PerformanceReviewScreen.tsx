@@ -7,7 +7,6 @@ import {
     TouchableOpacity,
     TextInput,
     Modal,
-    Platform,
     FlatList,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';

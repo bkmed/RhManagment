@@ -3,7 +3,6 @@ import {
     View,
     Text,
     StyleSheet,
-    FlatList,
     TouchableOpacity,
     ActivityIndicator,
     ScrollView,
@@ -360,7 +359,7 @@ const createStyles = (theme: Theme) =>
         },
         fabText: {
             fontSize: 32,
-            color: '#FFF',
+            color: theme.textVariants.button.color,
             marginTop: -2,
         },
         companySection: {

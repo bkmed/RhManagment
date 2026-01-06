@@ -54,6 +54,7 @@ export const LanguageSelectionScreen = ({ navigation }: any) => {
             }
         } catch (error) {
             notificationService.showAlert(t('common.error'), t('profile.languageChangeError'));
+            console.error(error);
         }
     };
 

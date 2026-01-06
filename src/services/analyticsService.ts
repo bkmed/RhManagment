@@ -41,7 +41,6 @@ export const analyticsService = {
             const uniqueEmployeesWithLeaves = new Set(weeklyLeaves.map(l => l.employeeId)).size;
 
             // Calculate weekly payroll distribution (last 7 days)
-            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const last7Days = Array.from({ length: 7 }, (_, i) => {
                 const d = new Date();
                 d.setDate(d.getDate() - (6 - i));

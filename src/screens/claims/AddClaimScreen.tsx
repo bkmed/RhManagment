@@ -18,7 +18,6 @@ import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { ClaimType } from '../../database/schema';
 import { Dropdown } from '../../components/Dropdown';
@@ -30,7 +29,6 @@ import { RootState } from '../../store';
 
 export const AddClaimScreen = ({ navigation }: any) => {
     const { theme } = useTheme();
-    const { showToast } = useToast();
     const { showModal } = useModal();
     const { t } = useTranslation();
     const { user } = useAuth();

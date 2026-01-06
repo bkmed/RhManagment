@@ -23,7 +23,7 @@ export const MyTeamScreen = () => {
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [team, setTeam] = useState<Team | null>(null);
-    const [manager, setManager] = useState<Employee | null>(null);
+    const [, setManager] = useState<Employee | null>(null);
     const [members, setMembers] = useState<Employee[]>([]);
     const [loading, setLoading] = useState(true);
 

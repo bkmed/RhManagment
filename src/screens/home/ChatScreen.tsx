@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     View,
     Text,
@@ -16,7 +16,6 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { selectMessagesByReceiver, sendMessage } from '../../store/slices/messagesSlice';
 import { ChatMessage } from '../../database/schema';
-import { formatDate } from '../../utils/dateUtils';
 
 export const ChatScreen = () => {
     const { t } = useTranslation();

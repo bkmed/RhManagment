@@ -87,7 +87,7 @@ export const AnalyticsScreen = () => {
     backgroundGradientTo: theme.colors.surface,
     decimalPlaces: 0,
     color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`, // Keep brand blue for chart line
-    labelColor: (opacity = 1) => theme.colors.text, // Adapt text color
+    labelColor: () => theme.colors.text, // Adapt text color
     style: {
       borderRadius: 16,
     },

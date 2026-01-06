@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useContext, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, User } from '../context/AuthContext';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { payrollDb } from '../database/payrollDb';
 import { leavesDb } from '../database/leavesDb';
 import { illnessesDb } from '../database/illnessesDb';
@@ -40,21 +41,28 @@ interface StatCardProps {
   icon: string;
   color: string;
   onPress: () => void;
-  styles: any;
+  styles: Record<string, any>;
 }
 
 const StatCard = ({ title, value, icon, color, onPress, styles }: StatCardProps) => {
+  const { theme } = useTheme();
   return (
     <TouchableOpacity
-      style={[styles.statCard, { backgroundColor: color }]}
+      style={[
+        styles.statCard,
+        {
+          backgroundColor: Platform.OS === 'web' ? (theme.colors.surface + 'B3') : theme.colors.surface + 'E6',
+          borderColor: color + '40',
+        }
+      ]}
       onPress={onPress}
     >
-      <View style={styles.statIconWrapper}>
-        <Text style={styles.statIcon}>{icon}</Text>
+      <View style={[styles.statIconWrapper, { backgroundColor: color + '15' }]}>
+        <Text style={[styles.statIcon, { color: color }]}>{icon}</Text>
       </View>
       <View style={styles.statInfo}>
-        <Text style={styles.statNumber}>{value}</Text>
-        <Text style={styles.statLabel}>{title}</Text>
+        <Text style={[styles.statNumber, { color: theme.colors.text }]}>{value}</Text>
+        <Text style={[styles.statLabel, { color: theme.colors.subText }]}>{title}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -66,7 +74,7 @@ interface ActivityItemProps {
   subtitle: string;
   time: string;
   theme: Theme;
-  styles: any;
+  styles: Record<string, any>;
 }
 
 const ActivityItem = ({ icon, title, subtitle, time, theme, styles }: ActivityItemProps) => {
@@ -88,17 +96,26 @@ const ActivityItem = ({ icon, title, subtitle, time, theme, styles }: ActivityIt
 
 interface AdminDashboardProps {
   summary: HomeSummary;
-  recentActivity: any[];
+  recentActivity: ActivityItemProps[];
   navigateToTab: (tab: string, screen?: string) => void;
-  styles: any;
+  styles: Record<string, any>;
   theme: Theme;
 }
 
 const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme }: AdminDashboardProps) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <View style={styles.dashboardContainer}>
+      <View style={[styles.welcomeSection, { backgroundColor: theme.colors.primary }]}>
+        <View>
+          <Text style={styles.welcomeTitle}>{t('home.greeting')}, {user?.name}! 👋</Text>
+          <Text style={styles.welcomeSubtitle}>{t('home.manageCareer')}</Text>
+        </View>
+        <Text style={{ fontSize: 44 }}>🏢</Text>
+      </View>
+
       <View style={styles.statsContainer}>
         <StatCard
           title={t('navigation.employees')}
@@ -201,12 +218,12 @@ const AdminDashboard = ({ summary, recentActivity, navigateToTab, styles, theme 
 };
 
 interface EmployeeDashboardProps {
-  user: any;
+  user: User | null;
   summary: HomeSummary;
   navigateToTab: (tab: string, screen?: string) => void;
   hasNotificationPermission: boolean;
   handleEnableNotifications: () => Promise<void>;
-  styles: any;
+  styles: Record<string, any>;
   theme: Theme;
 }
 
@@ -375,8 +392,8 @@ export const HomeScreen = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
-  const { setActiveTab } = useContext(WebNavigationContext) as any;
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const { setActiveTab } = useContext(WebNavigationContext);
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [summary, setSummary] = useState<HomeSummary>({
@@ -524,18 +541,7 @@ export const HomeScreen = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.welcome}>{t('home.greeting')}</Text>
-            <Text style={styles.name}>{user?.name}</Text>
-          </View>
-          <TouchableOpacity
-            style={[styles.notificationIcon, { backgroundColor: theme.colors.surface }]}
-            onPress={() => navigateToTab('Profile', 'Notifications')}
-          >
-            <Text style={{ fontSize: 20 }}>🔔</Text>
-          </TouchableOpacity>
-        </View>
+        <View style={{ height: Platform.OS === 'web' ? 20 : 0 }} />
 
         {user?.role === 'admin' || user?.role === 'rh' ? (
           <AdminDashboard
@@ -565,86 +571,90 @@ const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.colors.background,
     },
-    scrollContent: {
-      paddingBottom: 100,
-    },
-    loadingContainer: {
+    dashboardContainer: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      paddingHorizontal: 24,
     },
-    header: {
-      padding: 24,
-      paddingTop: Platform.OS === 'ios' ? 20 : 40,
+    welcomeSection: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+      padding: 24,
+      borderRadius: 24,
+      marginVertical: 24,
+      ...theme.shadows.medium,
+      ...(Platform.OS === 'web' && {
+
+        backgroundImage: 'linear-gradient(135deg, #0052CC 0%, #00A3BF 100%)' as any,
+
+      } as any),
     },
-    welcome: {
-      fontSize: 16,
-      color: theme.colors.subText,
-      marginBottom: 4,
-    },
-    name: {
+    welcomeTitle: {
       fontSize: 24,
       fontWeight: 'bold',
-      color: theme.colors.text,
+      color: '#FFFFFF',
+      marginBottom: 4,
     },
-    notificationIcon: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
+    welcomeSubtitle: {
+      fontSize: 14,
+      color: 'rgba(255, 255, 255, 0.8)',
+    },
+    statsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+      gap: 16,
+    },
+    statCard: {
+      flex: 1,
+      padding: 20,
+      borderRadius: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 1,
+      ...theme.shadows.small,
+      ...(Platform.OS === 'web' && {
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        background: theme.colors.surface + 'B3', // 70% opacity
+        '&:hover': {
+          transform: 'translateY(-5px)',
+          boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+        }
+
+      } as any),
+    },
+    statIconWrapper: {
+      width: 48,
+      height: 48,
+      borderRadius: 14,
       justifyContent: 'center',
       alignItems: 'center',
-      ...theme.shadows.small,
+      marginRight: 16,
     },
-    dashboardContainer: {
-      paddingHorizontal: 24,
-      gap: 24,
+    statIcon: {
+      fontSize: 24,
+    },
+    statInfo: {
+      flex: 1,
+    },
+    statNumber: {
+      fontSize: 22,
+      fontWeight: 'bold',
+    },
+    statLabel: {
+      fontSize: 13,
+      fontWeight: '500',
     },
     sectionTitle: {
       fontSize: 18,
       fontWeight: '700',
       color: theme.colors.text,
-      marginTop: 8,
-    },
-    statsContainer: {
-      flexDirection: 'row',
-      gap: 16,
-    },
-    statCard: {
-      flex: 1,
-      padding: 16,
-      borderRadius: 20,
-      gap: 12,
-      ...theme.shadows.small,
-    },
-    statIconWrapper: {
-      width: 44,
-      height: 44,
-      borderRadius: 14,
-      backgroundColor: 'rgba(255,255,255,0.2)',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    statIcon: {
-      fontSize: 22,
-    },
-    statInfo: {
-      gap: 2,
-    },
-    statNumber: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#FFF',
-    },
-    statLabel: {
-      fontSize: 12,
-      color: '#FFF',
-      opacity: 0.9,
-      fontWeight: '600',
+      marginTop: 24,
+      marginBottom: 16,
     },
     actionGrid: {
       flexDirection: 'row',
@@ -652,7 +662,8 @@ const createStyles = (theme: Theme) =>
       gap: 12,
     },
     actionButton: {
-      width: '48%',
+      flex: 1,
+      minWidth: '45%',
       padding: 16,
       borderRadius: 20,
       backgroundColor: theme.colors.surface,
@@ -660,6 +671,14 @@ const createStyles = (theme: Theme) =>
       borderColor: theme.colors.border,
       gap: 12,
       ...theme.shadows.small,
+      ...(Platform.OS === 'web' && {
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          borderColor: theme.colors.primary,
+          transform: 'scale(1.02)',
+        }
+
+      } as any),
     },
     actionIconWrapper: {
       width: 48,
@@ -683,6 +702,7 @@ const createStyles = (theme: Theme) =>
       borderWidth: 1,
       borderColor: theme.colors.border,
       ...theme.shadows.small,
+      marginBottom: 100,
     },
     activityItem: {
       flexDirection: 'row',
@@ -716,126 +736,21 @@ const createStyles = (theme: Theme) =>
       fontSize: 11,
       marginTop: 2,
     },
-    balanceCard: {
-      borderRadius: 24,
-      padding: 24,
-      backgroundColor: theme.colors.surface,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      ...theme.shadows.medium,
+    scrollContent: {
+      paddingBottom: 40,
     },
-    balanceHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 24,
-    },
-    balanceTitle: {
-      fontSize: 16,
-      color: theme.colors.text,
-      fontWeight: '700',
-    },
-    managedBadge: {
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-      borderRadius: 8,
-    },
-    balanceManaged: {
-      fontSize: 10,
-      fontWeight: '700',
-      textTransform: 'uppercase',
-    },
-    balanceGrid: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 24,
-    },
-    balanceItem: {
-      alignItems: 'center',
+    loadingContainer: {
       flex: 1,
-    },
-    balanceLabel: {
-      fontSize: 12,
-      color: theme.colors.subText,
-      marginBottom: 4,
-    },
-    balanceValue: {
-      fontSize: 24,
-      fontWeight: '800',
-      color: theme.colors.text,
-    },
-    balanceDivider: {
-      width: 1,
-      height: 40,
-    },
-    senioritySection: {
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.border,
-      paddingTop: 16,
-    },
-    seniorityRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-    },
-    seniorityItem: {
-      flex: 1,
-    },
-    countryLabel: {
-      fontSize: 11,
-      color: theme.colors.subText,
-      textTransform: 'uppercase',
-      letterSpacing: 0.5,
-    },
-    countryValue: {
-      fontSize: 14,
-      fontWeight: '600',
-      color: theme.colors.text,
-    },
-    quickActions: {
-      gap: 12,
-    },
-    quickActionItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 16,
-      backgroundColor: theme.colors.surface,
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      ...theme.shadows.small,
-    },
-    quickActionIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 10,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: 12,
     },
-    quickActionText: {
-      flex: 1,
-      fontSize: 15,
-      fontWeight: '600',
-      color: theme.colors.text,
-    },
-    tipCard: {
+    header: {
+      padding: 24,
+      paddingTop: Platform.OS === 'ios' ? 20 : 40,
       flexDirection: 'row',
-      backgroundColor: theme.colors.primary + '10',
-      padding: 16,
-      borderRadius: 16,
+      justifyContent: 'space-between',
       alignItems: 'center',
-      borderWidth: 1,
-      borderColor: theme.colors.primary + '30',
-    },
-    tipIcon: {
-      fontSize: 20,
-      marginRight: 12,
-    },
-    tipText: {
-      flex: 1,
-      fontSize: 13,
-      color: theme.colors.primary,
-      fontWeight: '500',
+      display: 'none', // Hidden as we use GlassHeader
     },
     emptyState: {
       padding: 20,

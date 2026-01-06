@@ -111,7 +111,6 @@ export const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
                 <Text style={styles.label}>
                     {label} {required && <Text style={styles.required}>*</Text>}
                 </Text>
-                {/* @ts-ignore - style prop on input not fully typed in RNW */}
                 <input
                     type={mode === 'time' ? 'time' : 'date'}
                     value={webValue}

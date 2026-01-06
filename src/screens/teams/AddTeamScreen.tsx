@@ -47,7 +47,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [services, setServices] = useState<Service[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
 
     // Validation state
     const [errors, setErrors] = useState<Record<string, string>>({});

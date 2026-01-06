@@ -5,13 +5,11 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Share,
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { payrollDb } from '../../database/payrollDb';
 import { employeesDb } from '../../database/employeesDb';
-import { notificationService } from '../../services/notificationService';
 import { Payroll, Employee } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
@@ -62,6 +60,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
       }
     } catch (error) {
       showToast(t('payrollDetails.errorLoadFailed'), 'info');
+      console.error(error);
     } finally {
       setLoading(false);
     }

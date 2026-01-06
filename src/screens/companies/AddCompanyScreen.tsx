@@ -14,10 +14,10 @@ import { companiesDb } from '../../database/companiesDb';
 import { notificationService } from '../../services/notificationService';
 import { Theme } from '../../theme';
 import { useToast } from '../../context/ToastContext';
-import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { CountryPicker } from '../../components/CountryPicker';
 import { isValidEmail } from '../../utils/validation';
+
 
 export const AddCompanyScreen = ({ navigation, route }: any) => {
     const editId = route?.params?.id;
@@ -27,7 +27,7 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
     const { t } = useTranslation();
     const { showToast } = useToast();
     const styles = useMemo(() => createStyles(theme), [theme]);
-    const { setActiveTab } = useContext(WebNavigationContext) as any;
+    const { setActiveTab } = useContext(WebNavigationContext);
 
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
@@ -38,7 +38,7 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
     // Validation state
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (isEdit) {
             loadCompanyData();
         }
@@ -70,7 +70,7 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
         }
 
         // Phone validation
-        if (phone && !/^[\d\s\-\+]+$/.test(phone)) {
+        if (phone && !/^[\d\s\-+]+$/.test(phone)) {
             newErrors.phone = t('common.invalidPhone') || 'Invalid phone number';
         }
 
@@ -103,6 +103,7 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
             } else {
                 navigation.goBack();
             }
+            
         } catch (error: any) {
             console.error('Error saving company:', error);
             const errorMessage = error?.message || t('common.saveError');
