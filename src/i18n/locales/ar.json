@@ -725,7 +725,8 @@
     "title": "الملف الشخصي",
     "updatedSuccessfully": "تم تحديث الملف الشخصي بنجاح",
     "validate": "تأكيد",
-    "version": "الإصدار"
+    "version": "الإصدار",
+    "documents": "المستندات"
   },
   "remote": {
     "employeePlanning": "جدول الموظف",
@@ -761,7 +762,7 @@
   },
   "settings": {
     "personal": "الإعدادات الشخصية",
-    "company": "إعدادات الشركة",
+    "company": "إدارة المؤسسة",
     "language": "اللغة",
     "theme": "المظهر",
     "themeLight": "فاتح",

@@ -725,7 +725,8 @@
     "title": "个人资料",
     "updatedSuccessfully": "个人资料更新成功",
     "validate": "验证",
-    "version": "版本"
+    "version": "版本",
+    "documents": "文档"
   },
   "remote": {
     "employeePlanning": "员工计划",
@@ -761,7 +762,7 @@
   },
   "settings": {
     "personal": "个人设置",
-    "company": "公司设置",
+    "company": "组织管理",
     "language": "语言",
     "theme": "主题",
     "themeLight": "浅色",

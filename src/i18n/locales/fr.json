@@ -725,7 +725,8 @@
     "title": "Profil",
     "updatedSuccessfully": "Profil mis à jour avec succès",
     "validate": "Valider",
-    "version": "Version"
+    "version": "Version",
+    "documents": "Documents"
   },
   "remote": {
     "employeePlanning": "Planning employé",
@@ -761,7 +762,7 @@
   },
   "settings": {
     "personal": "Paramètres Personnels",
-    "company": "Paramètres Entreprise",
+    "company": "Administration de l'Organisation",
     "language": "Langue",
     "theme": "Thème",
     "themeLight": "Clair",

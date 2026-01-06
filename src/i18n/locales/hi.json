@@ -725,7 +725,8 @@
     "title": "प्रोफ़ाइल",
     "updatedSuccessfully": "प्रोफ़ाइल सफलतापूर्वक अपडेट की गई",
     "validate": "मान्य करें",
-    "version": "संस्करण"
+    "version": "संस्करण",
+    "documents": "दस्तावेज़"
   },
   "remote": {
     "employeePlanning": "कर्मचारी योजना",
@@ -761,7 +762,7 @@
   },
   "settings": {
     "personal": "व्यक्तिगत सेटिंग्स",
-    "company": "कंपनी सेटिंग्स",
+    "company": "संगठन प्रशासन",
     "language": "भाषा",
     "theme": "थीम",
     "themeLight": "लाइट",

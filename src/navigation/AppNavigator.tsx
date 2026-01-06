@@ -624,7 +624,6 @@ const useNavigationSections = () => {
       title: t('sections.personal'),
       items: [
         { key: 'Profile', label: t('navigation.profile'), icon: '👤' },
-        { key: 'MyTeam', label: t('teams.myTeam'), icon: '👥' },
         { key: 'Settings', label: t('navigation.settings'), icon: '⚙️' },
         { key: 'Language', label: t('profile.language'), icon: '🌐' },
       ],
