@@ -126,3 +126,5 @@ update all mocked data to have a good exemple
  test detox et cree mois un index template pour voir leur resultat et capture si defallant
 
  add a commercial .md of it
+
+ update splashscreen and icon for ios web and android
