@@ -17,8 +17,10 @@ import {
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { sessionService } from '../services/sessionService';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
+import { rbacService, Permission } from '../services/rbacService';
 import { HomeScreen } from '../screens/HomeScreen';
 import { PayrollListScreen } from '../screens/payroll/PayrollListScreen';
 import { AddPayrollScreen } from '../screens/payroll/AddPayrollScreen';
@@ -27,6 +29,8 @@ import { LeaveListScreen } from '../screens/leaves/LeaveListScreen';
 import { AddLeaveScreen } from '../screens/leaves/AddLeaveScreen';
 import { LeaveDetailsScreen } from '../screens/leaves/LeaveDetailsScreen';
 import { LeaveApprovalListScreen } from '../screens/leaves/LeaveApprovalListScreen';
+import { TeamAbsencesScreen } from '../screens/leaves/TeamAbsencesScreen';
+import { CompanyAbsencesScreen } from '../screens/leaves/CompanyAbsencesScreen';
 import { IllnessListScreen } from '../screens/illnesses/IllnessListScreen';
 import { AddIllnessScreen } from '../screens/illnesses/AddIllnessScreen';
 import { IllnessDetailsScreen } from '../screens/illnesses/IllnessDetailsScreen';
@@ -58,12 +62,15 @@ import { AddServiceScreen } from '../screens/services/AddServiceScreen';
 import { TeamVacationsScreen } from '../screens/teams/TeamVacationsScreen';
 import { CareerHubScreen } from '../screens/profile/CareerHubScreen';
 import { PerformanceReviewScreen } from '../screens/analytics/PerformanceReviewScreen';
+import { ReviewPeriodScreen } from '../screens/performance/ReviewPeriodScreen';
+import { ManageNotificationsScreen } from '../screens/notifications/ManageNotificationsScreen';
 import { OrgChartScreen } from '../screens/companies/OrgChartScreen';
 import { AnnouncementsScreen } from '../screens/home/AnnouncementsScreen';
 import { PersonalSettingsScreen } from '../screens/settings/PersonalSettingsScreen';
 import { CompanySettingsScreen } from '../screens/settings/CompanySettingsScreen';
 import { CompanyChatScreen } from '../screens/chat/CompanyChatScreen';
 import { LanguageSelectionScreen } from '../screens/settings/LanguageSelectionScreen';
+import { MenuCustomizationScreen } from '../screens/settings/MenuCustomizationScreen';
 import { CustomThemeColorsScreen } from '../screens/settings/CustomThemeColorsScreen';
 import { ManageDevicesScreen } from '../screens/settings/ManageDevicesScreen';
 import { MyDevicesScreen } from '../screens/settings/MyDevicesScreen';
@@ -156,6 +163,16 @@ const LeavesStack = () => {
         component={TeamVacationsScreen}
         options={{ title: t('navigation.teams') }}
       />
+      <Stack.Screen
+        name="TeamAbsences"
+        component={TeamAbsencesScreen}
+        options={{ title: t('leaves.teamAbsences') || 'Team Absences' }}
+      />
+      <Stack.Screen
+        name="CompanyAbsences"
+        component={CompanyAbsencesScreen}
+        options={{ title: t('leaves.companyAbsences') || 'Company Absences' }}
+      />
     </Stack.Navigator>
   );
 };
@@ -245,6 +262,11 @@ const AnalyticsStack = () => {
         name="PerformanceReview"
         component={PerformanceReviewScreen}
         options={{ title: t('performance.title') || 'Évaluations' }}
+      />
+      <Stack.Screen
+        name="ReviewPeriod"
+        component={ReviewPeriodScreen}
+        options={{ title: t('performance.periods') || 'Review Periods' }}
       />
     </Stack.Navigator>
   );
@@ -436,9 +458,34 @@ const SettingsStack = () => {
         options={{ title: t('settings.customizeColors') || 'Customize Colors' }}
       />
       <Stack.Screen
+        name="MenuCustomization"
+        component={MenuCustomizationScreen}
+        options={{ title: t('settings.customizeMenu') || 'Customize Menu' }}
+      />
+      <Stack.Screen
         name="ManageDevices"
         component={ManageDevicesScreen}
         options={{ title: t('navigation.manageDevices') || 'Manage Devices' }}
+      />
+      <Stack.Screen
+        name="Departments"
+        component={DepartmentListScreen}
+        options={{ title: t('navigation.departments') }}
+      />
+      <Stack.Screen
+        name="AddDepartment"
+        component={AddDepartmentScreen}
+        options={{ title: t('departments.add') }}
+      />
+      <Stack.Screen
+        name="Services"
+        component={ServiceListScreen}
+        options={{ title: t('navigation.services') }}
+      />
+      <Stack.Screen
+        name="AddService"
+        component={AddServiceScreen}
+        options={{ title: t('services.add') }}
       />
     </Stack.Navigator>
   );
@@ -505,6 +552,11 @@ const HomeStack = () => (
       component={CompanyChatScreen}
       options={{ headerShown: false }} // Header is inside screen now
     />
+    <Stack.Screen
+      name="ManageNotifications"
+      component={ManageNotificationsScreen}
+      options={{ headerShown: true, title: 'Broadcast Notification' }}
+    />
   </Stack.Navigator>
 );
 
@@ -554,6 +606,8 @@ const useNavigationSections = () => {
           { key: 'Payroll', label: t('navigation.payroll'), icon: '💰' },
           { key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' },
           { key: 'Claims', label: t('navigation.claims'), icon: '📝' },
+          // Invoices might be restricted to Admin/RH/Manager? For now keeping as is or adding check.
+          // Assuming Invoices is generic for now or strictly for expenses.
           { key: 'Invoices', label: t('invoices.title'), icon: '🧾' },
           { key: 'Remote', label: t('remote.title'), icon: '📅' },
           { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' },
@@ -562,24 +616,32 @@ const useNavigationSections = () => {
     ];
 
     const organizationItems = [];
-    if (user?.role !== 'employee') {
+
+    if (rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)) {
       organizationItems.push({
         key: 'Employees',
         label: t('navigation.employees'),
         icon: '👥',
       });
     }
-    if (user?.role === 'admin') {
+
+    if (rbacService.hasPermission(user, Permission.MANAGE_COMPANY)) {
       organizationItems.push({
         key: 'Companies',
         label: t('navigation.companies'),
         icon: '🏢',
       });
+    }
+
+    if (rbacService.hasPermission(user, Permission.MANAGE_TEAMS)) {
       organizationItems.push({
         key: 'Teams',
         label: t('navigation.teams'),
         icon: '🤝',
       });
+    }
+
+    if (rbacService.hasPermission(user, Permission.MANAGE_SETTINGS)) {
       organizationItems.push({
         key: 'CompanySettings',
         label: t('settings.company'),
@@ -594,7 +656,8 @@ const useNavigationSections = () => {
       });
     }
 
-    if (user?.role !== 'employee') {
+    // Analytics: Managers, RH, Admin
+    if (rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)) {
       sections.push({
         title: t('sections.analytics'),
         items: [
@@ -610,6 +673,11 @@ const useNavigationSections = () => {
           key: 'Announcements',
           label: t('navigation.announcements'),
           icon: '📢',
+        },
+        {
+          key: 'ManageNotifications',
+          label: t('notifications.broadcast') || 'Broadcast',
+          icon: '📡',
         },
         { key: 'Chat', label: t('navigation.chat'), icon: '💬' },
         {
@@ -630,7 +698,7 @@ const useNavigationSections = () => {
     });
 
     return sections;
-  }, [t, user?.role]);
+  }, [t, user]);
 };
 
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
@@ -779,26 +847,57 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 };
 
 const DrawerNavigator = () => {
+  const { user } = useAuth();
+
   return (
     <Drawer.Navigator
       drawerContent={props => <CustomDrawerContent {...props} />}
       screenOptions={{ headerShown: false }}
     >
       <Drawer.Screen name="Main" component={TabNavigator} />
-      <Drawer.Screen name="Analytics" component={AnalyticsStack} />
+
+      {/* Analytics: VIEW_EMPLOYEES (Managers+) */}
+      {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && (
+        <Drawer.Screen name="Analytics" component={AnalyticsStack} />
+      )}
+
       <Drawer.Screen name="Illnesses" component={IllnessesStack} />
-      <Drawer.Screen name="Employees" component={EmployeesStack} />
-      <Drawer.Screen name="Companies" component={CompanyStack} />
-      <Drawer.Screen name="Teams" component={TeamStack} />
-      <Drawer.Screen name="Departments" component={DepartmentStack} />
-      <Drawer.Screen name="Services" component={ServiceStack} />
+
+      {/* Employees: VIEW_EMPLOYEES */}
+      {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && (
+        <Drawer.Screen name="Employees" component={EmployeesStack} />
+      )}
+
+      {/* Companies: MANAGE_COMPANY (Admin) */}
+      {rbacService.hasPermission(user, Permission.MANAGE_COMPANY) && (
+        <Drawer.Screen name="Companies" component={CompanyStack} />
+      )}
+
+      {/* Teams: MANAGE_TEAMS (Admin/RH) */}
+      {rbacService.hasPermission(user, Permission.MANAGE_TEAMS) && (
+        <Drawer.Screen name="Teams" component={TeamStack} />
+      )}
+
+      {/* Settings: MANAGE_SETTINGS (Admin) - technically Department/Service management is here too */}
+      {/* But Departments/Services might needed by RH? */}
+      {/* For now, linking to MANAGE_SETTINGS matching menu */}
+      {rbacService.hasPermission(user, Permission.MANAGE_SETTINGS) && (
+        <>
+          <Drawer.Screen name="Departments" component={DepartmentStack} />
+          <Drawer.Screen name="Services" component={ServiceStack} />
+          <Drawer.Screen name="Settings" component={SettingsStack} />
+          {/* Note: SettingsStack contains CompanySettings */}
+        </>
+      )}
+
       <Drawer.Screen name="Remote" component={RemoteCalendarScreen} />
       <Drawer.Screen name="Claims" component={ClaimsStack} />
       <Drawer.Screen name="Invoices" component={InvoicesStack} />
       <Drawer.Screen name="Profile" component={ProfileStack} />
-      <Drawer.Screen name="Settings" component={SettingsStack} />
+
       <Drawer.Screen name="Announcements" component={AnnouncementsScreen} />
       <Drawer.Screen name="Chat" component={CompanyChatScreen} />
+
       {/* Map other screens if needed, ensuring names match keys */}
       <Drawer.Screen name="Home" component={HomeStack} />
       <Drawer.Screen name="Payroll" component={PayrollStack} />
@@ -901,6 +1000,7 @@ const WebNavigator = () => {
       case 'Remote':
         return <RemoteCalendarScreen />;
       case 'Analytics':
+        if (!rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)) return <HomeStack />;
         if (subScreen === 'PerformanceReview')
           return <PerformanceReviewScreen />;
         return <AnalyticsStack />;
@@ -925,6 +1025,7 @@ const WebNavigator = () => {
           );
         return <IllnessesStack />;
       case 'Employees':
+        if (!rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)) return <HomeStack />;
         if (subScreen === 'AddEmployee')
           return (
             <AddEmployeeScreen route={mockRoute} navigation={mockNavigation} />
@@ -954,6 +1055,7 @@ const WebNavigator = () => {
           );
         return <InvoicesStack />;
       case 'Companies':
+        if (!rbacService.hasPermission(user, Permission.MANAGE_COMPANY)) return <HomeStack />;
         if (subScreen === 'AddCompany')
           return (
             <AddCompanyScreen route={mockRoute} navigation={mockNavigation} />
@@ -961,12 +1063,14 @@ const WebNavigator = () => {
         if (subScreen === 'OrgChart') return <OrgChartScreen />;
         return <CompanyStack />;
       case 'Teams':
+        if (!rbacService.hasPermission(user, Permission.MANAGE_TEAMS)) return <HomeStack />;
         if (subScreen === 'AddTeam')
           return (
             <AddTeamScreen route={mockRoute} navigation={mockNavigation} />
           );
         return <TeamListScreen />;
       case 'Departments':
+        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS)) return <HomeStack />;
         if (subScreen === 'AddDepartment')
           return (
             <AddDepartmentScreen
@@ -976,6 +1080,7 @@ const WebNavigator = () => {
           );
         return <DepartmentListScreen />;
       case 'Services':
+        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS)) return <HomeStack />;
         if (subScreen === 'AddService')
           return (
             <AddServiceScreen route={mockRoute} navigation={mockNavigation} />
@@ -992,8 +1097,10 @@ const WebNavigator = () => {
       case 'CustomThemeColors':
         return <CustomThemeColorsScreen />;
       case 'Settings':
+        // Personal Settings are available to all
         return <PersonalSettingsScreen />;
       case 'CompanySettings':
+        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS)) return <HomeStack />;
         if (subScreen === 'ManageDevices') return <ManageDevicesScreen />;
         if (subScreen === 'CustomThemeColors')
           return <CustomThemeColorsScreen />;
@@ -1383,7 +1490,12 @@ export const AppNavigator = () => {
 
   return (
     <AuthProvider>
-      <NavigationContainer linking={linking}>
+      <NavigationContainer
+        linking={linking}
+        onStateChange={() => {
+          sessionService.updateLastActivity();
+        }}
+      >
         <AppContent />
       </NavigationContainer>
     </AuthProvider>

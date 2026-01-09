@@ -22,6 +22,11 @@ import { useSelector } from 'react-redux';
 import { selectAllCurrencies } from '../../store/slices/currenciesSlice';
 import { Dropdown } from '../../components/Dropdown';
 import { selectAllServices } from '../../store/slices/servicesSlice';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { selectAllTeams } from '../../store/slices/teamsSlice';
+import { selectAllEmployees } from '../../store/slices/employeesSlice';
+import { Permission, rbacService } from '../../services/rbacService';
+import { RootState } from '../../store';
 
 export const AddInvoiceScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
@@ -32,6 +37,9 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
 
   const currencies = useSelector(selectAllCurrencies);
   const services = useSelector(selectAllServices);
+  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const teams = useSelector((state: RootState) => selectAllTeams(state));
+  const employees = useSelector((state: RootState) => selectAllEmployees(state));
 
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -41,11 +49,32 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  const [teamId, setTeamId] = useState<number | null>(null);
+  const [employeeId, setEmployeeId] = useState<number | null>(
+    user?.role === 'employee' && user?.id ? Number(user.id) : null,
+  );
+
   useEffect(() => {
     if (user?.department) {
       setDepartment(user.department);
     }
   }, [user]);
+
+  // Filtering Logic
+  const filteredTeams = useMemo(() => {
+    if (!companyId) return [];
+    return teams.filter(t => t.companyId === companyId);
+  }, [teams, companyId]);
+
+  const filteredEmployees = useMemo(() => {
+    if (!companyId && !teamId) return employees;
+    return employees.filter(emp => {
+      const matchesCompany = !companyId || emp.companyId === companyId;
+      const matchesTeam = !teamId || emp.teamId === teamId;
+      return matchesCompany && matchesTeam;
+    });
+  }, [employees, companyId, teamId]);
 
   const handleTakePhoto = async () => {
     if (Platform.OS === 'web') {
@@ -105,17 +134,18 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
 
     setLoading(true);
     try {
+      const selectedEmp = employees.find(e => e.id === employeeId);
       await invoicesDb.add({
-        employeeId: user?.employeeId || 0,
-        employeeName: user?.name,
+        employeeId: employeeId || user?.employeeId || 0,
+        employeeName: selectedEmp?.name || user?.name,
         amount: Number(amount),
         currency,
         description: description.trim(),
         photoUri: photoUri || undefined,
         status: 'pending',
-        companyId: user?.companyId,
-        teamId: user?.teamId,
-        department,
+        companyId: selectedEmp?.companyId || user?.companyId,
+        teamId: selectedEmp?.teamId || user?.teamId,
+        department: selectedEmp?.department || department,
       });
 
       navigation.goBack();
@@ -131,6 +161,38 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.section}>
+
+          {/* Admin/RH Selection Section */}
+          {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
+            <View style={{ marginBottom: theme.spacing.m }}>
+              <Dropdown
+                label={t('companies.selectCompany')}
+                data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                value={companyId ? String(companyId) : ''}
+                onSelect={val => {
+                  setCompanyId(Number(val));
+                  setTeamId(null);
+                  setEmployeeId(null);
+                }}
+              />
+              <View style={{ height: theme.spacing.m }} />
+              <Dropdown
+                label={t('teams.selectTeam')}
+                data={filteredTeams.map(t => ({ label: t.name, value: String(t.id) }))}
+                value={teamId ? String(teamId) : ''}
+                onSelect={val => setTeamId(Number(val))}
+              />
+              <View style={{ height: theme.spacing.m }} />
+              <Dropdown
+                label={t('employees.name')}
+                data={filteredEmployees.map(e => ({ label: e.name, value: String(e.id) }))}
+                value={employeeId ? String(employeeId) : ''}
+                onSelect={val => setEmployeeId(Number(val))}
+              />
+              <View style={{ height: theme.spacing.m }} />
+            </View>
+          )}
+
           <Text style={styles.label}>{t('invoices.description')} *</Text>
           <TextInput
             style={[styles.input, errors.description && styles.inputError]}

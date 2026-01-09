@@ -27,6 +27,12 @@ A premium, comprehensive HR management solution built with **React Native Web**.
 
 ---
 
+
+## Documentation
+- [Pages and Roles](pages-and-roles.md): Detailed matrix of access control.
+- [Use Cases](use-cases.md): Common user scenarios and workflows.
+- [Commercial Overview](COMMERCIAL.md): Product features and value proposition.
+
 ## 🛠 Tech Stack
 
 - **Framework**: [React Native Web](https://necolas.github.io/react-native-web/) for cross-platform excellence.

@@ -17,6 +17,7 @@ import { SearchInput } from '../../components/SearchInput';
 import { notificationService } from '../../services/notificationService';
 
 import { useAuth } from '../../context/AuthContext';
+import { Permission, rbacService } from '../../services/rbacService';
 
 export const PayrollListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -100,7 +101,7 @@ export const PayrollListScreen = ({ navigation }: any) => {
         ListEmptyComponent={!loading ? renderEmpty : null}
       />
 
-      {(user?.role === 'admin' || user?.role === 'rh') && (
+      {rbacService.hasPermission(user, Permission.MANAGE_PAYROLL) && (
         <TouchableOpacity
           style={styles.fab}
           onPress={() => navigation.navigate('AddPayroll')}

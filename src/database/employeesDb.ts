@@ -178,6 +178,16 @@ export const employeesDb = {
     employee: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>,
     companyName?: string,
   ): Promise<number> => {
+    // Check for duplicate email
+    const allEmployees = selectAllEmployees(store.getState());
+    const emailExists = allEmployees.some(
+      e => e.email.toLowerCase() === employee.email.toLowerCase()
+    );
+
+    if (emailExists) {
+      throw new Error('Email already exists');
+    }
+
     const now = new Date().toISOString();
     const id = Date.now();
 
@@ -197,6 +207,17 @@ export const employeesDb = {
     const existing = selectEmployeeById(id)(store.getState());
 
     if (existing) {
+      // Check for duplicate email if email is being updated
+      if (updates.email && updates.email.toLowerCase() !== existing.email.toLowerCase()) {
+        const allEmployees = selectAllEmployees(store.getState());
+        const emailExists = allEmployees.some(
+          e => e.id !== id && e.email.toLowerCase() === updates.email!.toLowerCase()
+        );
+        if (emailExists) {
+          throw new Error('Email already exists');
+        }
+      }
+
       const updated = {
         ...existing,
         ...updates,

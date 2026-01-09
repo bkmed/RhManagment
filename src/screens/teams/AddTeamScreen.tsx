@@ -132,15 +132,22 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
         });
       }
 
-      // 2. Update Manager's teamId
-      if (managerId) {
-        await employeesDb.update(managerId, { teamId });
-      }
-
-      // 3. Update Members' teamId
+      // 3. Update Members' teamId and companyId
       for (const memberIdStr of selectedMemberIds) {
         const memberId = Number(memberIdStr);
-        await employeesDb.update(memberId, { teamId });
+        await employeesDb.update(memberId, {
+          teamId,
+          // Ensure they are attached to the company too
+          ...(companyId ? { companyId } : {})
+        });
+      }
+
+      // Also update manager
+      if (managerId) {
+        await employeesDb.update(managerId, {
+          teamId,
+          ...(companyId ? { companyId } : {})
+        });
       }
 
       showToast(t('common.success'), 'success');
@@ -156,12 +163,39 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
     }
   };
 
+  // Filter out employees who:
+  // 1. Are already managers (handled by excluding current manager in dropdown, but here we filter generally)
+  // 2. Are assigned to another team (strict 1 team policy)
+  // 3. Do not belong to the selected company (if company selected)
+  // 4. If no company selected, they must not belong to any company (or strictly force company selection?) -> Assuming if team has company, employee must match.
+  const eligibleEmployees = useMemo(() => {
+    return employees.filter(e => {
+      // 1. Check Company Constraint
+      if (companyId) {
+        // If team has company, employee must belong to it (or be unassigned and willing to join? usually strict).
+        // Let's assume strict: Employee must be in the company or unassigned (which we might assign automatically? No, better strict).
+        // If employee has companyId, it must match.
+        // If employee has NO companyId, allow them (and we'll assign them to company on save).
+        const inCompany = !e.companyId || e.companyId === companyId;
+        if (!inCompany) return false;
+      }
+
+      // 2. Check Team Constraint
+      // Must not be in another team.
+      // If isEdit, allow if e.teamId === editId.
+      const inOtherTeam = e.teamId && e.teamId !== (isEdit ? editId : -1);
+      if (inOtherTeam) return false;
+
+      return true;
+    });
+  }, [employees, companyId, isEdit, editId]);
+
   const employeeOptions = useMemo(() => {
-    return employees.map(e => ({
+    return eligibleEmployees.map(e => ({
       label: e.name,
       value: (e.id || 0).toString(),
     }));
-  }, [employees]);
+  }, [eligibleEmployees]);
 
   const departmentOptions = useMemo(() => {
     return departments.map(d => ({ label: d.name, value: d.name }));
@@ -173,6 +207,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
 
   // Filter out selected manager from member options
   const memberOptions = useMemo(() => {
+    // Also exclude the currently selected manager from being a "member" (manager is separate role in team)
     return employeeOptions.filter(e => Number(e.value) !== managerId);
   }, [employeeOptions, managerId]);
 
@@ -346,5 +381,16 @@ const createStyles = (theme: Theme) =>
       color: '#FFFFFF',
       fontWeight: 'bold',
       fontSize: 16,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing.s,
+    },
+    countLabel: {
+      ...theme.textVariants.caption,
+      fontWeight: 'bold',
+      color: theme.colors.subText,
     },
   });

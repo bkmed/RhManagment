@@ -66,6 +66,32 @@ const App = () => {
       }
     };
 
+    // Initialize session management
+    const initializeSession = async () => {
+      try {
+        const { authService } = await import('./src/services/authService');
+        const { sessionService } = await import('./src/services/sessionService');
+
+        // Get current user from auth
+        const currentUser = await authService.getCurrentUser();
+
+        // Initialize session
+        await sessionService.initSession(currentUser);
+
+        // Listen for session expiry
+        if (typeof window !== 'undefined') {
+          const handleSessionExpiry = () => {
+            console.log('Session expired - redirecting to login');
+          };
+          (window as any).addEventListener('session_expired', handleSessionExpiry);
+        }
+
+        console.log('Session service initialized');
+      } catch (error) {
+        console.error('Session initialization error:', error);
+      }
+    };
+
     // Initialize notifications (native only)
     // Note: MMKV storage is ready to use immediately, no initialization needed
     const initialize = async () => {
@@ -78,6 +104,9 @@ const App = () => {
 
         // Migrate data first
         await migrateData();
+
+        // Initialize session management
+        await initializeSession();
 
         // Only initialize native modules on iOS/Android
         if (Platform.OS !== 'web') {

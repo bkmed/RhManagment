@@ -171,7 +171,9 @@
     "weekend": "عطلة نهاية الأسبوع",
     "yearUnit": "سنة",
     "yearsUnit": "سنوات",
-    "yes": "نعم"
+    "yes": "نعم",
+    "submit": "إرسال",
+    "invalidAmount": "مبلغ غير صالح"
   },
   "companies": {
     "add": "إضافة شركة",
@@ -292,7 +294,14 @@
     "title": "الموظفون",
     "titlePlaceholder": "e.g. Master React Native",
     "updateButton": "تحديث الموظف",
-    "website": "Website"
+    "website": "Website",
+    "alias": "الاسم المستعار",
+    "aliasPlaceholder": "على سبيل المثال، أحمد س.",
+    "birthDate": "تاريخ الميلاد",
+    "birthDatePlaceholder": "سنة-شهر-يوم",
+    "countryPlaceholder": "على سبيل المثال، مصر",
+    "jobTitle": "المسمى الوظيفي",
+    "jobTitlePlaceholder": "على سبيل المثال، مهندس برمجيات"
   },
   "forgotPassword": {
     "backToLogin": "العودة لتسجيل الدخول",
@@ -392,7 +401,14 @@
     "saveError": "فشل حفظ السجل",
     "takePhoto": "التقاط صورة",
     "title": "المرض",
-    "updateButton": "تحديث الحالة المرضية"
+    "updateButton": "تحديث الحالة المرضية",
+    "dateOfIllness": "تاريخ المرض",
+    "daysCount": "{{count}} يوم",
+    "daysCount_plural": "{{count}} أيام",
+    "endDate": "تاريخ الانتهاء",
+    "endDateLabel": "تاريخ الانتهاء",
+    "object": "الموضوع",
+    "objectPlaceholder": "على سبيل المثال، إجازة مرضية"
   },
   "invoices": {
     "add": "إضافة فاتورة",
@@ -493,7 +509,12 @@
     "titlePlaceholder": "مثل: إجازة صيفية",
     "upcoming": "القادمة",
     "update": "تحديث",
-    "updateSuccess": "تم تحديث طلب الإجازة بنجاح"
+    "updateSuccess": "تم تحديث طلب الإجازة بنجاح",
+    "cause": "السبب",
+    "causePlaceholder": "على سبيل المثال، أسباب شخصية",
+    "object": "الموضوع",
+    "objectPlaceholder": "على سبيل المثال، إجازة سنوية",
+    "status": "الحالة"
   },
   "login": {
     "admin": "مسؤول",
@@ -542,13 +563,22 @@
     "profile": "الملف الشخصي",
     "services": "الخدمات",
     "settings": "الإعدادات",
-    "teams": "الفرق"
+    "teams": "الفرق",
+    "chatBot": "مساعد الذكاء الاصطناعي",
+    "manageNotifications": "إدارة الإشعارات",
+    "personalInfo": "المعلومات الشخصية"
   },
   "notifications": {
     "markAllAsRead": "تحديد الكل كمقروء",
     "noNotifications": "لا توجد تنبيهات بعد",
     "title": "التنبيهات",
-    "unread": "غير مقروء"
+    "unread": "غير مقروء",
+    "manageNotifications": "إدارة الإشعارات",
+    "sendToAll": "إرسال إلى جميع الموظفين",
+    "sendToCompany": "إرسال إلى الشركة",
+    "sendToTeam": "إرسال إلى الفريق",
+    "welcomeTitle": "مرحبًا بك في إدارة الموارد البشرية!",
+    "welcomeMessage": "حل إدارة الموارد البشرية الشامل الخاص بك. إدارة الموظفين والإجازات والرواتب والمزيد - كل ذلك في مكان واحد."
   },
   "offline": {
     "limitedFunctionality": "قد تكون بعض الميزات غير متاحة",
@@ -743,7 +773,8 @@
     "admin": "مدير",
     "chef_dequipe": "رئيس فريق",
     "employee": "موظف",
-    "rh": "الموارد البشرية"
+    "rh": "الموارد البشرية",
+    "undefined": "دور غير محدد"
   },
   "sections": {
     "analytics": "التحليلات",
@@ -778,7 +809,8 @@
     "pushNotifications": "تنبيهات الهاتف",
     "emailNotifications": "تنبيهات البريد الإلكتروني",
     "params": "معايير الشركة",
-    "management": "إدارة الموارد"
+    "management": "إدارة الموارد",
+    "companySettings": "إعدادات الشركة"
   },
   "signUp": {
     "emailLabel": "البريد الإلكتروني",
@@ -822,7 +854,10 @@
     "title": "الفرق",
     "validation": {
       "maxMembers": "الحد الأقصى 10 أعضاء",
-      "minMembers": "اختر عضوين على الأقل"
-    }
+      "minMembers": "اختر عضوين على الأقل",
+      "noMembers": "لم يتم اختيار أعضاء"
+    },
+    "selectedCount": "تم اختيار {{count}} موظف",
+    "selectedCount_plural": "تم اختيار {{count}} موظفين"
   }
 }

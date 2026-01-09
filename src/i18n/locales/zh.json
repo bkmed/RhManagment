@@ -171,7 +171,9 @@
     "weekend": "周末",
     "yearUnit": "年",
     "yearsUnit": "年",
-    "yes": "是"
+    "yes": "是",
+    "submit": "提交",
+    "invalidAmount": "金额无效"
   },
   "companies": {
     "add": "添加公司",
@@ -292,7 +294,14 @@
     "title": "员工",
     "titlePlaceholder": "例如 精通 React Native",
     "updateButton": "更新员工",
-    "website": "网站"
+    "website": "网站",
+    "alias": "别名",
+    "aliasPlaceholder": "例如，张三",
+    "birthDate": "出生日期",
+    "birthDatePlaceholder": "年-月-日",
+    "countryPlaceholder": "例如，中国",
+    "jobTitle": "职位",
+    "jobTitlePlaceholder": "例如，软件工程师"
   },
   "forgotPassword": {
     "backToLogin": "返回登录",
@@ -392,7 +401,14 @@
     "takePhoto": "拍照",
     "title": "病假",
     "updateButton": "更新疾病记录",
-    "collisionError": "该员工在此期间已有病假记录。"
+    "collisionError": "该员工在此期间已有病假记录。",
+    "dateOfIllness": "疾病日期",
+    "daysCount": "{{count}} 天",
+    "daysCount_plural": "{{count}} 天",
+    "endDate": "结束日期",
+    "endDateLabel": "结束日期",
+    "object": "主题",
+    "objectPlaceholder": "例如，病假"
   },
   "invoices": {
     "add": "添加发票",
@@ -493,7 +509,12 @@
     "upcoming": "即将到来",
     "update": "更新",
     "updateSuccess": "休假申请更新成功",
-    "collisionError": "该员工在此期间已安排了休假或授权。"
+    "collisionError": "该员工在此期间已安排了休假或授权。",
+    "cause": "原因",
+    "causePlaceholder": "例如，个人原因",
+    "object": "主题",
+    "objectPlaceholder": "例如，年假",
+    "status": "状态"
   },
   "login": {
     "admin": "管理员",
@@ -542,13 +563,22 @@
     "profile": "个人资料",
     "services": "服务",
     "settings": "设置",
-    "teams": "团队"
+    "teams": "团队",
+    "chatBot": "AI助手",
+    "manageNotifications": "管理通知",
+    "personalInfo": "个人信息"
   },
   "notifications": {
     "markAllAsRead": "全部标记为已读",
     "noNotifications": "暂无通知",
     "title": "通知",
-    "unread": "未读"
+    "unread": "未读",
+    "manageNotifications": "管理通知",
+    "sendToAll": "发送给所有员工",
+    "sendToCompany": "发送给公司",
+    "sendToTeam": "发送给团队",
+    "welcomeTitle": "欢迎使用人力资源管理系统！",
+    "welcomeMessage": "您的全面人力资源管理解决方案。管理员工、假期、工资等 - 一站式服务。"
   },
   "offline": {
     "limitedFunctionality": "某些功能可能无法使用",
@@ -743,7 +773,8 @@
     "admin": "管理员",
     "chef_dequipe": "团队负责人",
     "employee": "员工",
-    "rh": "人力资源"
+    "rh": "人力资源",
+    "undefined": "未定义角色"
   },
   "sections": {
     "analytics": "分析",
@@ -778,7 +809,8 @@
     "pushNotifications": "推送通知",
     "emailNotifications": "电子邮件通知",
     "params": "公司参数",
-    "management": "资源管理"
+    "management": "资源管理",
+    "companySettings": "公司设置"
   },
   "signUp": {
     "emailLabel": "电子邮件",
@@ -822,7 +854,10 @@
     "title": "团队",
     "validation": {
       "maxMembers": "最多允许 10 名成员",
-      "minMembers": "至少选择 2 名成员"
-    }
+      "minMembers": "至少选择 2 名成员",
+      "noMembers": "未选择成员"
+    },
+    "selectedCount": "已选择 {{count}} 名员工",
+    "selectedCount_plural": "已选择 {{count}} 名员工"
   }
 }

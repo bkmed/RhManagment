@@ -13,6 +13,8 @@ export interface User {
   email: string;
   role: UserRole;
   employeeId?: number;
+  alias?: string;
+  jobTitle?: string;
   department?: string;
   photoUri?: string;
   vacationDaysPerYear?: number;
@@ -22,6 +24,7 @@ export interface User {
   hiringDate?: string;
   firstName?: string;
   lastName?: string;
+  address?: string; // Added address
   age?: number;
   gender?: 'male' | 'female' | 'other';
   emergencyContact?: {
@@ -279,100 +282,155 @@ const seedDemoData = async () => {
   const { employeesDb } = require('../database/employeesDb');
   const { leavesDb } = require('../database/leavesDb');
   const { payrollDb } = require('../database/payrollDb');
+  const { companiesDb } = require('../database/companiesDb');
+  const { teamsDb } = require('../database/teamsDb');
+  const { reviewPeriodsDb } = require('../database/reviewPeriodsDb');
 
-  // Create Employees
+  console.log('SEEDING DEMO DATA...');
+
+  // 1. Create Companies (2)
+  const company1Id = await companiesDb.add({ name: 'Tech Solutions Inc.', logo: 'https://via.placeholder.com/150', address: '123 Tech Park', country: 'France' });
+  const company2Id = await companiesDb.add({ name: 'Global Services Ltd', logo: 'https://via.placeholder.com/150', address: '456 Business Blvd', country: 'Tunisia' });
+
+  // 2. Create Teams (8) - 4 per company
+  const teamIds: number[] = [];
+  for (let i = 1; i <= 4; i++) {
+    const tId = await teamsDb.add({ name: `Tech Team ${i}`, department: 'IT', companyId: company1Id });
+    teamIds.push(tId);
+  }
+  for (let i = 1; i <= 4; i++) {
+    const tId = await teamsDb.add({ name: `Service Team ${i}`, department: 'Operations', companyId: company2Id });
+    teamIds.push(tId);
+  }
+
+  // 3. Create Users (90)
+  // Roles: 1 Admin, 3 RH, 8 Managers (1 per team), 78 Employees
+
+  // Admin
   await employeesDb.add({
-    name: 'Demo Admin',
-    position: 'Administrator',
+    name: 'Super Admin',
     email: 'admin@demo.com',
-    department: 'Management',
     role: 'admin',
+    companyId: company1Id,
+    teamId: undefined,
+    position: 'CTO',
+    department: 'Management',
     vacationDaysPerYear: 30,
-    remainingVacationDays: 20,
-    statePaidLeaves: 25,
-    country: 'France',
-    hiringDate: '2018-01-15',
-    notes: 'Demo admin account',
+    remainingVacationDays: 30,
+    statePaidLeaves: 0,
+    password: 'admin' // In real app, password is part of auth record, simpler here for mapping
   });
 
-  const emp1Id = await employeesDb.add({
-    name: 'Demo Employee',
-    position: 'Software Engineer',
-    email: 'employee@demo.com',
-    department: 'IT',
-    role: 'employee',
-    vacationDaysPerYear: 25,
-    remainingVacationDays: 15,
-    statePaidLeaves: 30,
-    country: 'Tunisia',
-    hiringDate: '2021-09-20',
-    notes: 'Demo account',
+  // RH (3)
+  const rhEmails = ['rh1@demo.com', 'rh2@demo.com', 'rh@demo.com'];
+  for (const email of rhEmails) {
+    await employeesDb.add({
+      name: `RH Officer ${email.split('@')[0]}`,
+      email: email,
+      role: 'rh',
+      companyId: company1Id, // Attach to first company for simplicity
+      department: 'Human Resources',
+      position: 'HR Specialist',
+      vacationDaysPerYear: 30,
+      remainingVacationDays: 25,
+      statePaidLeaves: 0
+    });
+  }
+
+  // Managers (8) - One per team
+  for (let i = 0; i < teamIds.length; i++) {
+    const teamId = teamIds[i];
+    const email = `manager${i + 1}@demo.com`;
+
+    // Use specific email for the login demo manager if needed, else random
+    const finalEmail = i === 0 ? 'chef@demo.com' : email;
+
+    const mgrId = await employeesDb.add({
+      name: `Manager Team ${i + 1}`,
+      email: finalEmail,
+      role: 'chef_dequipe',
+      teamId: teamId,
+      companyId: i < 4 ? company1Id : company2Id,
+      department: i < 4 ? 'IT' : 'Operations',
+      position: 'Team Lead',
+      vacationDaysPerYear: 28,
+      remainingVacationDays: 20,
+      statePaidLeaves: 5
+    });
+
+    // Update team with managerId
+    const team = await teamsDb.getById(teamId);
+    if (team) {
+      await teamsDb.update(teamId, { ...team, managerId: mgrId });
+    }
+  }
+
+  // Employees (78)
+  const firstNames = ['Sarah', 'John', 'Mohamed', 'Fatima', 'Lucas', 'Emma', 'Thomas', 'Sophie', 'Ahmed', 'Yasmine', 'Nicolas', 'Julie'];
+  const lastNames = ['Smith', 'Doe', 'Ben Ali', 'Dubois', 'Martin', 'Bernard', 'Petit', 'Durand', 'Leroy', 'Moreau', 'Simon', 'Laurent'];
+
+  for (let i = 0; i < 78; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const email = `emp${i + 1}@demo.com`;
+
+    // Use specific email for demo employee
+    const finalEmail = i === 0 ? 'employee@demo.com' : email;
+    const assignedTeamId = teamIds[i % teamIds.length];
+    const assignedCompanyId = i % teamIds.length < 4 ? company1Id : company2Id;
+
+    const empId = await employeesDb.add({
+      name: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
+      email: finalEmail,
+      role: 'employee',
+      teamId: assignedTeamId,
+      companyId: assignedCompanyId,
+      department: assignedCompanyId === company1Id ? 'IT' : 'Operations',
+      position: 'Developer',
+      vacationDaysPerYear: 25,
+      remainingVacationDays: Math.floor(Math.random() * 25),
+      statePaidLeaves: Math.floor(Math.random() * 10),
+      hiringDate: new Date(2020 + Math.floor(Math.random() * 4), Math.floor(Math.random() * 12), 1).toISOString().split('T')[0]
+    });
+
+    // Generate some leaves and payroll for the first few employees
+    if (i < 10) {
+      await leavesDb.add({
+        title: 'Vacation',
+        employeeName: `${firstName} ${lastName}`,
+        employeeId: empId,
+        dateTime: new Date().toISOString(),
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 86400000 * 3).toISOString(),
+        status: 'approved',
+        type: 'leave',
+        reminderEnabled: false
+      });
+
+      await payrollDb.add({
+        name: 'Monthly Salary',
+        amount: 2500 + Math.floor(Math.random() * 1000),
+        currency: assignedCompanyId === company1Id ? 'EUR' : 'TND',
+        frequency: 'Monthly',
+        times: JSON.stringify(['09:00']),
+        startDate: new Date().toISOString(),
+        reminderEnabled: true,
+        employeeId: empId,
+        companyId: assignedCompanyId
+      });
+    }
+  }
+
+  // 4. Create Review Periods
+  await reviewPeriodsDb.add({
+    name: 'Q1 2024 Performance Review',
+    startDate: '2024-01-01',
+    endDate: '2024-03-31',
+    status: 'active'
   });
 
-  await employeesDb.add({
-    name: 'Demo Manager',
-    position: 'Team Lead',
-    email: 'manager@demo.com',
-    department: 'IT',
-    role: 'chef_dequipe',
-    vacationDaysPerYear: 28,
-    remainingVacationDays: 10,
-    statePaidLeaves: 30,
-    country: 'Tunisia',
-    hiringDate: '2020-06-01',
-    notes: 'Demo manager account',
-  });
-
-  await employeesDb.add({
-    name: 'Demo HR',
-    position: 'HR Manager',
-    email: 'hr@demo.com',
-    department: 'HR',
-    role: 'rh',
-    vacationDaysPerYear: 30,
-    remainingVacationDays: 20,
-    statePaidLeaves: 25,
-    country: 'France',
-    hiringDate: '2019-03-10',
-    notes: 'Demo HR account',
-  });
-
-  // Create Leaves
-  await leavesDb.add({
-    title: 'Summer Vacation',
-    employeeName: 'Demo Employee',
-    employeeId: emp1Id,
-    dateTime: new Date(Date.now() + 86400000 * 5).toISOString(),
-    location: 'Office',
-    status: 'pending',
-    type: 'leave',
-    reminderEnabled: true,
-    notes: 'Holidays with family',
-  });
-
-  await leavesDb.add({
-    title: 'Doctor Appointment',
-    employeeName: 'Demo Employee',
-    employeeId: emp1Id,
-    dateTime: new Date(Date.now() - 86400000 * 2).toISOString(),
-    location: 'Medical Center',
-    status: 'approved',
-    type: 'permission',
-    reminderEnabled: false,
-    notes: 'Routine checkup',
-  });
-
-  // Create Payroll
-  await payrollDb.add({
-    name: 'Base Salary',
-    amount: 3500,
-    currency: '€',
-    frequency: 'Daily',
-    times: JSON.stringify(['09:00']),
-    startDate: new Date().toISOString(),
-    reminderEnabled: true,
-    employeeId: emp1Id,
-  });
-
+  console.log('DEMO DATA SEEDED SUCCESSFULLY');
   storageService.setBoolean('demo_data_seeded', true);
 };

@@ -13,6 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import { Permission, rbacService } from '../../services/rbacService';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllAnnouncements } from '../../store/slices/announcementsSlice';
@@ -37,6 +39,7 @@ export const SearchOverlay = ({
 }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { user } = useAuth();
   const [query, setQuery] = useState('');
 
   const employees = useSelector(selectAllEmployees);
@@ -54,41 +57,48 @@ export const SearchOverlay = ({
   const results = useMemo(() => {
     if (!query.trim()) return [];
 
+    // RBAC Checks
+    const canViewEmployees = rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES);
+    const canViewTeams = rbacService.hasPermission(user, Permission.MANAGE_TEAMS) || canViewEmployees; // Assuming view employees implies view teams context
+
     const lowerQuery = query.toLowerCase();
     const searchResults: SearchResult[] = [];
 
     // Search Employees
-    employees.forEach((e: Employee) => {
-      const name = e.name || '';
-      const email = e.email || '';
-      if (
-        name.toLowerCase().includes(lowerQuery) ||
-        email.toLowerCase().includes(lowerQuery)
-      ) {
-        searchResults.push({
-          id: String(e.id),
-          title: name,
-          subtitle: e.position || email || '',
-          type: 'employee',
-          originalItem: e,
-        });
-      }
-    });
+    if (canViewEmployees) {
+      employees.forEach((e: Employee) => {
+        const name = e.name || '';
+        const email = e.email || '';
+        if (
+          name.toLowerCase().includes(lowerQuery) ||
+          email.toLowerCase().includes(lowerQuery)
+        ) {
+          searchResults.push({
+            id: String(e.id),
+            title: name,
+            subtitle: e.position || email || '',
+            type: 'employee',
+            originalItem: e,
+          });
+        }
+      });
+    }
 
     // Search Teams
-    teams.forEach((tm: Team) => {
-      const teamName = tm.name || '';
-      if (teamName.toLowerCase().includes(lowerQuery)) {
-        searchResults.push({
-          id: String(tm.id),
-          title: teamName,
-          subtitle: tm.department || '',
-          type: 'team',
-          originalItem: tm,
-        });
-      }
-    });
-
+    if (canViewTeams) {
+      teams.forEach((tm: Team) => {
+        const teamName = tm.name || '';
+        if (teamName.toLowerCase().includes(lowerQuery)) {
+          searchResults.push({
+            id: String(tm.id),
+            title: teamName,
+            subtitle: tm.department || '',
+            type: 'team',
+            originalItem: tm,
+          });
+        }
+      });
+    }
     // Search Announcements
     announcements.forEach((a: Announcement) => {
       const title = a.title || '';
@@ -146,10 +156,9 @@ export const SearchOverlay = ({
       </View>
       <Text style={[styles.typeLabel, { color: theme.colors.subText }]}>
         {t(
-          `navigation.${
-            item.type === 'employee'
-              ? 'employees'
-              : item.type === 'team'
+          `navigation.${item.type === 'employee'
+            ? 'employees'
+            : item.type === 'team'
               ? 'teams'
               : 'announcements'
           }`,

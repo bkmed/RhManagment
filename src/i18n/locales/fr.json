@@ -145,6 +145,8 @@
     "required": "Ce champ est obligatoire",
     "save": "Enregistrer",
     "saveError": "Échec de l'enregistrement",
+    "submit": "Soumettre",
+    "invalidAmount": "Montant invalide",
     "search": "Rechercher",
     "searchPlaceholder": "Rechercher...",
     "searchPlaceholderGlobal": "Rechercher employés, équipes, news...",
@@ -232,6 +234,8 @@
   },
   "employees": {
     "add": "Ajouter un employé",
+    "alias": "Alias",
+    "aliasPlaceholder": "ex: Jean D.",
     "assigned": "Assigné",
     "addFirst": "Ajoutez votre premier employé",
     "addIllness": "Ajouter un dossier de maladie",
@@ -240,8 +244,11 @@
     "addressPlaceholder": "ex: 123 Rue de la Paie, Ville",
     "age": "Âge",
     "ageInvalid": "L'âge doit être compris entre 18 et 62 ans",
+    "birthDate": "Date de naissance",
+    "birthDatePlaceholder": "AAAA-MM-JJ",
     "company": "Entreprise",
     "country": "Pays",
+    "countryPlaceholder": "ex: France",
     "deleteButton": "Supprimer l'employé",
     "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cet employé ?",
     "deleteConfirmTitle": "Supprimer l'employé",
@@ -267,6 +274,8 @@
     "genderOther": "Autre",
     "hiringDate": "Date d'embauche",
     "jobHistory": "Parcours Professionnel",
+    "jobTitle": "Titre du poste",
+    "jobTitlePlaceholder": "ex: Ingénieur logiciel",
     "lastName": "Nom de famille",
     "linkedin": "LinkedIn",
     "loadError": "Échec du chargement des détails",
@@ -368,6 +377,11 @@
     "emptySubtitle": "Appuyez sur + pour ajouter un dossier",
     "expires": "Expire",
     "expiryDate": "Date d'expiration",
+    "dateOfIllness": "Date de la maladie",
+    "daysCount": "{{count}} jour",
+    "daysCount_plural": "{{count}} jours",
+    "endDate": "Date de fin",
+    "endDateLabel": "Date de fin",
     "expiryDateLabel": "Date d'expiration (Optionnelle)",
     "fillRequired": "Veuillez saisir le nom de l'élément",
     "history": {
@@ -382,6 +396,8 @@
     "issuedBy": "Émis par",
     "loadError": "Échec du chargement du dossier",
     "noIllnesses": "Aucun dossier trouvé",
+    "object": "Objet",
+    "objectPlaceholder": "ex: Congé médical",
     "notesLabel": "Notes / Facture",
     "payroll": "Élément de paie",
     "payrollNameLabel": "Nom de l'élément de paie",
@@ -465,6 +481,8 @@
     "addFirst": "Appuyez sur + pour planifier un congé",
     "approvals": "Approbations en attente",
     "approve": "Approuver",
+    "cause": "Cause/Raison",
+    "causePlaceholder": "ex: Raisons personnelles",
     "date": "Date",
     "decline": "Refuser",
     "details": "Détails du congé",
@@ -480,11 +498,14 @@
     "locationPlaceholder": "ex: Télétravail / Bureau",
     "noLeaves": "Aucun congé à venir",
     "notes": "Notes",
+    "object": "Objet",
+    "objectPlaceholder": "ex: Congé annuel",
     "notesPlaceholder": "Notes supplémentaires...",
     "past": "Passés",
     "reason": "Raison",
     "save": "Enregistrer",
-    "saveError": "Échec de l'enregistrement du congé",
+    "saveError": "Échec de l'enregistrement du cong é",
+    "status": "Statut",
     "statusUpdated_approved": "Demande de congé approuvée",
     "statusUpdated_declined": "Demande de congé refusée",
     "successMessage": "Demande de congé soumise avec succès",
@@ -522,6 +543,7 @@
   },
   "navigation": {
     "analytics": "Analytiques",
+    "chatBot": "Assistant IA",
     "announcements": "Annonces",
     "careerHub": "Espace Carrière",
     "chat": "Chat",
@@ -542,12 +564,20 @@
     "profile": "Profil",
     "services": "Services",
     "settings": "Paramètres",
-    "teams": "Équipes"
+    "teams": "Équipes",
+    "personalInfo": "Informations personnelles",
+    "manageNotifications": "Gérer les notifications"
   },
   "notifications": {
     "markAllAsRead": "Tout marquer comme lu",
+    "manageNotifications": "Gérer les notifications",
     "noNotifications": "Aucune notification pour le moment",
+    "sendToAll": "Envoyer à tous les employés",
+    "sendToCompany": "Envoyer à l'entreprise",
+    "sendToTeam": "Envoyer à l'équipe",
     "title": "Notifications",
+    "welcomeTitle": "Bienvenue sur RH Management !",
+    "welcomeMessage": "Votre solution complète de gestion des ressources humaines. Gérez les employés, congés, paie et plus encore - le tout en un seul endroit.",
     "unread": "Non lu"
   },
   "offline": {
@@ -743,7 +773,8 @@
     "admin": "Administrateur",
     "chef_dequipe": "Chef d'équipe",
     "employee": "Employé",
-    "rh": "RH"
+    "rh": "RH",
+    "undefined": "Rôle non défini"
   },
   "sections": {
     "analytics": "Analytiques",
@@ -762,7 +793,7 @@
   },
   "settings": {
     "personal": "Paramètres Personnels",
-    "company": "Administration de l'Organisation",
+    "company": "Paramètres de l'entreprise",
     "language": "Langue",
     "theme": "Thème",
     "themeLight": "Clair",
@@ -777,6 +808,7 @@
     "notifications": "Notifications",
     "pushNotifications": "Notifications Push",
     "emailNotifications": "Notifications Email",
+    "companySettings": "Paramètres de l'entreprise",
     "params": "Paramètres de l'entreprise",
     "management": "Gestion des ressources"
   },
@@ -822,7 +854,10 @@
     "title": "Équipes",
     "validation": {
       "maxMembers": "Max 10 membres autorisés",
-      "minMembers": "Sélectionnez au moins 2 membres"
-    }
+      "minMembers": "Sélectionnez au moins 2 membres",
+      "noMembers": "Aucun membre sélectionné"
+    },
+    "selectedCount": "{{count}} employé sélectionné",
+    "selectedCount_plural": "{{count}} employés sélectionnés"
   }
 }

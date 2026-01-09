@@ -102,9 +102,8 @@ export const notificationService = {
           {
             id: `pay-${payroll.id}-${time}`,
             title: 'Payroll Reminder',
-            body: `Time to process payroll ${payroll.name} (${payroll.amount} ${
-              payroll.currency || '€'
-            })`,
+            body: `Time to process payroll ${payroll.name} (${payroll.amount} ${payroll.currency || '€'
+              })`,
             android: {
               channelId: 'payroll',
               pressAction: {
@@ -325,4 +324,25 @@ export const notificationService = {
   showAlert: async (title: string, body: string) => {
     modalService.show({ title, message: body });
   },
+
+  showToast: (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    modalService.show({ title: type.toUpperCase(), message });
+  },
+
+  broadcastNotification: async ({ title, body, targetType, targetId, senderId }: {
+    title: string;
+    body: string;
+    targetType: 'all' | 'company' | 'team';
+    targetId?: number;
+    senderId?: number | string;
+  }) => {
+    console.log('BROADCAST NOTIFICATION:', { title, body, targetType, targetId, senderId });
+    if (Platform.OS !== 'web') {
+      await notifee.displayNotification({
+        title: 'Broadcast Sent',
+        body: `Sent "${title}" to ${targetType}`,
+        android: { channelId: 'payroll' }
+      });
+    }
+  }
 };

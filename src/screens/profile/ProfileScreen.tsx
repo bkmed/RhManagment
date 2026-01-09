@@ -9,14 +9,16 @@ import {
   Platform,
   Image,
   Dimensions,
+  TextInput,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { notificationService } from '../../services/notificationService';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useModal } from '../../context/ModalContext';
+import { useToast } from '../../context/ToastContext';
 import { Dropdown } from '../../components/Dropdown';
 import { AuthInput } from '../../components/auth/AuthInput';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
@@ -24,6 +26,7 @@ import {
   permissionsService,
   PermissionStatus,
 } from '../../services/permissions';
+import { DateTimePickerField } from '../../components/DateTimePickerField';
 import { Theme } from '../../theme';
 import { selectPendingLeaves } from '../../store/slices/leavesSlice';
 import { selectPendingClaims } from '../../store/slices/claimsSlice';
@@ -36,10 +39,12 @@ import { Device } from '../../database/schema';
 const { width } = Dimensions.get('window');
 
 export const ProfileScreen = ({ navigation }: any) => {
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { showModal } = useModal();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
+  const { showToast } = useToast();
+  // const dispatch = useDispatch(); // Unused for now, commenting out or removing.
   const { setActiveTab } = React.useContext(WebNavigationContext) as any;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -53,12 +58,18 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState(false);
 
   // Extended fields
+  const [alias, setAlias] = useState(user?.alias || '');
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
-  const [age, setAge] = useState(user?.age ? String(user.age) : '');
+  const [jobTitle, setJobTitle] = useState(user?.jobTitle || user?.position || '');
+  // const [age, setAge] = useState(user?.age ? String(user.age) : '');
+  const [birthDate, setBirthDate] = useState<string | null>(
+    user?.birthDate || null,
+  );
   const [gender, setGender] = useState<'male' | 'female' | 'other'>(
     user?.gender || 'male',
   );
+  const [address, setAddress] = useState(user?.address || ''); // Added address
   const [emergencyName, setEmergencyName] = useState(
     user?.emergencyContact?.name || '',
   );
@@ -269,7 +280,11 @@ export const ProfileScreen = ({ navigation }: any) => {
         backgroundPhotoUri,
         firstName,
         lastName,
-        age: parseInt(age) || undefined,
+        alias,
+        jobTitle,
+        address,
+        // age: parseInt(age) || undefined,
+        birthDate: birthDate || undefined,
         gender,
         emergencyContact: emergencyName
           ? {
@@ -493,7 +508,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                     🏢 {userCompany?.name || t('companies.noCompanyAssigned')}
                   </Text>
                 </View>
-                <View
+                <TouchableOpacity
                   style={[
                     styles.teamContainer,
                     {
@@ -504,6 +519,28 @@ export const ProfileScreen = ({ navigation }: any) => {
                           : theme.colors.border) + '10',
                     },
                   ]}
+                  onPress={() => {
+                    if (!userCompany) {
+                      notificationService.showAlert(
+                        t('common.error'),
+                        t('companies.noCompanyAssigned')
+                      );
+                      return;
+                    }
+                    if (!userTeam) {
+                      showToast(t('teams.noTeamAssigned'));
+                      return;
+                    }
+                    // Navigate to MyTeam
+                    if (Platform.OS === 'web') {
+                      // For web, we might need to handle it via routing or active tab if it's a "screen"
+                      // But MyTeam might not be a tab.
+                      // If MyTeam is a screen in a stack, navigation.navigate works on web too for react-navigation.
+                      navigation.navigate('MyTeam');
+                    } else {
+                      navigation.navigate('MyTeam');
+                    }
+                  }}
                 >
                   <Text
                     style={[
@@ -517,7 +554,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                   >
                     👥 {userTeam?.name || t('teams.noTeamAssigned')}
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -572,6 +609,18 @@ export const ProfileScreen = ({ navigation }: any) => {
                   placeholder={t('signUp.namePlaceholder')}
                 />
                 <AuthInput
+                  label={t('signUp.nameLabel')}
+                  value={name}
+                  onChangeText={setName}
+                  placeholder={t('signUp.namePlaceholder')}
+                />
+                <AuthInput
+                  label={t('employees.alias') || 'Alias'}
+                  value={alias}
+                  onChangeText={setAlias}
+                  placeholder="e.g. JB"
+                />
+                <AuthInput
                   label={t('signUp.emailLabel')}
                   value={email}
                   onChangeText={setEmail}
@@ -605,125 +654,155 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </View>
 
                 <View style={styles.responsiveRow}>
-                  <View
-                    style={[
-                      styles.fieldContainerFlex,
-                      { marginRight: theme.spacing.m },
-                    ]}
-                  >
-                    <AuthInput
-                      label={t('employees.age')}
-                      value={age}
-                      onChangeText={setAge}
-                      placeholder="25"
-                      keyboardType="numeric"
+                  <View style={styles.fieldContainer}>
+                    <DateTimePickerField
+                      label={t('profile.birthDate') || 'Birth Date'}
+                      value={
+                        birthDate ? new Date(birthDate) : null
+                      }
+                      onChange={(date: Date | null) =>
+                        setBirthDate(date ? date.toISOString() : '')
+                      }
+                      mode="date"
                     />
                   </View>
-                  <View style={styles.fieldContainerFlex}>
+                  <View style={styles.fieldContainer}>
                     <Dropdown
-                      label={t('employees.gender')}
+                      label={t('profile.gender')}
                       data={[
                         { label: t('employees.genderMale'), value: 'male' },
                         { label: t('employees.genderFemale'), value: 'female' },
                         { label: t('employees.genderOther'), value: 'other' },
                       ]}
                       value={gender}
-                      onSelect={val => setGender(val as any)}
+                      onSelect={val =>
+                        setGender(val as 'male' | 'female' | 'other')
+                      }
                     />
                   </View>
                 </View>
 
-                <View style={styles.divider} />
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('profile.address')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={address}
+                    onChangeText={setAddress}
+                    placeholder={t('profile.addressPlaceholder')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
 
-                <Text style={styles.subSectionTitle}>
-                  🚑 {t('employees.emergencyContact')}
+                <View style={styles.sectionDivider} />
+                <Text style={styles.sectionTitle}>
+                  {t('profile.emergencyContact')}
                 </Text>
-                <AuthInput
-                  label={t('employees.emergencyName')}
-                  value={emergencyName}
-                  onChangeText={setEmergencyName}
-                  placeholder={t('employees.emergencyName')}
-                />
+
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('profile.contactName')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={emergencyName}
+                    onChangeText={setEmergencyName}
+                    placeholder={t('profile.contactName')}
+                    placeholderTextColor={theme.colors.subText}
+                  />
+                </View>
+
                 <View style={styles.responsiveRow}>
-                  <View
-                    style={[
-                      styles.fieldContainerFlex,
-                      { marginRight: theme.spacing.m },
-                    ]}
-                  >
-                    <AuthInput
-                      label={t('employees.emergencyPhone')}
+                  <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>{t('profile.contactPhone')}</Text>
+                    <TextInput
+                      style={styles.input}
                       value={emergencyPhone}
                       onChangeText={setEmergencyPhone}
-                      placeholder={t('employees.emergencyPhone')}
+                      placeholder={t('profile.contactPhone')}
+                      placeholderTextColor={theme.colors.subText}
                       keyboardType="phone-pad"
                     />
                   </View>
-                  <View style={styles.fieldContainerFlex}>
-                    <AuthInput
-                      label={t('employees.emergencyRelationship')}
+                  <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>{t('profile.relationship')}</Text>
+                    <TextInput
+                      style={styles.input}
                       value={emergencyRelationship}
                       onChangeText={setEmergencyRelationship}
-                      placeholder={t('employees.emergencyRelationship')}
+                      placeholder={t('profile.relationship')}
+                      placeholderTextColor={theme.colors.subText}
                     />
                   </View>
                 </View>
 
-                <View style={styles.divider} />
+                <View style={styles.sectionDivider} />
+                <Text style={styles.sectionTitle}>{t('profile.socialLinks')}</Text>
 
-                <Text style={styles.subSectionTitle}>
-                  🔗 {t('employees.socialLinks')}
-                </Text>
-                <AuthInput
-                  label={t('employees.linkedin')}
-                  value={linkedin}
-                  onChangeText={setLinkedin}
-                  placeholder="https://linkedin.com/in/..."
-                />
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>LinkedIn</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={linkedin}
+                    onChangeText={setLinkedin}
+                    placeholder="https://linkedin.com/in/..."
+                    placeholderTextColor={theme.colors.subText}
+                    autoCapitalize="none"
+                  />
+                </View>
 
-                <AuthInput
-                  label={t('employees.skype')}
-                  value={linkedin}
-                  onChangeText={setSkype}
-                  placeholder="https://skype.com/..."
-                />
+                <View style={styles.responsiveRow}>
+                  <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>Skype</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={skype}
+                      onChangeText={setSkype}
+                      placeholder="Skype ID"
+                      placeholderTextColor={theme.colors.subText}
+                      autoCapitalize="none"
+                    />
+                  </View>
+                  <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>{t('profile.website')}</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={website}
+                      onChangeText={setWebsite}
+                      placeholder="https://..."
+                      placeholderTextColor={theme.colors.subText}
+                      autoCapitalize="none"
+                    />
+                  </View>
+                </View>
 
-                <AuthInput
-                  label={t('employees.website')}
-                  value={website}
-                  onChangeText={setWebsite}
-                  placeholder="https://example.com"
-                />
+                <View style={styles.sectionDivider} />
+                <Text style={styles.sectionTitle}>{t('profile.skills')}</Text>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t('profile.skillsHelp')}</Text>
+                  <TextInput
+                    style={[styles.input, { minHeight: 80 }]}
+                    value={skills}
+                    onChangeText={setSkills}
+                    placeholder="React, TypeScript, Management..."
+                    placeholderTextColor={theme.colors.subText}
+                    multiline
+                  />
+                </View>
 
-                <AuthInput
-                  label={t('employees.skills')}
-                  value={skills}
-                  onChangeText={setSkills}
-                  placeholder="React, Node.js, HR (Separate with commas)"
-                />
-
-                <View style={styles.editActions}>
+                <View style={styles.viewActions}>
                   <TouchableOpacity
-                    style={[styles.actionButton, styles.cancelButton]}
-                    onPress={() => {
-                      setIsEditing(false);
-                      setName(user?.name || '');
-                      setEmail(user?.email || '');
-                      setPhotoUri(user?.photoUri || '');
-                      setBackgroundPhotoUri(user?.backgroundPhotoUri || '');
-                    }}
+                    style={styles.cancelButton}
+                    onPress={() => setIsEditing(false)}
                   >
                     <Text style={styles.cancelButtonText}>
                       {t('common.cancel')}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.actionButton, styles.saveButton]}
+                    style={styles.saveButton}
                     onPress={handleSaveProfile}
                     disabled={loading}
                   >
                     <Text style={styles.saveButtonText}>
-                      {loading ? t('common.loading') : t('profile.save')}
+                      {loading ? t('common.loading') : t('common.save')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -953,125 +1032,142 @@ const createStyles = (theme: Theme) =>
       width: '100%',
       height: '100%',
       resizeMode: 'cover',
+      opacity: 0.3,
     },
     editBackgroundButton: {
       position: 'absolute',
-      top: theme.spacing.m,
-      right: theme.spacing.m,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      width: 40,
-      height: 40,
+      right: 20,
+      bottom: 20,
+      backgroundColor: theme.colors.surface,
+      padding: 8,
       borderRadius: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
+      ...theme.shadows.small,
     },
     editBackgroundIcon: {
       fontSize: 20,
     },
     mainContent: {
-      padding: theme.spacing.m,
-      marginTop: 60, // Peak relative to header background
+      flex: 1,
+      marginTop: -60,
+      paddingHorizontal: 20,
     },
     headerCard: {
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.spacing.m,
-      padding: theme.spacing.l,
-      marginBottom: theme.spacing.m,
+      backgroundColor: theme.colors.card,
+      borderRadius: 16,
+      padding: 20,
+      marginBottom: 20,
       ...theme.shadows.medium,
     },
     headerTop: {
-      flexDirection: Platform.OS === 'web' && width > 600 ? 'row' : 'column',
+      flexDirection: 'row',
       alignItems: 'center',
-    },
-    headerMainInfo: {
-      marginLeft: Platform.OS === 'web' && width > 600 ? theme.spacing.l : 0,
-      marginTop: Platform.OS === 'web' && width > 600 ? 0 : theme.spacing.m,
-      alignItems:
-        Platform.OS === 'web' && width > 600 ? 'flex-start' : 'center',
     },
     avatarContainer: {
       position: 'relative',
     },
     avatar: {
-      width: 120,
-      height: 120,
-      borderRadius: 60,
+      width: 100,
+      height: 100,
+      borderRadius: 50,
       backgroundColor: theme.colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
       overflow: 'hidden',
     },
-    avatarImage: { width: '100%', height: '100%' },
-    avatarText: { fontSize: 48, fontWeight: 'bold', color: '#FFFFFF' },
+    avatarImage: {
+      width: '100%',
+      height: '100%',
+    },
+    avatarText: {
+      color: '#FFF',
+      fontSize: 36,
+      fontWeight: 'bold',
+    },
     editOverlay: {
-      ...StyleSheet.absoluteFillObject,
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: 0,
       backgroundColor: 'rgba(0,0,0,0.3)',
       justifyContent: 'center',
       alignItems: 'center',
     },
-    editOverlayText: { fontSize: 24 },
+    editOverlayText: {
+      fontSize: 24,
+    },
     roleBadge: {
       position: 'absolute',
-      bottom: 5,
-      right: 5,
-      backgroundColor: theme.colors.secondary,
-      paddingHorizontal: theme.spacing.m,
+      bottom: -10,
+      alignSelf: 'center',
+      backgroundColor: theme.colors.accent,
+      paddingHorizontal: 12,
       paddingVertical: 4,
-      borderRadius: 15,
-      borderWidth: 3,
-      borderColor: theme.colors.surface,
+      borderRadius: 12,
+      ...theme.shadows.small,
     },
     roleBadgeText: {
+      color: '#fff',
       fontSize: 12,
       fontWeight: 'bold',
-      color: theme.colors.text,
+      textTransform: 'uppercase',
+    },
+    headerMainInfo: {
+      flex: 1,
+      marginLeft: 20,
     },
     userName: {
-      ...theme.textVariants.header,
-      fontSize: 26,
+      fontSize: 24,
+      fontWeight: 'bold',
       color: theme.colors.text,
       marginBottom: 4,
     },
     userEmail: {
-      ...theme.textVariants.body,
+      fontSize: 14,
       color: theme.colors.subText,
-      fontSize: 16,
       marginBottom: 8,
     },
     teamContainer: {
-      backgroundColor: theme.colors.primary + '10',
-      paddingHorizontal: theme.spacing.m,
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: 10,
       paddingVertical: 4,
-      borderRadius: theme.spacing.s,
+      borderRadius: 8,
+      alignSelf: 'flex-start',
     },
-    teamText: { color: theme.colors.primary, fontWeight: '600', fontSize: 14 },
+    teamText: {
+      fontSize: 13,
+      color: theme.colors.subText,
+      fontWeight: '500',
+    },
     editButton: {
-      alignSelf: 'stretch',
-      marginTop: theme.spacing.l,
-      paddingVertical: theme.spacing.m,
-      borderRadius: theme.spacing.m,
-      backgroundColor: theme.colors.primary + '10',
-      alignItems: 'center',
+      position: 'absolute',
+      top: 20,
+      right: 20,
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 8,
     },
     editButtonText: {
       color: theme.colors.primary,
-      fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 14,
+      fontWeight: '600',
     },
     statsRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: theme.spacing.m,
-      gap: theme.spacing.s,
+      flexWrap: 'wrap',
+      marginBottom: 20,
     },
     statCard: {
-      flex: 1,
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.spacing.m,
-      padding: theme.spacing.m,
+      width: '48%',
+      backgroundColor: theme.colors.card,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      ...theme.shadows.small,
       flexDirection: 'row',
       alignItems: 'center',
-      ...theme.shadows.small,
     },
     statIconContainer: {
       width: 40,
@@ -1079,23 +1175,106 @@ const createStyles = (theme: Theme) =>
       borderRadius: 20,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: theme.spacing.s,
+      marginRight: 12,
     },
-    statIcon: { fontSize: 20 },
-    statValue: { fontSize: 20, fontWeight: 'bold', color: theme.colors.text },
-    statLabel: { fontSize: 11, color: theme.colors.subText },
+    statIcon: {
+      fontSize: 20,
+    },
+    statValue: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+    },
+    statLabel: {
+      fontSize: 12,
+      color: theme.colors.subText,
+    },
     card: {
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.spacing.m,
-      padding: theme.spacing.l,
-      marginBottom: theme.spacing.m,
+      backgroundColor: theme.colors.card,
+      borderRadius: 12,
+      padding: 20,
+      marginBottom: 20,
       ...theme.shadows.small,
     },
     cardTitle: {
-      ...theme.textVariants.subheader,
-      color: theme.colors.text,
       fontSize: 18,
-      marginBottom: theme.spacing.l,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+      marginBottom: 16,
+    },
+    editForm: {
+      gap: 16,
+      width: '100%',
+    },
+    responsiveRow: {
+      flexDirection: 'row',
+      gap: 16,
+    },
+    fieldContainer: {
+      flex: 1,
+    },
+    fieldContainerFlex: {
+      flex: 1,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: theme.colors.text,
+      marginBottom: 6,
+    },
+    input: {
+      backgroundColor: theme.colors.background,
+      borderRadius: 8,
+      padding: 12,
+      color: theme.colors.text,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      fontSize: 15,
+    },
+    sectionDivider: {
+      height: 1,
+      backgroundColor: theme.colors.border,
+      marginVertical: 16,
+    },
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 16,
+    },
+    viewActions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      marginTop: 20,
+      gap: 12,
+    },
+    editActions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      marginTop: theme.spacing.l,
+      gap: theme.spacing.m,
+    },
+    cancelButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 8,
+      backgroundColor: theme.colors.background,
+      borderColor: theme.colors.border,
+      borderWidth: 1,
+    },
+    cancelButtonText: {
+      color: theme.colors.subText,
+      fontWeight: '600',
+    },
+    saveButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 8,
+      backgroundColor: theme.colors.primary,
+    },
+    saveButtonText: {
+      color: '#fff',
+      fontWeight: '600',
     },
     fieldLabel: {
       fontSize: 14,
@@ -1126,22 +1305,11 @@ const createStyles = (theme: Theme) =>
     socialIcon: { fontSize: 18, marginRight: theme.spacing.m },
     socialValue: { color: theme.colors.text, fontSize: 14, flex: 1 },
     emptyText: { color: theme.colors.subText, fontStyle: 'italic' },
-    editForm: { width: '100%' },
-    editActions: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      marginTop: theme.spacing.l,
-      gap: theme.spacing.m,
-    },
     actionButton: {
       paddingHorizontal: theme.spacing.xl,
       paddingVertical: theme.spacing.m,
       borderRadius: theme.spacing.m,
     },
-    cancelButton: { backgroundColor: theme.colors.border },
-    cancelButtonText: { color: theme.colors.text, fontWeight: '600' },
-    saveButton: { backgroundColor: theme.colors.primary },
-    saveButtonText: { color: '#FFFFFF', fontWeight: 'bold' },
     divider: {
       height: 1,
       backgroundColor: theme.colors.border,
@@ -1181,14 +1349,7 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.subText,
       textAlign: 'center',
     },
-    responsiveRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.m,
-    },
-    fieldContainerFlex: {
-      flex: 1,
-    },
+
     subSectionTitle: {
       fontSize: 18,
       fontWeight: 'bold',

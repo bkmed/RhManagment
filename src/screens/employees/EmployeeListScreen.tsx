@@ -16,6 +16,7 @@ import { SearchInput } from '../../components/SearchInput';
 import { notificationService } from '../../services/notificationService';
 
 import { useAuth } from '../../context/AuthContext';
+import { Permission, rbacService } from '../../services/rbacService';
 
 export const EmployeeListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -123,7 +124,7 @@ export const EmployeeListScreen = ({ navigation }: any) => {
         ListEmptyComponent={!loading ? renderEmpty : null}
       />
 
-      {(user?.role === 'admin' || user?.role === 'rh') && (
+      {rbacService.hasPermission(user, Permission.ADD_EMPLOYEES) && (
         <TouchableOpacity
           style={styles.fab}
           onPress={() => navigation.navigate('AddEmployee')}

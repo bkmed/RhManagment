@@ -145,6 +145,8 @@
     "required": "This field is required",
     "save": "Save",
     "saveError": "Failed to save changes",
+    "submit": "Submit",
+    "invalidAmount": "Invalid amount",
     "search": "Search",
     "searchPlaceholder": "Search...",
     "searchPlaceholderGlobal": "Search employees, teams, news...",
@@ -232,6 +234,8 @@
   },
   "employees": {
     "add": "Add Employee",
+    "alias": "Alias",
+    "aliasPlaceholder": "e.g., John D.",
     "assigned": "Assigned",
     "addFirst": "Add your first employee",
     "addIllness": "Add Illness Record",
@@ -240,8 +244,11 @@
     "addressPlaceholder": "e.g., 123 HR St, City",
     "age": "Age",
     "ageInvalid": "Age must be between 18 and 62",
+    "birthDate": "Date of Birth",
+    "birthDatePlaceholder": "YYYY-MM-DD",
     "company": "Company",
     "country": "Country",
+    "countryPlaceholder": "e.g., USA",
     "deleteButton": "Delete Employee",
     "deleteConfirmMessage": "Are you sure you want to delete this employee? This action cannot be undone.",
     "deleteConfirmTitle": "Delete Employee",
@@ -267,6 +274,8 @@
     "genderOther": "Other",
     "hiringDate": "Hiring Date",
     "jobHistory": "Job History",
+    "jobTitle": "Job Title",
+    "jobTitlePlaceholder": "e.g., Software Engineer",
     "lastName": "Last Name",
     "linkedin": "LinkedIn",
     "loadError": "Failed to load details",
@@ -368,6 +377,11 @@
     "emptySubtitle": "Tap + to add a record",
     "expires": "Expires",
     "expiryDate": "Expiry Date",
+    "dateOfIllness": "Date of Illness",
+    "daysCount": "{{count}} day",
+    "daysCount_plural": "{{count}} days",
+    "endDate": "End Date",
+    "endDateLabel": "End Date",
     "expiryDateLabel": "Expiry Date (Optional)",
     "fillRequired": "Please enter item name",
     "history": {
@@ -382,6 +396,8 @@
     "issuedBy": "Issued By",
     "loadError": "Failed to load record",
     "noIllnesses": "No records found",
+    "object": "Subject",
+    "objectPlaceholder": "e.g., Medical Leave",
     "notesLabel": "Notes / Invoices",
     "payroll": "Payroll Item",
     "payrollNameLabel": "Payroll Item Name",
@@ -465,6 +481,8 @@
     "addFirst": "Tap + to schedule a leave",
     "approvals": "Pending Approvals",
     "approve": "Approve",
+    "cause": "Cause/Reason",
+    "causePlaceholder": "e.g., Personal reasons",
     "date": "Date",
     "decline": "Decline",
     "details": "Leave Details",
@@ -480,11 +498,14 @@
     "locationPlaceholder": "e.g., Remote / Office",
     "noLeaves": "No upcoming leaves",
     "notes": "Notes",
+    "object": "Subject",
+    "objectPlaceholder": "e.g., Annual Leave",
     "notesPlaceholder": "Additional notes...",
     "past": "Past",
     "reason": "Reason",
     "save": "Save",
     "saveError": "Failed to save leave",
+    "status": "Status",
     "statusUpdated_approved": "Leave request approved",
     "statusUpdated_declined": "Leave request declined",
     "successMessage": "Leave request submitted successfully",
@@ -522,6 +543,7 @@
   },
   "navigation": {
     "analytics": "Analytics",
+    "chatBot": "AI Assistant",
     "announcements": "Announcements",
     "careerHub": "Career Hub",
     "chat": "Chat",
@@ -535,8 +557,10 @@
     "illnesses": "Illness",
     "leaves": "Leaves",
     "notifications": "Notifications",
+    "manageNotifications": "Manage Notifications",
     "orgChart": "Org Chart",
     "manageDevices": "Manage Devices",
+    "personalInfo": "Personal Information",
     "params": "Params",
     "payroll": "Payroll",
     "profile": "Profile",
@@ -546,8 +570,14 @@
   },
   "notifications": {
     "markAllAsRead": "Mark all as read",
+    "manageNotifications": "Manage Notifications",
     "noNotifications": "No notifications yet",
+    "sendToAll": "Send to All Employees",
+    "sendToCompany": "Send to Company",
+    "sendToTeam": "Send to Team",
     "title": "Notifications",
+    "welcomeTitle": "Welcome to RH Management!",
+    "welcomeMessage": "Your comprehensive HR management solution. Manage employees, leaves, payroll, and more - all in one place.",
     "unread": "Unread"
   },
   "offline": {
@@ -743,7 +773,8 @@
     "admin": "Administrator",
     "chef_dequipe": "Team Leader",
     "employee": "Employee",
-    "rh": "HR"
+    "rh": "HR",
+    "undefined": "Undefined Role"
   },
   "sections": {
     "analytics": "Analytics",
@@ -762,7 +793,7 @@
   },
   "settings": {
     "personal": "Personal Settings",
-    "company": "Organization Settings",
+    "company": "Company Settings",
     "language": "Language",
     "theme": "Theme",
     "themeLight": "Light",
@@ -777,6 +808,7 @@
     "notifications": "Notifications",
     "pushNotifications": "Push Notifications",
     "emailNotifications": "Email Notifications",
+    "companySettings": "Company Settings",
     "params": "Company Parameters",
     "management": "Resource Management"
   },
@@ -814,6 +846,8 @@
     "selectMembers": "Select Members",
     "selectTeam": "Select Team",
     "selectTeamLeader": "Select Team Leader",
+    "selectedCount": "{{count}} employee selected",
+    "selectedCount_plural": "{{count}} employees selected",
     "supervised": "supervised",
     "myTeam": "My Team",
     "noTeamAssigned": "No team assigned",
@@ -822,7 +856,8 @@
     "title": "Teams",
     "validation": {
       "maxMembers": "Max 10 members allowed",
-      "minMembers": "Select at least 2 members"
+      "minMembers": "Select at least 2 members",
+      "noMembers": "No members selected"
     }
   }
 }

@@ -29,6 +29,7 @@ import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { RootState } from '../../store';
 import { servicesDb } from '../../database/servicesDb';
 import { Service } from '../../database/schema';
+import { Permission, rbacService } from '../../services/rbacService';
 
 export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { theme } = useTheme();
@@ -41,6 +42,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const { setActiveTab } = useContext(WebNavigationContext);
 
   const employeeId = route.params?.id || route.params?.employeeId;
+  const isEdit = !!employeeId;
 
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
@@ -59,9 +61,12 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [hiringDate, setHiringDate] = useState<Date | null>(new Date());
 
   // Extended fields
+  const [alias, setAlias] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [age, setAge] = useState('');
+  // const [age, setAge] = useState(''); // Deprecated
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
+  const [jobTitle, setJobTitle] = useState(''); // Replaces location
   const [gender, setGender] = useState<'male' | 'female' | 'other'>('male');
   const [emergencyName, setEmergencyName] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
@@ -82,6 +87,13 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    // RBAC Check: Must have ADD or EDIT permission
+    const requiredPermission = isEdit ? Permission.EDIT_EMPLOYEES : Permission.ADD_EMPLOYEES;
+    if (!rbacService.hasPermission(currentUser, requiredPermission)) {
+      showToast(t('common.unauthorized'), 'error');
+      navigateBack();
+    }
+
     const fetchData = async () => {
       if (employeeId) {
         await loadEmployee();
@@ -90,7 +102,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
       setLoading(false);
     };
     fetchData();
-  }, [employeeId]);
+  }, [employeeId, currentUser, isEdit]);
 
   const loadServices = async () => {
     const allServices = await servicesDb.getAll();
@@ -120,9 +132,14 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         setTeamId(employee.teamId || null);
 
         // Load extended fields
+        setAlias(employee.alias || '');
         setFirstName(employee.firstName || '');
         setLastName(employee.lastName || '');
-        setAge(employee.age ? String(employee.age) : '');
+        // setAge(employee.age ? String(employee.age) : '');
+        if (employee.birthDate) {
+          setBirthDate(new Date(employee.birthDate));
+        }
+        setJobTitle(employee.jobTitle || employee.location || ''); // Load jobTitle or fallback to location
         setGender(employee.gender || 'male');
         if (employee.emergencyContact) {
           setEmergencyName(employee.emergencyContact.name);
@@ -179,7 +196,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
       }
     }
 
-    // Age validation
+    // Birth Date validation (optional but if set, should be reasonable?)
+    /*
     if (age) {
       if (!/^\d+$/.test(age)) {
         newErrors.age = t('employees.ageInvalid');
@@ -188,6 +206,14 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         if (ageNum < 18 || ageNum > 62) {
           newErrors.age = t('employees.ageInvalid');
         }
+      }
+    }
+    */
+    if (birthDate) {
+      const year = birthDate.getFullYear();
+      const currentYear = new Date().getFullYear();
+      if (currentYear - year < 18) {
+        newErrors.birthDate = t('employees.tooYoung') || 'Must be at least 18';
       }
     }
 
@@ -230,7 +256,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         photoUri,
         role,
         department,
-        location,
+        // location, // Removed to avoid duplicate key, handled below
         vacationDaysPerYear: parseInt(vacationDays) || 25,
         remainingVacationDays: parseInt(vacationDays) || 25,
         statePaidLeaves: 0,
@@ -240,30 +266,34 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         teamId: teamId || undefined,
 
         // Extended fields
+        alias,
         firstName,
         lastName,
-        age: parseInt(age) || undefined,
+        // age: parseInt(age) || undefined,
+        birthDate: birthDate ? birthDate.toISOString() : undefined,
+        jobTitle,
+        location: jobTitle, // Keep location synced for backward compatibility if needed, or just replace usage
         gender,
         emergencyContact: emergencyName
           ? {
-              name: emergencyName,
-              phone: emergencyPhone,
-              relationship: emergencyRelationship,
-            }
+            name: emergencyName,
+            phone: emergencyPhone,
+            relationship: emergencyRelationship,
+          }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-                linkedin,
-                skype,
-                website,
-              }
+              linkedin,
+              skype,
+              website,
+            }
             : undefined,
         skills: skills
           ? skills
-              .split(',')
-              .map(s => s.trim())
-              .filter(s => s)
+            .split(',')
+            .map(s => s.trim())
+            .filter(s => s)
           : undefined,
       };
 
@@ -276,8 +306,11 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         showToast(t('employees.added'));
       }
       navigateBack();
-    } catch (error) {
-      showToast(t('employees.saveError'));
+    } catch (error: any) {
+      const errorMessage = error.message === 'Email already exists'
+        ? t('employees.emailExists') || 'Email already exists'
+        : t('employees.saveError');
+      showToast(errorMessage, 'error');
       console.error(error);
     } finally {
       setLoading(false);
@@ -354,6 +387,17 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               )}
             </View>
 
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>{t('employees.alias') || 'Alias'}</Text>
+              <TextInput
+                style={styles.input}
+                value={alias}
+                onChangeText={setAlias}
+                placeholder={t('employees.aliasPlaceholder') || 'e.g. JB'}
+                placeholderTextColor={theme.colors.subText}
+              />
+            </View>
+
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>{t('employees.firstName')}</Text>
@@ -387,21 +431,13 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('employees.age')}</Text>
-                <TextInput
-                  style={[styles.input, errors.age && styles.inputError]}
-                  value={age}
-                  onChangeText={text => {
-                    setAge(text);
-                    if (errors.age) setErrors({ ...errors, age: '' });
-                  }}
-                  placeholder="25"
-                  keyboardType="numeric"
-                  placeholderTextColor={theme.colors.subText}
+                <DateTimePickerField
+                  label={t('employees.birthDate') || 'Birth Date'}
+                  value={birthDate}
+                  onChange={setBirthDate}
+                  mode="date"
                 />
-                {errors.age && (
-                  <Text style={styles.errorText}>{errors.age}</Text>
-                )}
+                {errors.birthDate && <Text style={styles.errorText}>{errors.birthDate}</Text>}
               </View>
               <View style={styles.fieldContainer}>
                 <Dropdown
@@ -611,12 +647,12 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               </View>
 
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.local')}</Text>
+                <Text style={styles.label}>{t('employees.jobTitle') || 'Job Title'}</Text>
                 <TextInput
                   style={styles.input}
-                  value={location}
-                  onChangeText={setLocation}
-                  placeholder={t('common.local')}
+                  value={jobTitle}
+                  onChangeText={setJobTitle}
+                  placeholder={t('employees.jobTitle') || 'e.g. Senior Developer'}
                   placeholderTextColor={theme.colors.subText}
                 />
               </View>
@@ -715,8 +751,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
             {loading
               ? t('common.loading')
               : employeeId
-              ? t('common.save')
-              : t('common.add')}
+                ? t('common.save')
+                : t('common.add')}
           </Text>
         </TouchableOpacity>
 

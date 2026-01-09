@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { illnessesDb } from '../../database/illnessesDb';
 import { notificationService } from '../../services/notificationService';
+import { Permission, rbacService } from '../../services/rbacService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
@@ -78,12 +79,12 @@ export const AddIllnessScreen = ({
   const [companyId, setCompanyId] = useState<number | undefined>(undefined);
   const [teamId, setTeamId] = useState<number | undefined>(undefined);
   const [employeeId, setEmployeeId] = useState<number | undefined>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : undefined,
+    !rbacService.hasPermission(user, Permission.MANAGE_TEAMS) && user?.id ? Number(user.id) : undefined,
   );
 
   // Auto-fill logic for employees
   useEffect(() => {
-    if (!isEdit && user?.role === 'employee') {
+    if (!isEdit && rbacService.isEmployee(user) && user) {
       setEmployeeName(user.name);
       setDepartment(user.department || '');
       setPayrollName(user.name); // Default payroll name to employee name for simplicity if needed
@@ -222,7 +223,7 @@ export const AddIllnessScreen = ({
           (user?.role === 'employee' ? user.name : employeeName).trim() ||
           undefined,
         employeeId:
-          user?.role === 'employee' ? user.employeeId : initialEmployeeId,
+          rbacService.isEmployee(user) ? user?.employeeId : initialEmployeeId,
         issueDate: issueDate!.toISOString().split('T')[0],
         expiryDate: expiryDate
           ? expiryDate.toISOString().split('T')[0]
@@ -308,7 +309,7 @@ export const AddIllnessScreen = ({
                 )}
               </View>
 
-              {user?.role !== 'employee' && (
+              {!rbacService.isEmployee(user) && (
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>
                     {t('illnesses.employeeNameLabel')}
@@ -326,7 +327,7 @@ export const AddIllnessScreen = ({
 
             {/* Company / Team / Employee Selection */}
             <View style={styles.responsiveRow}>
-              {(user?.role === 'admin' || user?.role === 'rh') && (
+              {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('companies.selectCompany')}
@@ -339,7 +340,7 @@ export const AddIllnessScreen = ({
                   />
                 </View>
               )}
-              {(user?.role === 'admin' || user?.role === 'rh') && (
+              {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('teams.selectTeam')}
@@ -378,17 +379,7 @@ export const AddIllnessScreen = ({
                     onSelect={setDepartment}
                   />
                 </View>
-
-                <View style={styles.fieldContainer}>
-                  <Text style={styles.label}>{t('common.local')}</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={location}
-                    onChangeText={setLocation}
-                    placeholder={t('common.local')}
-                    placeholderTextColor={theme.colors.subText}
-                  />
-                </View>
+                {/* Local field removed as per Phase 7 */}
               </View>
             )}
           </View>
@@ -402,7 +393,7 @@ export const AddIllnessScreen = ({
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
                 <DateTimePickerField
-                  label={t('illnesses.issueDateLabel')}
+                  label={t('illnesses.startDateLabel') || 'Start Date'}
                   value={issueDate}
                   onChange={setIssueDate}
                   mode="date"
@@ -413,7 +404,7 @@ export const AddIllnessScreen = ({
 
               <View style={styles.fieldContainer}>
                 <DateTimePickerField
-                  label={t('illnesses.expiryDateLabel')}
+                  label={t('illnesses.endDateLabel') || 'End Date'}
                   value={expiryDate}
                   onChange={setExpiryDate}
                   mode="date"
@@ -422,6 +413,12 @@ export const AddIllnessScreen = ({
                 />
               </View>
             </View>
+
+            {issueDate && expiryDate && (
+              <Text style={styles.durationText}>
+                {t('leaves.duration')}: {Math.ceil((expiryDate.getTime() - issueDate.getTime()) / (1000 * 60 * 60 * 24)) + 1} {t('leaves.days')}
+              </Text>
+            )}
           </View>
 
           {/* Section: Documentation */}
@@ -465,8 +462,8 @@ export const AddIllnessScreen = ({
             {loading
               ? t('common.loading')
               : isEdit
-              ? t('illnesses.updateButton')
-              : t('illnesses.saveButton')}
+                ? t('illnesses.updateButton')
+                : t('illnesses.saveButton')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -567,4 +564,11 @@ const createStyles = (theme: Theme) =>
       marginTop: 4,
       marginLeft: 4,
     },
+    durationText: {
+      ...theme.textVariants.body,
+      color: theme.colors.primary,
+      fontWeight: '600',
+      marginTop: theme.spacing.m,
+      textAlign: 'center',
+    }
   });

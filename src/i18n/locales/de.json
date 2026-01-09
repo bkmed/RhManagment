@@ -171,7 +171,9 @@
     "weekend": "Wochenende",
     "yearUnit": "Jahr",
     "yearsUnit": "Jahre",
-    "yes": "Ja"
+    "yes": "Ja",
+    "submit": "Einreichen",
+    "invalidAmount": "Ungültiger Betrag"
   },
   "companies": {
     "add": "Unternehmen hinzufügen",
@@ -292,7 +294,14 @@
     "title": "Mitarbeiter",
     "titlePlaceholder": "e.g. Master React Native",
     "updateButton": "Mitarbeiter aktualisieren",
-    "website": "Website"
+    "website": "Website",
+    "alias": "Alias",
+    "aliasPlaceholder": "z.B. Hans M.",
+    "birthDate": "Geburtsdatum",
+    "birthDatePlaceholder": "JJJJ-MM-TT",
+    "countryPlaceholder": "z.B. Deutschland",
+    "jobTitle": "Berufsbezeichnung",
+    "jobTitlePlaceholder": "z.B. Software-Ingenieur"
   },
   "forgotPassword": {
     "backToLogin": "Zurück zur Anmeldung",
@@ -392,7 +401,14 @@
     "takePhoto": "Foto aufnehmen",
     "title": "Krankheit",
     "updateButton": "Krankmeldung aktualisieren",
-    "collisionError": "Dieser Mitarbeiter hat in diesem Zeitraum bereits einen Krankheitsfall."
+    "collisionError": "Dieser Mitarbeiter hat in diesem Zeitraum bereits einen Krankheitsfall.",
+    "dateOfIllness": "Datum der Krankheit",
+    "daysCount": "{{count}} Tag",
+    "daysCount_plural": "{{count}} Tage",
+    "endDate": "Enddatum",
+    "endDateLabel": "Enddatum",
+    "object": "Betreff",
+    "objectPlaceholder": "z.B. Krankenurlaub"
   },
   "invoices": {
     "add": "Rechnung hinzufügen",
@@ -493,7 +509,12 @@
     "upcoming": "Anstehend",
     "update": "Aktualisieren",
     "updateSuccess": "Urlaubsantrag erfolgreich aktualisiert",
-    "collisionError": "Dieser Mitarbeiter hat in diesem Zeitraum bereits einen Urlaub oder eine Genehmigung geplant."
+    "collisionError": "Dieser Mitarbeiter hat in diesem Zeitraum bereits einen Urlaub oder eine Genehmigung geplant.",
+    "cause": "Grund",
+    "causePlaceholder": "z.B. Persönliche Gründe",
+    "object": "Betreff",
+    "objectPlaceholder": "z.B. Jahresurlaub",
+    "status": "Status"
   },
   "login": {
     "admin": "Admin",
@@ -542,13 +563,22 @@
     "profile": "Profil",
     "services": "Dienste",
     "settings": "Einstellungen",
-    "teams": "Teams"
+    "teams": "Teams",
+    "chatBot": "KI-Assistent",
+    "manageNotifications": "Benachrichtigungen verwalten",
+    "personalInfo": "Persönliche Informationen"
   },
   "notifications": {
     "markAllAsRead": "Alle als gelesen markieren",
     "noNotifications": "Noch keine Benachrichtigungen",
     "title": "Benachrichtigungen",
-    "unread": "Ungelesen"
+    "unread": "Ungelesen",
+    "manageNotifications": "Benachrichtigungen verwalten",
+    "sendToAll": "An alle Mitarbeiter senden",
+    "sendToCompany": "An Unternehmen senden",
+    "sendToTeam": "An Team senden",
+    "welcomeTitle": "Willkommen bei RH Management!",
+    "welcomeMessage": "Ihre umfassende HR-Management-Lösung. Verwalten Sie Mitarbeiter, Urlaube, Gehaltsabrechnungen und mehr - alles an einem Ort."
   },
   "offline": {
     "limitedFunctionality": "Einige Funktionen sind möglicherweise nicht verfügbar",
@@ -743,7 +773,8 @@
     "admin": "Administrator",
     "chef_dequipe": "Teamleiter",
     "employee": "Mitarbeiter",
-    "rh": "Personalwesen (HR)"
+    "rh": "Personalwesen (HR)",
+    "undefined": "Undefinierte Rolle"
   },
   "sections": {
     "analytics": "Analytik",
@@ -778,7 +809,8 @@
     "pushNotifications": "Push-Benachrichtigungen",
     "emailNotifications": "E-Mail-Benachrichtigungen",
     "params": "Unternehmensparameter",
-    "management": "Ressourcenmanagement"
+    "management": "Ressourcenmanagement",
+    "companySettings": "Unternehmenseinstellungen"
   },
   "signUp": {
     "emailLabel": "E-Mail",
@@ -822,7 +854,10 @@
     "title": "Teams",
     "validation": {
       "maxMembers": "Maximal 10 Mitglieder erlaubt",
-      "minMembers": "Wählen Sie mindestens 2 Mitglieder"
-    }
+      "minMembers": "Wählen Sie mindestens 2 Mitglieder",
+      "noMembers": "Keine Mitglieder ausgewählt"
+    },
+    "selectedCount": "{{count}} Mitarbeiter ausgewählt",
+    "selectedCount_plural": "{{count}} Mitarbeiter ausgewählt"
   }
 }

@@ -1,8 +1,10 @@
-import React, { createContext, useContext, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, ReactNode, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setUser, logout } from '../store/slices/authSlice';
 import { authService, User } from '../services/authService';
+import { sessionService } from '../services/sessionService';
+
 export type { User };
 
 interface AuthContextType {
@@ -10,7 +12,7 @@ interface AuthContextType {
   isLoading: boolean;
   signIn: (user: User) => Promise<void>;
   signUp: (user: User) => Promise<void>;
-  signOut: (navigation: any) => Promise<void>;
+  signOut: (navigation?: any) => Promise<void>;
   updateProfile: (updatedData: Partial<User>) => Promise<void>;
 }
 
@@ -19,54 +21,72 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
-  const isLoading = useSelector((state: RootState) => state.auth.isLoading); // Loaded via persist
+  const isLoading = useSelector((state: RootState) => state.auth.isLoading);
+  const [sessionCheckInterval, setSessionCheckInterval] = useState<any>(null);
 
-  // No need for explicit checkUser check as redux-persist handles hydration
-
-  // However, if we want to sync with "authService.getCurrentUser" initially just in case the manual storage was used before:
   useEffect(() => {
-    // Optional: Migration from old manual storage if Redux is empty
-    const migrate = async () => {
-      if (!user) {
-        const oldUser = await authService.getCurrentUser();
-        if (oldUser) {
-          dispatch(setUser(oldUser));
-        }
+    // Sync session service with Redux state on mount
+    if (user) {
+      if (!sessionService.isAuthenticated()) {
+        sessionService.initSession(user);
       }
+    }
+  }, [user]);
+
+  // Session Monitoring
+  useEffect(() => {
+    if (user) {
+      // Start checking session validity
+      const interval = setInterval(() => {
+        if (!sessionService.isSessionValid()) {
+          console.log('Auto-logout triggered due to inactivity');
+          signOut();
+        }
+      }, 60 * 1000); // Check every minute
+      setSessionCheckInterval(interval);
+    } else {
+      if (sessionCheckInterval) {
+        clearInterval(sessionCheckInterval);
+        setSessionCheckInterval(null);
+      }
+    }
+    return () => {
+      if (sessionCheckInterval) clearInterval(sessionCheckInterval);
     };
-    migrate();
-  }, []);
+  }, [user]);
 
   const signIn = async (loggedInUser: User) => {
     dispatch(setUser(loggedInUser));
-    // Also keep sync with legacy service if needed or just replace it
-    await authService.login(loggedInUser.email, 'ignored'); // This is weird, authService.login does the logic.
-    // Better: We assume the caller of signIn has verified the user.
-    // Actually, looking at LoginScreen, it calls authService.login THEN signIn.
-    // So here we validly just set the store.
+    await sessionService.initSession(loggedInUser);
   };
 
   const signUp = async (registeredUser: User) => {
     dispatch(setUser(registeredUser));
+    await sessionService.initSession(registeredUser);
   };
 
-  const signOut = async (navigation: any) => {
+  const signOut = async (navigation?: any) => {
     try {
       await authService.logout();
+      sessionService.clearSession();
     } catch (error) {
       console.error('Error signing out:', error);
     } finally {
       dispatch(logout());
-      navigation.replace('Login'); // Use replace to reset stack
+      if (navigation) {
+        navigation.replace('Login');
+      }
+      // Note: If called from auto-logout (no navigation param), 
+      // the AppNavigator should ideally react to user being null and switch stacks,
+      // or we rely on the Redux state change to trigger re-render of navigation.
     }
   };
 
   const updateProfile = async (updatedData: Partial<User>) => {
     try {
-      // We still call the service to update "legacy" persistent storage if we want to keep it
-      // OR we move logic to slice. For now, call service then update store.
       const updatedUser = await authService.updateUser(updatedData);
       dispatch(setUser(updatedUser));
+      sessionService.refreshSession(updatedUser);
     } catch (error) {
       console.error('Error updating profile:', error);
       throw error;

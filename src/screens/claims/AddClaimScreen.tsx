@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -19,8 +19,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { useModal } from '../../context/ModalContext';
-import { ClaimType } from '../../database/schema';
+import { ClaimType, Device } from '../../database/schema';
 import { Dropdown } from '../../components/Dropdown';
+import { devicesDb } from '../../database/devicesDb';
 import { useSelector } from 'react-redux';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
@@ -36,10 +37,31 @@ export const AddClaimScreen = ({ navigation }: any) => {
 
   const [type, setType] = useState<ClaimType>('material');
   const [description, setDescription] = useState('');
+  const [selectedDevice, setSelectedDevice] = useState<string>('');
+  const [availableDevices, setAvailableDevices] = useState<Device[]>([]);
   const [isUrgent, setIsUrgent] = useState(false);
   const [photoUri, setPhotoUri] = useState('');
-  const [errors, setErrors] = useState<{ description?: string }>({});
+  const [errors, setErrors] = useState<{ description?: string; device?: string }>({});
   const [loading, setLoading] = useState(false);
+
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  const [teamId, setTeamId] = useState<number | null>(null);
+  const [employeeId, setEmployeeId] = useState<number | null>(
+    user?.role === 'employee' && user?.id ? Number(user.id) : null,
+  );
+
+  // Load devices for selected employee - Moved here to fix scoping issue
+  useEffect(() => {
+    const loadDevices = async () => {
+      if (employeeId) {
+        const devices = await devicesDb.getByEmployeeId(employeeId);
+        setAvailableDevices(devices);
+      } else {
+        setAvailableDevices([]);
+      }
+    };
+    loadDevices();
+  }, [employeeId]);
 
   const companies = useSelector((state: RootState) =>
     selectAllCompanies(state),
@@ -47,12 +69,6 @@ export const AddClaimScreen = ({ navigation }: any) => {
   const teams = useSelector((state: RootState) => selectAllTeams(state));
   const employees = useSelector((state: RootState) =>
     selectAllEmployees(state),
-  );
-
-  const [companyId, setCompanyId] = useState<number | null>(null);
-  const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : null,
   );
 
   const { setActiveTab } = useContext(WebNavigationContext);
@@ -107,8 +123,14 @@ export const AddClaimScreen = ({ navigation }: any) => {
   };
 
   const handleSave = async () => {
-    const newErrors: { description?: string } = {};
-    if (!description.trim()) {
+    const newErrors: { description?: string; device?: string } = {};
+    if (type === 'material' && !selectedDevice) {
+      newErrors.device = t('common.required');
+    }
+    if (!description.trim() && type !== 'material') {
+      newErrors.description = t('common.required');
+    }
+    if (type === 'material' && selectedDevice === 'other' && !description.trim()) {
       newErrors.description = t('common.required');
     }
 
@@ -119,6 +141,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
     try {
       const claimData = {
         type,
+        title: type === 'material' ? (selectedDevice === 'other' ? 'Other Material' : availableDevices.find(d => String(d.id) === selectedDevice)?.name) : t(`claims.type_${type}`),
         description: description.trim(),
         isUrgent,
         status: 'pending' as const,
@@ -128,6 +151,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
         companyId,
         teamId,
         employeeId: employeeId || 0,
+        deviceId: type === 'material' && selectedDevice !== 'other' ? Number(selectedDevice) : undefined,
       };
 
       await claimsDb.add(claimData);
@@ -174,6 +198,21 @@ export const AddClaimScreen = ({ navigation }: any) => {
                 onSelect={val => setType(val as ClaimType)}
               />
             </View>
+
+            {type === 'material' && (
+              <View style={styles.fieldContainer}>
+                <Dropdown
+                  label={t('profile.myMaterial')}
+                  data={[
+                    ...availableDevices.map(d => ({ label: d.name, value: String(d.id) })),
+                    { label: t('common.other'), value: 'other' }
+                  ]}
+                  value={selectedDevice}
+                  onSelect={setSelectedDevice}
+                  error={errors.device}
+                />
+              </View>
+            )}
 
             {/* Company / Team / Employee Selection */}
             <View style={styles.fieldContainer}>
@@ -228,37 +267,39 @@ export const AddClaimScreen = ({ navigation }: any) => {
               )}
             </View>
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.label}>{t('claims.description')} *</Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  styles.textArea,
-                  errors.description && { borderColor: theme.colors.error },
-                ]}
-                value={description}
-                onChangeText={text => {
-                  setDescription(text);
-                  if (errors.description)
-                    setErrors({ ...errors, description: '' });
-                }}
-                placeholder={t('claims.descriptionPlaceholder')}
-                placeholderTextColor={theme.colors.subText}
-                multiline
-                numberOfLines={6}
-              />
-              {errors.description && (
-                <Text
-                  style={{
-                    color: theme.colors.error,
-                    fontSize: 12,
-                    marginTop: 4,
+            {(type !== 'material' || selectedDevice === 'other') && (
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('claims.description')} *</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    styles.textArea,
+                    errors.description && { borderColor: theme.colors.error },
+                  ]}
+                  value={description}
+                  onChangeText={text => {
+                    setDescription(text);
+                    if (errors.description)
+                      setErrors({ ...errors, description: '' });
                   }}
-                >
-                  {errors.description}
-                </Text>
-              )}
-            </View>
+                  placeholder={t('claims.descriptionPlaceholder')}
+                  placeholderTextColor={theme.colors.subText}
+                  multiline
+                  numberOfLines={6}
+                />
+                {errors.description && (
+                  <Text
+                    style={{
+                      color: theme.colors.error,
+                      fontSize: 12,
+                      marginTop: 4,
+                    }}
+                  >
+                    {errors.description}
+                  </Text>
+                )}
+              </View>
+            )}
 
             <View style={styles.switchRow}>
               <View>

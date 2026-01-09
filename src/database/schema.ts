@@ -51,6 +51,8 @@ export interface Payroll {
   month?: string; // e.g., "1" for January
   year?: string; // e.g., "2024"
   hoursWorked?: number;
+  overtimeHours?: number;
+  overtimeRate?: number;
   companyId?: number;
   teamId?: number;
 }
@@ -238,22 +240,25 @@ export interface ChatMessage {
 export interface Employee {
   id?: number;
   name: string;
+  alias?: string; // NEW: Short display name
   firstName?: string;
   lastName?: string;
   position?: string;
   phone?: string;
-  email?: string;
+  email: string; // REQUIRED & UNIQUE
   address?: string;
   city?: string;
   country: string;
-  age?: number;
+  age?: number; // DEPRECATED: Calculate from birthDate
+  birthDate?: string; // NEW: ISO date (YYYY-MM-DD)
+  jobTitle?: string; // NEW: Job title
   gender?: 'male' | 'female' | 'other';
   photoUri?: string;
   notes?: string;
   department?: string;
-  role?: string; // 'admin' | 'rh' | 'manager' | 'employee'
-  teamId?: number;
-  companyId?: number;
+  role?: string; // 'admin' | 'rh' | 'chef_dequipe' | 'employee'
+  teamId?: number; // CONSTRAINT: One team per employee
+  companyId?: number; // CONSTRAINT: One company per employee
   vacationDaysPerYear: number;
   remainingVacationDays: number;
   statePaidLeaves: number;
@@ -282,7 +287,16 @@ export interface Device {
   condition: 'working' | 'faulty';
   assignedTo?: string;
   assignedToId?: number;
-  companyId?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReviewPeriod {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'closed' | 'planned';
   createdAt: string;
   updatedAt: string;
 }

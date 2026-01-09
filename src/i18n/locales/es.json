@@ -171,7 +171,9 @@
     "weekend": "Fin de semana",
     "yearUnit": "año",
     "yearsUnit": "años",
-    "yes": "Sí"
+    "yes": "Sí",
+    "submit": "Enviar",
+    "invalidAmount": "Monto inválido"
   },
   "companies": {
     "add": "Añadir empresa",
@@ -292,7 +294,14 @@
     "title": "Empleados",
     "titlePlaceholder": "e.g. Master React Native",
     "updateButton": "Actualizar empleado",
-    "website": "Website"
+    "website": "Website",
+    "alias": "Alias",
+    "aliasPlaceholder": "p.ej., Juan D.",
+    "birthDate": "Fecha de nacimiento",
+    "birthDatePlaceholder": "AAAA-MM-DD",
+    "countryPlaceholder": "p.ej., España",
+    "jobTitle": "Título del trabajo",
+    "jobTitlePlaceholder": "p.ej., Ingeniero de Software"
   },
   "forgotPassword": {
     "backToLogin": "Volver al inicio de sesión",
@@ -392,7 +401,14 @@
     "takePhoto": "Tomar foto",
     "title": "Enfermedad",
     "updateButton": "Actualizar enfermedad",
-    "collisionError": "Este empleado ya tiene un registro de enfermedad durante este período."
+    "collisionError": "Este empleado ya tiene un registro de enfermedad durante este período.",
+    "dateOfIllness": "Fecha de enfermedad",
+    "daysCount": "{{count}} día",
+    "daysCount_plural": "{{count}} días",
+    "endDate": "Fecha de finalización",
+    "endDateLabel": "Fecha de finalización",
+    "object": "Asunto",
+    "objectPlaceholder": "p.ej., Licencia médica"
   },
   "invoices": {
     "add": "Añadir factura",
@@ -493,7 +509,12 @@
     "upcoming": "Próximas",
     "update": "Actualizar",
     "updateSuccess": "Solicitud de vacaciones actualizada con éxito",
-    "collisionError": "Este empleado ya tiene una vacación o autorización programada durante este período."
+    "collisionError": "Este empleado ya tiene una vacación o autorización programada durante este período.",
+    "cause": "Causa/Razón",
+    "causePlaceholder": "p.ej., Razones personales",
+    "object": "Asunto",
+    "objectPlaceholder": "p.ej., Licencia anual",
+    "status": "Estado"
   },
   "login": {
     "admin": "Admin",
@@ -542,13 +563,22 @@
     "profile": "Perfil",
     "services": "Servicios",
     "settings": "Ajustes",
-    "teams": "Equipos"
+    "teams": "Equipos",
+    "chatBot": "Asistente IA",
+    "manageNotifications": "Gestionar notificaciones",
+    "personalInfo": "Información personal"
   },
   "notifications": {
     "markAllAsRead": "Marcar todo como leído",
     "noNotifications": "No hay notificaciones aún",
     "title": "Notificaciones",
-    "unread": "Sin leer"
+    "unread": "Sin leer",
+    "manageNotifications": "Gestionar notificaciones",
+    "sendToAll": "Enviar a todos los empleados",
+    "sendToCompany": "Enviar a la empresa",
+    "sendToTeam": "Enviar al equipo",
+    "welcomeTitle": "¡Bienvenido a RH Management!",
+    "welcomeMessage": "Su solución integral de gestión de RRHH. Gestione empleados, licencias, nóminas y más, todo en un solo lugar."
   },
   "offline": {
     "limitedFunctionality": "Algunas funciones pueden no estar disponibles",
@@ -743,7 +773,8 @@
     "admin": "Administrador",
     "chef_dequipe": "Jefe de equipo",
     "employee": "Empleado",
-    "rh": "RRHH"
+    "rh": "RRHH",
+    "undefined": "Rol indefinido"
   },
   "sections": {
     "analytics": "Analítica",
@@ -778,7 +809,8 @@
     "pushNotifications": "Notificaciones Push",
     "emailNotifications": "Notificaciones por Email",
     "params": "Parámetros de empresa",
-    "management": "Gestión de recursos"
+    "management": "Gestión de recursos",
+    "companySettings": "Configuración de la empresa"
   },
   "signUp": {
     "emailLabel": "Correo electrónico",
@@ -822,7 +854,10 @@
     "title": "Equipos",
     "validation": {
       "maxMembers": "Máximo 10 miembros permitidos",
-      "minMembers": "Seleccione al menos 2 miembros"
-    }
+      "minMembers": "Seleccione al menos 2 miembros",
+      "noMembers": "No se seleccionaron miembros"
+    },
+    "selectedCount": "{{count}} empleado seleccionado",
+    "selectedCount_plural": "{{count}} empleados seleccionados"
   }
 }

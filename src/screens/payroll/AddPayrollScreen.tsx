@@ -21,6 +21,7 @@ import { selectAllServices } from '../../store/slices/servicesSlice';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
+import { Permission, rbacService } from '../../services/rbacService';
 import { useAuth } from '../../context/AuthContext';
 import { RootState } from '../../store';
 
@@ -54,6 +55,16 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [month, setMonth] = useState(new Date().getMonth() + 1 + '');
   const [year, setYear] = useState(new Date().getFullYear() + '');
   const [hoursWorked, setHoursWorked] = useState('');
+
+  // Phase 11: New fields
+  const [overtimeHours, setOvertimeHours] = useState('');
+  const [overtimeRate, setOvertimeRate] = useState('');
+
+  // Split vouchers
+  const [mealVoucherCount, setMealVoucherCount] = useState('');
+  const [mealVoucherValue, setMealVoucherValue] = useState('');
+  const [giftVoucherCount, setGiftVoucherCount] = useState('');
+  const [giftVoucherValue, setGiftVoucherValue] = useState('');
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
@@ -163,6 +174,13 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
       newErrors.amount = t('common.invalidAmount') || 'Invalid amount';
     }
 
+    if (hoursWorked) {
+      const hours = parseFloat(hoursWorked);
+      if (isNaN(hours) || hours > 168) {
+        newErrors.hoursWorked = t('payroll.invalidHours') || 'Max 168 hours';
+      }
+    }
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
@@ -185,22 +203,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         startDate: new Date().toISOString().split('T')[0], // Default to today
         reminderEnabled: false,
         isUrgent: false,
-        mealVouchers: (() => {
-          if (!mealVouchers) return undefined;
-          const clean = mealVouchers
-            .toLowerCase()
-            .replace(/,/g, '.')
-            .replace(/\s/g, '');
-          if (clean.includes('x') || clean.includes('*')) {
-            const parts = clean.split(/[x*]/);
-            if (parts.length === 2) {
-              const val = parseFloat(parts[0]) * parseFloat(parts[1]);
-              return isNaN(val) ? undefined : val;
-            }
-          }
-          return parseFloat(clean) || undefined;
-        })(),
-        giftVouchers: giftVouchers ? parseFloat(giftVouchers) : undefined,
+        mealVouchers: mealVoucherCount && mealVoucherValue ? parseFloat(mealVoucherCount) * parseFloat(mealVoucherValue) : undefined,
+        giftVouchers: giftVoucherCount && giftVoucherValue ? parseFloat(giftVoucherCount) * parseFloat(giftVoucherValue) : undefined,
         bonusAmount: bonusAmount ? parseFloat(bonusAmount) : undefined,
         bonusType,
         department,
@@ -208,6 +212,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         month,
         year,
         hoursWorked: hoursWorked ? parseFloat(hoursWorked) : undefined,
+        overtimeHours: overtimeHours ? parseFloat(overtimeHours) : undefined,
+        overtimeRate: overtimeRate ? parseFloat(overtimeRate) : undefined,
         companyId: companyId ?? undefined,
         teamId: teamId ?? undefined,
         employeeId:
@@ -319,7 +325,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
             {/* Company / Team / Employee Selection */}
             <View style={styles.responsiveRow}>
-              {(user?.role === 'admin' || user?.role === 'rh') && (
+              {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('companies.selectCompany')}
@@ -332,7 +338,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                   />
                 </View>
               )}
-              {(user?.role === 'admin' || user?.role === 'rh') && (
+              {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('teams.selectTeam')}
@@ -347,7 +353,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               )}
             </View>
 
-            {(user?.role === 'admin' || user?.role === 'rh') && (
+            {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
               <View style={styles.fieldContainer}>
                 <Dropdown
                   label={t('employees.name')}
@@ -388,28 +394,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               {t('common.details') || 'Benefits & Bonuses'}
             </Text>
 
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('payroll.mealVouchers')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={mealVouchers}
-                  onChangeText={setMealVouchers}
-                  placeholder="e.g. 15 x 6.50"
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('payroll.giftVouchers')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={giftVouchers}
-                  onChangeText={setGiftVouchers}
-                  placeholder="e.g. 100.00"
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
-            </View>
+            {/* Replaced by split inputs below */}
 
             <View
               style={[styles.responsiveRow, { marginTop: theme.spacing.m }]}
@@ -494,13 +479,82 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>{t('payroll.hoursWorked')}</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, errors.hoursWorked && styles.inputError]}
                   value={hoursWorked}
                   onChangeText={setHoursWorked}
                   keyboardType="numeric"
                   placeholder="e.g., 150"
                   placeholderTextColor={theme.colors.subText}
                 />
+                {errors.hoursWorked && (
+                  <Text style={styles.errorText}>{errors.hoursWorked}</Text>
+                )}
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.overtimeHours') || 'Overtime Hours'}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={overtimeHours}
+                  onChangeText={setOvertimeHours}
+                  keyboardType="numeric"
+                  placeholder="e.g. 10"
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.overtimeRate') || 'Overtime Rate / Hour'}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={overtimeRate}
+                  onChangeText={setOvertimeRate}
+                  keyboardType="numeric"
+                  placeholder="e.g. 25.00"
+                  placeholderTextColor={theme.colors.subText}
+                />
+              </View>
+            </View>
+
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.mealVouchers')}</Text>
+                <View style={{ flexDirection: 'row', gap: 5 }}>
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    value={mealVoucherCount}
+                    onChangeText={setMealVoucherCount}
+                    placeholder={t('common.count') || 'Count'}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    value={mealVoucherValue}
+                    onChangeText={setMealVoucherValue}
+                    placeholder={t('common.unitPrice') || 'Unit'}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('payroll.giftVouchers')}</Text>
+                <View style={{ flexDirection: 'row', gap: 5 }}>
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    value={giftVoucherCount}
+                    onChangeText={setGiftVoucherCount}
+                    placeholder={t('common.count') || 'Count'}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    value={giftVoucherValue}
+                    onChangeText={setGiftVoucherValue}
+                    placeholder={t('common.unitPrice') || 'Unit'}
+                    keyboardType="numeric"
+                  />
+                </View>
               </View>
             </View>
           </View>
@@ -515,8 +569,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             {loading
               ? t('common.loading')
               : isEdit
-              ? t('payroll.update')
-              : t('common.save')}{' '}
+                ? t('payroll.update')
+                : t('common.save')}{' '}
             {t('payroll.payroll')}
           </Text>
         </TouchableOpacity>

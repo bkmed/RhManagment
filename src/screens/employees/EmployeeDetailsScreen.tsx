@@ -23,6 +23,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useModal } from '../../context/ModalContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+import { Permission, rbacService } from '../../services/rbacService';
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -223,22 +224,26 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 )}
               </View>
             </View>
-            {(user?.role === 'admin' || user?.role === 'rh') && (
+            {(rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) || rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES)) && (
               <View style={styles.actions}>
-                <TouchableOpacity
-                  onPress={handleEdit}
-                  style={styles.actionButton}
-                >
-                  <Text style={styles.actionText}>{t('common.edit')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleDelete}
-                  style={[styles.actionButton, styles.deleteButton]}
-                >
-                  <Text style={[styles.actionText, styles.deleteText]}>
-                    {t('common.delete')}
-                  </Text>
-                </TouchableOpacity>
+                {rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) && (
+                  <TouchableOpacity
+                    onPress={handleEdit}
+                    style={styles.actionButton}
+                  >
+                    <Text style={styles.actionText}>{t('common.edit')}</Text>
+                  </TouchableOpacity>
+                )}
+                {rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES) && (
+                  <TouchableOpacity
+                    onPress={handleDelete}
+                    style={[styles.actionButton, styles.deleteButton]}
+                  >
+                    <Text style={[styles.actionText, styles.deleteText]}>
+                      {t('common.delete')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           </View>
@@ -267,11 +272,10 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.detailValue}>
                   {employee.gender
                     ? t(
-                        `employees.gender${
-                          employee.gender.charAt(0).toUpperCase() +
-                          employee.gender.slice(1)
-                        }`,
-                      )
+                      `employees.gender${employee.gender.charAt(0).toUpperCase() +
+                      employee.gender.slice(1)
+                      }`,
+                    )
                     : '-'}
                 </Text>
               </View>
@@ -401,30 +405,29 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{t('leaves.title')}</Text>
-          {(user?.role === 'admin' ||
-            user?.role === 'rh' ||
-            user?.role === 'chef_dequipe') && (
-            <View style={styles.headerActions}>
-              <TouchableOpacity
-                onPress={() => navigateToAddIllness(employee)}
-                style={[styles.addButton, styles.secondaryButton]}
-              >
-                <Text
-                  style={[styles.addButtonText, styles.secondaryButtonText]}
+          {(rbacService.hasPermission(user, Permission.MANAGE_PAYROLL) ||
+            rbacService.hasPermission(user, Permission.APPROVE_LEAVES)) && (
+              <View style={styles.headerActions}>
+                <TouchableOpacity
+                  onPress={() => navigateToAddIllness(employee)}
+                  style={[styles.addButton, styles.secondaryButton]}
                 >
-                  + {t('employees.addIllness')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={navigateToAddLeave}
-                style={styles.addButton}
-              >
-                <Text style={styles.addButtonText}>
-                  + {t('employees.addLeave')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
+                  <Text
+                    style={[styles.addButtonText, styles.secondaryButtonText]}
+                  >
+                    + {t('employees.addIllness')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={navigateToAddLeave}
+                  style={styles.addButton}
+                >
+                  <Text style={styles.addButtonText}>
+                    + {t('employees.addLeave')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
         </View>
 
         {leaves.length > 0 ? (

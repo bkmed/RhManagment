@@ -15,6 +15,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
 import { Leave } from '../../database/schema';
+import { Permission, rbacService } from '../../services/rbacService';
 import { notificationService } from '../../services/notificationService';
 import { emailService } from '../../services/emailService';
 import { storageService } from '../../services/storage';
@@ -253,12 +254,12 @@ export const AddLeaveScreen = ({
       const selectedEmp = allEmployees.find(e => e.id === employeeId);
       const leaveData = {
         title: title.trim(),
-        employeeName: (user?.role === 'employee'
+        employeeName: (rbacService.isEmployee(user)
           ? user?.name || ''
           : selectedEmp?.name || employeeName
         ).trim(),
         employeeId:
-          (user?.role === 'employee' ? user?.employeeId : employeeId) || 0,
+          (rbacService.isEmployee(user) ? user?.employeeId : employeeId) || 0,
         location: location.trim() || undefined,
         dateTime:
           type === 'permission' || type === 'authorization'
@@ -275,7 +276,7 @@ export const AddLeaveScreen = ({
         notes: notes.trim() || undefined,
         reminderEnabled,
         type,
-        status,
+        status: rbacService.isEmployee(user) ? 'pending' : status, // Force pending for employees
         department: selectedEmp?.department || department,
         companyId: selectedEmp?.companyId || companyId,
         teamId: selectedEmp?.teamId || teamId,
@@ -302,7 +303,7 @@ export const AddLeaveScreen = ({
               leaveData.employeeName,
               t(`leaveTypes.${type}`),
               startDate?.toLocaleDateString() ||
-                new Date().toLocaleDateString(),
+              new Date().toLocaleDateString(),
               endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
               notes || '',
             )
@@ -394,7 +395,7 @@ export const AddLeaveScreen = ({
             <View style={styles.divider} />
 
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>{t('leaves.leaveTitle')} *</Text>
+              <Text style={styles.label}>{t('leaves.subject') || 'Objet'} *</Text>
               <TextInput
                 style={[styles.input, errors.title && styles.inputError]}
                 value={title}
@@ -402,7 +403,7 @@ export const AddLeaveScreen = ({
                   setTitle(text);
                   if (errors.title) setErrors({ ...errors, title: '' });
                 }}
-                placeholder={t('leaves.titlePlaceholder')}
+                placeholder={t('leaves.subjectPlaceholder') || 'Objet de la demande'}
                 placeholderTextColor={theme.colors.subText}
               />
               {errors.title && (
@@ -410,7 +411,7 @@ export const AddLeaveScreen = ({
               )}
             </View>
 
-            {(user?.role === 'admin' || user?.role === 'rh') && (
+            {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
               <>
                 <View style={styles.responsiveRow}>
                   <View style={styles.fieldContainer}>
@@ -469,7 +470,7 @@ export const AddLeaveScreen = ({
               </>
             )}
 
-            {user?.role !== 'employee' && (
+            {(rbacService.isAdmin(user) || rbacService.isRH(user) || rbacService.isManager(user)) && (
               <View style={styles.fieldContainer}>
                 <Dropdown
                   label={t('leaves.status')}
@@ -551,12 +552,12 @@ export const AddLeaveScreen = ({
             </View>
 
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>{t('common.local')}</Text>
+              <Text style={styles.label}>{t('leaves.cause') || 'Cause'}</Text>
               <TextInput
                 style={styles.input}
                 value={location}
                 onChangeText={setLocation}
-                placeholder={t('common.local')}
+                placeholder={t('leaves.causePlaceholder') || 'Cause de la demande'}
                 placeholderTextColor={theme.colors.subText}
               />
             </View>
@@ -625,10 +626,10 @@ export const AddLeaveScreen = ({
                 time={
                   startDate
                     ? startDate.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false,
-                      })
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false,
+                    })
                     : '12:00'
                 }
                 location={location}
@@ -647,8 +648,8 @@ export const AddLeaveScreen = ({
             {loading
               ? t('common.loading')
               : isEdit
-              ? t('leaves.update')
-              : t('leaves.save')}
+                ? t('leaves.update')
+                : t('leaves.save')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

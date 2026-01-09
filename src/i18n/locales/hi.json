@@ -171,7 +171,9 @@
     "weekend": "सप्ताहांत",
     "yearUnit": "वर्ष",
     "yearsUnit": "वर्ष",
-    "yes": "हाँ"
+    "yes": "हाँ",
+    "submit": "जमा करें",
+    "invalidAmount": "अमान्य रा शि"
   },
   "companies": {
     "add": "कंपनी जोड़ें",
@@ -292,7 +294,14 @@
     "title": "कर्मचारी",
     "titlePlaceholder": "उदा. रिएक्ट नेटिव मास्टर",
     "updateButton": "कर्मचारी अपडेट करें",
-    "website": "वेबसाइट"
+    "website": "वेबसाइट",
+    "alias": "उपनाम",
+    "aliasPlaceholder": "उदाहरण, जॉन डी.",
+    "birthDate": "जन्म तिथि",
+    "birthDatePlaceholder": "वर्ष-माह-दिन",
+    "countryPlaceholder": "उदाहरण, भारत",
+    "jobTitle": "नौकरी का शीर्षक",
+    "jobTitlePlaceholder": "उदाहरण, सॉफ्टवेयर इंजीनियर"
   },
   "forgotPassword": {
     "backToLogin": "लॉगिन पर वापस जाएं",
@@ -392,7 +401,14 @@
     "takePhoto": "फोटो लें",
     "title": "बीमारी",
     "updateButton": "बीमारी अपडेट करें",
-    "collisionError": "इस कर्मचारी के पास इस अवधि के दौरान पहले से ही बीमारी का रिकॉर्ड है।"
+    "collisionError": "इस कर्मचारी के पास इस अवधि के दौरान पहले से ही बीमारी का रिकॉर्ड है।",
+    "dateOfIllness": "बीमारी की तारीख",
+    "daysCount": "{{count}} दिन",
+    "daysCount_plural": "{{count}} दिन",
+    "endDate": "समाप्ति तिथि",
+    "endDateLabel": "समाप्ति तिथि",
+    "object": "विषय",
+    "objectPlaceholder": "उदाहरण, चिकित्सा अवकाश"
   },
   "invoices": {
     "add": "इनवॉइस जोड़ें",
@@ -493,7 +509,12 @@
     "upcoming": "आगामी",
     "update": "अपडेट करें",
     "updateSuccess": "छुट्टी का अनुरोध सफलतापूर्वक अपडेट किया गया",
-    "collisionError": "इस कर्मचारी के पास इस अवधि के दौरान पहले से ही छुट्टी या प्राधिकरण निर्धारित है।"
+    "collisionError": "इस कर्मचारी के पास इस अवधि के दौरान पहले से ही छुट्टी या प्राधिकरण निर्धारित है।",
+    "cause": "कारण",
+    "causePlaceholder": "उदाहरण, व्यक्तिगत कारण",
+    "object": "विषय",
+    "objectPlaceholder": "उदाहरण, वार्षिक अवकाश",
+    "status": "स्थिति"
   },
   "login": {
     "admin": "प्रशासक",
@@ -542,13 +563,22 @@
     "profile": "प्रोफ़ाइल",
     "services": "सेवाएं",
     "settings": "सेटिंग्स",
-    "teams": "टीमें"
+    "teams": "टीमें",
+    "chatBot": "एआई सहायक",
+    "manageNotifications": "सूचनाएं प्रबंधित करें",
+    "personalInfo": "व्यक्तिगत जानकारी"
   },
   "notifications": {
     "markAllAsRead": "सभी को पढ़ा हुआ चिह्नित करें",
     "noNotifications": "अभी तक कोई सूचना नहीं",
     "title": "सूचनाएं",
-    "unread": "अपठित"
+    "unread": "अपठित",
+    "manageNotifications": "सूचनाएं प्रबंधित करें",
+    "sendToAll": "सभी कर्मचारियों को भेजें",
+    "sendToCompany": "कंपनी को भेजें",
+    "sendToTeam": "टीम को भेजें",
+    "welcomeTitle": "आरएच प्रबंधन में आपका स्वागत है!",
+    "welcomeMessage": "आपका व्यापक एचआर प्रबंधन समाधान। कर्मचारियों, अवकाश, वेतन और अधिक का प्रबंधन करें - सब एक ही स्थान पर।"
   },
   "offline": {
     "limitedFunctionality": "कुछ सुविधाएँ अनुपलब्ध हो सकती हैं",
@@ -743,7 +773,8 @@
     "admin": "प्रशासक",
     "chef_dequipe": "टीम लीडर",
     "employee": "कर्मचारी",
-    "rh": "मानव संसाधन"
+    "rh": "मानव संसाधन",
+    "undefined": "अपरिभाषित भूमिका"
   },
   "sections": {
     "analytics": "विश्लेषण",
@@ -778,7 +809,8 @@
     "pushNotifications": "पुश सूचनाएं",
     "emailNotifications": "ईमेल सूचनाएं",
     "params": "कंपनी पैरामीटर",
-    "management": "संसंसाधन प्रबंधन"
+    "management": "संसंसाधन प्रबंधन",
+    "companySettings": "कंपनी सेटिंग्स"
   },
   "signUp": {
     "emailLabel": "ईमेल",
@@ -822,7 +854,10 @@
     "title": "टीमें",
     "validation": {
       "maxMembers": "अधिकतम 10 सदस्यों की अनुमति है",
-      "minMembers": "कम से कम 2 सदस्य चुनें"
-    }
+      "minMembers": "कम से कम 2 सदस्य चुनें",
+      "noMembers": "कोई सदस्य चयनित नहीं"
+    },
+    "selectedCount": "{{count}} कर्मचारी चयनित",
+    "selectedCount_plural": "{{count}} कर्मचारी चयनित"
   }
 }
