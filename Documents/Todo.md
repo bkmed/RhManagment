@@ -1,130 +1,261 @@
-see all absence same team or same entreprise employee
+# HR Management Platform – Product & Engineering Specification
 
-user can rearange menu edit
+## Overview
+This document defines functional, technical, and UX requirements for improving and stabilizing the HR Management platform.  
+The goal is to deliver a **secure, role-based, multilingual, and production-ready system** across Web, iOS, and Android, with consistent data rules, analytics, notifications, and testing.
 
-manage review period
+---
 
-Add missing profile.documents translation key to all language files
-Remove "Mon équipe" (My Team) from main menu navigation
-Add team section to Profile screen when user has a company
-Display "not assigned to company" message when clicking team without company
-Navigation & Company Settings
-Fix department/service navigation back button to return to company settings
-Rename "param entreprise" to more professional name in all languages
-Update English translation
-Update French translation
-Update Arabic translation
-Update German translation
-Update Spanish translation
-Update Hindi translation
-Update Chinese translation
-Employee & Team Assignment Constraints
-Enforce one team per employee constraint in data model
-Enforce one company per employee constraint in data model
-Update AddTeamScreen dropdown to exclude employees with teams in selected company
-Update AddCompanyScreen to exclude employees already assigned to companies
-Enforce one company per team constraint
-Update team assignment dropdowns to exclude teams already assigned to companies
-Filter employees from dropdowns when already assigned to company
-Filter employees from dropdowns when already assigned to team in company
+## 1. Roles & Access Model
 
-lors de la selection des employer dans une equipe afficher le nombre demployer selectioner et mettre en rouge le nombre si il depasse le 10 la restriction et 0 aussi
+### Supported Roles
+- **Admin**
+- **HR (RH)**
+- **Team Leader (Chef d’équipe)**
+- **Employee**
 
-missing roles.undefined
-invoice fix theme le contenu au dessous de no invoice est blanc diferent de celui de no invoice
-la recherche global affiche la liste des entreprise alors que lemployer na pa acce a sa il faut rajouter dans la recherche global les acce au page par role
-rajoute moi un md avec tt les page et les leur roles et use case des 4 role dans une autre md
+### Core Constraints
+- One **company per employee**
+- One **team per employee**
+- One **company per team**
+- Missing role key:
+  - `roles.undefined`
 
-page analytic doit etre dedier que a lemployer pour voir ses statistique pas besoin de la section hr insights Upcoming Leaves (Employees)
-une aurer page analytique selon son role si rh voir tt les equipe danas la meme entreprise que lui si chef equipe que son equipe et admin voir tt les equipe et entreprise
+---
 
-dans add ilness :
+## 2. Navigation, Menu & Layout
 
-- Payroll Item Name \* par objet
-- employee name se rempli direct par le user connecter sinn si cest un rh ou admin rune autre page pour rajouter un employer (par employer drop down avec entreprise equipe comme filtre )
-- remove fieald local
-  -update name Weekly date de la maladie ou autre plus pro
-  -replace Expiry Date (Optional) par end date et aficher a coter selon le choi des 2 fiel le nombre de jour prix dans le add ilness
-  -enlever employee planing pour employee le laisser pour rh chef dequipe ou admin pour voir les employer qui gerer seulement admin (all) rh (all employer son entreprise) ( chef dequipe only his team) employe que son mayplanning
+### Main Menu
+- Remove **“Mon équipe / My Team”** from main navigation
+- Add **Analytics** page under **General** section
+- Menu must be fully responsive (height & width on resize)
+- Allow users (with permission) to rearrange and edit menu items
 
-facture invoice que rh ou admin peuvent la voir et rajouter dedans et filtrer par entreprise
+### Navigation Fixes
+- Department/Service → Back button must return to **Company Settings**
+- Fix unauthorized access:
+  - If a user is disconnected and loads any page → force logout & redirect
+  - Add local service to manage:
+    - Authentication state
+    - Device/session tracking
+    - Concurrent session control
 
-dans addclaim si il choisi material sa liste de material drop down se rajouter
+### Naming & UX
+- Rename **“param entreprise”** to a professional label in all languages
 
-common.submit missing
+---
 
-ajouter un employer que rh et admin peuvent le faire
+## 3. Profile & Personal Information
 
-approbations en atente admin (all) rh (all employer son entreprise) ( chef dequipe only his team) employe que les sien et biensure rh et admin et chef equipe peuveut voir leur mais peuvent pas accepter et refuser leur demande de congé
+### Profile Screen
+- Add **Team section** when user belongs to a company
+- If user clicks Team without company:
+  - Display **“Not assigned to company”** message
+-page profile est hachee
 
-addleave:
-leaves.status missing et par defaut pending cest pa lemployer qui choisi le status
-replacer Titre \* par objet
-remplace Lieu de travail par cause
-rajouter un rappele web et mobile lore de sa creation
-handle save marche pas et naffiche pas un message de reussite ou error
+### Personal Information
+- Replace **Name** with **Alias**
+- Replace **Age** with **Date of Birth**
+  - Age is calculated automatically
+- Email:
+  - Required
+  - Must be unique
+- Replace **Lieu de travail** with **Job Title**
 
-home screen marche pa bien quand deployer sur github https://bkmed.github.io/Home
+### Missing Keys
+- `navigation.personalInfo`
+- `profile.documents`
 
-rajouter analytics page dans la section general je parle de menu
+---
 
-quand le user est deconnecter et parfois on peu acceder a une page profile il faut le deconecté si il charge une page alors quil est deconecter rajouter un local service pour gestion de user connecter ou pas et device par il se connecter ou il est connecter avec au meme teamps
+## 4. Employees & Assignments
 
-missing navigation.personalInfo
-pk nom , prenom et name de famille met remplace name par alias et calcul age ts seul et remplace age par date de naissance
+### Employee Management
+- Add Employee:
+  - Allowed: **Admin, HR**
+- Dropdown filtering rules:
+  - Exclude employees already assigned to a company
+  - Exclude employees already assigned to a team (within company)
 
-remplace Lieu de travail par job title et email doit etre unique et required in add employee
+### Team Management
+- AddTeamScreen:
+  - Exclude employees already assigned to a team in selected company
+- Team assignment:
+  - Exclude teams already assigned to companies
+- Employee selection in team:
+  - Display selected employee count
+  - Highlight count in **red** when:
+    - Count = 0
+    - Count > 10 (restriction exceeded)
 
-Ajouter une maladie lenlever de menu car elle existe dans congé
+---
 
-addinvoice doit rajouter drop down entreprise
+## 5. Absence, Leave & Illness
 
-addpayroll
-heude travailler valider number qui depasse pas 168 si cest conter comme heure supp du coup il faut rajouter le coup dune heur supp et le rajouter au total
+### Absence Visibility
+- View absences by:
+  - Same team
+  - Same company
+- Review period management (role-based)
 
-Ticket restaurant
-et
-Tickets Cadeaux il faut que se soit 2 field le nombre de ticket et leur cout valider number pour ses fields
-Lieu de travail a enlever et service aussi et le nom (admin all employee , rh all emplyee same entreprise que rh, chef equipe et employee cant add payroll)
+### Leaves
+- Default status: **Pending**
+  - Employee cannot select status
+- Missing key:
+  - `leaves.status`
+- Field updates:
+  - **Titre*** → **Objet**
+  - **Lieu de travail** → **Cause**
+- Add reminders (Web & Mobile) on creation
+- Save action:
+  - Must work correctly
+  - Show success or error message
 
-Sélectionner l'entreprise
-Sélectionner l'équipe les afficher que pour admin pour filter employee in addpayroll
+### Illness
+- Remove Illness from menu (already covered under Leave)
+- Field updates:
+  - Payroll Item Name* → **Objet**
+  - **Weekly** → professional illness date label
+  - **Expiry Date (Optional)** → **End Date**
+- Display number of days taken (start/end date)
+- Employee name:
+  - Auto-filled for logged employee
+  - HR/Admin:
+    - Dedicated page with employee dropdown
+    - Filters by company & team
+- Planning visibility:
+  - Employee: own planning only
+  - Team Leader: own team
+  - HR: all employees in company
+  - Admin: all employees
 
-common.invalidAmount missing
-rajouter un message de reausite ou error
+---
 
-review all key in all lang to be same and verify the translation if it is ok in all lang
+## 6. Payroll
 
-menu nest pas responsive en hauteur et width aussi in resize
+### Add Payroll
+- Access:
+  - Admin: all employees
+  - HR: employees in same company
+  - Team Leader / Employee: cannot add
+- Validation:
+  - Worked hours ≤ 168
+  - Exceeding hours → overtime
+    - Add overtime hourly cost
+    - Include in total
 
-employees.birthDate missing
-employees.countryplaceholder missing
+### Tickets
+- Ticket Restaurant:
+  - Number of tickets (number)
+  - Cost (number)
+- Ticket Cadeaux:
+  - Number of tickets (number)
+  - Cost (number)
 
-rajouter manage notification ou on peu envoyer une notification a tt les employe dans la meme equipe ou meme entreprise ou all for admin comme la notif explore the new phase
+### Fields & Filters
+- Remove:
+  - Lieu de travail
+  - Service
+- Admin only:
+  - Company dropdown
+  - Team dropdown (filters employees)
 
-remplace title: 'Welcome to RhManagment!',
-message: 'Explore the new Phase 3 features like Search and Chat.',
-avec un welcome pro in all lang
+---
+
+## 7. Claims
+
+### Add Claim
+- If type = **Material**:
+  - Dynamically display material dropdown list
+
+---
+
+## 8. Invoices
+
+### Access Control
+- View & Add:
+  - Admin
+  - HR only
+
+### Add Invoice
+- Company dropdown required
+- Filtering by company
+
+### UI Fix
+- “No Invoice” section background must match theme
+
+---
+
+## 9. Approvals & Workflows
+
+### Pending Approvals Visibility
+- Admin: all
+- HR: all employees in company
+- Team Leader: own team
+- Employee: own requests only
+
+### Restrictions
+- HR, Admin, Team Leader:
+  - Can see their own requests
+  - Cannot approve/refuse their own leave
+
+---
+
+## 10. Analytics
+
+### Employee Analytics
+- Dedicated page
+- Personal statistics only
+- Remove HR Insights → Upcoming Leaves (Employees)
+
+### Role-Based Analytics
+- Admin: all companies & teams
+- HR: all teams in same company
+- Team Leader: own team
+- Employee: own data
+
+---
+
+## 11. Search
+
+### Global Search
+- Must respect role-based access
+- Employees must not see companies or pages they are not allowed to access
+
+---
+
+## 12. Notifications
+
+### Notification Management
+- Admin:
+  - All employees
+  - By company
+  - By team
+- HR:
+  - By company
+  - By team
+
+### Broadcast Notifications
+- Missing translation keys in all languages
+- Clicking a notification must navigate correctly
+
+### Welcome Message
+Replace:
+```js
+title: 'Welcome to RhManagment!',
+message: 'Explore the new Phase 3 features like Search and Chat.'
 
 
 
-update all mocked data to have a good exemple
 
+-nouvelle annonce Type de Paiement replace with title
+-navigation.setOptions is not a function
+-TypeError: navigation.setOptions is not a function
+    at eval (webpack://rhmanagment/./src/screens/illnesses/AddIllnessScreen.tsx?:1:6701)
+-refresh list after add or edit or delete or approval or denied
+-common.count common.unitprice common.count common.unitprice missing payroll.overtimeHours payroll.overtimeRate
+-detail must hace placeholder and  detail must be more pro
+message derreur add paie et la fiche de paie enleve les heure en bas
 
-
- with 2 entreprise every entreprise have 4 equipe marketing ... with 4 employee et un chef dequipedans chaque equipe un seul rh par entreprise
-
-
- 2 entreprise
- 2 role rh
- un role admin
- 80 role employee 
- 8 role chef equipe
-
- 90 user 8 equipe 2 entreprise, ou chauqe 4 equipe on une seul entreprise et un seul rh et chaque equipe un seul che equipe
- test cypress 
- test detox et cree mois un index template pour voir leur resultat et capture si defallant
-
- add a commercial .md of it
-
- update splashscreen and icon for ios web and android
+homescreen employee ui not working
+approuve employer register by sign up or deaprouve

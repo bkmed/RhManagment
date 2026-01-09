@@ -17,7 +17,6 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const times = JSON.parse(payroll.times) as string[];
 
   // Format month/year display
   const getMonthYearDisplay = () => {
@@ -166,22 +165,6 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
           </View>
         )}
       </View>
-
-      {times.length > 0 && (
-        <View style={styles.footer}>
-          <View style={styles.timesContainer}>
-            <Text style={styles.timeIcon}>🔔</Text>
-            {times.slice(0, 3).map((time, index) => (
-              <View key={index} style={styles.timeBadge}>
-                <Text style={styles.timeText}>{time}</Text>
-              </View>
-            ))}
-            {times.length > 3 && (
-              <Text style={styles.moreTimes}>+{times.length - 3}</Text>
-            )}
-          </View>
-        </View>
-      )}
     </TouchableOpacity>
   );
 };
