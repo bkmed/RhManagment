@@ -106,7 +106,7 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
             text: t('common.ok'),
             onPress: () => {
               if (Platform.OS === 'web') {
-                setActiveTab('Companies');
+                setActiveTab('Companies', 'CompanyList');
               } else {
                 if (navigation && navigation.canGoBack()) {
                   navigation.goBack();

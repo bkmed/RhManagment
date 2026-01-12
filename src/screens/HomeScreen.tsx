@@ -808,11 +808,13 @@ const createStyles = (theme: Theme) =>
     },
     quickActionsGrid: {
       flexDirection: 'row',
+      flexWrap: 'wrap',
       gap: 16,
       marginBottom: 32,
     },
     premiumActionCard: {
       flex: 1,
+      minWidth: 140,
       padding: 16,
       borderRadius: 24,
       alignItems: 'center',

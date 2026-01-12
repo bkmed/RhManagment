@@ -251,7 +251,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             text: t('common.ok'),
             onPress: () => {
               if (Platform.OS === 'web') {
-                setActiveTab('Payroll');
+                setActiveTab('Payroll', 'PayrollList');
               } else {
                 if (navigation && navigation.canGoBack()) {
                   navigation.goBack();

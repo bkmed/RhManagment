@@ -411,7 +411,7 @@ export const AddLeaveScreen = ({
                     employeeId: initialEmployeeId,
                   });
                 } else {
-                  setActiveTab('Leaves');
+                  setActiveTab('Leaves', 'LeaveList');
                 }
               } else {
                 if (navigation && navigation.canGoBack()) {

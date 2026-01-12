@@ -609,6 +609,7 @@ const useNavigationSections = () => {
         items: [
           { key: 'Payroll', label: t('navigation.payroll'), icon: '💰' },
           { key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' },
+          { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🤒' },
           { key: 'Claims', label: t('navigation.claims'), icon: '📝' },
           ...(rbacService.hasPermission(user, Permission.MANAGE_INVOICES) ? [{ key: 'Invoices', label: t('invoices.title'), icon: '🧾' }] : []),
           { key: 'Remote', label: t('remote.title'), icon: '📅' },
@@ -1011,6 +1012,21 @@ const WebNavigator = () => {
           return <LeaveApprovalListScreen />;
         if (subScreen === 'TeamVacations') return <TeamVacationsScreen />;
         return <LeavesStack />;
+      case 'Illnesses':
+        if (subScreen === 'AddIllness')
+          return (
+            <AddIllnessScreen route={mockRoute} navigation={mockNavigation} />
+          );
+        if (subScreen === 'IllnessDetails')
+          return (
+            <IllnessDetailsScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
+          );
+        if (subScreen === 'IllnessHistory')
+          return <IllnessHistoryScreen />;
+        return <IllnessesStack />;
       case 'Remote':
         return <RemoteCalendarScreen />;
       case 'Analytics':

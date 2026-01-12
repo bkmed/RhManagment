@@ -158,7 +158,7 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
             text: t('common.ok'),
             onPress: () => {
               if (Platform.OS === 'web') {
-                setActiveTab('Invoices');
+                setActiveTab('Invoices', 'InvoiceList');
               } else {
                 if (navigation && navigation.canGoBack()) {
                   navigation.goBack();

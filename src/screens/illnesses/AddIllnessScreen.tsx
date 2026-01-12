@@ -293,7 +293,7 @@ export const AddIllnessScreen = ({
                 if (initialEmployeeId) {
                   setActiveTab('Employees');
                 } else {
-                  setActiveTab('Illnesses');
+                  setActiveTab('Illnesses', 'IllnessList');
                 }
               } else {
                 if (navigation && navigation.canGoBack()) {

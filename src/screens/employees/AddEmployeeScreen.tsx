@@ -227,7 +227,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Employees');
+      setActiveTab('Employees', 'EmployeeList');
     } else {
       navigation.goBack();
     }

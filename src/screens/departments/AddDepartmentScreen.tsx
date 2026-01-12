@@ -95,7 +95,7 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
             text: t('common.ok'),
             onPress: () => {
               if (Platform.OS === 'web') {
-                setActiveTab?.('Departments', '', { companyId: selectedCompanyId });
+                setActiveTab?.('CompanySettings', 'Departments', { companyId: selectedCompanyId });
               } else {
                 if (navigation && navigation.canGoBack()) {
                   navigation.goBack();
@@ -115,7 +115,7 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
 
   const handleCancel = () => {
     if (Platform.OS === 'web') {
-      setActiveTab?.('Departments');
+      setActiveTab?.('CompanySettings', 'Departments');
     } else {
       navigation.goBack();
     }

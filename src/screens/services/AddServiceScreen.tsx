@@ -93,7 +93,7 @@ export const AddServiceScreen = ({ navigation, route }: any) => {
             text: t('common.ok'),
             onPress: () => {
               if (Platform.OS === 'web') {
-                setActiveTab?.('Services', '', {
+                setActiveTab?.('CompanySettings', 'Services', {
                   companyId: selectedCompanyId,
                 });
               } else {
@@ -115,7 +115,7 @@ export const AddServiceScreen = ({ navigation, route }: any) => {
 
   const handleCancel = () => {
     if (Platform.OS === 'web') {
-      setActiveTab?.('Services');
+      setActiveTab?.('CompanySettings', 'Services');
     } else {
       navigation.goBack();
     }

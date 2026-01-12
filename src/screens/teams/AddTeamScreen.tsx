@@ -160,7 +160,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
             text: t('common.ok'),
             onPress: () => {
               if (Platform.OS === 'web') {
-                setActiveTab('Teams');
+                setActiveTab('Teams', 'TeamList');
               } else {
                 if (navigation && navigation.canGoBack()) {
                   navigation.goBack();
