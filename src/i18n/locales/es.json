@@ -491,6 +491,7 @@
     "authorization": "Autorización"
   },
   "leaves": {
+    "noCompanyError": "Debe estar afiliado a una empresa para solicitar vacaciones",
     "add": "Añadir solicitud de vacaciones",
     "addFirst": "Toque + para programar vacaciones",
     "approvals": "Aprobaciones",

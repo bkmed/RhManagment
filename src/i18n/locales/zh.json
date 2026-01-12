@@ -491,6 +491,7 @@
     "authorization": "授权"
   },
   "leaves": {
+    "noCompanyError": "您必须隶属于一家公司才能申请休假",
     "add": "添加休假",
     "addFirst": "点击 + 安排休假",
     "approvals": "待审批",

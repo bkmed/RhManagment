@@ -492,6 +492,7 @@
     "authorization": "Autorisation"
   },
   "leaves": {
+    "noCompanyError": "Vous devez être affilié à une entreprise pour demander un congé",
     "add": "Ajouter un congé",
     "addFirst": "Appuyez sur + pour planifier un congé",
     "approvals": "Approbations",

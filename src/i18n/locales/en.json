@@ -494,6 +494,7 @@
     "authorization": "Authorization"
   },
   "leaves": {
+    "noCompanyError": "You must be affiliated with a company to request leave",
     "add": "Add Leave Request",
     "approvals": "Approvals",
     "approvalsSubtitle": "Manage requests",

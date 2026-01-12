@@ -491,6 +491,7 @@
     "authorization": "Autorisierung"
   },
   "leaves": {
+    "noCompanyError": "Sie müssen einem Unternehmen angehören, um Urlaub zu beantragen",
     "add": "Urlaubsantrag hinzufügen",
     "addFirst": "Tippen Sie auf +, um eine Abwesenheit zu planen",
     "approvals": "Genehmigungen",

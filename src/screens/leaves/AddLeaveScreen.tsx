@@ -227,6 +227,15 @@ export const AddLeaveScreen = ({
     if (!employeeId && user?.role !== 'employee')
       newErrors.employeeId = t('common.required');
 
+    // Validation: Only allow adding leave if affiliated with a company (except for admin)
+    if (!rbacService.isAdmin(user) && !user?.companyId) {
+      notificationService.showAlert(
+        t('common.error'),
+        t('leaves.noCompanyError')
+      );
+      return;
+    }
+
     let permissionStart: Date | null = null;
     let permissionEnd: Date | null = null;
 
