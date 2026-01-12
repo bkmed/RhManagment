@@ -82,9 +82,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
 
   // New state for company/team/employee
-  const [companyId, setCompanyId] = useState<number | null>(null);
-  const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(null);
+  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
+  const [teamId, setTeamId] = useState<number | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     loadInitialData();
@@ -166,11 +166,11 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
           setYear(item.year || new Date().getFullYear() + '');
           setHoursWorked(item.hoursWorked ? item.hoursWorked.toString() : '');
           setCurrency(item.currency || '€');
-          setEmployeeId(item.employeeId ?? null);
+          setEmployeeId(item.employeeId ?? undefined);
           if (item.employeeId) {
             const emp = employees.find(e => e.id === item.employeeId);
-            setCompanyId(emp?.companyId ?? null);
-            setTeamId(emp?.teamId ?? null);
+            setCompanyId(emp?.companyId ?? undefined);
+            setTeamId(emp?.teamId ?? undefined);
           }
         }
       }
@@ -363,7 +363,11 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                       value: String(c.id),
                     }))}
                     value={companyId ? String(companyId) : ''}
-                    onSelect={val => setCompanyId(Number(val))}
+                    onSelect={val => {
+                      setCompanyId(val ? Number(val) : undefined);
+                      setTeamId(undefined);
+                      setEmployeeId(undefined);
+                    }}
                   />
                 </View>
               )}
@@ -376,7 +380,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                       value: String(t.id),
                     }))}
                     value={teamId ? String(teamId) : ''}
-                    onSelect={val => setTeamId(Number(val))}
+                    onSelect={val => {
+                      setTeamId(val ? Number(val) : undefined);
+                      setEmployeeId(undefined);
+                    }}
                   />
                 </View>
               )}
@@ -398,7 +405,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                     }))}
                   value={employeeId ? String(employeeId) : ''}
                   onSelect={val => {
-                    setEmployeeId(Number(val));
+                    setEmployeeId(val ? Number(val) : undefined);
                     if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
                   }}
                   error={errors.employeeId}

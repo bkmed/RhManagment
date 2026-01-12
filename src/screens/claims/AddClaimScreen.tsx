@@ -44,10 +44,10 @@ export const AddClaimScreen = ({ navigation }: any) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
-  const [companyId, setCompanyId] = useState<number | null>(null);
-  const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : null,
+  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
+  const [teamId, setTeamId] = useState<number | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<number | undefined>(
+    user?.role === 'employee' && user?.id ? Number(user.id) : undefined,
   );
 
   // Load devices for selected employee - Moved here to fix scoping issue
@@ -243,7 +243,11 @@ export const AddClaimScreen = ({ navigation }: any) => {
                       value: String(c.id),
                     }))}
                     value={companyId ? String(companyId) : ''}
-                    onSelect={val => setCompanyId(Number(val))}
+                    onSelect={val => {
+                      setCompanyId(val ? Number(val) : undefined);
+                      setTeamId(undefined);
+                      setEmployeeId(undefined);
+                    }}
                   />
                 </View>
               )}
@@ -261,7 +265,10 @@ export const AddClaimScreen = ({ navigation }: any) => {
                       value: String(t.id),
                     }))}
                     value={teamId ? String(teamId) : ''}
-                    onSelect={val => setTeamId(Number(val))}
+                    onSelect={val => {
+                      setTeamId(val ? Number(val) : undefined);
+                      setEmployeeId(undefined);
+                    }}
                   />
                 </View>
               )}
@@ -281,7 +288,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
                       }))}
                     value={employeeId ? String(employeeId) : ''}
                     onSelect={val => {
-                      setEmployeeId(Number(val));
+                      setEmployeeId(val ? Number(val) : undefined);
                       if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
                     }}
                     error={errors.employeeId}

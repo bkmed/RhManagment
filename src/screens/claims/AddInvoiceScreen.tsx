@@ -51,10 +51,10 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const [companyId, setCompanyId] = useState<number | null>(null);
-  const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : null,
+  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
+  const [teamId, setTeamId] = useState<number | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<number | undefined>(
+    user?.role === 'employee' && user?.id ? Number(user.id) : undefined,
   );
 
   useEffect(() => {
@@ -191,9 +191,9 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
                 data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
                 value={companyId ? String(companyId) : ''}
                 onSelect={val => {
-                  setCompanyId(Number(val));
-                  setTeamId(null);
-                  setEmployeeId(null);
+                  setCompanyId(val ? Number(val) : undefined);
+                  setTeamId(undefined);
+                  setEmployeeId(undefined);
                 }}
               />
               <View style={{ height: theme.spacing.m }} />
@@ -201,7 +201,10 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
                 label={t('teams.selectTeam')}
                 data={filteredTeams.map(t => ({ label: t.name, value: String(t.id) }))}
                 value={teamId ? String(teamId) : ''}
-                onSelect={val => setTeamId(Number(val))}
+                onSelect={val => {
+                  setTeamId(val ? Number(val) : undefined);
+                  setEmployeeId(undefined);
+                }}
               />
               <View style={{ height: theme.spacing.m }} />
               <Dropdown

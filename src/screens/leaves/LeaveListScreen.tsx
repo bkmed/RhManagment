@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useFocusEffect, ParamListBase } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { leavesDb } from '../../database/leavesDb';
 import { employeesDb } from '../../database/employeesDb';
 import { companiesDb } from '../../database/companiesDb';
@@ -128,6 +129,14 @@ export const LeaveListScreen = ({
       loadData();
     }, []),
   );
+
+  // Web Refresh Logic
+  const { activeTab } = useContext(WebNavigationContext);
+  useEffect(() => {
+    if (activeTab === 'Leaves') {
+      loadData();
+    }
+  }, [activeTab]);
 
   const groupedData = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();

@@ -76,8 +76,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [website, setWebsite] = useState('');
   const [skills, setSkills] = useState('');
 
-  const [companyId, setCompanyId] = useState<number | null>(null);
-  const [teamId, setTeamId] = useState<number | null>(null);
+  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
+  const [teamId, setTeamId] = useState<number | undefined>(undefined);
 
   const companies = useSelector((state: RootState) =>
     selectAllCompanies(state),
@@ -132,8 +132,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         if (employee.hiringDate) {
           setHiringDate(new Date(employee.hiringDate));
         }
-        setCompanyId(employee.companyId || null);
-        setTeamId(employee.teamId || null);
+        setCompanyId(employee.companyId || undefined);
+        setTeamId(employee.teamId || undefined);
 
         // Load extended fields
         setAlias(employee.alias || '');

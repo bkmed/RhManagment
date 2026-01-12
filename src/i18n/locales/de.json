@@ -615,7 +615,6 @@
     "freqWeekly": "Wöchentlich",
     "frequency": "Häufigkeit",
     "giftVouchers": "Geschenkgutscheine",
-    "hoursWorked": "Arbeitsstunden",
     "inactive": "Inaktiv",
     "isUrgent": "Dringend",
     "items": {
@@ -632,6 +631,9 @@
     "manageServices": "Abteilungen/Dienste verwalten",
     "manageCurrencies": "Währungen verwalten",
     "mealVouchers": "Essensgutscheine",
+    "overtimeHours": "Überstunden",
+    "overtimeRate": "Überstundensatz",
+    "hoursWorked": "Geleistete Stunden",
     "month": "Abrechnungsmonat",
     "name": "Name",
     "namePlaceholder": "z.B. Grundgehalt",

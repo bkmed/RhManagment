@@ -186,7 +186,11 @@
     "yes": "Yes",
     "all": "All",
     "company": "Company",
-    "team": "Team"
+    "team": "Team",
+    "other": "Other",
+    "count": "Count",
+    "unitPrice": "Unit Price",
+    "description": "Description"
   },
   "companies": {
     "add": "Add Company",
@@ -635,6 +639,8 @@
     "manageServices": "Manage Departments/Services",
     "manageCurrencies": "Manage Currencies",
     "mealVouchers": "Meal Vouchers",
+    "overtimeHours": "Overtime Hours",
+    "overtimeRate": "Overtime Rate / Hour",
     "month": "Payroll Month",
     "name": "Type of Payment",
     "namePlaceholder": "Select payment type",

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
 import { notificationService } from '../../services/notificationService';
 
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { useAuth } from '../../context/AuthContext';
 import { Permission, rbacService } from '../../services/rbacService';
 
@@ -65,6 +66,14 @@ export const PayrollListScreen = ({ navigation }: any) => {
       loadPayrollItems();
     }, []),
   );
+
+  // Web Refresh Logic
+  const { activeTab } = useContext(WebNavigationContext);
+  useEffect(() => {
+    if (activeTab === 'Payroll') {
+      loadPayrollItems();
+    }
+  }, [activeTab]);
 
   const filteredPayrollItems = useMemo(() => {
     if (!searchQuery) return payrollItems;

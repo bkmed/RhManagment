@@ -625,7 +625,6 @@
     "freqWeekly": "每周",
     "frequency": "频率",
     "giftVouchers": "礼品券",
-    "hoursWorked": "工作小时数",
     "inactive": "无效",
     "isUrgent": "紧急",
     "items": {
@@ -642,6 +641,9 @@
     "manageServices": "管理部门/服务",
     "manageCurrencies": "管理货币",
     "mealVouchers": "餐券",
+    "overtimeHours": "加班时间",
+    "overtimeRate": "加班费率",
+    "hoursWorked": "工作时间",
     "month": "薪酬月份",
     "name": "支付类型",
     "namePlaceholder": "选择支付类型",

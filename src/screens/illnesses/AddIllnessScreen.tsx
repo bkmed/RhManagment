@@ -98,9 +98,11 @@ export const AddIllnessScreen = ({
   const { setActiveTab } = useContext(WebNavigationContext);
 
   useEffect(() => {
-    navigation?.setOptions({
-      title: isEdit ? t('illnesses.edit') : t('illnesses.add'),
-    });
+    if (navigation && navigation.setOptions) {
+      navigation.setOptions({
+        title: isEdit ? t('illnesses.edit') : t('illnesses.add'),
+      });
+    }
     if (isEdit) loadIllness();
   }, [illnessId]);
 

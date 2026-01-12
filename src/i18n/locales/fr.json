@@ -645,6 +645,8 @@
     "manageServices": "Gérer les Départements/Services",
     "manageCurrencies": "Gérer les Devises",
     "mealVouchers": "Ticket restaurant",
+    "overtimeHours": "Heures supplémentaires",
+    "overtimeRate": "Taux horaire sup.",
     "method": "Type de paiement",
     "month": "Mois de paie",
     "name": "Nom de l'élément",

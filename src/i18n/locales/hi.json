@@ -623,7 +623,6 @@
     "freqWeekly": "साप्ताहिक",
     "frequency": "आवृत्ति",
     "giftVouchers": "उपहार वाउचर",
-    "hoursWorked": "कार्य के घंटे",
     "inactive": "निष्क्रिय",
     "isUrgent": "अति आवश्यक",
     "items": {
@@ -640,6 +639,9 @@
     "manageServices": "विभाग/सेवा प्रबंधन",
     "manageCurrencies": "मुद्रा प्रबंधन",
     "mealVouchers": "भोजन वाउचर",
+    "overtimeHours": "ओवरटाइम घंटे",
+    "overtimeRate": "ओवरटाइम दर",
+    "hoursWorked": "काम के घंटे",
     "month": "पेरोल महीना",
     "name": "भुगतान का प्रकार",
     "namePlaceholder": "भुगतान प्रकार चुनें",

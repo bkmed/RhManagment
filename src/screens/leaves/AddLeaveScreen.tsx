@@ -87,10 +87,10 @@ export const AddLeaveScreen = ({
   const allLeaves = useSelector((state: RootState) => selectAllLeaves(state));
   const allIllnesses = useSelector((state: RootState) => selectAllIllnesses(state));
 
-  const [companyId, setCompanyId] = useState<number | null>(null);
-  const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : null,
+  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
+  const [teamId, setTeamId] = useState<number | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<number | undefined>(
+    user?.role === 'employee' && user?.id ? Number(user.id) : undefined,
   );
 
   // Cascading lists
@@ -122,7 +122,7 @@ export const AddLeaveScreen = ({
     if (!isEdit && user?.role === 'employee') {
       setEmployeeName(user.name);
       setDepartment(user.department || '');
-      setEmployeeId(user.employeeId || null);
+      setEmployeeId(user.employeeId || undefined);
     }
   }, [user, isEdit]);
 
@@ -138,9 +138,11 @@ export const AddLeaveScreen = ({
   const { setActiveTab } = useContext(WebNavigationContext);
 
   useEffect(() => {
-    navigation?.setOptions({
-      title: isEdit ? t('leaves.edit') : t('leaves.add'),
-    });
+    if (navigation && navigation.setOptions) {
+      navigation.setOptions({
+        title: isEdit ? t('leaves.edit') : t('leaves.add'),
+      });
+    }
     if (isEdit) loadLeave();
   }, [leaveId]);
 
@@ -200,7 +202,7 @@ export const AddLeaveScreen = ({
       if (leave) {
         setTitle(leave.title || '');
         setEmployeeName(leave.employeeName || '');
-        setEmployeeId(leave.employeeId || null);
+        setEmployeeId(leave.employeeId || undefined);
         setLocation(leave.location || '');
         setStartDate(
           leave.startDate
@@ -503,9 +505,9 @@ export const AddLeaveScreen = ({
                       ]}
                       value={companyId ? String(companyId) : ''}
                       onSelect={val => {
-                        setCompanyId(val ? Number(val) : null);
-                        setTeamId(null);
-                        setEmployeeId(null);
+                        setCompanyId(val ? Number(val) : undefined);
+                        setTeamId(undefined);
+                        setEmployeeId(undefined);
                       }}
                     />
                   </View>
@@ -521,8 +523,8 @@ export const AddLeaveScreen = ({
                       ]}
                       value={teamId ? String(teamId) : ''}
                       onSelect={val => {
-                        setTeamId(val ? Number(val) : null);
-                        setEmployeeId(null);
+                        setTeamId(val ? Number(val) : undefined);
+                        setEmployeeId(undefined);
                       }}
                     />
                   </View>
