@@ -63,6 +63,7 @@
   },
   "careerHub": {
     "titlePlaceholder": "ex. Maîtriser React Native",
+    "editGoal": "Modifier objectif",
     "descriptionPlaceholder": "Décrivez votre objectif, l'objectif principal et comment vous prévoyez de l'atteindre..."
   },
   "claims": {
@@ -75,6 +76,7 @@
     "process": "Traiter",
     "reject": "Rejeter",
     "saveError": "Erreur lors de l'enregistrement",
+    "noTeamError": "Vous devez faire partie d'une équipe pour soumettre une réclamation",
     "statusPending": "En attente",
     "statusProcessed": "Traitée",
     "statusRejected": "Rejetée",

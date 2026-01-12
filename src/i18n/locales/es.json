@@ -63,6 +63,7 @@
   },
   "careerHub": {
     "titlePlaceholder": "p. ej. Dominar React Native",
+    "editGoal": "Editar objetivo",
     "descriptionPlaceholder": "Describe tu objetivo, el objetivo principal y cómo planeas lograrlo..."
   },
   "claims": {
@@ -75,6 +76,7 @@
     "process": "Procesar",
     "reject": "Rechazar",
     "saveError": "Error al guardar la reclamación",
+    "noTeamError": "Debes ser parte de un equipo para enviar una reclamación",
     "statusPending": "Pendiente",
     "statusProcessed": "Procesada",
     "statusRejected": "Rechazada",

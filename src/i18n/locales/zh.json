@@ -63,6 +63,7 @@
   },
   "careerHub": {
     "titlePlaceholder": "例如：精通 React Native",
+    "editGoal": "编辑目标",
     "descriptionPlaceholder": "描述您的目标、主要目标以及您计划如何实现它..."
   },
   "claims": {
@@ -75,6 +76,7 @@
     "process": "处理",
     "reject": "拒绝",
     "saveError": "保存申请出错",
+    "noTeamError": "您必须是团队的一员才能提交索赔",
     "statusPending": "待处理",
     "statusProcessed": "已处理",
     "statusRejected": "已拒绝",

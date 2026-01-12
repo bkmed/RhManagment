@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -19,12 +19,14 @@ import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { formatDate } from '../../utils/dateUtils';
 import { SearchInput } from '../../components/SearchInput';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const ClaimsListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { activeTab } = useContext(WebNavigationContext);
 
   const [claims, setClaims] = useState<Claim[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -156,6 +158,12 @@ export const ClaimsListScreen = ({ navigation }: any) => {
       loadData();
     }, [user]),
   );
+
+  useEffect(() => {
+    if (activeTab === 'Claims') {
+      loadData();
+    }
+  }, [activeTab]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

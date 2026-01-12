@@ -63,6 +63,7 @@
   },
   "careerHub": {
     "titlePlaceholder": "مثال: إتقان React Native",
+    "editGoal": "تعديل الهدف",
     "descriptionPlaceholder": "صف هدفك والغاية الرئيسية وكيف تخطط لتحقيق ذلك..."
   },
   "claims": {
@@ -75,6 +76,7 @@
     "process": "معالجة",
     "reject": "رفض",
     "saveError": "خطأ في حفظ المطالبة",
+    "noTeamError": "يجب أن تكون جزءًا من فريق لتقديم مطالبة",
     "statusPending": "قيد الانتظار",
     "statusProcessed": "تمت المعالجة",
     "statusRejected": "مرفوضة",

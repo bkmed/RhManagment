@@ -25,7 +25,9 @@ export const CareerHubScreen = () => {
   const dispatch = useDispatch();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const employeeId = user?.id ? Number(user.id) : 0;
+  /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
+  const rawId = user?.id ? Number(user.id) : 0;
+  const employeeId = user?.employeeId || (!isNaN(rawId) ? rawId : 0);
 
   const goalsSelector = useMemo(
     () => selectGoalsByEmployeeId(employeeId),
@@ -54,7 +56,7 @@ export const CareerHubScreen = () => {
       }
       : {
         id: Date.now(),
-        employeeId: user?.id ? Number(user.id) : 0,
+        employeeId,
         title,
         description,
         deadline,
@@ -113,7 +115,7 @@ export const CareerHubScreen = () => {
             setModalVisible(true);
           }}
         >
-          <Text style={styles.editLink}>{t('profile.edit')}</Text>
+          <Text style={styles.editLink}>{t('careerHub.editGoal')}</Text>
         </TouchableOpacity>
       </View>
 

@@ -63,6 +63,7 @@
   },
   "careerHub": {
     "titlePlaceholder": "जैसे: React Native में महारत हासिल करें",
+    "editGoal": "लक्ष्य संपादित करें",
     "descriptionPlaceholder": "अपने लक्ष्य, मुख्य उद्देश्य और आप इसे कैसे प्राप्त करने की योजना बना रहे हैं, इसका वर्णन करें..."
   },
   "claims": {
@@ -75,6 +76,7 @@
     "process": "संसाधित करें",
     "reject": "अस्वीकार करें",
     "saveError": "दावा सहेजने में त्रुटि",
+    "noTeamError": "दावा प्रस्तुत करने के लिए आपको एक टीम का हिस्सा होना चाहिए",
     "statusPending": "लंबित",
     "statusProcessed": "संसाधित",
     "statusRejected": "अस्वीकृत",

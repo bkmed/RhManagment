@@ -46,8 +46,10 @@ export const AddClaimScreen = ({ navigation }: any) => {
 
   const [companyId, setCompanyId] = useState<number | undefined>(undefined);
   const [teamId, setTeamId] = useState<number | undefined>(undefined);
+  /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
+  /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
   const [employeeId, setEmployeeId] = useState<number | undefined>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : undefined,
+    user?.role === 'employee' ? (user?.employeeId || (user?.id ? Number(user.id) : undefined)) : undefined,
   );
 
   // Load devices for selected employee - Moved here to fix scoping issue
@@ -136,6 +138,14 @@ export const AddClaimScreen = ({ navigation }: any) => {
     }
     if ((user?.role === 'admin' || user?.role === 'rh') && !employeeId) {
       newErrors.employeeId = t('common.required');
+    }
+
+    // Check if employee has a team (if applicable logic)
+    // The user requirement: "pas d emeesage si je ne suis pas dans un team pour reclamation"
+    // Assuming we want to block or warn if no team.
+    if (user?.role === 'employee' && !user?.teamId) {
+      notificationService.showAlert(t('common.error'), t('claims.noTeamError') || 'You must be in a team to submit a claim.');
+      return;
     }
 
     setErrors(newErrors);

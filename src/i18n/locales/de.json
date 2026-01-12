@@ -63,6 +63,7 @@
   },
   "careerHub": {
     "titlePlaceholder": "z.B. React Native meistern",
+    "editGoal": "Ziel bearbeiten",
     "descriptionPlaceholder": "Beschreiben Sie Ihr Ziel, das Hauptziel und wie Sie es erreichen wollen..."
   },
   "claims": {
@@ -75,6 +76,7 @@
     "process": "Bearbeiten",
     "reject": "Ablehnen",
     "saveError": "Fehler beim Speichern der Reklamation",
+    "noTeamError": "Sie müssen Teil eines Teams sein, um einen Anspruch geltend zu machen",
     "statusPending": "Ausstehend",
     "statusProcessed": "Bearbeitet",
     "statusRejected": "Abgelehnt",

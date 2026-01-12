@@ -63,6 +63,7 @@
   },
   "careerHub": {
     "titlePlaceholder": "e.g. Master React Native",
+    "editGoal": "Edit Goal",
     "descriptionPlaceholder": "Describe your goal, the main objective and how you plan to achieve it..."
   },
   "claims": {
@@ -75,6 +76,7 @@
     "process": "Process",
     "reject": "Reject",
     "saveError": "Error saving claim",
+    "noTeamError": "You must be part of a team to submit a claim",
     "statusPending": "Pending",
     "statusProcessed": "Processed",
     "statusRejected": "Rejected",
@@ -91,7 +93,6 @@
   },
   "common": {
     "add": "Add",
-    "other": "Other",
     "allCompanies": "All Companies",
     "addToCalendar": "Add to Calendar",
     "addedToCalendar": "Event added to calendar",

@@ -63,6 +63,7 @@ export const authService = {
         password: 'admin123',
         user: {
           id: 'demo-admin',
+          employeeId: 1001,
           name: 'Demo Admin',
           email: 'admin@demo.com',
           role: 'admin',
@@ -78,6 +79,7 @@ export const authService = {
         password: 'hr123',
         user: {
           id: 'demo-hr',
+          employeeId: 1002,
           name: 'Demo HR',
           email: 'hr@demo.com',
           role: 'rh',
@@ -93,6 +95,7 @@ export const authService = {
         password: 'chef123',
         user: {
           id: 'demo-manager',
+          employeeId: 1003,
           name: 'Demo Manager',
           email: 'chef@demo.com',
           role: 'manager',
