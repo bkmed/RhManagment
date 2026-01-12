@@ -92,13 +92,6 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const handleViewHistory = () => {
-    if (Platform.OS === 'web') {
-      setActiveTab('Illnesses', 'IllnessHistory', { illnessId });
-    } else {
-      navigation.navigate('IllnessHistory', { illnessId });
-    }
-  };
 
   if (loading || !illness) {
     return (
@@ -141,9 +134,6 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
           </View>
         )}
 
-        <TouchableOpacity style={styles.button} onPress={handleViewHistory}>
-          <Text style={styles.buttonText}>{t('common.viewHistory')}</Text>
-        </TouchableOpacity>
 
         {(user?.role === 'admin' ||
           user?.role === 'rh' ||

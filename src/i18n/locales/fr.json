@@ -421,6 +421,7 @@
     "refills": "Renouvellements",
     "saveButton": "Enregistrer le dossier",
     "saveError": "Échec de l'enregistrement du dossier",
+    "saveSuccess": "Maladie enregistrée avec succès",
     "takePhoto": "Prendre une photo",
     "title": "Maladies",
     "updateButton": "Modifier la maladie"

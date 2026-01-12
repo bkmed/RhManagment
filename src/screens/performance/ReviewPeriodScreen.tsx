@@ -20,7 +20,7 @@ import { useAuth } from '../../context/AuthContext';
 import { notificationService } from '../../services/notificationService';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 
-export const ReviewPeriodScreen = ({ navigation }: any) => {
+export const ReviewPeriodScreen = () => {
     const { user } = useAuth();
     const { theme } = useTheme();
     const { t } = useTranslation();

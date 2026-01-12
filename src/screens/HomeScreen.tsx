@@ -419,7 +419,7 @@ const EmployeeDashboard = ({
 
         <TouchableOpacity
           style={[styles.premiumActionCard, { backgroundColor: theme.colors.primary + '10' }]}
-          onPress={() => navigateToTab('Profile', 'CareerHub')}
+          onPress={() => navigateToTab('Home', 'CareerHub')}
         >
           <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.primary + '20' }]}>
             <Text style={{ fontSize: 24 }}>🚀</Text>

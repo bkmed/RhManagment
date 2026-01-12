@@ -28,7 +28,7 @@ import { RootState } from '../../store';
 import { Dropdown } from '../../components/Dropdown';
 import { selectAllIllnesses } from '../../store/slices/illnessesSlice';
 import { selectAllLeaves } from '../../store/slices/leavesSlice';
-import { Illness, Leave, Company, Team, Employee } from '../../database/schema';
+import { Illness, Leave, Company, Team } from '../../database/schema';
 import { selectAllServices } from '../../store/slices/servicesSlice';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, ParamListBase } from '@react-navigation/native';

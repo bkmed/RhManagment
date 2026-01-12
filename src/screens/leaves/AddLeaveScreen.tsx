@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import {
   View,
@@ -17,7 +16,7 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker'; //
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
 import { Leave, Company, Team, Employee, Illness } from '../../database/schema';
-import { Permission, rbacService } from '../../services/rbacService';
+import { rbacService } from '../../services/rbacService';
 import { notificationService } from '../../services/notificationService';
 import { emailService } from '../../services/emailService';
 import { storageService } from '../../services/storage';
@@ -45,7 +44,6 @@ export const AddLeaveScreen = ({
   route: RouteProp<ParamListBase>;
 }) => {
   const { theme } = useTheme();
-  const { showToast } = useToast();
   const { t } = useTranslation();
   const { user } = useAuth();
   const { showModal } = useModal(); // Added useModal hook
@@ -72,7 +70,6 @@ export const AddLeaveScreen = ({
   >('leave');
   const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>('pending');
   const [photoUri, setPhotoUri] = useState<string | undefined>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [department, setDepartment] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);

@@ -11,7 +11,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTheme } from '../../context/ThemeContext';
-import { RootState } from '../../store';
 import { useAuth } from '../../context/AuthContext';
 import { Goal } from '../../database/schema';
 import { addGoal, updateGoal, selectGoalsByEmployeeId } from '../../store/slices/goalsSlice';

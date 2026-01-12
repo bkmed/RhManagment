@@ -609,7 +609,6 @@ const useNavigationSections = () => {
         items: [
           { key: 'Payroll', label: t('navigation.payroll'), icon: '💰' },
           { key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' },
-          { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🤒' },
           { key: 'Claims', label: t('navigation.claims'), icon: '📝' },
           ...(rbacService.hasPermission(user, Permission.MANAGE_INVOICES) ? [{ key: 'Invoices', label: t('invoices.title'), icon: '🧾' }] : []),
           { key: 'Remote', label: t('remote.title'), icon: '📅' },
@@ -985,6 +984,7 @@ const WebNavigator = () => {
 
     switch (activeTab) {
       case 'Home':
+        if (subScreen === 'CareerHub') return <CareerHubScreen />;
         return <HomeStack />;
       case 'Payroll':
         if (subScreen === 'AddPayroll')
@@ -1004,6 +1004,7 @@ const WebNavigator = () => {
           return (
             <AddLeaveScreen route={mockRoute} navigation={mockNavigation} />
           );
+        if (subScreen === 'LeaveList') return <LeaveListScreen />;
         if (subScreen === 'LeaveDetails')
           return (
             <LeaveDetailsScreen route={mockRoute} navigation={mockNavigation} />
@@ -1013,6 +1014,7 @@ const WebNavigator = () => {
         if (subScreen === 'TeamVacations') return <TeamVacationsScreen />;
         return <LeavesStack />;
       case 'Illnesses':
+        if (subScreen === 'IllnessList') return <IllnessListScreen />;
         if (subScreen === 'AddIllness')
           return (
             <AddIllnessScreen route={mockRoute} navigation={mockNavigation} />
