@@ -58,17 +58,18 @@ const StatCard = ({
       style={[
         styles.statCard,
         {
-          backgroundColor:
-            Platform.OS === 'web'
-              ? theme.colors.surface + 'B3'
-              : theme.colors.surface + 'E6',
-          borderColor: color + '40',
+          backgroundColor: theme.colors.surface,
+          borderColor: color + '20',
+          borderWidth: 1,
+          borderBottomWidth: 4,
+          borderBottomColor: color,
         },
       ]}
       onPress={onPress}
+      activeOpacity={0.7}
     >
-      <View style={[styles.statIconWrapper, { backgroundColor: color + '15' }]}>
-        <Text style={[styles.statIcon, { color: color }]}>{icon}</Text>
+      <View style={[styles.statIconWrapper, { backgroundColor: color + '10' }]}>
+        <Text style={[styles.statIcon, { color }]}>{icon}</Text>
       </View>
       <View style={styles.statInfo}>
         <Text style={[styles.statNumber, { color: theme.colors.text }]}>
@@ -78,6 +79,7 @@ const StatCard = ({
           {title}
         </Text>
       </View>
+      <View style={[styles.statDecoration, { backgroundColor: color + '05' }]} />
     </TouchableOpacity>
   );
 };
@@ -203,62 +205,45 @@ const AdminDashboard = ({
       </View>
 
       <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
-      <View style={styles.actionGrid}>
+      <View style={styles.quickActionsGrid}>
         <TouchableOpacity
-          style={styles.actionButton}
+          style={[styles.premiumActionCard, { backgroundColor: theme.colors.primary + '10' }]}
           onPress={() => navigateToTab('Employees', 'AddEmployee')}
         >
-          <View
-            style={[
-              styles.actionIconWrapper,
-              { backgroundColor: theme.colors.primary + '15' },
-            ]}
-          >
+          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.primary + '20' }]}>
             <Text style={styles.actionIcon}>➕</Text>
           </View>
-          <Text style={styles.actionLabel}>{t('employees.add')}</Text>
+          <Text style={styles.premiumActionText}>{t('employees.add')}</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
-          style={styles.actionButton}
+          style={[styles.premiumActionCard, { backgroundColor: theme.colors.secondary + '10' }]}
           onPress={() => navigateToTab('Companies')}
         >
-          <View
-            style={[
-              styles.actionIconWrapper,
-              { backgroundColor: theme.colors.secondary + '15' },
-            ]}
-          >
+          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.secondary + '20' }]}>
             <Text style={styles.actionIcon}>🏢</Text>
           </View>
-          <Text style={styles.actionLabel}>{t('home.companies')}</Text>
+          <Text style={styles.premiumActionText}>{t('home.companies')}</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
-          style={styles.actionButton}
+          style={[styles.premiumActionCard, { backgroundColor: theme.colors.success + '10' }]}
           onPress={() => navigateToTab('Teams')}
         >
-          <View
-            style={[
-              styles.actionIconWrapper,
-              { backgroundColor: theme.colors.success + '15' },
-            ]}
-          >
+          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.success + '20' }]}>
             <Text style={styles.actionIcon}>🚀</Text>
           </View>
-          <Text style={styles.actionLabel}>{t('home.teams')}</Text>
+          <Text style={styles.premiumActionText}>{t('home.teams')}</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
-          style={styles.actionButton}
+          style={[styles.premiumActionCard, { backgroundColor: theme.colors.accent + '10' }]}
           onPress={() => navigateToTab('Leaves', 'TeamVacations')}
         >
-          <View
-            style={[
-              styles.actionIconWrapper,
-              { backgroundColor: theme.colors.accent + '15' },
-            ]}
-          >
+          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.accent + '20' }]}>
             <Text style={styles.actionIcon}>🏖️</Text>
           </View>
-          <Text style={styles.actionLabel}>{t('navigation.leaves')}</Text>
+          <Text style={styles.premiumActionText}>{t('navigation.leaves')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -343,155 +328,103 @@ const EmployeeDashboard = ({
         />
       </View>
 
-      <View style={styles.balanceCard}>
-        <View style={styles.balanceHeader}>
-          <Text style={styles.balanceTitle}>{t('leavePolicy.title')}</Text>
-          <View
-            style={[
-              styles.managedBadge,
-              { backgroundColor: theme.colors.primary + '15' },
-            ]}
-          >
-            <Text
-              style={[styles.balanceManaged, { color: theme.colors.primary }]}
-            >
-              {t('leavePolicy.managedBy')}
-            </Text>
+      <View style={styles.balanceSection}>
+        <Text style={styles.sectionTitle}>{t('leavePolicy.title')}</Text>
+        <View style={styles.balanceCardsContainer}>
+          <View style={[styles.balanceGridCard, { backgroundColor: theme.colors.primary + '10' }]}>
+            <View style={[styles.balanceIconWrapper, { backgroundColor: theme.colors.primary + '20' }]}>
+              <Text style={styles.balanceIcon}>📅</Text>
+            </View>
+            <View>
+              <Text style={styles.balanceCardValue}>{user?.vacationDaysPerYear || 25}</Text>
+              <Text style={styles.balanceCardLabel}>{t('leavePolicy.perYear')}</Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.balanceGrid}>
-          <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>{t('leavePolicy.perYear')}</Text>
-            <Text style={styles.balanceValue}>
-              {user?.vacationDaysPerYear || 25}
-            </Text>
+          <View style={[styles.balanceGridCard, { backgroundColor: theme.colors.success + '10' }]}>
+            <View style={[styles.balanceIconWrapper, { backgroundColor: theme.colors.success + '20' }]}>
+              <Text style={styles.balanceIcon}>⏳</Text>
+            </View>
+            <View>
+              <Text style={[styles.balanceCardValue, { color: theme.colors.success }]}>
+                {user?.remainingVacationDays ?? 25}
+              </Text>
+              <Text style={styles.balanceCardLabel}>{t('leavePolicy.remaining')}</Text>
+            </View>
           </View>
-          <View
-            style={[
-              styles.balanceDivider,
-              { backgroundColor: theme.colors.border },
-            ]}
-          />
-          <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>
-              {t('leavePolicy.remaining')}
-            </Text>
-            <Text
-              style={[styles.balanceValue, { color: theme.colors.primary }]}
-            >
-              {user?.remainingVacationDays ?? 25}
-            </Text>
-          </View>
-          <View
-            style={[
-              styles.balanceDivider,
-              { backgroundColor: theme.colors.border },
-            ]}
-          />
-          <View style={styles.balanceItem}>
-            <Text style={styles.balanceLabel}>{t('home.statePaidLeaves')}</Text>
-            <Text style={styles.balanceValue}>
-              {user?.statePaidLeaves || 0}
-            </Text>
+
+          <View style={[styles.balanceGridCard, { backgroundColor: theme.colors.warning + '10' }]}>
+            <View style={[styles.balanceIconWrapper, { backgroundColor: theme.colors.warning + '20' }]}>
+              <Text style={styles.balanceIcon}>🏥</Text>
+            </View>
+            <View>
+              <Text style={[styles.balanceCardValue, { color: theme.colors.warning }]}>
+                {user?.statePaidLeaves || 0}
+              </Text>
+              <Text style={styles.balanceCardLabel}>{t('home.statePaidLeaves')}</Text>
+            </View>
           </View>
         </View>
 
         {user?.hiringDate && (
-          <View style={styles.senioritySection}>
-            <View style={styles.seniorityRow}>
-              <View style={styles.seniorityItem}>
-                <Text style={styles.countryLabel}>{t('home.hiringDate')}</Text>
-                <Text style={styles.countryValue}>
-                  {formatDate(user.hiringDate)}
-                </Text>
-              </View>
-              <View style={[styles.seniorityItem, { alignItems: 'flex-end' }]}>
-                <Text style={styles.countryLabel}>{t('home.seniority')}</Text>
-                <Text style={styles.countryValue}>
-                  {(() => {
-                    const start = new Date(user.hiringDate);
-                    const now = new Date();
-                    let years = now.getFullYear() - start.getFullYear();
-                    let months = now.getMonth() - start.getMonth();
-                    if (months < 0) {
-                      years--;
-                      months += 12;
-                    }
-                    const parts = [];
-                    if (years > 0)
-                      parts.push(
-                        `${years} ${years > 1
-                          ? t('common.yearsUnit')
-                          : t('common.yearUnit')
-                        }`,
-                      );
-                    if (months > 0)
-                      parts.push(
-                        `${months} ${months > 1
-                          ? t('common.monthsUnit')
-                          : t('common.monthUnit')
-                        }`,
-                      );
-                    return parts.join(', ') || `0 ${t('common.monthUnit')}`;
-                  })()}
-                </Text>
-              </View>
+          <View style={styles.infoRow}>
+            <View style={styles.infoCard}>
+              <Text style={styles.infoLabel}>{t('home.hiringDate')}</Text>
+              <Text style={styles.infoValue}>{formatDate(user.hiringDate)}</Text>
+            </View>
+            <View style={styles.infoCard}>
+              <Text style={styles.infoLabel}>{t('home.seniority')}</Text>
+              <Text style={styles.infoValue}>
+                {(() => {
+                  const start = new Date(user.hiringDate);
+                  const now = new Date();
+                  let years = now.getFullYear() - start.getFullYear();
+                  let months = now.getMonth() - start.getMonth();
+                  if (months < 0) {
+                    years--;
+                    months += 12;
+                  }
+                  const parts = [];
+                  if (years > 0) parts.push(`${years}${t('common.yearUnit').charAt(0)}`);
+                  if (months > 0) parts.push(`${months}${t('common.monthUnit').charAt(0)}`);
+                  return parts.join(' ') || `0${t('common.monthUnit').charAt(0)}`;
+                })()}
+              </Text>
             </View>
           </View>
         )}
       </View>
 
       <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
-      <View style={styles.quickActions}>
+      <View style={styles.quickActionsGrid}>
         <TouchableOpacity
-          style={styles.quickActionItem}
+          style={[styles.premiumActionCard, { backgroundColor: theme.colors.secondary + '10' }]}
           onPress={() => navigateToTab('Claims', 'AddClaim')}
         >
-          <View
-            style={[
-              styles.quickActionIcon,
-              { backgroundColor: theme.colors.secondary + '15' },
-            ]}
-          >
-            <Text style={{ fontSize: 20 }}>📝</Text>
+          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.secondary + '20' }]}>
+            <Text style={{ fontSize: 24 }}>📝</Text>
           </View>
-          <Text style={styles.quickActionText}>{t('claims.newClaim')}</Text>
-          <Text style={{ color: theme.colors.subText }}>›</Text>
+          <Text style={styles.premiumActionText}>{t('claims.newClaim')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.quickActionItem}
+          style={[styles.premiumActionCard, { backgroundColor: theme.colors.success + '10' }]}
           onPress={() => navigateToTab('Leaves', 'AddLeave')}
         >
-          <View
-            style={[
-              styles.quickActionIcon,
-              { backgroundColor: theme.colors.success + '15' },
-            ]}
-          >
-            <Text style={{ fontSize: 20 }}>📅</Text>
+          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.success + '20' }]}>
+            <Text style={{ fontSize: 24 }}>📅</Text>
           </View>
-          <Text style={styles.quickActionText}>{t('home.scheduleLeave')}</Text>
-          <Text style={{ color: theme.colors.subText }}>›</Text>
+          <Text style={styles.premiumActionText}>{t('home.scheduleLeave')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.quickActionItem}
+          style={[styles.premiumActionCard, { backgroundColor: theme.colors.primary + '10' }]}
           onPress={() => navigateToTab('Profile', 'CareerHub')}
         >
-          <View
-            style={[
-              styles.quickActionIcon,
-              { backgroundColor: theme.colors.primary + '15' },
-            ]}
-          >
-            <Text style={{ fontSize: 20 }}>🚀</Text>
+          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.primary + '20' }]}>
+            <Text style={{ fontSize: 24 }}>🚀</Text>
           </View>
-          <Text style={styles.quickActionText}>
-            {t('navigation.careerHub')}
-          </Text>
-          <Text style={{ color: theme.colors.subText }}>›</Text>
+          <Text style={styles.premiumActionText}>{t('navigation.careerHub')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -597,14 +530,47 @@ export const HomeScreen = () => {
           ],
         );
 
-        if (user?.employeeId) {
-          allPayroll = allPayroll.filter(p => p.employeeId === user.employeeId);
-          upcomingLeaves = upcomingLeaves.filter(
-            l => l.employeeId === user.employeeId,
-          );
-          expiringIllnesses = expiringIllnesses.filter(
-            i => i.employeeId === user.employeeId,
-          );
+        const userRole = user?.role;
+        if (userRole === 'employee') {
+          if (user?.employeeId) {
+            allPayroll = allPayroll.filter(
+              p => Number(p.employeeId) === Number(user.employeeId),
+            );
+            upcomingLeaves = upcomingLeaves.filter(
+              l => Number(l.employeeId) === Number(user.employeeId),
+            );
+            expiringIllnesses = expiringIllnesses.filter(
+              i => Number(i.employeeId) === Number(user.employeeId),
+            );
+          } else {
+            allPayroll = [];
+            upcomingLeaves = [];
+            expiringIllnesses = [];
+          }
+        } else if (userRole === 'manager') {
+          if (user?.teamId) {
+            allPayroll = allPayroll.filter(
+              p => Number(p.teamId) === Number(user.teamId),
+            );
+            upcomingLeaves = upcomingLeaves.filter(
+              l => Number(l.teamId) === Number(user.teamId),
+            );
+            expiringIllnesses = expiringIllnesses.filter(
+              i => Number(i.teamId) === Number(user.teamId),
+            );
+          }
+        } else if (userRole === 'rh') {
+          if (user?.companyId) {
+            allPayroll = allPayroll.filter(
+              p => Number(p.companyId) === Number(user.companyId),
+            );
+            upcomingLeaves = upcomingLeaves.filter(
+              l => Number(l.companyId) === Number(user.companyId),
+            );
+            expiringIllnesses = expiringIllnesses.filter(
+              i => Number(i.companyId) === Number(user.companyId),
+            );
+          }
         }
 
         setSummary(prev => ({
@@ -737,146 +703,154 @@ const createStyles = (theme: Theme) =>
     statsContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 16,
-      gap: 16,
+      marginBottom: 20,
+      gap: 20,
     },
     statCard: {
       flex: 1,
       padding: 20,
-      borderRadius: 20,
+      borderRadius: 24,
       flexDirection: 'row',
       alignItems: 'center',
-      borderWidth: 1,
-      ...theme.shadows.small,
+      overflow: 'hidden',
+      ...theme.shadows.medium,
       ...(Platform.OS === 'web' &&
         ({
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
           transition: 'all 0.3s ease',
           cursor: 'pointer',
-          background: theme.colors.surface + 'B3', // 70% opacity
           '&:hover': {
-            transform: 'translateY(-5px)',
-            boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+            transform: 'translateY(-4px)',
+            boxShadow: '0 12px 24px rgba(0,0,0,0.12)',
           },
         } as any)),
     },
     statIconWrapper: {
-      width: 48,
-      height: 48,
-      borderRadius: 14,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginRight: 16,
+      marginRight: 20,
     },
-    statIcon: {
-      fontSize: 24,
+    statDecoration: {
+      position: 'absolute',
+      right: -20,
+      bottom: -20,
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      zIndex: -1,
     },
-    statInfo: {
-      flex: 1,
+    statArrow: {
+      fontSize: 20,
+      color: theme.colors.subText,
+      marginLeft: 'auto',
     },
-    statNumber: {
-      fontSize: 22,
-      fontWeight: 'bold',
+    balanceSection: {
+      marginTop: 8,
     },
-    statLabel: {
-      fontSize: 13,
-      fontWeight: '500',
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: '700',
-      color: theme.colors.text,
-      marginTop: 24,
-      marginBottom: 16,
-    },
-    actionGrid: {
+    balanceCardsContainer: {
       flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 12,
+      gap: 16,
+      marginBottom: 20,
     },
-    actionButton: {
+    balanceGridCard: {
       flex: 1,
-      minWidth: '45%',
       padding: 16,
       borderRadius: 20,
-      backgroundColor: theme.colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
       borderWidth: 1,
-      borderColor: theme.colors.border,
-      gap: 12,
-      ...theme.shadows.small,
-      ...(Platform.OS === 'web' &&
-        ({
-          transition: 'all 0.2s ease',
-          '&:hover': {
-            borderColor: theme.colors.primary,
-            transform: 'scale(1.02)',
-          },
-        } as any)),
+      borderColor: 'rgba(0,0,0,0.05)',
     },
-    actionIconWrapper: {
-      width: 48,
-      height: 48,
-      borderRadius: 16,
+    balanceIconWrapper: {
+      width: 40,
+      height: 40,
+      borderRadius: 12,
       justifyContent: 'center',
       alignItems: 'center',
     },
-    actionIcon: {
-      fontSize: 24,
+    balanceIcon: {
+      fontSize: 20,
     },
-    actionLabel: {
+    balanceCardValue: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      color: theme.colors.text,
+    },
+    balanceCardLabel: {
+      fontSize: 10,
+      fontWeight: '600',
+      color: theme.colors.subText,
+      textAlign: 'center',
+      marginTop: 2,
+    },
+    infoRow: {
+      flexDirection: 'row',
+      gap: 12,
+      marginBottom: 24,
+    },
+    infoCard: {
+      flex: 1,
+      backgroundColor: theme.colors.surface,
+      padding: 16,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      ...theme.shadows.small,
+    },
+    infoLabel: {
+      fontSize: 12,
+      color: theme.colors.subText,
+      marginBottom: 4,
+    },
+    infoValue: {
       fontSize: 14,
       fontWeight: '700',
       color: theme.colors.text,
     },
-    activityCard: {
-      backgroundColor: theme.colors.surface,
-      borderRadius: 24,
-      padding: 8,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      ...theme.shadows.small,
-      marginBottom: 100,
-    },
-    activityItem: {
+    quickActionsGrid: {
       flexDirection: 'row',
-      padding: 16,
-      alignItems: 'center',
-      borderBottomWidth: 1,
+      gap: 16,
+      marginBottom: 32,
     },
-    activityIconWrapper: {
-      width: 44,
-      height: 44,
-      borderRadius: 12,
+    premiumActionCard: {
+      flex: 1,
+      padding: 16,
+      borderRadius: 24,
+      alignItems: 'center',
+      gap: 12,
+      borderWidth: 1,
+      borderColor: 'transparent',
+      ...(Platform.OS === 'web' && ({
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        '&:hover': {
+          transform: 'translateY(-5px)',
+          borderColor: 'rgba(0,0,0,0.1)',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+        }
+      } as any)),
+    },
+    premiumActionIcon: {
+      width: 56,
+      height: 56,
+      borderRadius: 18,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: 16,
+      ...theme.shadows.small,
     },
-    activityIcon: {
-      fontSize: 20,
-    },
-    activityContent: {
-      flex: 1,
-      gap: 2,
-    },
-    activityTitle: {
-      fontSize: 15,
-      fontWeight: '600',
-    },
-    activitySubtitle: {
-      fontSize: 13,
-    },
-    activityTime: {
-      fontSize: 11,
-      marginTop: 2,
+    premiumActionText: {
+      fontSize: 12,
+      fontWeight: '700',
+      color: theme.colors.text,
+      textAlign: 'center',
     },
     scrollContent: {
-      paddingBottom: 40,
+      paddingBottom: 60,
     },
     loadingContainer: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: theme.colors.background,
     },
     header: {
       padding: 24,
@@ -884,14 +858,36 @@ const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      display: 'none', // Hidden as we use GlassHeader
+      display: 'none',
     },
     emptyState: {
-      padding: 20,
+      padding: 40,
       alignItems: 'center',
     },
     emptyText: {
       color: theme.colors.subText,
       fontSize: 14,
+      textAlign: 'center',
+    },
+    tipCard: {
+      flexDirection: 'row',
+      backgroundColor: theme.colors.primary + '10',
+      padding: 20,
+      borderRadius: 24,
+      alignItems: 'center',
+      marginTop: 24,
+      borderWidth: 1,
+      borderColor: theme.colors.primary + '20',
+      gap: 16,
+    },
+    tipIcon: {
+      fontSize: 28,
+    },
+    tipText: {
+      flex: 1,
+      fontSize: 14,
+      color: theme.colors.primary,
+      fontWeight: '600',
+      lineHeight: 20,
     },
   });

@@ -21,13 +21,16 @@ import { selectAllAnnouncements } from '../../store/slices/announcementsSlice';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllDepartments } from '../../store/slices/departmentsSlice';
 import { selectAllServices } from '../../store/slices/servicesSlice';
-import { Employee, Team, Announcement } from '../../database/schema';
+import { selectAllLeaves } from '../../store/slices/leavesSlice';
+import { selectAllClaims } from '../../store/slices/claimsSlice';
+import { selectAllIllnesses } from '../../store/slices/illnessesSlice';
+import { Employee, Team, Announcement, Leave, Claim, Illness } from '../../database/schema';
 
 interface SearchResult {
   id: string;
   title: string;
   subtitle: string;
-  type: 'employee' | 'team' | 'announcement' | 'company' | 'department' | 'service';
+  type: 'employee' | 'team' | 'announcement' | 'company' | 'department' | 'service' | 'leave' | 'claim' | 'illness';
   originalItem: any;
 }
 
@@ -51,6 +54,9 @@ export const SearchOverlay = ({
   const companies = useSelector(selectAllCompanies);
   const departments = useSelector(selectAllDepartments);
   const services = useSelector(selectAllServices);
+  const leaves = useSelector(selectAllLeaves);
+  const claims = useSelector(selectAllClaims);
+  const illnesses = useSelector(selectAllIllnesses);
 
   const formatDate = (dateString: string) => {
     try {
@@ -74,9 +80,21 @@ export const SearchOverlay = ({
     if (canViewEmployees) {
       employees.forEach((e: Employee) => {
         // Scope Filtering
-        if (rbacService.isRH(user) && e.companyId !== user?.companyId) return;
-        if (rbacService.isManager(user) && e.teamId !== user?.teamId) return;
-        if (rbacService.isEmployee(user) && e.companyId !== user?.companyId) return; // Employee sees own company
+        if (rbacService.isAdmin(user)) {
+          // Admin sees everyone
+        } else if (rbacService.isRH(user)) {
+          // RH sees company employees
+          if (e.companyId !== user?.companyId) return;
+        } else if (rbacService.isManager(user)) {
+          // Manager sees team members (including self usually)
+          if (e.teamId !== user?.teamId) return;
+        } else if (rbacService.isEmployee(user)) {
+          // Employee sees teammates if in a team, otherwise nobody
+          if (!user?.teamId || e.teamId !== user?.teamId) return;
+        } else {
+          // Others see nobody
+          return;
+        }
 
         const name = e.name || '';
         const email = e.email || '';
@@ -118,19 +136,86 @@ export const SearchOverlay = ({
       });
     }
     // Search Announcements
-    announcements.forEach((a: Announcement) => {
-      const title = a.title || '';
-      const content = a.content || '';
-      if (
-        title.toLowerCase().includes(lowerQuery) ||
-        content.toLowerCase().includes(lowerQuery)
-      ) {
+    if (user?.companyId) {
+      announcements.forEach((a: Announcement) => {
+        if (a.companyId !== user.companyId) return;
+
+        const title = a.title || '';
+        const content = a.content || '';
+        if (
+          title.toLowerCase().includes(lowerQuery) ||
+          content.toLowerCase().includes(lowerQuery)
+        ) {
+          searchResults.push({
+            id: String(a.id),
+            title: title,
+            subtitle: formatDate(a.createdAt),
+            type: 'announcement',
+            originalItem: a,
+          });
+        }
+      });
+    }
+
+    // Search Leaves, Claims, Illnesses (personal data)
+    const canViewAllPersonal = rbacService.isAdmin(user);
+    const myEmpId = Number(user?.employeeId);
+    const myCompanyId = Number(user?.companyId);
+    const myTeamId = Number(user?.teamId);
+
+    // Search Leaves
+    leaves.forEach((l: Leave) => {
+      const isOwner = Number(l.employeeId) === myEmpId;
+      const isRHInCompany = rbacService.isRH(user) && Number((l as any).companyId) === myCompanyId;
+      const isManagerInTeam = rbacService.isManager(user) && Number((l as any).teamId) === myTeamId;
+
+      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam) return;
+
+      if ((l.title || '').toLowerCase().includes(lowerQuery)) {
         searchResults.push({
-          id: String(a.id),
-          title: title,
-          subtitle: formatDate(a.createdAt),
-          type: 'announcement',
-          originalItem: a,
+          id: String(l.id),
+          title: l.title || '',
+          subtitle: formatDate(l.startDate || l.dateTime),
+          type: 'leave',
+          originalItem: l,
+        });
+      }
+    });
+
+    // Search Claims
+    claims.forEach((c: Claim) => {
+      const isOwner = Number(c.employeeId) === myEmpId;
+      const isRHInCompany = rbacService.isRH(user) && Number((c as any).companyId) === myCompanyId;
+      const isManagerInTeam = rbacService.isManager(user) && Number((c as any).teamId) === myTeamId;
+
+      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam) return;
+
+      if ((c.description || '').toLowerCase().includes(lowerQuery)) {
+        searchResults.push({
+          id: String(c.id),
+          title: t(`claims.type${c.type.charAt(0).toUpperCase() + c.type.slice(1)}`),
+          subtitle: c.description,
+          type: 'claim',
+          originalItem: c,
+        });
+      }
+    });
+
+    // Search Illnesses
+    illnesses.forEach((i: Illness) => {
+      const isOwner = Number(i.employeeId) === myEmpId;
+      const isRHInCompany = rbacService.isRH(user) && Number(i.companyId) === myCompanyId;
+      const isManagerInTeam = rbacService.isManager(user) && Number(i.teamId) === myTeamId;
+
+      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam) return;
+
+      if ((i.payrollName || '').toLowerCase().includes(lowerQuery)) {
+        searchResults.push({
+          id: String(i.id),
+          title: i.payrollName,
+          subtitle: formatDate(i.issueDate),
+          type: 'illness',
+          originalItem: i,
         });
       }
     });
@@ -177,7 +262,7 @@ export const SearchOverlay = ({
     }
 
     return searchResults;
-  }, [query, employees, teams, announcements]);
+  }, [query, employees, teams, announcements, leaves, claims, illnesses]);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -193,6 +278,12 @@ export const SearchOverlay = ({
         return '🏛️';
       case 'service':
         return '⚙️';
+      case 'leave':
+        return '🏖️';
+      case 'claim':
+        return '📝';
+      case 'illness':
+        return '🤒';
       default:
         return '🔍';
     }
@@ -225,7 +316,15 @@ export const SearchOverlay = ({
             ? 'employees'
             : item.type === 'team'
               ? 'teams'
-              : 'announcements'
+              : item.type === 'announcement'
+                ? 'announcements'
+                : item.type === 'leave'
+                  ? 'leaves'
+                  : item.type === 'claim'
+                    ? 'claims'
+                    : item.type === 'illness'
+                      ? 'illness'
+                      : item.title
           }`,
         )}
       </Text>

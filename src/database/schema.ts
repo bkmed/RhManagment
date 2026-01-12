@@ -3,11 +3,15 @@ export type ClaimType = 'material' | 'account' | 'other';
 export interface Claim {
   id?: number;
   employeeId: number;
+  employeeName?: string;
   type: ClaimType;
   description: string;
   isUrgent: boolean;
   status: 'pending' | 'processed' | 'rejected';
   photoUri?: string;
+  processedByName?: string;
+  companyId?: number;
+  teamId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -83,6 +87,8 @@ export interface Leave {
   updatedAt: string;
   department?: string; // Service
   photoUri?: string; // NEW: Photo for sick leaves
+  companyId?: number;
+  teamId?: number;
 }
 
 export interface RemoteWork {

@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { companiesDb } from '../../database/companiesDb';
+import { useModal } from '../../context/ModalContext';
 import { notificationService } from '../../services/notificationService';
 import { Theme } from '../../theme';
 import { useToast } from '../../context/ToastContext';
@@ -24,6 +25,7 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
 
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { showModal } = useModal();
   const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { setActiveTab } = useContext(WebNavigationContext);
@@ -96,12 +98,26 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
         await companiesDb.add(companyData);
       }
 
-      showToast(t('common.success'), 'success');
-      if (Platform.OS === 'web') {
-        setActiveTab('Companies');
-      } else {
-        navigation.goBack();
-      }
+      showModal({
+        title: t('common.success'),
+        message: isEdit ? t('companies.updateSuccess') || t('common.saved') : t('companies.saveSuccess') || t('common.saved'),
+        buttons: [
+          {
+            text: t('common.ok'),
+            onPress: () => {
+              if (Platform.OS === 'web') {
+                setActiveTab('Companies');
+              } else {
+                if (navigation && navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('Main', { screen: 'Companies' });
+                }
+              }
+            },
+          },
+        ],
+      });
     } catch (error: any) {
       console.error('Error saving company:', error);
       const errorMessage = error?.message || t('common.saveError');

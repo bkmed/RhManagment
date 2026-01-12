@@ -83,18 +83,27 @@ export const LeaveListScreen = ({
 
       // Apply Visibility Rules based on Role
       if (user?.role === 'employee' && user?.employeeId) {
+        const empId = Number(user.employeeId);
         filteredAbsences = allAbsences.filter(
-          a => (a as any).employeeId === user.employeeId,
+          a => Number((a as any).employeeId) === empId,
         );
       } else if (user?.role === 'manager' && user?.teamId) {
         // Manager sees own + team members
+        const empId = Number(user.employeeId);
+        const tId = Number(user.teamId);
         filteredAbsences = allAbsences.filter(
-          a => (a as any).employeeId === user.employeeId || (a as any).teamId === user.teamId
+          a =>
+            Number((a as any).employeeId) === empId ||
+            Number((a as any).teamId) === tId,
         );
       } else if (user?.role === 'rh' && user?.companyId) {
         // HR sees own + company members
+        const empId = Number(user.employeeId);
+        const cId = Number(user.companyId);
         filteredAbsences = allAbsences.filter(
-          a => (a as any).employeeId === user.employeeId || (a as any).companyId === user.companyId
+          a =>
+            Number((a as any).employeeId) === empId ||
+            Number((a as any).companyId) === cId,
         );
       }
       // Admin sees everything (filteredAbsences = allAbsences)
@@ -145,7 +154,7 @@ export const LeaveListScreen = ({
         const company = companies.find(c => c.id === companyId);
         companiesMap.set(companyId, {
           id: companyId,
-          name: company?.name || 'Autres Entreprises',
+          name: company?.name || `${t('common.other')} ${t('home.companies')}`,
           teamsMap: new Map(),
         });
       }

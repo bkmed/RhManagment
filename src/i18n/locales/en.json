@@ -61,6 +61,10 @@
     "helpDetails": "I can help you with:\n• Viewing and managing your **Payroll**\n• Requesting or checking **Leave** status\n• Viewing your **Team** details\n• Submitting **Claims** and expenses\n• Browsing the **Employee Directory**",
     "responseCaVa": "I'm doing great, thank you for asking! How can I assist you?"
   },
+  "careerHub": {
+    "titlePlaceholder": "e.g. Master React Native",
+    "descriptionPlaceholder": "Describe your goal, the main objective and how you plan to achieve it..."
+  },
   "claims": {
     "description": "Description",
     "descriptionPlaceholder": "Describe your issue or request...",
@@ -81,10 +85,13 @@
     "typeMaterial": "Material",
     "typeOther": "Other",
     "updateError": "Error updating claim",
-    "urgentNote": "Mark as urgent"
+    "urgentNote": "Mark as urgent",
+    "requester": "Requester",
+    "handler": "Handler"
   },
   "common": {
     "add": "Add",
+    "other": "Other",
     "allCompanies": "All Companies",
     "addToCalendar": "Add to Calendar",
     "addedToCalendar": "Event added to calendar",
@@ -157,9 +164,12 @@
     "selectService": "Select Service",
     "selectTime": "Select Time",
     "selectType": "Day Type",
+    "send": "Send",
     "sendEmail": "Send Email",
     "service": "Service",
     "success": "Success",
+    "title": "Title",
+    "message": "Message",
     "timePlaceholder": "HH:MM",
     "to": "to",
     "todo": "To Do",
@@ -577,7 +587,8 @@
     "unread": "Unread",
     "broadcastTitle": "Broadcast Notification",
     "target": "Target Audience",
-    "sent": "Notification broadcasted successfully"
+    "sent": "Notification broadcasted successfully",
+    "broadcast": "Broadcast"
   },
   "offline": {
     "limitedFunctionality": "Some features may be unavailable",
@@ -719,6 +730,20 @@
     "startTime": "Start Time"
   },
   "profile": {
+    "personalInfo": "Personal Information",
+    "birthDate": "Birth Date",
+    "gender": "Gender",
+    "address": "Address",
+    "addressPlaceholder": "Enter your address",
+    "website": "Website",
+    "skills": "Skills",
+    "skillsHelp": "Separate skills with commas",
+    "socialLinks": "Social Links",
+    "emergencyContact": "Emergency Contact",
+    "contactName": "Contact Name",
+    "contactPhone": "Contact Phone",
+    "relationship": "Relationship",
+    "myMaterial": "My Material",
     "about": "About",
     "accountSettings": "Account Settings",
     "appearance": "Appearance",

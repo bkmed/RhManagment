@@ -61,6 +61,10 @@
     "helpDetails": "我可以为您提供以下帮助：\n• 查看和管理您的**薪酬**\n• 申请或查询**休假**状态\n• 查看您的**团队**详情\n• 提交**报销**和费用\n• 浏览**员工通讯录**",
     "responseCaVa": "我很好，谢谢您的关心！请问有什么我可以帮您的吗？"
   },
+  "careerHub": {
+    "titlePlaceholder": "例如：精通 React Native",
+    "descriptionPlaceholder": "描述您的目标、主要目标以及您计划如何实现它..."
+  },
   "claims": {
     "description": "描述",
     "descriptionPlaceholder": "描述您的问题或请求...",
@@ -81,10 +85,13 @@
     "typeMaterial": "材料",
     "typeOther": "其他",
     "updateError": "更新申请出错",
-    "urgentNote": "标记为紧急"
+    "urgentNote": "标记为紧急",
+    "requester": "请求者",
+    "handler": "处理者"
   },
   "common": {
     "add": "添加",
+    "other": "其他",
     "allCompanies": "所有公司",
     "addToCalendar": "添加到日历",
     "addedToCalendar": "事件已添加到日历",
@@ -155,9 +162,15 @@
     "selectService": "选择服务",
     "selectTime": "选择时间",
     "selectType": "日期类型",
+    "send": "发送",
     "sendEmail": "发送电子邮件",
     "service": "服务",
     "success": "成功",
+    "team": "团队",
+    "all": "全部",
+    "company": "公司",
+    "title": "标题",
+    "message": "消息",
     "timePlaceholder": "HH:MM",
     "to": "至",
     "todo": "待办",
@@ -578,7 +591,11 @@
     "sendToCompany": "发送给公司",
     "sendToTeam": "发送给团队",
     "welcomeTitle": "欢迎使用人力资源管理系统！",
-    "welcomeMessage": "您的全面人力资源管理解决方案。管理员工、假期、工资等 - 一站式服务。"
+    "welcomeMessage": "您的全面人力资源管理解决方案。管理员工、假期、工资等 - 一站式服务。",
+    "broadcastTitle": "广播通知",
+    "target": "目标受众",
+    "sent": "通知广播成功",
+    "broadcast": "广播"
   },
   "offline": {
     "limitedFunctionality": "某些功能可能无法使用",
@@ -719,6 +736,20 @@
     "startTime": "开始时间"
   },
   "profile": {
+    "personalInfo": "个人信息",
+    "birthDate": "出生日期",
+    "gender": "性别",
+    "address": "地址",
+    "addressPlaceholder": "输入您的地址",
+    "website": "网站",
+    "skills": "技能",
+    "skillsHelp": "用逗号分隔技能",
+    "socialLinks": "社交链接",
+    "emergencyContact": "紧急联系人",
+    "contactName": "联系人姓名",
+    "contactPhone": "联系人电话",
+    "relationship": "关系",
+    "myMaterial": "我的资料",
     "about": "关于",
     "accountSettings": "账户设置",
     "appearance": "外观",

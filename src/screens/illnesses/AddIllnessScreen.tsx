@@ -27,7 +27,8 @@ import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { RootState } from '../../store';
 import { Dropdown } from '../../components/Dropdown';
 import { selectAllIllnesses } from '../../store/slices/illnessesSlice';
-import { Illness } from '../../database/schema';
+import { selectAllLeaves } from '../../store/slices/leavesSlice';
+import { Illness, Leave, Company, Team, Employee } from '../../database/schema';
 import { selectAllServices } from '../../store/slices/servicesSlice';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, ParamListBase } from '@react-navigation/native';
@@ -75,6 +76,7 @@ export const AddIllnessScreen = ({
   const allIllnesses = useSelector((state: RootState) =>
     selectAllIllnesses(state),
   );
+  const allLeaves = useSelector((state: RootState) => selectAllLeaves(state));
 
   const [companyId, setCompanyId] = useState<number | undefined>(undefined);
   const [teamId, setTeamId] = useState<number | undefined>(undefined);
@@ -185,6 +187,10 @@ export const AddIllnessScreen = ({
       newErrors.expiryDate = t('common.invalidDateRange');
     }
 
+    if ((rbacService.isAdmin(user) || rbacService.isRH(user)) && !employeeId) {
+      newErrors.employeeId = t('common.required');
+    }
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
@@ -193,10 +199,10 @@ export const AddIllnessScreen = ({
     const checkEnd = expiryDate || issueDate!;
 
     const hasCollision = allIllnesses.some((i: Illness) => {
-      if (i.id === illnessId) return false;
+      if (Number(i.id) === Number(illnessId)) return false;
       if (
-        i.employeeId !==
-        (user?.role === 'employee' ? user?.employeeId : employeeId)
+        Number(i.employeeId) !==
+        Number(user?.role === 'employee' ? user?.employeeId : employeeId)
       )
         return false;
 
@@ -207,7 +213,26 @@ export const AddIllnessScreen = ({
       return checkStart <= iEnd && checkEnd >= iStart;
     });
 
-    if (hasCollision) {
+    if (!hasCollision) {
+      const targetEmpId = Number(user?.role === 'employee' ? user?.employeeId : employeeId);
+      const hasLeaveCollision = allLeaves.some((l: Leave) => {
+        if (Number(l.employeeId) !== targetEmpId) return false;
+        if (l.status === 'declined') return false;
+
+        const lStart = new Date(l.startDate || l.dateTime);
+        const lEnd = new Date(l.endDate || l.dateTime);
+
+        return checkStart < lEnd && checkEnd > lStart;
+      });
+
+      if (hasLeaveCollision) {
+        notificationService.showAlert(
+          t('common.error'),
+          t('leaves.collisionError'),
+        );
+        return;
+      }
+    } else {
       notificationService.showAlert(
         t('common.error'),
         t('illnesses.collisionError'),
@@ -255,15 +280,30 @@ export const AddIllnessScreen = ({
         );
       }
 
-      if (Platform.OS === 'web') {
-        if (initialEmployeeName) {
-          setActiveTab('Employees');
-        } else {
-          setActiveTab('Illnesses');
-        }
-      } else {
-        navigation.goBack();
-      }
+      showModal({
+        title: t('common.success'),
+        message: isEdit ? t('illnesses.updateSuccess') || t('common.saved') : t('illnesses.saveSuccess') || t('common.saved'),
+        buttons: [
+          {
+            text: t('common.ok'),
+            onPress: () => {
+              if (Platform.OS === 'web') {
+                if (initialEmployeeId) {
+                  setActiveTab('Employees');
+                } else {
+                  setActiveTab('Illnesses');
+                }
+              } else {
+                if (navigation && navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('Main', { screen: 'Illnesses' });
+                }
+              }
+            },
+          },
+        ],
+      });
     } catch (error) {
       console.error('Error saving illness:', error);
       notificationService.showAlert(
@@ -331,7 +371,7 @@ export const AddIllnessScreen = ({
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('companies.selectCompany')}
-                    data={companies.map(c => ({
+                    data={companies.map((c: Company) => ({
                       label: c.name,
                       value: String(c.id),
                     }))}
@@ -344,7 +384,7 @@ export const AddIllnessScreen = ({
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('teams.selectTeam')}
-                    data={teams.map(t => ({
+                    data={teams.map((t: Team) => ({
                       label: t.name,
                       value: String(t.id),
                     }))}
@@ -358,13 +398,23 @@ export const AddIllnessScreen = ({
             {(user?.role === 'admin' || user?.role === 'rh') && (
               <View style={styles.fieldContainer}>
                 <Dropdown
-                  label={t('employees.name')}
-                  data={employees.map(e => ({
-                    label: e.name,
-                    value: String(e.id),
-                  }))}
+                  label={t('employees.name') + ' *'}
+                  data={employees
+                    .filter(e => {
+                      if (companyId && e.companyId !== companyId) return false;
+                      if (teamId && e.teamId !== teamId) return false;
+                      return true;
+                    })
+                    .map(e => ({
+                      label: e.name,
+                      value: String(e.id),
+                    }))}
                   value={employeeId ? String(employeeId) : ''}
-                  onSelect={val => setEmployeeId(Number(val))}
+                  onSelect={val => {
+                    setEmployeeId(Number(val));
+                    if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                  }}
+                  error={errors.employeeId}
                 />
               </View>
             )}

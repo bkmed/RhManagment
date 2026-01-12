@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { payrollDb, currenciesDb, Currency } from '../../database';
 import { notificationService } from '../../services/notificationService';
+import { useModal } from '../../context/ModalContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { Payroll } from '../../database/schema';
@@ -27,6 +28,7 @@ import { RootState } from '../../store';
 
 export const AddPayrollScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
+  const { showModal } = useModal();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -187,13 +189,11 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
       newErrors.amount = t('common.invalidAmount') || 'Invalid amount';
     }
 
-    if (hoursWorked) {
-      const hours = parseFloat(hoursWorked);
-      if (isNaN(hours)) {
-        newErrors.hoursWorked = t('common.invalidAmount');
-      } else if (hours > 168) {
-        newErrors.hoursWorked = t('payroll.invalidHours') || 'Max 168 hours (Standard working month)';
-      }
+    if (!month) newErrors.month = t('common.required');
+    if (!year.trim()) newErrors.year = t('common.required');
+
+    if ((rbacService.isAdmin(user) || rbacService.isRH(user)) && !employeeId) {
+      newErrors.employeeId = t('common.required');
     }
 
     setErrors(newErrors);
@@ -243,11 +243,26 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
       /* Reminders removed */
 
-      if (Platform.OS === 'web') {
-        setActiveTab('Payroll');
-      } else {
-        navigation.goBack();
-      }
+      showModal({
+        title: t('common.success'),
+        message: isEdit ? t('payroll.updateSuccess') || t('common.saved') : t('payroll.saveSuccess') || t('common.saved'),
+        buttons: [
+          {
+            text: t('common.ok'),
+            onPress: () => {
+              if (Platform.OS === 'web') {
+                setActiveTab('Payroll');
+              } else {
+                if (navigation && navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('Main', { screen: 'Payroll' });
+                }
+              }
+            },
+          },
+        ],
+      });
     } catch (error) {
       console.error('Error saving payroll:', error);
       notificationService.showAlert(t('common.error'), t('payroll.saveError'));
@@ -370,7 +385,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
               <View style={styles.fieldContainer}>
                 <Dropdown
-                  label={t('employees.name')}
+                  label={t('employees.name') + ' *'}
                   data={employees
                     .filter(e => {
                       if (companyId && e.companyId !== companyId) return false;
@@ -382,7 +397,11 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                       value: String(e.id),
                     }))}
                   value={employeeId ? String(employeeId) : ''}
-                  onSelect={val => setEmployeeId(Number(val))}
+                  onSelect={val => {
+                    setEmployeeId(Number(val));
+                    if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                  }}
+                  error={errors.employeeId}
                 />
               </View>
             )}
@@ -454,7 +473,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             >
               <View style={styles.fieldContainer}>
                 <Dropdown
-                  label={t('payroll.month')}
+                  label={t('payroll.month') + ' *'}
                   data={Array.from({ length: 12 }, (_, i) => ({
                     label: new Date(0, i).toLocaleString(undefined, {
                       month: 'long',
@@ -462,19 +481,29 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                     value: (i + 1).toString(),
                   }))}
                   value={month}
-                  onSelect={setMonth}
+                  onSelect={val => {
+                    setMonth(val);
+                    if (errors.month) setErrors({ ...errors, month: '' });
+                  }}
+                  error={errors.month}
                 />
               </View>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('payroll.year')}</Text>
+                <Text style={styles.label}>{t('payroll.year')} *</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, errors.year && styles.inputError]}
                   value={year}
-                  onChangeText={setYear}
+                  onChangeText={text => {
+                    setYear(text);
+                    if (errors.year) setErrors({ ...errors, year: '' });
+                  }}
                   keyboardType="numeric"
                   placeholder="2024"
                   placeholderTextColor={theme.colors.subText}
                 />
+                {errors.year && (
+                  <Text style={styles.errorText}>{errors.year}</Text>
+                )}
               </View>
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>{t('payroll.hoursWorked')}</Text>

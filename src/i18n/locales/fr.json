@@ -61,6 +61,10 @@
     "helpDetails": "Je peux vous aider à :\n• Consulter et gérer votre **Paie**\n• Demander ou vérifier le statut de vos **Congés**\n• Voir les détails de votre **Équipe**\n• Soumettre des **Réclamations** et frais\n• Parcourir l'**Annuaire des employés**",
     "responseCaVa": "Je vais très bien, merci de demander ! Comment puis-je vous assister ?"
   },
+  "careerHub": {
+    "titlePlaceholder": "ex. Maîtriser React Native",
+    "descriptionPlaceholder": "Décrivez votre objectif, l'objectif principal et comment vous prévoyez de l'atteindre..."
+  },
   "claims": {
     "description": "Description",
     "descriptionPlaceholder": "Décrivez votre problème ou demande...",
@@ -81,10 +85,13 @@
     "typeMaterial": "Matériel",
     "typeOther": "Autre",
     "updateError": "Erreur lors de la mise à jour",
-    "urgentNote": "Signaler comme urgent"
+    "urgentNote": "Signaler comme urgent",
+    "requester": "Demandeur",
+    "handler": "Traitant"
   },
   "common": {
     "add": "Ajouter",
+    "other": "Autre",
     "allCompanies": "Toutes les entreprises",
     "addToCalendar": "Ajouter au calendrier",
     "addedToCalendar": "Événement ajouté au calendrier",
@@ -157,6 +164,7 @@
     "selectService": "Sélectionner le service",
     "selectTime": "Sélectionner une heure",
     "selectType": "Type de jour",
+    "send": "Envoyer",
     "sendEmail": "Envoyer un email",
     "service": "Service",
     "success": "Succès",
@@ -174,6 +182,8 @@
     "yearUnit": "an",
     "yearsUnit": "ans",
     "yes": "Oui",
+    "title": "Titre",
+    "message": "Message",
     "all": "Tous",
     "company": "Entreprise",
     "team": "Équipe"
@@ -587,7 +597,8 @@
     "unread": "Non lu",
     "broadcastTitle": "Diffuser une notification",
     "target": "Audience cible",
-    "sent": "Notification diffusée avec succès"
+    "sent": "Notification diffusée avec succès",
+    "broadcast": "Diffusion"
   },
   "offline": {
     "limitedFunctionality": "Certaines fonctionnalités peuvent être indisponibles",
@@ -729,6 +740,20 @@
     "startTime": "Start Time"
   },
   "profile": {
+    "personalInfo": "Informations personnelles",
+    "birthDate": "Date de naissance",
+    "gender": "Genre",
+    "address": "Adresse",
+    "addressPlaceholder": "Entrez votre adresse",
+    "website": "Site web",
+    "skills": "Compétences",
+    "skillsHelp": "Séparez les compétences par des virgules",
+    "socialLinks": "Liens Sociaux",
+    "emergencyContact": "Contact d'Urgence",
+    "contactName": "Nom du contact",
+    "contactPhone": "Téléphone du contact",
+    "relationship": "Relation",
+    "myMaterial": "Mon Matériel",
     "about": "À propos",
     "accountSettings": "Paramètres du Compte",
     "appearance": "Apparence",

@@ -52,11 +52,26 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
     try {
       const payrollItem = await payrollDb.getById(payrollId);
       if (payrollItem) {
+        // Access Control Check
+        const isOwner = user?.employeeId && Number(payrollItem.employeeId) === Number(user.employeeId);
+        const isAdmin = user?.role === 'admin';
+        const isRHInCompany = user?.role === 'rh' && user?.companyId && Number(payrollItem.companyId) === Number(user.companyId);
+        const isManagerInTeam = user?.role === 'manager' && user?.teamId && Number(payrollItem.teamId) === Number(user.teamId);
+
+        if (!isAdmin && !isOwner && !isRHInCompany && !isManagerInTeam) {
+          showToast(t('common.accessDenied') || 'Access Denied', 'error');
+          navigateBack();
+          return;
+        }
+
         setPayroll(payrollItem);
         if (payrollItem.employeeId) {
           const emp = await employeesDb.getById(payrollItem.employeeId);
           setEmployee(emp);
         }
+      } else {
+        showToast(t('payrollDetails.notFound'), 'info');
+        navigateBack();
       }
     } catch (error) {
       showToast(t('payrollDetails.errorLoadFailed'), 'info');

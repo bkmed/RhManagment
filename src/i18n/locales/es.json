@@ -61,6 +61,10 @@
     "helpDetails": "Puedo ayudarle con:\n• Ver y gestionar su **Nómina**\n• Solicitar o consultar el estado de **Vacaciones**\n• Ver los detalles de su **Equipo**\n• Enviar **Reclamaciones** y gastos\n• Explorar el **Directorio de Empleados**",
     "responseCaVa": "¡Estoy muy bien, gracias por preguntar! ¿Cómo puedo asistirle?"
   },
+  "careerHub": {
+    "titlePlaceholder": "p. ej. Dominar React Native",
+    "descriptionPlaceholder": "Describe tu objetivo, el objetivo principal y cómo planeas lograrlo..."
+  },
   "claims": {
     "description": "Descripción",
     "descriptionPlaceholder": "Describa su problema o solicitud...",
@@ -81,10 +85,13 @@
     "typeMaterial": "Material",
     "typeOther": "Otro",
     "updateError": "Error al actualizar la reclamación",
-    "urgentNote": "Marcar como urgente"
+    "urgentNote": "Marcar como urgente",
+    "requester": "Solicitante",
+    "handler": "Tramitador"
   },
   "common": {
     "add": "Añadir",
+    "other": "Otro",
     "allCompanies": "Todas las empresas",
     "addToCalendar": "Añadir al calendario",
     "addedToCalendar": "Evento añadido al calendario",
@@ -155,9 +162,15 @@
     "selectService": "Seleccionar servicio",
     "selectTime": "Seleccionar hora",
     "selectType": "Tipo de día",
-    "sendEmail": "Enviar correo",
+    "send": "Enviar",
+    "sendEmail": "Enviar correo electrónico",
     "service": "Servicio",
     "success": "Éxito",
+    "team": "Equipo",
+    "all": "Todos",
+    "company": "Empresa",
+    "title": "Título",
+    "message": "Mensaje",
     "timePlaceholder": "HH:MM",
     "to": "to",
     "todo": "Por hacer",
@@ -572,6 +585,10 @@
   "notifications": {
     "markAllAsRead": "Marcar todo como leído",
     "noNotifications": "No hay notificaciones aún",
+    "broadcastTitle": "Difundir notificación",
+    "target": "Público objetivo",
+    "sent": "Notificación difundida con éxito",
+    "broadcast": "Difusión",
     "title": "Notificaciones",
     "unread": "Sin leer",
     "manageNotifications": "Gestionar notificaciones",
@@ -720,6 +737,20 @@
     "startTime": "Start Time"
   },
   "profile": {
+    "personalInfo": "Información personal",
+    "birthDate": "Fecha de nacimiento",
+    "gender": "Género",
+    "address": "Dirección",
+    "addressPlaceholder": "Ingrese su dirección",
+    "website": "Sitio web",
+    "skills": "Habilidades",
+    "skillsHelp": "Separe las habilidades con comas",
+    "socialLinks": "Enlaces Sociales",
+    "emergencyContact": "Contacto de Emergencia",
+    "contactName": "Nombre del contacto",
+    "contactPhone": "Teléfono del contacto",
+    "relationship": "Relación",
+    "myMaterial": "Mi Material",
     "about": "Acerca de",
     "accountSettings": "Ajustes de la Cuenta",
     "appearance": "Apariencia",

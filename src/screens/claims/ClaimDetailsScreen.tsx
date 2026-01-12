@@ -35,7 +35,19 @@ export const ClaimDetailsScreen = ({ route }: any) => {
   const loadClaim = async () => {
     try {
       const data = await claimsDb.getById(claimId);
-      setClaim(data);
+      if (data) {
+        // Access Control
+        const isOwner = user?.employeeId && Number(data.employeeId) === Number(user.employeeId);
+        const isAdmin = user?.role === 'admin';
+        const isRHInCompany = user?.role === 'rh' && user?.companyId && Number(data.companyId) === Number(user.companyId);
+        const isManagerInTeam = user?.role === 'manager' && user?.teamId && Number(data.teamId) === Number(user.teamId);
+
+        if (!isAdmin && !isOwner && !isRHInCompany && !isManagerInTeam) {
+          showToast(t('common.accessDenied'), 'error');
+          return;
+        }
+        setClaim(data);
+      }
     } catch (error) {
       showToast(t('claims.loadError'), 'error');
       console.error(error);
@@ -48,8 +60,13 @@ export const ClaimDetailsScreen = ({ route }: any) => {
     if (!claim) return;
     try {
       setLoading(true);
-      await claimsDb.update(claimId, { status });
-      setClaim({ ...claim, status });
+      const updates = {
+        status,
+        processedByName: user?.name || user?.role?.toUpperCase(),
+        updatedAt: new Date().toISOString(),
+      };
+      await claimsDb.update(claimId, updates);
+      setClaim({ ...claim, ...updates });
       notificationService.showAlert(
         t('common.success'),
         t('claims.statusUpdated'),
@@ -115,9 +132,21 @@ export const ClaimDetailsScreen = ({ route }: any) => {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.label}>{t('claims.requester') || 'Requester'}</Text>
+          <Text style={styles.value}>{claim.employeeName || t('common.unknown')}</Text>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.label}>{t('claims.description')}</Text>
           <Text style={styles.value}>{claim.description}</Text>
         </View>
+
+        {claim.status !== 'pending' && (
+          <View style={styles.section}>
+            <Text style={styles.label}>{t('claims.handler') || 'Processed By'}</Text>
+            <Text style={styles.value}>{claim.processedByName || t('common.unknown')}</Text>
+          </View>
+        )}
 
         {claim.photoUri && (
           <View style={styles.section}>

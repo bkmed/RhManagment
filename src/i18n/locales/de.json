@@ -61,6 +61,10 @@
     "helpDetails": "Ich kann Ihnen helfen bei:\n• Anzeige und Verwaltung Ihrer **Gehaltsabrechnung**\n• Beantragung oder Überprüfung des **Urlaubsstatus**\n• Anzeige Ihrer **Teamdetails**\n• Einreichung von **Ansprüchen** und Ausgaben\n• Durchsuchen des **Mitarbeiterverzeichnisses**",
     "responseCaVa": "Mir geht es sehr gut, danke der Nachfrage! Wie kann ich Ihnen behilflich sein?"
   },
+  "careerHub": {
+    "titlePlaceholder": "z.B. React Native meistern",
+    "descriptionPlaceholder": "Beschreiben Sie Ihr Ziel, das Hauptziel und wie Sie es erreichen wollen..."
+  },
   "claims": {
     "description": "Beschreibung",
     "descriptionPlaceholder": "Beschreiben Sie Ihr Problem oder Ihre Anfrage...",
@@ -81,10 +85,13 @@
     "typeMaterial": "Material",
     "typeOther": "Andere",
     "updateError": "Fehler beim Aktualisieren der Reklamation",
-    "urgentNote": "Als dringend markieren"
+    "urgentNote": "Als dringend markieren",
+    "requester": "Antragsteller",
+    "handler": "Bearbeiter"
   },
   "common": {
     "add": "Hinzufügen",
+    "other": "Sonstige",
     "allCompanies": "Alle Unternehmen",
     "addToCalendar": "Zum Kalender hinzufügen",
     "addedToCalendar": "Termin zum Kalender hinzugefügt",
@@ -155,10 +162,16 @@
     "selectService": "Dienstleistung auswählen",
     "selectTime": "Zeit auswählen",
     "selectType": "Tagestyp",
+    "send": "Senden",
     "sendEmail": "E-Mail senden",
-    "service": "Abteilung",
+    "service": "Service",
     "success": "Erfolg",
-    "timePlaceholder": "SS:MM",
+    "team": "Team",
+    "all": "Alle",
+    "company": "Unternehmen",
+    "title": "Titel",
+    "message": "Nachricht",
+    "timePlaceholder": "HH:MM",
     "to": "to",
     "todo": "Zu erledigen",
     "total": "Gesamt",
@@ -713,6 +726,20 @@
     "startTime": "Start Time"
   },
   "profile": {
+    "personalInfo": "Persönliche Informationen",
+    "birthDate": "Geburtsdatum",
+    "gender": "Geschlecht",
+    "address": "Adresse",
+    "addressPlaceholder": "Geben Sie Ihre Adresse ein",
+    "website": "Webseite",
+    "skills": "Fähigkeiten",
+    "skillsHelp": "Fähigkeiten durch Kommas trennen",
+    "socialLinks": "Soziale Links",
+    "emergencyContact": "Notfallkontakt",
+    "contactName": "Name des Kontakts",
+    "contactPhone": "Telefon des Kontakts",
+    "relationship": "Beziehung",
+    "myMaterial": "Mein Material",
     "about": "Über",
     "accountSettings": "Kontoeinstellungen",
     "appearance": "Erscheinungsbild",

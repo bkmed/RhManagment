@@ -19,6 +19,7 @@ import { Theme } from '../../theme';
 import { holidaysService } from '../../services/holidaysService';
 import { leavesDb } from '../../database/leavesDb';
 import { SearchOverlay } from '../../components/common/SearchOverlay';
+import { rbacService, Permission } from '../../services/rbacService';
 
 export const RemoteCalendarScreen = () => {
   const { theme } = useTheme();
@@ -66,7 +67,7 @@ export const RemoteCalendarScreen = () => {
       ]);
 
       const mappedRemote = remoteData.reduce(
-        (acc: Record<string, string>, curr) => {
+        (acc: Record<string, string>, curr: any) => {
           acc[curr.date] = curr.status;
           return acc;
         },
@@ -273,8 +274,8 @@ export const RemoteCalendarScreen = () => {
                     i18n.language.startsWith('ar')
                       ? 'fr'
                       : i18n.language.startsWith('fr')
-                      ? 'fr'
-                      : 'en'
+                        ? 'fr'
+                        : 'en'
                   ] || holiday.name.fr}
                 </Text>
               </View>
@@ -292,40 +293,58 @@ export const RemoteCalendarScreen = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <ScrollView contentContainerStyle={styles.container}>
         {/* Toggle View Mode */}
-        <View style={styles.toggleContainer}>
-          <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              viewMode === 'mine' && styles.toggleButtonActive,
-            ]}
-            onPress={() => setViewMode('mine')}
-          >
-            <Text
-              style={[
-                styles.toggleText,
-                viewMode === 'mine' && styles.toggleTextActive,
-              ]}
-            >
-              {t('remote.myPlanning') || 'My Planning'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              viewMode === 'other' && styles.toggleButtonActive,
-            ]}
-            onPress={() => setViewMode('other')}
-          >
-            <Text
-              style={[
-                styles.toggleText,
-                viewMode === 'other' && styles.toggleTextActive,
-              ]}
-            >
-              {t('remote.employeePlanning') || 'Employee Planning'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {(rbacService.isAdmin(user) ||
+          rbacService.isRH(user) ||
+          rbacService.isManager(user)) && (
+            <View style={styles.toggleContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.toggleButton,
+                  viewMode === 'mine' && styles.toggleButtonActive,
+                ]}
+                onPress={() => setViewMode('mine')}
+              >
+                <Text
+                  style={[
+                    styles.toggleText,
+                    viewMode === 'mine' && styles.toggleTextActive,
+                  ]}
+                >
+                  {t('remote.myPlanning') || 'My Planning'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.toggleButton,
+                  viewMode === 'other' && styles.toggleButtonActive,
+                ]}
+                onPress={() => {
+                  // Double check permissions before switching
+                  if (
+                    rbacService.isAdmin(user) ||
+                    rbacService.isRH(user) ||
+                    rbacService.isManager(user)
+                  ) {
+                    setViewMode('other');
+                  } else {
+                    notificationService.showAlert(
+                      t('common.error'),
+                      t('common.accessDenied'),
+                    );
+                  }
+                }}
+              >
+                <Text
+                  style={[
+                    styles.toggleText,
+                    viewMode === 'other' && styles.toggleTextActive,
+                  ]}
+                >
+                  {t('remote.employeePlanning') || 'Employee Planning'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
         {/* Employee Search Selection */}
         {viewMode === 'other' && (

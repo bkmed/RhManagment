@@ -32,15 +32,22 @@ export const PayrollListScreen = ({ navigation }: any) => {
     try {
       let data = await payrollDb.getAll();
 
-      // Role-based filtering
-      if (user?.role === 'employee' && user?.employeeId) {
-        data = data.filter(item => item.employeeId === user.employeeId);
+      // Role-based filtering (Strict isolation)
+      if (user?.role === 'employee') {
+        if (user?.employeeId) {
+          data = data.filter(item => Number(item.employeeId) === Number(user.employeeId));
+        } else {
+          data = []; // Deny by default if ID is missing
+        }
       } else if (user?.role === 'manager' && user?.teamId) {
         // Manager sees their team's payroll
-        data = data.filter(item => item.teamId === user.teamId);
+        data = data.filter(item => Number(item.teamId) === Number(user.teamId));
       } else if (user?.role === 'rh' && user?.companyId) {
         // HR sees their company's payroll
-        data = data.filter(item => item.companyId === user.companyId);
+        data = data.filter(item => Number(item.companyId) === Number(user.companyId));
+      } else if (user?.role !== 'admin') {
+        // Any other non-admin role with missing affiliations
+        data = [];
       }
       // Admin sees everything
 

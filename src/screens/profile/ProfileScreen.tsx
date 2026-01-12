@@ -1087,7 +1087,7 @@ const createStyles = (theme: Theme) =>
     },
     mainContent: {
       flex: 1,
-      marginTop: -60,
+      marginTop: 140, // Changed from -60 to 140 to correctly overlap with absolute background
       paddingHorizontal: 20,
     },
     headerCard: {

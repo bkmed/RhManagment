@@ -41,7 +41,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
   const [availableDevices, setAvailableDevices] = useState<Device[]>([]);
   const [isUrgent, setIsUrgent] = useState(false);
   const [photoUri, setPhotoUri] = useState('');
-  const [errors, setErrors] = useState<{ description?: string; device?: string }>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
   const [companyId, setCompanyId] = useState<number | null>(null);
@@ -123,7 +123,8 @@ export const AddClaimScreen = ({ navigation }: any) => {
   };
 
   const handleSave = async () => {
-    const newErrors: { description?: string; device?: string } = {};
+    const newErrors: { [key: string]: string } = {};
+    if (!type) newErrors.type = t('common.required');
     if (type === 'material' && !selectedDevice) {
       newErrors.device = t('common.required');
     }
@@ -133,12 +134,15 @@ export const AddClaimScreen = ({ navigation }: any) => {
     if (type === 'material' && selectedDevice === 'other' && !description.trim()) {
       newErrors.description = t('common.required');
     }
+    if ((user?.role === 'admin' || user?.role === 'rh') && !employeeId) {
+      newErrors.employeeId = t('common.required');
+    }
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    setLoading(true);
     try {
+      const selectedEmployee = employees.find(e => e.id === employeeId);
       const claimData = {
         type,
         title: type === 'material' ? (selectedDevice === 'other' ? 'Other Material' : availableDevices.find(d => String(d.id) === selectedDevice)?.name) : t(`claims.type_${type}`),
@@ -148,9 +152,10 @@ export const AddClaimScreen = ({ navigation }: any) => {
         photoUri: photoUri || undefined,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        companyId,
-        teamId,
+        companyId: companyId || selectedEmployee?.companyId,
+        teamId: teamId || selectedEmployee?.teamId,
         employeeId: employeeId || 0,
+        employeeName: selectedEmployee?.name || user?.name,
         deviceId: type === 'material' && selectedDevice !== 'other' ? Number(selectedDevice) : undefined,
       };
 
@@ -171,9 +176,13 @@ export const AddClaimScreen = ({ navigation }: any) => {
 
   const goBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Home');
+      setActiveTab('Claims');
     } else {
-      navigation.goBack();
+      if (navigation && navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        navigation.navigate('Main', { screen: 'Claims' });
+      }
     }
   };
 
@@ -192,10 +201,14 @@ export const AddClaimScreen = ({ navigation }: any) => {
           <View style={styles.section}>
             <View style={styles.fieldContainer}>
               <Dropdown
-                label={t('claims.type')}
+                label={t('claims.type') + ' *'}
                 data={claimTypes}
                 value={type}
-                onSelect={val => setType(val as ClaimType)}
+                onSelect={val => {
+                  setType(val as ClaimType);
+                  if (errors.type) setErrors({ ...errors, type: '' });
+                }}
+                error={errors.type}
               />
             </View>
 
@@ -255,7 +268,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
               {(user?.role === 'admin' || user?.role === 'rh') && (
                 <View style={styles.fieldContainer}>
                   <Dropdown
-                    label={t('employees.name')}
+                    label={t('employees.name') + ' *'}
                     data={employees
                       .filter(e => {
                         if (companyId && e.companyId !== companyId) return false;
@@ -267,7 +280,11 @@ export const AddClaimScreen = ({ navigation }: any) => {
                         value: String(e.id),
                       }))}
                     value={employeeId ? String(employeeId) : ''}
-                    onSelect={val => setEmployeeId(Number(val))}
+                    onSelect={val => {
+                      setEmployeeId(Number(val));
+                      if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                    }}
+                    error={errors.employeeId}
                   />
                 </View>
               )}

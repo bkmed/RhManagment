@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { useTheme } from '../../context/ThemeContext';
 import { departmentsDb } from '../../database/departmentsDb';
 import { Theme } from '../../theme';
@@ -20,6 +21,7 @@ import { Dropdown } from '../../components/Dropdown';
 export const AddDepartmentScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { showModal } = useModal();
   const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { setActiveTab } = React.useContext(WebNavigationContext) as any;
@@ -81,18 +83,30 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
           name.trim(),
           selectedCompanyId,
         );
-        showToast(t('common.success'), 'success');
       } else {
         await departmentsDb.add(name.trim(), selectedCompanyId);
-        showToast(t('common.success'), 'success');
       }
 
-      // Navigate back
-      if (Platform.OS === 'web') {
-        setActiveTab?.('Departments', '', { companyId: selectedCompanyId });
-      } else {
-        navigation.goBack();
-      }
+      showModal({
+        title: t('common.success'),
+        message: isEdit ? t('departments.updateSuccess') || t('common.saved') : t('departments.saveSuccess') || t('common.saved'),
+        buttons: [
+          {
+            text: t('common.ok'),
+            onPress: () => {
+              if (Platform.OS === 'web') {
+                setActiveTab?.('Departments', '', { companyId: selectedCompanyId });
+              } else {
+                if (navigation && navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('Main', { screen: 'Departments' });
+                }
+              }
+            },
+          },
+        ],
+      });
     } catch (error) {
       showToast(t('common.saveError'), 'error');
       console.error(error);

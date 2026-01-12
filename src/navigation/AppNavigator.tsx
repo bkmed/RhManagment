@@ -662,17 +662,29 @@ const useNavigationSections = () => {
     sections.push({
       title: t('sections.communication'),
       items: [
-        {
-          key: 'Announcements',
-          label: t('navigation.announcements'),
-          icon: '📢',
-        },
-        {
-          key: 'ManageNotifications',
-          label: t('notifications.broadcast') || 'Broadcast',
-          icon: '📡',
-        },
-        { key: 'Chat', label: t('navigation.chat'), icon: '💬' },
+        ...(user?.companyId
+          ? [
+            {
+              key: 'Announcements',
+              label: t('navigation.announcements'),
+              icon: '📢',
+            },
+          ]
+          : []),
+        ...(rbacService.isAdmin(user) ||
+          rbacService.isRH(user) ||
+          rbacService.isManager(user)
+          ? [
+            {
+              key: 'ManageNotifications',
+              label: t('notifications.broadcast') || 'Broadcast',
+              icon: '📡',
+            },
+          ]
+          : []),
+        ...(user?.companyId
+          ? [{ key: 'Chat', label: t('navigation.chat'), icon: '💬' }]
+          : []),
         {
           key: 'Assistant',
           label: t('common.assistant') || 'Assistant',
@@ -1076,6 +1088,19 @@ const WebNavigator = () => {
         return <ChatBot />;
       case 'Language':
         return <LanguageSelectionScreen />;
+      case 'ManageNotifications':
+        if (
+          !rbacService.isAdmin(user) &&
+          !rbacService.isRH(user) &&
+          !rbacService.isManager(user)
+        )
+          return <HomeStack />;
+        return (
+          <ManageNotificationsScreen
+            route={mockRoute}
+            navigation={mockNavigation}
+          />
+        );
       case 'CustomThemeColors':
         return <CustomThemeColorsScreen />;
       case 'Settings':

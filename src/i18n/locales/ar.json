@@ -61,6 +61,10 @@
     "helpDetails": "يمكنني مساعدتك في:\n• عرض وإدارة **الرواتب** الخاصة بك\n• طلب أو التحقق من حالة **الإجازات**\n• عرض تفاصيل **الفريق** الخاص بك\n• تقديم **المطالبات** والمصروفات\n• تصفح **دليل الموظفين**",
     "responseCaVa": "أنا بخير، شكراً لسؤالك! كيف يمكنني مساعدتك؟"
   },
+  "careerHub": {
+    "titlePlaceholder": "مثال: إتقان React Native",
+    "descriptionPlaceholder": "صف هدفك والغاية الرئيسية وكيف تخطط لتحقيق ذلك..."
+  },
   "claims": {
     "description": "الوصف",
     "descriptionPlaceholder": "صف مشكلتك أو طلبك...",
@@ -81,10 +85,13 @@
     "typeMaterial": "معدات",
     "typeOther": "أخرى",
     "updateError": "خطأ في تحديث المطالبة",
-    "urgentNote": "وضع علامة عاجل"
+    "urgentNote": "وضع علامة عاجل",
+    "requester": "صاحب الطلب",
+    "handler": "المعالج"
   },
   "common": {
     "add": "إضافة",
+    "other": "آخر",
     "allCompanies": "جميع الشركات",
     "addToCalendar": "إضافة إلى التقويم",
     "addedToCalendar": "تمت إضافة الحدث إلى التقويم",
@@ -155,10 +162,16 @@
     "selectService": "اختر الخدمة",
     "selectTime": "تحديد الوقت",
     "selectType": "نوع اليوم",
+    "send": "إرسال",
+    "team": "فريق",
+    "all": "الكل",
+    "company": "شركة",
+    "title": "العنوان",
+    "message": "الرسالة",
     "sendEmail": "إرسال بريد إلكتروني",
     "service": "المصلحة",
     "success": "نجاح",
-    "timePlaceholder": "س س:د د",
+    "timePlaceholder": "HH:MM",
     "to": "to",
     "todo": "للقيام به",
     "total": "المجموع",
@@ -577,7 +590,11 @@
     "sendToCompany": "إرسال إلى الشركة",
     "sendToTeam": "إرسال إلى الفريق",
     "welcomeTitle": "مرحبًا بك في إدارة الموارد البشرية!",
-    "welcomeMessage": "حل إدارة الموارد البشرية الشامل الخاص بك. إدارة الموظفين والإجازات والرواتب والمزيد - كل ذلك في مكان واحد."
+    "welcomeMessage": "حل إدارة الموارد البشرية الشامل الخاص بك. إدارة الموظفين والإجازات والرواتب والمزيد - كل ذلك في مكان واحد.",
+    "broadcastTitle": "بث إشعار",
+    "target": "الجمهور المستهدف",
+    "sent": "تم بث الإشعار بنجاح",
+    "broadcast": "بث"
   },
   "offline": {
     "limitedFunctionality": "قد تكون بعض الميزات غير متاحة",
@@ -700,7 +717,7 @@
     "calendarDesc": "السماح بالوصول إلى التقويم لإضافة الإجازات",
     "calendarPermissionMessage": "يحتاج هذا التطبيق إلى الوصول إلى التقويم الخاص بك لإضافة الإجازات.",
     "calendarPermissionRequired": "إذن التقويم مطلوب",
-    "camera": "إذن الكामيرا",
+    "camera": "إذن الكاميرا",
     "cameraDesc": "السماح بالوصول إلى الكاميرا لمسح المستندات",
     "date": "Permission Date",
     "denied": "مرفوض",
@@ -718,6 +735,20 @@
     "startTime": "Start Time"
   },
   "profile": {
+    "personalInfo": "معلومات شخصية",
+    "birthDate": "تاريخ الميلاد",
+    "gender": "الجنس",
+    "address": "العنوان",
+    "addressPlaceholder": "أدخل عنوانك",
+    "website": "الموقع الإلكتروني",
+    "skills": "المهارات",
+    "skillsHelp": "افصل المهارات بفواصل",
+    "socialLinks": "روابط التواصل الاجتماعي",
+    "emergencyContact": "جهة اتصال الطوارئ",
+    "contactName": "اسم جهة الاتصال",
+    "contactPhone": "هاتف جهة الاتصال",
+    "relationship": "العلاقة",
+    "myMaterial": "موادي",
     "about": "حول",
     "accountSettings": "إعدادات الحساب",
     "appearance": "المظهر",

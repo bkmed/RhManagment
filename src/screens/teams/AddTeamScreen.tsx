@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { teamsDb } from '../../database/teamsDb';
+import { useModal } from '../../context/ModalContext';
 import { employeesDb } from '../../database/employeesDb';
 import { notificationService } from '../../services/notificationService';
 import { servicesDb } from '../../database/servicesDb';
@@ -31,6 +32,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
 
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { showModal } = useModal();
   const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { setActiveTab } = useContext(WebNavigationContext) as any;
@@ -150,12 +152,26 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
         });
       }
 
-      showToast(t('common.success'), 'success');
-      if (Platform.OS === 'web') {
-        setActiveTab('Teams');
-      } else {
-        navigation.goBack();
-      }
+      showModal({
+        title: t('common.success'),
+        message: isEdit ? t('teams.updateSuccess') || t('common.saved') : t('teams.saveSuccess') || t('common.saved'),
+        buttons: [
+          {
+            text: t('common.ok'),
+            onPress: () => {
+              if (Platform.OS === 'web') {
+                setActiveTab('Teams');
+              } else {
+                if (navigation && navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('Main', { screen: 'Teams' });
+                }
+              }
+            },
+          },
+        ],
+      });
     } catch (error: any) {
       console.error('Error saving team:', error);
       const errorMessage = error?.message || t('common.saveError');

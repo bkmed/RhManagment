@@ -16,7 +16,7 @@ import {
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker'; // Added image picker imports
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
-import { Leave } from '../../database/schema';
+import { Leave, Company, Team, Employee, Illness } from '../../database/schema';
 import { Permission, rbacService } from '../../services/rbacService';
 import { notificationService } from '../../services/notificationService';
 import { emailService } from '../../services/emailService';
@@ -26,12 +26,13 @@ import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 import { CalendarButton } from '../../components/CalendarButton';
 import { Dropdown } from '../../components/Dropdown';
-import { useModal } from '../../context/ModalContext'; // Added useModal import
+import { useModal } from '../../context/ModalContext';
 import { useSelector } from 'react-redux';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { selectAllLeaves } from '../../store/slices/leavesSlice';
+import { selectAllIllnesses } from '../../store/slices/illnessesSlice';
 import { RootState } from '../../store';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, ParamListBase } from '@react-navigation/native';
@@ -84,6 +85,7 @@ export const AddLeaveScreen = ({
     selectAllEmployees(state),
   );
   const allLeaves = useSelector((state: RootState) => selectAllLeaves(state));
+  const allIllnesses = useSelector((state: RootState) => selectAllIllnesses(state));
 
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [teamId, setTeamId] = useState<number | null>(null);
@@ -94,12 +96,12 @@ export const AddLeaveScreen = ({
   // Cascading lists
   const filteredTeams = useMemo(() => {
     if (!companyId) return [];
-    return allTeams.filter(t => t.companyId === companyId);
+    return allTeams.filter((t: Team) => t.companyId === companyId);
   }, [allTeams, companyId]);
 
   const filteredEmployees = useMemo(() => {
     if (!companyId && !teamId) return allEmployees;
-    return allEmployees.filter(emp => {
+    return allEmployees.filter((emp: Employee) => {
       const matchesCompany = !companyId || emp.companyId === companyId;
       const matchesTeam = !teamId || emp.teamId === teamId;
       return matchesCompany && matchesTeam;
@@ -279,10 +281,10 @@ export const AddLeaveScreen = ({
         : endDate!;
 
     const hasCollision = allLeaves.some((l: Leave) => {
-      if (l.id === leaveId) return false; // Skip the same leave when editing
+      if (l.id === leaveId) return false;
       if (
-        l.employeeId !==
-        (user?.role === 'employee' ? user?.employeeId : employeeId)
+        Number(l.employeeId) !==
+        Number(user?.role === 'employee' ? user?.employeeId : employeeId)
       )
         return false;
       if (l.status === 'declined') return false;
@@ -290,11 +292,29 @@ export const AddLeaveScreen = ({
       const lStart = new Date(l.startDate || l.dateTime);
       const lEnd = new Date(l.endDate || l.dateTime);
 
-      // Overlap check: (start1 < end2) and (end1 > start2)
       return finalStartDate < lEnd && finalEndDate > lStart;
     });
 
-    if (hasCollision) {
+    if (!hasCollision) {
+      const targetEmpId = Number(user?.role === 'employee' ? user?.employeeId : employeeId);
+      const hasIllnessCollision = allIllnesses.some((i: Illness) => {
+        if (Number(i.employeeId) !== targetEmpId) return false;
+
+        const iStart = new Date(i.issueDate);
+        const iEnd = i.expiryDate ? new Date(i.expiryDate) : iStart;
+
+        // Match precision with illness (midnight dates usually)
+        return finalStartDate <= iEnd && finalEndDate >= iStart;
+      });
+
+      if (hasIllnessCollision) {
+        notificationService.showAlert(
+          t('common.error'),
+          t('illnesses.collisionError'),
+        );
+        return;
+      }
+    } else {
       notificationService.showAlert(
         t('common.error'),
         t('leaves.collisionError'),
@@ -305,7 +325,7 @@ export const AddLeaveScreen = ({
     setLoading(true);
 
     try {
-      const selectedEmp = allEmployees.find(e => e.id === employeeId);
+      const selectedEmp = allEmployees.find((e: Employee) => e.id === employeeId);
       const leaveData = {
         title: title.trim(),
         employeeName: (rbacService.isEmployee(user)
@@ -376,30 +396,32 @@ export const AddLeaveScreen = ({
         await notificationService.cancelLeaveReminder(id);
       }
 
-      // Show Success Pulse
-      showToast(
-        isEdit ? t('leaves.updateSuccess') : t('leaves.successMessage'),
-        'success',
-      );
-
-      // Navigation Logic with a small delay to allow toast/state to settle
-      setTimeout(() => {
-        if (Platform.OS === 'web') {
-          if (initialEmployeeId) {
-            setActiveTab('Employees', 'EmployeeDetails', {
-              employeeId: initialEmployeeId,
-            });
-          } else {
-            setActiveTab('Leaves', '', {});
-          }
-        } else {
-          if (navigation && navigation.canGoBack()) {
-            navigation.goBack();
-          } else {
-            navigation.navigate('Leaves');
-          }
-        }
-      }, 100);
+      showModal({
+        title: t('common.success'),
+        message: isEdit ? t('leaves.updateSuccess') : t('leaves.successMessage'),
+        buttons: [
+          {
+            text: t('common.ok'),
+            onPress: () => {
+              if (Platform.OS === 'web') {
+                if (initialEmployeeId) {
+                  setActiveTab('Employees', 'EmployeeDetails', {
+                    employeeId: initialEmployeeId,
+                  });
+                } else {
+                  setActiveTab('Leaves');
+                }
+              } else {
+                if (navigation && navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('Main', { screen: 'Leaves' });
+                }
+              }
+            },
+          },
+        ],
+      });
     } catch (error) {
       console.error('Error saving leave:', error);
       notificationService.showAlert(t('common.error'), t('leaves.saveError'));
@@ -474,7 +496,7 @@ export const AddLeaveScreen = ({
                       label={t('companies.selectCompany')}
                       data={[
                         { label: t('common.allCompanies'), value: '' },
-                        ...allCompanies.map(c => ({
+                        ...allCompanies.map((c: Company) => ({
                           label: c.name,
                           value: String(c.id),
                         })),
@@ -492,7 +514,7 @@ export const AddLeaveScreen = ({
                       label={t('teams.selectTeam')}
                       data={[
                         { label: t('common.noTeam'), value: '' },
-                        ...filteredTeams.map(t => ({
+                        ...filteredTeams.map((t: Team) => ({
                           label: t.name,
                           value: String(t.id),
                         })),
@@ -509,7 +531,7 @@ export const AddLeaveScreen = ({
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('leaves.employee')}
-                    data={filteredEmployees.map(e => ({
+                    data={filteredEmployees.map((e: Employee) => ({
                       label: e.name,
                       value: String(e.id),
                     }))}

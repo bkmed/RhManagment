@@ -18,6 +18,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { formatDate } from '../../utils/dateUtils';
+import { SearchInput } from '../../components/SearchInput';
 
 export const ClaimsListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
@@ -42,10 +44,28 @@ export const ClaimsListScreen = ({ navigation }: any) => {
         ]);
 
       let filteredClaims = claimsData;
-      if (user?.role === 'employee' && user?.employeeId) {
+      // Role-based filtering (Strict isolation)
+      if (user?.role === 'employee') {
+        if (user?.employeeId) {
+          filteredClaims = claimsData.filter(
+            c => Number(c.employeeId) === Number(user.employeeId),
+          );
+        } else {
+          filteredClaims = []; // Deny by default if ID is missing
+        }
+      } else if (user?.role === 'manager' && user?.teamId) {
+        // Manager sees their team's claims
         filteredClaims = claimsData.filter(
-          c => c.employeeId === user.employeeId,
+          c => Number(c.teamId) === Number(user.teamId),
         );
+      } else if (user?.role === 'rh' && user?.companyId) {
+        // HR sees their company's claims
+        filteredClaims = claimsData.filter(
+          c => Number(c.companyId) === Number(user.companyId),
+        );
+      } else if (user?.role !== 'admin') {
+        // Any other non-admin role with missing affiliations
+        filteredClaims = [];
       }
 
       // Sort by urgency and date
@@ -69,13 +89,22 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   };
 
   const groupedData = useMemo(() => {
+    const lowerQuery = searchQuery.toLowerCase();
+    const searchedClaims = claims.filter(
+      claim =>
+        (claim.description || '').toLowerCase().includes(lowerQuery) ||
+        (claim.type || '').toLowerCase().includes(lowerQuery) ||
+        (claim.status || '').toLowerCase().includes(lowerQuery) ||
+        (claim.employeeName || '').toLowerCase().includes(lowerQuery),
+    );
+
     if (user?.role !== 'admin' && user?.role !== 'rh') {
-      return [{ type: 'direct', items: claims }];
+      return [{ type: 'direct', id: 'direct', items: searchedClaims }];
     }
 
     const companiesMap = new Map<number | string, any>();
 
-    claims.forEach(claim => {
+    searchedClaims.forEach(claim => {
       const employee = employees.find(e => e.id === claim.employeeId);
       const companyId = employee?.companyId || 'other';
       const teamId = employee?.teamId || 'other';
@@ -108,7 +137,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
       ...c,
       teams: Array.from(c.teams.values()),
     }));
-  }, [claims, user?.role, employees, companies, teams]);
+  }, [claims, searchQuery, user?.role, employees, companies, teams]);
 
   const handleUpdateStatus = async (
     id: number,
@@ -149,8 +178,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
         <View style={styles.typeTag}>
           <Text style={styles.typeText}>
             {t(
-              `claims.type${
-                item.type.charAt(0).toUpperCase() + item.type.slice(1)
+              `claims.type${item.type.charAt(0).toUpperCase() + item.type.slice(1)
               }`,
             )}
           </Text>
@@ -165,13 +193,16 @@ export const ClaimsListScreen = ({ navigation }: any) => {
             style={[styles.statusText, { color: getStatusColor(item.status) }]}
           >
             {t(
-              `claims.status${
-                item.status.charAt(0).toUpperCase() + item.status.slice(1)
+              `claims.status${item.status.charAt(0).toUpperCase() + item.status.slice(1)
               }`,
             )}
           </Text>
         </View>
       </View>
+
+      <Text style={styles.requesterName}>
+        {item.employeeName || t('common.unknown')}
+      </Text>
 
       <Text style={styles.description} numberOfLines={2}>
         {item.description}
@@ -211,6 +242,13 @@ export const ClaimsListScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <SearchInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder={t('common.searchPlaceholder')}
+        />
+      </View>
       {loading ? (
         <ActivityIndicator
           size="large"
@@ -279,6 +317,10 @@ const createStyles = (theme: Theme) =>
       width: '100%',
       alignSelf: 'center',
     },
+    searchContainer: {
+      padding: theme.spacing.m,
+      paddingBottom: 0,
+    },
     card: {
       backgroundColor: theme.colors.surface,
       borderRadius: 16,
@@ -318,6 +360,12 @@ const createStyles = (theme: Theme) =>
       fontSize: 11,
       fontWeight: 'bold',
       textTransform: 'uppercase',
+    },
+    requesterName: {
+      ...theme.textVariants.caption,
+      color: theme.colors.primary,
+      fontWeight: 'bold',
+      marginBottom: 4,
     },
     description: {
       ...theme.textVariants.body,

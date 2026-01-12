@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { useModal } from '../../context/ModalContext';
 import { notificationService } from '../../services/notificationService';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { useSelector } from 'react-redux';
 import { selectAllCurrencies } from '../../store/slices/currenciesSlice';
 import { Dropdown } from '../../components/Dropdown';
@@ -33,6 +34,7 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { showModal } = useModal();
+  const { setActiveTab } = useContext(WebNavigationContext);
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const currencies = useSelector(selectAllCurrencies);
@@ -148,7 +150,26 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
         department: selectedEmp?.department || department,
       });
 
-      navigation.goBack();
+      showModal({
+        title: t('common.success'),
+        message: t('invoices.saveSuccess') || t('common.saved'),
+        buttons: [
+          {
+            text: t('common.ok'),
+            onPress: () => {
+              if (Platform.OS === 'web') {
+                setActiveTab('Invoices');
+              } else {
+                if (navigation && navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('Main', { screen: 'Invoices' });
+                }
+              }
+            },
+          },
+        ],
+      });
     } catch (error) {
       console.error('Error saving invoice:', error);
       notificationService.showAlert(t('common.error'), t('invoices.saveError'));

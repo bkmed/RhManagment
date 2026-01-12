@@ -303,17 +303,26 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
 
       if (employeeId) {
         await employeesDb.update(employeeId, employeeData);
-        showToast(t('employees.updated'));
       } else {
         const companyName = companies.find(c => c.id === companyId)?.name;
         await employeesDb.add(employeeData, companyName);
-        showToast(t('employees.added'));
       }
-      navigateBack();
+
+      showModal({
+        title: t('common.success'),
+        message: employeeId ? t('employees.updated') : t('employees.added'),
+        buttons: [
+          {
+            text: t('common.ok'),
+            onPress: () => navigateBack(),
+          },
+        ],
+      });
     } catch (error: any) {
-      const errorMessage = error.message === 'Email already exists'
-        ? t('employees.emailExists') || 'Email already exists'
-        : t('employees.saveError');
+      const errorMessage =
+        error.message === 'Email already exists'
+          ? t('employees.emailExists') || 'Email already exists'
+          : t('employees.saveError');
       showToast(errorMessage, 'error');
       console.error(error);
     } finally {
