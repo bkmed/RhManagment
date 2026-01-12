@@ -32,7 +32,7 @@ export const TeamVacationsScreen = () => {
   const teamLeaves = useMemo(() => {
     const memberIds = teamMembers.map((m: Employee) => m.id);
     return leaves
-      .filter((l: Leave) => memberIds.includes(l.employeeId || 0))
+      .filter((l: Leave) => memberIds.includes(l.employeeId || ''))
       .sort(
         (a: Leave, b: Leave) =>
           new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
@@ -82,7 +82,7 @@ export const TeamVacationsScreen = () => {
       <FlatList
         data={teamLeaves}
         renderItem={renderItem}
-        keyExtractor={item => (item.id || 0).toString()}
+        keyExtractor={item => item.id || ''}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>

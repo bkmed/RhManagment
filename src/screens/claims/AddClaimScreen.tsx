@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { claimsDb } from '../../database/claimsDb';
+import { employeesDb } from '../../database/employeesDb';
 import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
@@ -44,12 +45,12 @@ export const AddClaimScreen = ({ navigation }: any) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
-  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
-  const [teamId, setTeamId] = useState<number | undefined>(undefined);
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+  const [teamId, setTeamId] = useState<string | undefined>(undefined);
   /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
   /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
-  const [employeeId, setEmployeeId] = useState<number | undefined>(
-    user?.role === 'employee' ? (user?.employeeId || (user?.id ? Number(user.id) : undefined)) : undefined,
+  const [employeeId, setEmployeeId] = useState<string | undefined>(
+    user?.role === 'employee' ? (user?.employeeId || user?.id) : undefined,
   );
 
   // Load devices for selected employee - Moved here to fix scoping issue
@@ -72,6 +73,37 @@ export const AddClaimScreen = ({ navigation }: any) => {
   const employees = useSelector((state: RootState) =>
     selectAllEmployees(state),
   );
+
+  // Auto-resolve employee ID for logged-in user if missing
+  useEffect(() => {
+    if (user?.role === 'employee' && !employeeId) {
+      // First try to match by exact ID if available
+      let found = user.employeeId ? employees.find(e => e.id === user.employeeId) : undefined;
+
+      // Fallback: Match by email if not found or if user.employeeId was missing
+      if (!found && user.email) {
+        found = employees.find(e => e.email.toLowerCase() === user.email.toLowerCase());
+      }
+
+      if (found) {
+        setEmployeeId(found.id);
+        setCompanyId(found.companyId);
+        setTeamId(found.teamId);
+      } else {
+        // Double check DB directly just in case Redux is empty/stale
+        const fetchFromDb = async () => {
+          const allEmps = await employeesDb.getAll();
+          const dbFound = allEmps.find(e => e.email === user.email);
+          if (dbFound) {
+            setEmployeeId(dbFound.id);
+            setCompanyId(dbFound.companyId);
+            setTeamId(dbFound.teamId);
+          }
+        };
+        if (user.email) fetchFromDb();
+      }
+    }
+  }, [user, employees, employeeId]);
 
   const { setActiveTab } = useContext(WebNavigationContext);
 
@@ -141,22 +173,35 @@ export const AddClaimScreen = ({ navigation }: any) => {
     }
 
     // Check if employee has a team (if applicable logic)
-    // The user requirement: "pas d emeesage si je ne suis pas dans un team pour reclamation"
-    // Assuming we want to block or warn if no team.
     if (user?.role === 'employee' && !user?.teamId) {
-      notificationService.showAlert(t('common.error'), t('claims.noTeamError') || 'You must be in a team to submit a claim.');
-      return;
+      // Allow if we found the teamId via auto-resolve
+      if (!teamId) {
+        notificationService.showAlert(t('common.error'), t('claims.noTeamError') || 'You must be in a team to submit a claim.');
+        return;
+      }
     }
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
     // Resolve proper ids
-    let currentEmployeeId = employeeId || (user?.role === 'employee' && user?.employeeId ? Number(user.employeeId) : undefined);
+    let currentEmployeeId = employeeId || (user?.role === 'employee' && user?.employeeId ? user.employeeId : undefined);
 
     // Fallback: Try to find employee by email if ID is missing
     if (!currentEmployeeId && user?.email && user?.role === 'employee') {
-      const foundEmployee = employees.find(e => e.email.toLowerCase() === user.email.toLowerCase());
+      // First try from Redux list
+      let foundEmployee = employees.find(e => e.email.toLowerCase() === user.email.toLowerCase());
+
+      // If not found in Redux, try direct DB fetch (async)
+      if (!foundEmployee) {
+        try {
+          const allEmps = await employeesDb.getAll();
+          foundEmployee = allEmps.find(e => e.email.toLowerCase() === user.email.toLowerCase());
+        } catch (err) {
+          console.error("Failed to fetch employees for fallback", err);
+        }
+      }
+
       if (foundEmployee) {
         currentEmployeeId = foundEmployee.id;
       }
@@ -167,11 +212,28 @@ export const AddClaimScreen = ({ navigation }: any) => {
       return;
     }
 
-    const selectedEmployee = employees.find(e => e.id === currentEmployeeId);
+    // Must re-find selectedEmployee if we just found the ID
+    let selectedEmployee = employees.find(e => e.id === currentEmployeeId);
+    if (!selectedEmployee) {
+      // Try fetching from DB if not in Redux
+      try {
+        const fetched = await employeesDb.getById(currentEmployeeId);
+        selectedEmployee = fetched || undefined;
+      } catch (e) { console.log("Error fetching emp details", e); }
+    }
 
+    // Last check
     if (!selectedEmployee && user?.role === 'employee') {
-      notificationService.showAlert(t('common.error'), "Employee profile not found.");
-      return;
+      // Before erroring, try one more time to fetch ALL from DB and find
+      try {
+        const allEmps = await employeesDb.getAll();
+        selectedEmployee = allEmps.find(e => e.id === currentEmployeeId);
+      } catch (e) { console.error(e) }
+
+      if (!selectedEmployee) {
+        notificationService.showAlert(t('common.error'), "Employee profile not found in database.");
+        return;
+      }
     }
 
     try {
@@ -188,7 +250,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
         teamId: teamId || selectedEmployee?.teamId,
         employeeId: currentEmployeeId,
         employeeName: selectedEmployee?.name || user?.name || 'Unknown',
-        deviceId: type === 'material' && selectedDevice !== 'other' ? Number(selectedDevice) : undefined,
+        deviceId: type === 'material' && selectedDevice !== 'other' ? selectedDevice : undefined,
       };
 
       await claimsDb.add(claimData);
@@ -274,9 +336,9 @@ export const AddClaimScreen = ({ navigation }: any) => {
                       label: c.name,
                       value: String(c.id),
                     }))}
-                    value={companyId ? String(companyId) : ''}
+                    value={companyId || ''}
                     onSelect={val => {
-                      setCompanyId(val ? Number(val) : undefined);
+                      setCompanyId(val || undefined);
                       setTeamId(undefined);
                       setEmployeeId(undefined);
                     }}
@@ -296,9 +358,9 @@ export const AddClaimScreen = ({ navigation }: any) => {
                       label: t.name,
                       value: String(t.id),
                     }))}
-                    value={teamId ? String(teamId) : ''}
+                    value={teamId || ''}
                     onSelect={val => {
-                      setTeamId(val ? Number(val) : undefined);
+                      setTeamId(val || undefined);
                       setEmployeeId(undefined);
                     }}
                   />
@@ -318,9 +380,9 @@ export const AddClaimScreen = ({ navigation }: any) => {
                         label: e.name,
                         value: String(e.id),
                       }))}
-                    value={employeeId ? String(employeeId) : ''}
+                    value={employeeId || ''}
                     onSelect={val => {
-                      setEmployeeId(val ? Number(val) : undefined);
+                      setEmployeeId(val || undefined);
                       if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
                     }}
                     error={errors.employeeId}

@@ -50,7 +50,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
       if (user?.role === 'employee') {
         if (user?.employeeId) {
           filteredClaims = claimsData.filter(
-            c => Number(c.employeeId) === Number(user.employeeId),
+            c => c.employeeId === user.employeeId,
           );
         } else {
           filteredClaims = []; // Deny by default if ID is missing
@@ -58,12 +58,12 @@ export const ClaimsListScreen = ({ navigation }: any) => {
       } else if (user?.role === 'manager' && user?.teamId) {
         // Manager sees their team's claims
         filteredClaims = claimsData.filter(
-          c => Number(c.teamId) === Number(user.teamId),
+          c => c.teamId === user.teamId,
         );
       } else if (user?.role === 'rh' && user?.companyId) {
         // HR sees their company's claims
         filteredClaims = claimsData.filter(
-          c => Number(c.companyId) === Number(user.companyId),
+          c => c.companyId === user.companyId,
         );
       } else if (user?.role !== 'admin') {
         // Any other non-admin role with missing affiliations
@@ -143,7 +143,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   }, [claims, searchQuery, user?.role, employees, companies, teams]);
 
   const handleUpdateStatus = async (
-    id: number,
+    id: string,
     status: 'processed' | 'rejected',
   ) => {
     try {

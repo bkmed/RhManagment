@@ -10,42 +10,56 @@ import { Team } from './schema';
 
 const MOCK_TEAMS: Team[] = [
   {
-    id: 1,
-    name: 'Équipe Développement',
-    managerId: 3,
-    department: 'Informatique',
+    id: '1',
+    name: 'Tech Development',
+    managerId: '3',
+    companyId: '1',
+    department: 'Information Technology',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 2,
-    name: 'Équipe Logistique',
-    managerId: 4,
-    department: 'Opérations',
+    id: '2',
+    name: 'Global Marketing',
+    managerId: '4',
+    companyId: '1',
+    department: 'Marketing',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 3,
-    name: 'Équipe Marketing',
-    managerId: 5,
-    department: 'Ventes',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 4,
-    name: 'Équipe Finance',
-    managerId: 6,
+    id: '3',
+    name: 'Finance & Legal',
+    managerId: '5',
+    companyId: '1',
     department: 'Finance',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 5,
-    name: 'Équipe Support',
-    managerId: 7,
-    department: 'Clients',
+    id: '4',
+    name: 'Eco Operations',
+    managerId: '6',
+    companyId: '2',
+    department: 'Operations',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: '5',
+    name: 'Green Sales',
+    managerId: '7',
+    companyId: '2',
+    department: 'Sales',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: '6',
+    name: 'Logistics Plus',
+    managerId: '8',
+    companyId: '2',
+    department: 'Logistics',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -64,7 +78,7 @@ export const teamsDb = {
   },
 
   // Get team by ID
-  getById: async (id: number): Promise<Team | null> => {
+  getById: async (id: string): Promise<Team | null> => {
     return selectTeamById(id)(store.getState()) || null;
   },
 
@@ -77,9 +91,9 @@ export const teamsDb = {
   // Add new team
   add: async (
     team: Omit<Team, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<number> => {
+  ): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
 
     const newTeam: Team = {
       ...team,
@@ -93,7 +107,7 @@ export const teamsDb = {
   },
 
   // Update team
-  update: async (id: number, updates: Partial<Team>): Promise<void> => {
+  update: async (id: string, updates: Partial<Team>): Promise<void> => {
     const existing = selectTeamById(id)(store.getState());
 
     if (existing) {
@@ -107,7 +121,7 @@ export const teamsDb = {
   },
 
   // Delete team
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteTeamAction(id));
   },
 };

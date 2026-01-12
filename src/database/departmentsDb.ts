@@ -26,7 +26,7 @@ export const departmentsDb = {
     if (existing.length === 0) {
       const now = new Date().toISOString();
       const initial = DEFAULT_DEPARTMENTS.map((name, index) => ({
-        id: index + 1,
+        id: (index + 1).toString(),
         name,
         createdAt: now,
         updatedAt: now,
@@ -39,14 +39,14 @@ export const departmentsDb = {
     return selectAllDepartments(store.getState());
   },
 
-  getByCompany: async (companyId: number): Promise<Department[]> => {
+  getByCompany: async (companyId: string): Promise<Department[]> => {
     const all = selectAllDepartments(store.getState());
     return all.filter(d => !d.companyId || d.companyId === companyId);
   },
 
-  add: async (name: string, companyId?: number): Promise<number> => {
+  add: async (name: string, companyId?: string): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
     const newDept: Department = {
       id,
       name,
@@ -59,9 +59,9 @@ export const departmentsDb = {
   },
 
   update: async (
-    id: number,
+    id: string,
     name: string,
-    companyId?: number,
+    companyId?: string,
   ): Promise<void> => {
     const existing = selectAllDepartments(store.getState()).find(
       d => d.id === id,
@@ -78,7 +78,7 @@ export const departmentsDb = {
     }
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteDepartmentAction(id));
   },
 };

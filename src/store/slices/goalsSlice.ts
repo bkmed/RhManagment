@@ -30,7 +30,7 @@ const goalsSlice = createSlice({
         state.goals[index] = action.payload;
       }
     },
-    deleteGoal: (state, action: PayloadAction<number>) => {
+    deleteGoal: (state, action: PayloadAction<string>) => {
       state.goals = state.goals.filter(g => g.id !== action.payload);
     },
   },
@@ -39,7 +39,7 @@ const goalsSlice = createSlice({
 export const { setGoals, addGoal, updateGoal, deleteGoal } = goalsSlice.actions;
 
 export const selectAllGoals = (state: RootState) => state.goals.goals;
-export const selectGoalsByEmployeeId = (employeeId: number) =>
+export const selectGoalsByEmployeeId = (employeeId: string) =>
   createSelector([selectAllGoals], goals =>
     goals.filter(goal => goal.employeeId === employeeId),
   );

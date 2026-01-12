@@ -26,7 +26,7 @@ import { selectAllServices } from '../../store/slices/servicesSlice';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
-import { Permission, rbacService } from '../../services/rbacService';
+import { rbacService } from '../../services/rbacService';
 import { RootState } from '../../store';
 
 export const AddInvoiceScreen = ({ navigation }: any) => {
@@ -51,10 +51,10 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
-  const [teamId, setTeamId] = useState<number | undefined>(undefined);
-  const [employeeId, setEmployeeId] = useState<number | undefined>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : undefined,
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+  const [teamId, setTeamId] = useState<string | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<string | undefined>(
+    user?.role === 'employee' && user?.id ? user.id : undefined,
   );
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
     try {
       const selectedEmp = employees.find(e => e.id === employeeId);
       await invoicesDb.add({
-        employeeId: employeeId || user?.employeeId || 0,
+        employeeId: employeeId || user?.employeeId || '',
         employeeName: selectedEmp?.name || user?.name,
         amount: Number(amount),
         currency,
@@ -191,7 +191,7 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
                 data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
                 value={companyId ? String(companyId) : ''}
                 onSelect={val => {
-                  setCompanyId(val ? Number(val) : undefined);
+                  setCompanyId(val || undefined);
                   setTeamId(undefined);
                   setEmployeeId(undefined);
                 }}
@@ -202,7 +202,7 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
                 data={filteredTeams.map(t => ({ label: t.name, value: String(t.id) }))}
                 value={teamId ? String(teamId) : ''}
                 onSelect={val => {
-                  setTeamId(val ? Number(val) : undefined);
+                  setTeamId(val || undefined);
                   setEmployeeId(undefined);
                 }}
               />
@@ -211,7 +211,7 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
                 label={t('employees.name')}
                 data={filteredEmployees.map(e => ({ label: e.name, value: String(e.id) }))}
                 value={employeeId ? String(employeeId) : ''}
-                onSelect={val => setEmployeeId(Number(val))}
+                onSelect={val => setEmployeeId(val)}
               />
               <View style={{ height: theme.spacing.m }} />
             </View>

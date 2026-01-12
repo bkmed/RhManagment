@@ -11,11 +11,11 @@ import { Claim } from './schema';
 // Mock Data for initial seeding
 const MOCK_CLAIMS: Claim[] = [
   {
-    id: 1,
-    employeeId: 8,
+    id: '1',
+    employeeId: '8',
     employeeName: 'John Smith',
-    companyId: 1,
-    teamId: 1,
+    companyId: '1',
+    teamId: '1',
     type: 'material',
     description: 'Écran de rechange pour le bureau 10',
     isUrgent: true,
@@ -24,11 +24,11 @@ const MOCK_CLAIMS: Claim[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 2,
-    employeeId: 15,
+    id: '2',
+    employeeId: '15',
     employeeName: 'Sarah Doe',
-    companyId: 1,
-    teamId: 2,
+    companyId: '1',
+    teamId: '2',
     type: 'account',
     description: 'Accès VPN expiré',
     isUrgent: false,
@@ -38,11 +38,11 @@ const MOCK_CLAIMS: Claim[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 3,
-    employeeId: 22,
+    id: '3',
+    employeeId: '22',
     employeeName: 'Mohamed Ben Ali',
-    companyId: 2,
-    teamId: 5,
+    companyId: '2',
+    teamId: '5',
     type: 'other',
     description: 'Problème de chauffage zone B',
     isUrgent: false,
@@ -51,11 +51,11 @@ const MOCK_CLAIMS: Claim[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 4,
-    employeeId: 30,
+    id: '4',
+    employeeId: '30',
     employeeName: 'Fatima Dubois',
-    companyId: 1,
-    teamId: 4,
+    companyId: '1',
+    teamId: '4',
     type: 'material',
     description: 'Chaise de bureau cassée',
     isUrgent: false,
@@ -64,11 +64,11 @@ const MOCK_CLAIMS: Claim[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 5,
-    employeeId: 49,
+    id: '5',
+    employeeId: '49',
     employeeName: 'Lucas Martin',
-    companyId: 2,
-    teamId: 7,
+    companyId: '2',
+    teamId: '7',
     type: 'other',
     description: 'Demande de nouveaux produits de nettoyage',
     isUrgent: true,
@@ -91,20 +91,20 @@ export const claimsDb = {
     return [...items];
   },
 
-  getByEmployeeId: async (employeeId: number): Promise<Claim[]> => {
+  getByEmployeeId: async (employeeId: string): Promise<Claim[]> => {
     return selectAllClaims(store.getState()).filter(
       c => c.employeeId === employeeId,
     );
   },
 
-  add: async (item: Omit<Claim, 'id'>): Promise<number> => {
-    const id = Date.now();
+  add: async (item: Omit<Claim, 'id'>): Promise<string> => {
+    const id = Date.now().toString();
     const newItem: Claim = { ...item, id };
     store.dispatch(addClaimAction(newItem));
     return id;
   },
 
-  update: async (id: number, updates: Partial<Claim>): Promise<void> => {
+  update: async (id: string, updates: Partial<Claim>): Promise<void> => {
     const items = selectAllClaims(store.getState());
     const existing = items.find(c => c.id === id);
 
@@ -118,12 +118,12 @@ export const claimsDb = {
     }
   },
 
-  getById: async (id: number): Promise<Claim | null> => {
+  getById: async (id: string): Promise<Claim | null> => {
     const items = selectAllClaims(store.getState());
     return items.find(c => c.id === id) || null;
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteClaimAction(id));
   },
 };

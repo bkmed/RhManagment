@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Platform,
 } from 'react-native';
 import { useFocusEffect, ParamListBase } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -24,20 +23,6 @@ import { formatDate } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
-interface TeamGroup {
-  id: number | string;
-  name: string;
-  managerName: string;
-  items: (Leave | Illness)[];
-}
-
-interface CompanyGroup {
-  id: number | string;
-  name: string;
-  teams: TeamGroup[];
-  items: (Leave | Illness)[];
-  type?: string;
-}
 
 export const LeaveListScreen = ({
   navigation,

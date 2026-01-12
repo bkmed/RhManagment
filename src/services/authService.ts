@@ -12,7 +12,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  employeeId?: number;
+  employeeId?: string;
   alias?: string;
   jobTitle?: string;
   department?: string;
@@ -39,8 +39,8 @@ export interface User {
     website?: string;
   };
   skills?: string[];
-  teamId?: number;
-  companyId?: number;
+  teamId?: string;
+  companyId?: string;
   status?: 'active' | 'pending' | 'rejected';
   birthDate?: string;
   backgroundPhotoUri?: string;
@@ -63,7 +63,7 @@ export const authService = {
         password: 'admin123',
         user: {
           id: 'demo-admin',
-          employeeId: 1001,
+          employeeId: '1001',
           name: 'Demo Admin',
           email: 'admin@demo.com',
           role: 'admin',
@@ -79,7 +79,7 @@ export const authService = {
         password: 'hr123',
         user: {
           id: 'demo-hr',
-          employeeId: 1002,
+          employeeId: '1002',
           name: 'Demo HR',
           email: 'hr@demo.com',
           role: 'rh',
@@ -95,12 +95,12 @@ export const authService = {
         password: 'chef123',
         user: {
           id: 'demo-manager',
-          employeeId: 1003,
+          employeeId: '1003',
           name: 'Demo Manager',
           email: 'chef@demo.com',
           role: 'manager',
           department: 'IT',
-          teamId: 1,
+          teamId: '1',
           vacationDaysPerYear: 25,
           remainingVacationDays: 10,
           statePaidLeaves: 30,
@@ -117,7 +117,7 @@ export const authService = {
           email: 'employee@demo.com',
           role: 'employee',
           department: 'IT',
-          teamId: 1,
+          teamId: '1',
           vacationDaysPerYear: 25,
           remainingVacationDays: 25,
           statePaidLeaves: 30,
@@ -296,7 +296,7 @@ const seedDemoData = async () => {
   const company2Id = await companiesDb.add({ name: 'Global Services Ltd', logo: 'https://via.placeholder.com/150', address: '456 Business Blvd', country: 'Tunisia' });
 
   // 2. Create Teams (8) - 4 per company
-  const teamIds: number[] = [];
+  const teamIds: string[] = [];
   for (let i = 1; i <= 4; i++) {
     const tId = await teamsDb.add({ name: `Tech Team ${i}`, department: 'IT', companyId: company1Id });
     teamIds.push(tId);

@@ -127,7 +127,7 @@ export const notificationService = {
             },
             data: {
               type: 'payroll',
-              payrollId: payroll.id.toString(),
+              payrollId: payroll.id,
               time,
             },
           },
@@ -142,7 +142,7 @@ export const notificationService = {
   },
 
   // Cancel payroll reminders
-  cancelPayrollReminders: async (payrollId: number) => {
+  cancelPayrollReminders: async (payrollId: string) => {
     if (Platform.OS === 'web') return;
     const notifications = await notifee.getTriggerNotifications();
 
@@ -155,7 +155,7 @@ export const notificationService = {
 
   // Schedule leave reminder
   scheduleLeaveReminder: async (
-    leaveId: number,
+    leaveId: string,
     title: string,
     dateTime: string,
   ) => {
@@ -189,7 +189,7 @@ export const notificationService = {
         },
         data: {
           type: 'leave',
-          leaveId: leaveId.toString(),
+          leaveId,
         },
       },
       trigger,
@@ -197,14 +197,14 @@ export const notificationService = {
   },
 
   // Cancel leave reminder
-  cancelLeaveReminder: async (leaveId: number) => {
+  cancelLeaveReminder: async (leaveId: string) => {
     if (Platform.OS === 'web') return;
     await notifee.cancelNotification(`leave-${leaveId}`);
   },
 
   // Schedule illness expiry reminder
   scheduleIllnessExpiryReminder: async (
-    illnessId: number,
+    illnessId: string,
     payrollName: string,
     expiryDate: string,
   ) => {
@@ -243,7 +243,7 @@ export const notificationService = {
         },
         data: {
           type: 'illness',
-          illnessId: illnessId.toString(), // Updated Key
+          illnessId, // Updated Key
         },
       },
       trigger,
@@ -251,7 +251,7 @@ export const notificationService = {
   },
 
   // Cancel illness reminder
-  cancelIllnessReminder: async (illnessId: number) => {
+  cancelIllnessReminder: async (illnessId: string) => {
     if (Platform.OS === 'web') return;
     await notifee.cancelNotification(`ill-${illnessId}`);
   },
@@ -264,7 +264,7 @@ export const notificationService = {
 
   // Notify about leave request decision
   notifyLeaveRequestDecision: async (
-    leaveId: number,
+    leaveId: string,
     title: string,
     status: 'approved' | 'declined',
   ) => {
@@ -286,14 +286,14 @@ export const notificationService = {
       },
       data: {
         type: 'leave_decision',
-        leaveId: leaveId.toString(),
+        leaveId,
       },
     });
   },
 
   // Notify about new leave request (for HR/Manager - simplified as local notification for now)
   notifyNewLeaveRequest: async (
-    leaveId: number,
+    leaveId: string,
     employeeName: string,
     leaveType: string,
   ) => {
@@ -315,7 +315,7 @@ export const notificationService = {
       },
       data: {
         type: 'new_leave',
-        leaveId: leaveId.toString(),
+        leaveId,
       },
     });
   },
@@ -333,7 +333,7 @@ export const notificationService = {
     title: string;
     body: string;
     targetType: 'all' | 'company' | 'team';
-    targetId?: number;
+    targetId?: string;
     senderId?: number | string;
   }) => {
     console.log('BROADCAST NOTIFICATION:', { title, body, targetType, targetId, senderId });

@@ -43,7 +43,7 @@ const employeesSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteEmployee: (state, action: PayloadAction<number>) => {
+    deleteEmployee: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(e => e.id !== action.payload);
     },
   },
@@ -56,7 +56,7 @@ export const selectAllEmployees = (state: { employees: EmployeesState }) =>
   state.employees.items;
 
 export const selectEmployeeById =
-  (id: number) => (state: { employees: EmployeesState }) =>
+  (id: string) => (state: { employees: EmployeesState }) =>
     state.employees.items.find(e => e.id === id);
 
 export default employeesSlice.reducer;

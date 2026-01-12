@@ -30,7 +30,7 @@ const performanceSlice = createSlice({
         state.reviews[index] = action.payload;
       }
     },
-    deleteReview: (state, action: PayloadAction<number>) => {
+    deleteReview: (state, action: PayloadAction<string>) => {
       state.reviews = state.reviews.filter(r => r.id !== action.payload);
     },
   },
@@ -40,7 +40,7 @@ export const { setReviews, addReview, updateReview, deleteReview } =
   performanceSlice.actions;
 
 export const selectAllReviews = (state: RootState) => state.performance.reviews;
-export const selectReviewsByEmployeeId = (employeeId: number) =>
+export const selectReviewsByEmployeeId = (employeeId: string) =>
   createSelector([selectAllReviews], reviews =>
     reviews.filter(review => review.employeeId === employeeId),
   );

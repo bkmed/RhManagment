@@ -9,25 +9,26 @@ export const reviewPeriodsDb = {
         return json ? JSON.parse(json) : [];
     },
 
-    getById: async (id: number): Promise<ReviewPeriod | undefined> => {
+    getById: async (id: string): Promise<ReviewPeriod | undefined> => {
         const periods = await reviewPeriodsDb.getAll();
         return periods.find(p => p.id === id);
     },
 
-    add: async (period: Omit<ReviewPeriod, 'id' | 'createdAt' | 'updatedAt'>): Promise<number> => {
+    add: async (period: Omit<ReviewPeriod, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {
         const periods = await reviewPeriodsDb.getAll();
+        const id = Date.now().toString();
         const newPeriod: ReviewPeriod = {
             ...period,
-            id: Date.now(),
+            id,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         };
         periods.push(newPeriod);
         storageService.setString(REVIEW_PERIODS_KEY, JSON.stringify(periods));
-        return newPeriod.id;
+        return id;
     },
 
-    update: async (id: number, updates: Partial<ReviewPeriod>): Promise<void> => {
+    update: async (id: string, updates: Partial<ReviewPeriod>): Promise<void> => {
         const periods = await reviewPeriodsDb.getAll();
         const index = periods.findIndex(p => p.id === id);
         if (index !== -1) {
@@ -36,7 +37,7 @@ export const reviewPeriodsDb = {
         }
     },
 
-    delete: async (id: number): Promise<void> => {
+    delete: async (id: string): Promise<void> => {
         const periods = await reviewPeriodsDb.getAll();
         const filtered = periods.filter(p => p.id !== id);
         storageService.setString(REVIEW_PERIODS_KEY, JSON.stringify(filtered));

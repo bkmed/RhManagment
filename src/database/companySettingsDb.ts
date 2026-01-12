@@ -6,7 +6,7 @@ import {
 import { CompanySettings } from './schema';
 
 export const companySettingsDb = {
-  getSettingsByCompany: async (companyId: number): Promise<CompanySettings> => {
+  getSettingsByCompany: async (companyId: string): Promise<CompanySettings> => {
     const state = store.getState();
     const existing = selectCompanySettingsByCompanyId(state, companyId);
     if (existing) {
@@ -16,7 +16,7 @@ export const companySettingsDb = {
     // Return default settings if none exist
     const now = new Date().toISOString();
     return {
-      id: Date.now(),
+      id: Date.now().toString(),
       companyId,
       maxPermissionHours: 2,
       createdAt: now,
@@ -36,7 +36,7 @@ export const companySettingsDb = {
   /**
    * Helper to get max permission hours directly
    */
-  getMaxPermissionHours: async (companyId?: number): Promise<number> => {
+  getMaxPermissionHours: async (companyId?: string): Promise<number> => {
     if (!companyId) return 2; // Default
     const settings = await companySettingsDb.getSettingsByCompany(companyId);
     return settings.maxPermissionHours;

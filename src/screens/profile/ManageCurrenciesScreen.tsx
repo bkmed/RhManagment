@@ -25,7 +25,7 @@ export const ManageCurrenciesScreen = () => {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [newCode, setNewCode] = useState('');
   const [newSymbol, setNewSymbol] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingCode, setEditingCode] = useState('');
   const [editingSymbol, setEditingSymbol] = useState('');
 
@@ -62,7 +62,7 @@ export const ManageCurrenciesScreen = () => {
     loadCurrencies();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     showModal({
       title: t('common.confirm'),
       message: t('common.confirmDelete'),

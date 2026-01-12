@@ -18,7 +18,7 @@ export const invoicesDb = {
   },
 
   // Get invoice by ID
-  getById: async (id: number): Promise<Invoice | null> => {
+  getById: async (id: string): Promise<Invoice | null> => {
     const invoices = selectAllInvoices(store.getState());
     return invoices.find(i => i.id === id) || null;
   },
@@ -26,9 +26,9 @@ export const invoicesDb = {
   // Add new invoice
   add: async (
     invoice: Omit<Invoice, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<number> => {
+  ): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
 
     const newInvoice: Invoice = {
       ...invoice,
@@ -43,7 +43,7 @@ export const invoicesDb = {
   },
 
   // Update invoice
-  update: async (id: number, updates: Partial<Invoice>): Promise<void> => {
+  update: async (id: string, updates: Partial<Invoice>): Promise<void> => {
     const invoices = selectAllInvoices(store.getState());
     const existing = invoices.find(i => i.id === id);
 
@@ -58,7 +58,7 @@ export const invoicesDb = {
   },
 
   // Delete invoice
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteInvoiceAction(id));
   },
 };

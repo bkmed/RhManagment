@@ -3,7 +3,7 @@ import { Company } from '../../database/schema';
 
 interface CompaniesState {
   items: Company[];
-  selectedCompanyId: number | null;
+  selectedCompanyId: string | null;
 }
 
 const initialState: CompaniesState = {
@@ -27,13 +27,13 @@ const companiesSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteCompany: (state, action: PayloadAction<number>) => {
+    deleteCompany: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(c => c.id !== action.payload);
       if (state.selectedCompanyId === action.payload) {
         state.selectedCompanyId = null;
       }
     },
-    setSelectedCompanyId: (state, action: PayloadAction<number | null>) => {
+    setSelectedCompanyId: (state, action: PayloadAction<string | null>) => {
       state.selectedCompanyId = action.payload;
     },
   },
@@ -56,7 +56,7 @@ export const selectSelectedCompany = (state: { companies: CompaniesState }) =>
   state.companies.items.find(c => c.id === state.companies.selectedCompanyId);
 
 export const selectCompanyById =
-  (id: number) => (state: { companies: CompaniesState }) =>
+  (id: string) => (state: { companies: CompaniesState }) =>
     state.companies.items.find(c => c.id === id);
 
 export default companiesSlice.reducer;

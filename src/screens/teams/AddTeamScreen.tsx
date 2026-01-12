@@ -18,7 +18,6 @@ import { servicesDb } from '../../database/servicesDb';
 import { departmentsDb } from '../../database/departmentsDb';
 import { Employee, Service, Department } from '../../database/schema';
 import { Theme } from '../../theme';
-import { useToast } from '../../context/ToastContext';
 import { Dropdown } from '../../components/Dropdown';
 import { MultiSelectDropdown } from '../../components/MultiSelectDropdown';
 import { useSelector } from 'react-redux';
@@ -33,17 +32,16 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { showModal } = useModal();
-  const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { setActiveTab } = useContext(WebNavigationContext) as any;
 
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
-  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
   const [service, setService] = useState('');
 
   const companies = useSelector(selectAllCompanies);
-  const [managerId, setManagerId] = useState<number | undefined>(undefined);
+  const [managerId, setManagerId] = useState<string | undefined>(undefined);
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
 
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -82,7 +80,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
           // Note: This assumes we want to pre-select current members.
           // In teamsDb.add/update, we update employees.teamId.
           const teamMembers = emps.filter(e => e.teamId === editId);
-          setSelectedMemberIds(teamMembers.map(m => (m.id || 0).toString()));
+          setSelectedMemberIds(teamMembers.map(m => m.id || ''));
         }
       }
     } catch (error) {
@@ -121,7 +119,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
           department,
           service,
           companyId,
-          managerId: managerId || 0,
+          managerId: managerId || '',
         });
       } else {
         // 1. Create Team
@@ -130,13 +128,12 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
           department,
           service,
           companyId,
-          managerId: managerId || 0,
+          managerId: managerId || '',
         });
       }
 
       // 3. Update Members' teamId and companyId
-      for (const memberIdStr of selectedMemberIds) {
-        const memberId = Number(memberIdStr);
+      for (const memberId of selectedMemberIds) {
         await employeesDb.update(memberId, {
           teamId,
           // Ensure they are attached to the company too
@@ -209,7 +206,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
   const employeeOptions = useMemo(() => {
     return eligibleEmployees.map(e => ({
       label: e.name,
-      value: (e.id || 0).toString(),
+      value: e.id || '',
     }));
   }, [eligibleEmployees]);
 
@@ -224,7 +221,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
   // Filter out selected manager from member options
   const memberOptions = useMemo(() => {
     // Also exclude the currently selected manager from being a "member" (manager is separate role in team)
-    return employeeOptions.filter(e => Number(e.value) !== managerId);
+    return employeeOptions.filter(e => e.value !== managerId);
   }, [employeeOptions, managerId]);
 
   // Reset members selection if the selected manager was in it
@@ -255,7 +252,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
                 value: String(c.id),
               }))}
               value={companyId ? String(companyId) : ''}
-              onSelect={val => setCompanyId(Number(val))}
+              onSelect={val => setCompanyId(val || undefined)}
               placeholder={t('companies.selectCompany')}
             />
           </View>
@@ -308,8 +305,8 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
             <Dropdown
               label={t('teams.selectTeamLeader') || 'Select Team Leader'}
               data={employeeOptions}
-              value={managerId ? managerId.toString() : ''}
-              onSelect={(val: string) => setManagerId(Number(val))}
+              value={managerId || ''}
+              onSelect={(val: string) => setManagerId(val || undefined)}
               error={errors.manager}
             />
           </View>

@@ -34,7 +34,7 @@ export const LeaveApprovalListScreen = () => {
   const loadPendingLeaves = async () => {
     try {
       let leaves = await leavesDb.getPending();
-      const currentUser = await employeesDb.getById(user?.employeeId!);
+      //const currentUser = await employeesDb.getById(user?.employeeId!);
 
       const allEmployees = await employeesDb.getAll();
 
@@ -104,7 +104,7 @@ export const LeaveApprovalListScreen = () => {
     }
   };
 
-  const handleDecline = async (id: number) => {
+  const handleDecline = async (id: string) => {
     try {
       await leavesDb.update(id, { status: 'declined' });
       notificationService.showAlert(
@@ -170,7 +170,7 @@ export const LeaveApprovalListScreen = () => {
       <FlatList
         data={pendingLeaves}
         renderItem={renderItem}
-        keyExtractor={item => item.id!.toString()}
+        keyExtractor={item => item.id!}
         ListEmptyComponent={
           <View style={styles.centered}>
             <Text style={styles.emptyText}>{t('leaves.noLeaves')}</Text>

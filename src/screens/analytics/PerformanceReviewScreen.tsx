@@ -44,11 +44,11 @@ export const PerformanceReviewScreen = () => {
     if (user?.role === 'manager')
       return state.performance.reviews.filter(
         (r: PerformanceReview) =>
-          r.reviewerId === (user?.id ? Number(user.id) : 0),
+          r.reviewerId === (user?.id || ''),
       );
     return state.performance.reviews.filter(
       (r: PerformanceReview) =>
-        r.employeeId === (user?.id ? Number(user.id) : 0),
+        r.employeeId === (user?.id || ''),
     );
   });
 
@@ -59,11 +59,11 @@ export const PerformanceReviewScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
 
   // Filter States for Modal
-  const [tempCompanyId, setTempCompanyId] = useState<number | 'none' | null>(
+  const [tempCompanyId, setTempCompanyId] = useState<string | 'none' | null>(
     null,
   );
-  const [tempTeamId, setTempTeamId] = useState<number | 'none' | null>(null);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
+  const [tempTeamId, setTempTeamId] = useState<string | 'none' | null>(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
     null,
   );
 
@@ -95,9 +95,9 @@ export const PerformanceReviewScreen = () => {
     if (!selectedEmployeeId || !comments.trim()) return;
 
     const reviewData: PerformanceReview = {
-      id: Date.now(),
+      id: Date.now().toString(),
       employeeId: selectedEmployeeId,
-      reviewerId: user?.id ? Number(user.id) : 0,
+      reviewerId: user?.id || '',
       period,
       score: Number(score),
       comments,

@@ -25,8 +25,7 @@ export const CareerHubScreen = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
-  const rawId = user?.id ? Number(user.id) : 0;
-  const employeeId = user?.employeeId || (!isNaN(rawId) ? rawId : 0);
+  const employeeId = user?.employeeId || user?.id || '';
 
   const goalsSelector = useMemo(
     () => selectGoalsByEmployeeId(employeeId),
@@ -54,7 +53,7 @@ export const CareerHubScreen = () => {
         deadline,
       }
       : {
-        id: Date.now(),
+        id: Date.now().toString(),
         employeeId,
         title,
         description,

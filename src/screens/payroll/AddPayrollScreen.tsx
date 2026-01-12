@@ -18,11 +18,10 @@ import { Theme } from '../../theme';
 import { Payroll } from '../../database/schema';
 import { Dropdown } from '../../components/Dropdown';
 import { useSelector } from 'react-redux';
-import { selectAllServices } from '../../store/slices/servicesSlice';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
-import { Permission, rbacService } from '../../services/rbacService';
+import { rbacService } from '../../services/rbacService';
 import { useAuth } from '../../context/AuthContext';
 import { RootState } from '../../store';
 
@@ -42,8 +41,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
     new Date(new Date().setHours(8, 0, 0, 0)),
     new Date(new Date().setHours(20, 0, 0, 0)),
   ]);
-  const [mealVouchers, setMealVouchers] = useState('');
-  const [giftVouchers, setGiftVouchers] = useState('');
+  const [, setMealVouchers] = useState('');
+  const [, setGiftVouchers] = useState('');
   const [bonusAmount, setBonusAmount] = useState('');
   const [bonusType, setBonusType] = useState('none');
   const [department, setDepartment] = useState('');
@@ -71,7 +70,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
-  const services = useSelector((state: RootState) => selectAllServices(state));
+  //const services = useSelector((state: RootState) => selectAllServices(state));
   const companies = useSelector((state: RootState) =>
     selectAllCompanies(state),
   );
@@ -82,9 +81,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   const { user } = useAuth();
 
   // New state for company/team/employee
-  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
-  const [teamId, setTeamId] = useState<number | undefined>(undefined);
-  const [employeeId, setEmployeeId] = useState<number | undefined>(undefined);
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+  const [teamId, setTeamId] = useState<string | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     loadInitialData();
@@ -364,7 +363,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                     }))}
                     value={companyId ? String(companyId) : ''}
                     onSelect={val => {
-                      setCompanyId(val ? Number(val) : undefined);
+                      setCompanyId(val || undefined);
                       setTeamId(undefined);
                       setEmployeeId(undefined);
                     }}
@@ -381,7 +380,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                     }))}
                     value={teamId ? String(teamId) : ''}
                     onSelect={val => {
-                      setTeamId(val ? Number(val) : undefined);
+                      setTeamId(val || undefined);
                       setEmployeeId(undefined);
                     }}
                   />
@@ -405,7 +404,7 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                     }))}
                   value={employeeId ? String(employeeId) : ''}
                   onSelect={val => {
-                    setEmployeeId(val ? Number(val) : undefined);
+                    setEmployeeId(val || undefined);
                     if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
                   }}
                   error={errors.employeeId}

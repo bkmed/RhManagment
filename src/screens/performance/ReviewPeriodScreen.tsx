@@ -34,7 +34,7 @@ export const ReviewPeriodScreen = () => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [status, setStatus] = useState<'active' | 'closed' | 'planned'>('planned');
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     useEffect(() => {
         loadPeriods();
@@ -76,7 +76,7 @@ export const ReviewPeriodScreen = () => {
         }
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         Alert.alert(
             t('common.delete'),
             t('common.confirmDelete'),
@@ -156,7 +156,7 @@ export const ReviewPeriodScreen = () => {
             <FlatList
                 data={periods}
                 renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={item => item.id}
                 contentContainerStyle={styles.listContent}
                 ListEmptyComponent={<Text style={styles.emptyText}>{t('common.noData')}</Text>}
             />

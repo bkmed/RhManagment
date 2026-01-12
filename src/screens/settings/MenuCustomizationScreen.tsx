@@ -6,12 +6,10 @@ import {
     Switch,
     FlatList,
     TouchableOpacity,
-    Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
-import { useAuth } from '../../context/AuthContext';
 import { menuPreferencesService, MenuPreferences } from '../../services/menuPreferencesService';
 import { notificationService } from '../../services/notificationService';
 
@@ -34,14 +32,13 @@ const AVAILABLE_MENU_ITEMS = [
     { key: 'Assistant', category: 'communication' },
 ];
 
-export const MenuCustomizationScreen = ({ navigation }: any) => {
-    const { user } = useAuth();
+export const MenuCustomizationScreen = () => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [preferences, setPreferences] = useState<MenuPreferences>({ hiddenItems: [], customOrder: [] });
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
 
     useEffect(() => {
         loadPreferences();

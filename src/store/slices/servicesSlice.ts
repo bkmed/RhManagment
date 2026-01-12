@@ -31,7 +31,7 @@ const servicesSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteService: (state, action: PayloadAction<number>) => {
+    deleteService: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(item => item.id !== action.payload);
     },
   },
@@ -43,7 +43,7 @@ export const { setServices, addService, updateService, deleteService } =
 export const selectAllServices = (state: { services: ServicesState }) =>
   state.services.items;
 export const selectServiceById =
-  (id: number) => (state: { services: ServicesState }) =>
+  (id: string) => (state: { services: ServicesState }) =>
     state.services.items.find(s => s.id === id);
 
 export default servicesSlice.reducer;

@@ -37,8 +37,8 @@ export const IllnessListScreen = ({ navigation }: any) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'mine' | 'all'>('mine');
-  const [filterCompanyId, setFilterCompanyId] = useState<number | null>(null);
-  const [filterTeamId, setFilterTeamId] = useState<number | null>(null);
+  const [filterCompanyId, setFilterCompanyId] = useState<string | null>(null);
+  const [filterTeamId, setFilterTeamId] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
@@ -95,7 +95,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
         if (filterCompanyId !== null) {
           data = data.filter(ill => {
             const emp = employees.find(e => e.id === ill.employeeId);
-            return filterCompanyId === -1
+            return filterCompanyId === '-1'
               ? !emp?.companyId
               : emp?.companyId === filterCompanyId;
           });
@@ -103,7 +103,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
         if (filterTeamId !== null) {
           data = data.filter(ill => {
             const emp = employees.find(e => e.id === ill.employeeId);
-            return filterTeamId === -1
+            return filterTeamId === '-1'
               ? !emp?.teamId
               : emp?.teamId === filterTeamId;
           });
@@ -321,18 +321,18 @@ export const IllnessListScreen = ({ navigation }: any) => {
                 ))}
                 <TouchableOpacity
                   onPress={() => {
-                    setFilterCompanyId(-1);
+                    setFilterCompanyId('-1');
                     setFilterTeamId(null);
                   }}
                   style={[
                     styles.filterChip,
-                    filterCompanyId === -1 && styles.activeFilterChip,
+                    filterCompanyId === '-1' && styles.activeFilterChip,
                   ]}
                 >
                   <Text
                     style={[
                       styles.filterChipText,
-                      filterCompanyId === -1 && styles.activeFilterChipText,
+                      filterCompanyId === '-1' && styles.activeFilterChipText,
                     ]}
                   >
                     {t('common.none')}

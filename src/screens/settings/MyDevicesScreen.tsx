@@ -33,7 +33,7 @@ export const MyDevicesScreen = () => {
   );
 
   const handleReportStatus = (
-    id: number,
+    id: string,
     currentCondition: 'working' | 'faulty',
   ) => {
     const newCondition = currentCondition === 'working' ? 'faulty' : 'working';

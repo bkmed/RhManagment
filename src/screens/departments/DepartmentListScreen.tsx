@@ -58,7 +58,7 @@ export const DepartmentListScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     if (Platform.OS === 'web') {
       setActiveTab?.('Departments', 'AddDepartment', {
         departmentId: id,
@@ -69,7 +69,7 @@ export const DepartmentListScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     showModal({
       title: t('common.confirm'),
       message: t('common.confirmDelete'),

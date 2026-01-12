@@ -32,7 +32,7 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
 
   const [name, setName] = useState('');
   const [selectedCompanyId, setSelectedCompanyId] = useState<
-    number | undefined
+    string | undefined
   >(companyId);
   const [error, setError] = useState('');
 
@@ -43,7 +43,7 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
         label: t('common.allCompanies') || 'All Companies / Global',
         value: 'global',
       },
-      ...companies.map(c => ({ label: c.name, value: c.id.toString() })),
+      ...companies.map(c => ({ label: c.name, value: c.id })),
     ],
     [companies, t],
   );
@@ -137,9 +137,9 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
           <Dropdown
             label={t('companies.select')}
             data={companyOptions}
-            value={selectedCompanyId ? selectedCompanyId.toString() : 'global'}
+            value={selectedCompanyId || 'global'}
             onSelect={val =>
-              setSelectedCompanyId(val === 'global' ? undefined : Number(val))
+              setSelectedCompanyId(val === 'global' ? undefined : val)
             }
           />
         </View>

@@ -41,7 +41,7 @@ export const selectAllCompanySettings = (state: {
 }) => state.companySettings.settings;
 export const selectCompanySettingsByCompanyId = (
   state: { companySettings: CompanySettingsState },
-  companyId: number,
+  companyId: string,
 ) => state.companySettings.settings.find(s => s.companyId === companyId);
 
 export default companySettingsSlice.reducer;

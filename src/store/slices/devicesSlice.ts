@@ -33,7 +33,7 @@ const devicesSlice = createSlice({
     },
     updateDeviceStatus: (
       state,
-      action: PayloadAction<{ id: number; condition: 'working' | 'faulty' }>,
+      action: PayloadAction<{ id: string; condition: 'working' | 'faulty' }>,
     ) => {
       const device = state.items.find(item => item.id === action.payload.id);
       if (device) {
@@ -44,8 +44,8 @@ const devicesSlice = createSlice({
     assignDevice: (
       state,
       action: PayloadAction<{
-        id: number;
-        employeeId: number;
+        id: string;
+        employeeId: string;
         employeeName: string;
       }>,
     ) => {
@@ -57,7 +57,7 @@ const devicesSlice = createSlice({
         device.updatedAt = new Date().toISOString();
       }
     },
-    deleteDevice: (state, action: PayloadAction<number>) => {
+    deleteDevice: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(item => item.id !== action.payload);
     },
   },
@@ -75,7 +75,7 @@ export const {
 export const selectAllDevices = (state: { devices: DevicesState }) =>
   state.devices.items;
 export const selectDeviceById =
-  (id: number) => (state: { devices: DevicesState }) =>
+  (id: string) => (state: { devices: DevicesState }) =>
     state.devices.items.find(d => d.id === id);
 
 export default devicesSlice.reducer;

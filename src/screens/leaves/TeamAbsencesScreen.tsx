@@ -13,7 +13,7 @@ import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { formatDate } from '../../utils/dateUtils';
-import { Leave, Employee } from '../../database/schema';
+import { Leave } from '../../database/schema';
 import { useAuth } from '../../context/AuthContext';
 
 export const TeamAbsencesScreen = () => {

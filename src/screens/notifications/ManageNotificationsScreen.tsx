@@ -6,7 +6,6 @@ import {
     TextInput,
     TouchableOpacity,
     ScrollView,
-    Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
@@ -70,7 +69,7 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                 title,
                 body: message,
                 targetType,
-                targetId: targetId ? parseInt(targetId) : undefined,
+                targetId: targetId || undefined,
                 senderId: user?.id
             });
 

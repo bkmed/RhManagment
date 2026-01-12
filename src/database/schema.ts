@@ -1,8 +1,8 @@
 export type ClaimType = 'material' | 'account' | 'other';
 
 export interface Claim {
-  id?: number;
-  employeeId: number;
+  id?: string;
+  employeeId: string;
   employeeName?: string;
   type: ClaimType;
   description: string;
@@ -10,21 +10,21 @@ export interface Claim {
   status: 'pending' | 'processed' | 'rejected';
   photoUri?: string;
   processedByName?: string;
-  companyId?: number;
-  teamId?: number;
+  companyId?: string;
+  teamId?: string;
   createdAt: string;
   updatedAt: string;
 }
 export interface Service {
-  id: number;
+  id: string;
   name: string;
-  companyId?: number;
+  companyId?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Currency {
-  id: number;
+  id: string;
   code: string; // e.g. "EUR", "USD", "TND"
   symbol: string; // e.g. "€", "$", "DT"
   createdAt: string;
@@ -32,7 +32,7 @@ export interface Currency {
 }
 
 export interface Payroll {
-  id?: number;
+  id?: string;
   name: string;
   employeeName?: string;
   amount: number;
@@ -44,7 +44,7 @@ export interface Payroll {
   notes?: string;
   reminderEnabled: boolean;
   isUrgent?: boolean;
-  employeeId?: number;
+  employeeId?: string;
   mealVouchers?: number;
   giftVouchers?: number;
   bonusAmount?: number;
@@ -58,23 +58,23 @@ export interface Payroll {
   hoursWorked?: number;
   overtimeHours?: number;
   overtimeRate?: number;
-  companyId?: number;
-  teamId?: number;
+  companyId?: string;
+  teamId?: string;
 }
 
 export interface PayrollHistory {
-  id?: number;
-  payrollId: number;
+  id?: string;
+  payrollId: string;
   paidAt: string; // ISO datetime string
   status: 'paid' | 'missed' | 'skipped';
   notes?: string;
 }
 
 export interface Leave {
-  id?: number;
+  id?: string;
   title: string;
   employeeName?: string;
-  employeeId?: number;
+  employeeId?: string;
   location?: string; // Local
   dateTime: string; // ISO datetime string
   startDate?: string; // ISO date string
@@ -87,13 +87,13 @@ export interface Leave {
   updatedAt: string;
   department?: string; // Service
   photoUri?: string; // NEW: Photo for sick leaves
-  companyId?: number;
-  teamId?: number;
+  companyId?: string;
+  teamId?: string;
 }
 
 export interface RemoteWork {
-  id?: number;
-  employeeId: number;
+  id?: string;
+  employeeId: string;
   date: string; // ISO date string (YYYY-MM-DD)
   status: 'remote' | 'office';
   createdAt: string;
@@ -101,11 +101,11 @@ export interface RemoteWork {
 }
 
 export interface Illness {
-  id?: number;
+  id?: string;
   payrollName: string;
-  payrollIds?: string; // JSON string of number[] linking to Payroll.id
+  payrollIds?: string; // JSON string of string[] linking to Payroll.id
   employeeName?: string;
-  employeeId?: number;
+  employeeId?: string;
   issueDate: string;
   expiryDate?: string;
   photoUri?: string;
@@ -114,13 +114,13 @@ export interface Illness {
   updatedAt: string;
   department?: string; // Service
   location?: string; // Local
-  companyId?: number;
-  teamId?: number;
+  companyId?: string;
+  teamId?: string;
 }
 
 export interface Invoice {
-  id?: number;
-  employeeId: number;
+  id?: string;
+  employeeId: string;
   employeeName?: string;
   amount: number;
   currency: string;
@@ -129,21 +129,21 @@ export interface Invoice {
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
   updatedAt: string;
-  companyId?: number;
-  teamId?: number;
+  companyId?: string;
+  teamId?: string;
   department?: string; // Service
 }
 
 export interface IllnessHistory {
-  id: number;
-  illnessId: number;
+  id: string;
+  illnessId: string;
   action: 'created' | 'updated' | 'refilled';
   date: string;
   notes?: string;
 }
 
 export interface Company {
-  id: number;
+  id: string;
   name: string;
   logo?: string;
   address?: string;
@@ -155,28 +155,28 @@ export interface Company {
 }
 
 export interface Department {
-  id: number;
+  id: string;
   name: string;
-  companyId?: number;
+  companyId?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CompanySettings {
-  id: number;
-  companyId: number;
+  id: string;
+  companyId: string;
   maxPermissionHours: number;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Team {
-  id: number;
+  id: string;
   name: string;
-  managerId?: number; // Employee ID of the manager
+  managerId?: string; // Employee ID of the manager
   department: string;
   service?: string;
-  companyId?: number;
+  companyId?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -202,9 +202,9 @@ export interface JobHistoryItem {
 }
 
 export interface PerformanceReview {
-  id?: number;
-  employeeId: number;
-  reviewerId: number;
+  id?: string;
+  employeeId: string;
+  reviewerId: string;
   period: string; // e.g. "Q1 2024"
   score: number; // 1-5
   comments: string;
@@ -213,8 +213,8 @@ export interface PerformanceReview {
 }
 
 export interface Goal {
-  id?: number;
-  employeeId: number;
+  id?: string;
+  employeeId: string;
   title: string;
   description: string;
   deadline: string;
@@ -224,16 +224,16 @@ export interface Goal {
 }
 
 export interface Announcement {
-  id?: number;
+  id?: string;
   title: string;
   content: string;
-  authorId: number;
+  authorId: string;
   authorName: string;
   date: string;
   targetDepartment?: string; // Optional: specific department or 'all'
   createdAt: string;
   category: 'news' | 'event' | 'alert';
-  companyId?: number;
+  companyId?: string;
   backgroundPhotoUri?: string;
 }
 
@@ -246,7 +246,7 @@ export interface ChatMessage {
 }
 
 export interface Employee {
-  id?: number;
+  id?: string;
   name: string;
   alias?: string; // NEW: Short display name
   firstName?: string;
@@ -265,8 +265,8 @@ export interface Employee {
   notes?: string;
   department?: string;
   role?: string; // 'admin' | 'rh' | 'manager' | 'employee'
-  teamId?: number; // CONSTRAINT: One team per employee
-  companyId?: number; // CONSTRAINT: One company per employee
+  teamId?: string; // CONSTRAINT: One team per employee
+  companyId?: string; // CONSTRAINT: One company per employee
   vacationDaysPerYear: number;
   remainingVacationDays: number;
   statePaidLeaves: number;
@@ -287,20 +287,20 @@ export interface Employee {
 }
 
 export interface Device {
-  id?: number;
+  id?: string;
   name: string;
   type: string;
   serialNumber: string;
   status: 'available' | 'assigned' | 'maintenance';
   condition: 'working' | 'faulty';
   assignedTo?: string;
-  assignedToId?: number;
+  assignedToId?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface ReviewPeriod {
-  id: number;
+  id: string;
   name: string;
   startDate: string;
   endDate: string;

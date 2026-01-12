@@ -534,13 +534,13 @@ export const HomeScreen = () => {
         if (userRole === 'employee') {
           if (user?.employeeId) {
             allPayroll = allPayroll.filter(
-              p => Number(p.employeeId) === Number(user.employeeId),
+              p => p.employeeId === user.employeeId,
             );
             upcomingLeaves = upcomingLeaves.filter(
-              l => Number(l.employeeId) === Number(user.employeeId),
+              l => l.employeeId === user.employeeId,
             );
             expiringIllnesses = expiringIllnesses.filter(
-              i => Number(i.employeeId) === Number(user.employeeId),
+              i => i.employeeId === user.employeeId,
             );
           } else {
             allPayroll = [];
@@ -550,25 +550,25 @@ export const HomeScreen = () => {
         } else if (userRole === 'manager') {
           if (user?.teamId) {
             allPayroll = allPayroll.filter(
-              p => Number(p.teamId) === Number(user.teamId),
+              p => p.teamId === user.teamId,
             );
             upcomingLeaves = upcomingLeaves.filter(
-              l => Number(l.teamId) === Number(user.teamId),
+              l => l.teamId === user.teamId,
             );
             expiringIllnesses = expiringIllnesses.filter(
-              i => Number(i.teamId) === Number(user.teamId),
+              i => i.teamId === user.teamId,
             );
           }
         } else if (userRole === 'rh') {
           if (user?.companyId) {
             allPayroll = allPayroll.filter(
-              p => Number(p.companyId) === Number(user.companyId),
+              p => p.companyId === user.companyId,
             );
             upcomingLeaves = upcomingLeaves.filter(
-              l => Number(l.companyId) === Number(user.companyId),
+              l => l.companyId === user.companyId,
             );
             expiringIllnesses = expiringIllnesses.filter(
-              i => Number(i.companyId) === Number(user.companyId),
+              i => i.companyId === user.companyId,
             );
           }
         }

@@ -25,7 +25,7 @@ const payrollSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deletePayroll: (state, action: PayloadAction<number>) => {
+    deletePayroll: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(p => p.id !== action.payload);
     },
   },

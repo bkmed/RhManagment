@@ -14,7 +14,6 @@ import { companiesDb } from '../../database/companiesDb';
 import { useModal } from '../../context/ModalContext';
 import { notificationService } from '../../services/notificationService';
 import { Theme } from '../../theme';
-import { useToast } from '../../context/ToastContext';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { CountryPicker } from '../../components/CountryPicker';
 import { isValidEmail } from '../../utils/validation';
@@ -26,7 +25,6 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { showModal } = useModal();
-  const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { setActiveTab } = useContext(WebNavigationContext);
 

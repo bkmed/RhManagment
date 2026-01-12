@@ -43,7 +43,7 @@ export const OrgChartScreen = () => {
   }, [employees]);
 
   // Helper function to count supervised employees
-  const getSupervisedCount = (managerId: number) => {
+  const getSupervisedCount = (managerId: string) => {
     return employees.filter(
       (e: Employee) =>
         e.teamId === teams.find(t => t.managerId === managerId)?.id,

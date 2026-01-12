@@ -57,13 +57,13 @@ export const AnnouncementsScreen = () => {
     if (!newTitle.trim() || !newContent.trim()) return;
 
     const announcement: Announcement = {
-      id: Date.now(),
+      id: Date.now().toString(),
       title: newTitle,
       content: newContent,
       category: newCategory,
-      authorId: Number(user?.id) || 0,
+      authorId: user?.id || '',
       authorName: user?.name || 'Admin',
-      companyId: selectedCompanyId || 0,
+      companyId: selectedCompanyId || '',
       createdAt: new Date().toISOString(),
       date: new Date().toISOString(),
     };
@@ -239,7 +239,7 @@ export const AnnouncementsScreen = () => {
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )}
         renderItem={renderItem}
-        keyExtractor={item => (item.id || 0).toString()}
+        keyExtractor={item => item.id || ''}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>

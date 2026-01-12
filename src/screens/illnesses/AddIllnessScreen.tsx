@@ -47,7 +47,7 @@ export const AddIllnessScreen = ({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const params = route.params as
-    | { illnessId?: string; employeeName?: string; employeeId?: number }
+    | { illnessId?: string; employeeName?: string; employeeId?: string }
     | undefined;
   const illnessId = params?.illnessId;
   const isEdit = !!illnessId;
@@ -78,10 +78,12 @@ export const AddIllnessScreen = ({
   );
   const allLeaves = useSelector((state: RootState) => selectAllLeaves(state));
 
-  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
-  const [teamId, setTeamId] = useState<number | undefined>(undefined);
-  const [employeeId, setEmployeeId] = useState<number | undefined>(
-    !rbacService.hasPermission(user, Permission.MANAGE_TEAMS) && user?.id ? Number(user.id) : undefined,
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+  const [teamId, setTeamId] = useState<string | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<string | undefined>(
+    !rbacService.hasPermission(user, Permission.MANAGE_TEAMS) && user?.id
+      ? user.id
+      : undefined,
   );
 
   // Auto-fill logic for employees
@@ -109,7 +111,7 @@ export const AddIllnessScreen = ({
   const loadIllness = async () => {
     if (!illnessId) return;
     try {
-      const illness = await illnessesDb.getById(Number(illnessId));
+      const illness = await illnessesDb.getById(illnessId);
       if (illness) {
         setPayrollName(illness.payrollName || '');
         setEmployeeName(illness.employeeName || '');
@@ -201,10 +203,10 @@ export const AddIllnessScreen = ({
     const checkEnd = expiryDate || issueDate!;
 
     const hasCollision = allIllnesses.some((i: Illness) => {
-      if (Number(i.id) === Number(illnessId)) return false;
+      if (i.id === illnessId) return false;
       if (
-        Number(i.employeeId) !==
-        Number(user?.role === 'employee' ? user?.employeeId : employeeId)
+        i.employeeId !==
+        (user?.role === 'employee' ? user?.employeeId : employeeId)
       )
         return false;
 
@@ -216,9 +218,9 @@ export const AddIllnessScreen = ({
     });
 
     if (!hasCollision) {
-      const targetEmpId = Number(user?.role === 'employee' ? user?.employeeId : employeeId);
+      const targetEmpId = user?.role === 'employee' ? user?.employeeId : employeeId;
       const hasLeaveCollision = allLeaves.some((l: Leave) => {
-        if (Number(l.employeeId) !== targetEmpId) return false;
+        if (l.employeeId !== targetEmpId) return false;
         if (l.status === 'declined') return false;
 
         const lStart = new Date(l.startDate || l.dateTime);
@@ -263,13 +265,13 @@ export const AddIllnessScreen = ({
         teamId,
       };
 
-      let id: number;
+      let id: string;
       if (isEdit && illnessId) {
         await illnessesDb.update(
-          Number(illnessId),
+          illnessId,
           illnessData as Partial<Illness>,
         );
-        id = Number(illnessId);
+        id = illnessId;
       } else {
         id = await illnessesDb.add(illnessData as Omit<Illness, 'id'>);
       }
@@ -378,7 +380,7 @@ export const AddIllnessScreen = ({
                       value: String(c.id),
                     }))}
                     value={companyId ? String(companyId) : ''}
-                    onSelect={val => setCompanyId(Number(val))}
+                    onSelect={val => setCompanyId(val)}
                   />
                 </View>
               )}
@@ -391,7 +393,7 @@ export const AddIllnessScreen = ({
                       value: String(t.id),
                     }))}
                     value={teamId ? String(teamId) : ''}
-                    onSelect={val => setTeamId(Number(val))}
+                    onSelect={val => setTeamId(val)}
                   />
                 </View>
               )}
@@ -413,7 +415,7 @@ export const AddIllnessScreen = ({
                     }))}
                   value={employeeId ? String(employeeId) : ''}
                   onSelect={val => {
-                    setEmployeeId(Number(val));
+                    setEmployeeId(val);
                     if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
                   }}
                   error={errors.employeeId}

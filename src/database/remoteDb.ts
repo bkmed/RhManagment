@@ -17,7 +17,7 @@ export const remoteDb = {
     return getAllRemote();
   },
 
-  getByEmployeeId: async (employeeId: number): Promise<RemoteWork[]> => {
+  getByEmployeeId: async (employeeId: string): Promise<RemoteWork[]> => {
     const data = getAllRemote();
     return data.filter(r => r.employeeId === employeeId);
   },
@@ -45,7 +45,7 @@ export const remoteDb = {
     } else {
       data.push({
         ...remote,
-        id: Date.now(),
+        id: Date.now().toString(),
         createdAt: now,
         updatedAt: now,
       });
@@ -53,7 +53,7 @@ export const remoteDb = {
     saveAllRemote(data);
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     const data = getAllRemote();
     const filtered = data.filter(r => r.id !== id);
     saveAllRemote(filtered);

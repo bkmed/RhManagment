@@ -24,7 +24,7 @@ export const ManageDepartmentsScreen = () => {
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [newDepartmentName, setNewDepartmentName] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const ManageDepartmentsScreen = () => {
     loadDepartments();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     showModal({
       title: t('common.confirm'),
       message: t('common.confirmDelete'),

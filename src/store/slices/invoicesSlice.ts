@@ -25,7 +25,7 @@ const invoicesSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteInvoice: (state, action: PayloadAction<number>) => {
+    deleteInvoice: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(i => i.id !== action.payload);
     },
   },

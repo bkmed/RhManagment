@@ -26,7 +26,7 @@ const leavesSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteLeave: (state, action: PayloadAction<number>) => {
+    deleteLeave: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(l => l.id !== action.payload);
     },
   },

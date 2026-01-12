@@ -25,7 +25,7 @@ export const servicesDb = {
     if (existing.length === 0) {
       const now = new Date().toISOString();
       const initial = DEFAULT_SERVICES.map((name, index) => ({
-        id: index + 1,
+        id: (index + 1).toString(),
         name,
         createdAt: now,
         updatedAt: now,
@@ -38,14 +38,14 @@ export const servicesDb = {
     return selectAllServices(store.getState());
   },
 
-  getByCompany: async (companyId: number): Promise<Service[]> => {
+  getByCompany: async (companyId: string): Promise<Service[]> => {
     const all = selectAllServices(store.getState());
     return all.filter(s => !s.companyId || s.companyId === companyId);
   },
 
-  add: async (name: string, companyId?: number): Promise<number> => {
+  add: async (name: string, companyId?: string): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
     const newService: Service = {
       id,
       name,
@@ -58,9 +58,9 @@ export const servicesDb = {
   },
 
   update: async (
-    id: number,
+    id: string,
     name: string,
-    companyId?: number,
+    companyId?: string,
   ): Promise<void> => {
     const existing = selectAllServices(store.getState()).find(s => s.id === id);
     if (existing) {
@@ -75,7 +75,7 @@ export const servicesDb = {
     }
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteServiceAction(id));
   },
 };

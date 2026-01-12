@@ -32,7 +32,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<'all' | 'mine'>('mine');
-  const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
@@ -251,7 +251,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
               ...companies.map(c => ({ label: c.name, value: String(c.id) }))
             ]}
             value={selectedCompanyId ? String(selectedCompanyId) : ''}
-            onSelect={val => setSelectedCompanyId(val ? Number(val) : null)}
+            onSelect={val => setSelectedCompanyId(val || null)}
           />
         </View>
       )}

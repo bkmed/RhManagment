@@ -8,7 +8,6 @@ import {
   ScrollView,
   Platform,
   Image,
-  Dimensions,
   TextInput,
 } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -35,8 +34,6 @@ import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllDevices } from '../../store/slices/devicesSlice';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { Device } from '../../database/schema';
-
-const { width: _width } = Dimensions.get('window');
 
 export const ProfileScreen = ({ navigation }: any) => {
   const { theme } = useTheme();

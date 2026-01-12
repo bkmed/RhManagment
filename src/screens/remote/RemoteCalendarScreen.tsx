@@ -19,7 +19,7 @@ import { Theme } from '../../theme';
 import { holidaysService } from '../../services/holidaysService';
 import { leavesDb } from '../../database/leavesDb';
 import { SearchOverlay } from '../../components/common/SearchOverlay';
-import { rbacService, Permission } from '../../services/rbacService';
+import { rbacService } from '../../services/rbacService';
 
 export const RemoteCalendarScreen = () => {
   const { theme } = useTheme();
@@ -38,7 +38,7 @@ export const RemoteCalendarScreen = () => {
   // New state for viewing other employees
   const [viewMode, setViewMode] = useState<'mine' | 'other'>('mine');
   const [selectedEmployee, setSelectedEmployee] = useState<{
-    id: number;
+    id: string;
     name: string;
   } | null>(null);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -194,7 +194,7 @@ export const RemoteCalendarScreen = () => {
     title: string;
   }) => {
     if (result.type === 'employee') {
-      setSelectedEmployee({ id: Number(result.id), name: result.title });
+      setSelectedEmployee({ id: result.id, name: result.title });
       setIsSearchVisible(false);
     }
   };

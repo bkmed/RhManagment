@@ -21,13 +21,13 @@ const saveAllHistory = (history: IllnessHistory[]): void => {
 };
 
 const recordHistory = (
-  illnessId: number,
+  illnessId: string,
   action: IllnessHistory['action'],
   notes?: string,
 ) => {
   const history = getAllHistory();
   const newRecord: IllnessHistory = {
-    id: Date.now(),
+    id: Date.now().toString(),
     illnessId,
     action,
     date: new Date().toISOString(),
@@ -53,7 +53,7 @@ export const illnessesDb = {
   },
 
   // Get illness by ID
-  getById: async (id: number): Promise<Illness | null> => {
+  getById: async (id: string): Promise<Illness | null> => {
     const illnesses = selectAllIllnesses(store.getState());
     return illnesses.find(p => p.id === id) || null;
   },
@@ -61,9 +61,9 @@ export const illnessesDb = {
   // Add new illness
   add: async (
     illness: Omit<Illness, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<number> => {
+  ): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
 
     const newIllness: Illness = {
       ...illness,
@@ -79,7 +79,7 @@ export const illnessesDb = {
   },
 
   // Update illness
-  update: async (id: number, updates: Partial<Illness>): Promise<void> => {
+  update: async (id: string, updates: Partial<Illness>): Promise<void> => {
     const illnesses = selectAllIllnesses(store.getState());
     const existing = illnesses.find(p => p.id === id);
 
@@ -95,7 +95,7 @@ export const illnessesDb = {
   },
 
   // Delete illness
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteIllnessAction(id));
 
     // Also delete associated history
@@ -105,7 +105,7 @@ export const illnessesDb = {
   },
 
   // Get history
-  getHistory: async (id: number): Promise<IllnessHistory[]> => {
+  getHistory: async (id: string): Promise<IllnessHistory[]> => {
     const history = getAllHistory();
     return history
       .filter(h => h.illnessId === id)

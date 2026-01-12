@@ -11,31 +11,31 @@ import { Device } from './schema';
 
 const MOCK_DEVICES: Device[] = [
   {
-    id: 1,
+    id: '1',
     name: 'MacBook Pro 16"',
     type: 'Laptop',
     serialNumber: 'APPLE-MBP-2024-001',
     status: 'assigned',
     condition: 'working',
-    assignedToId: 1, // Demo Admin
+    assignedToId: '1', // Demo Admin
     assignedTo: 'Demo Admin',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 2,
+    id: '2',
     name: 'Dell UltraSharp 27"',
     type: 'Screen',
     serialNumber: 'DELL-U27-002',
     status: 'assigned',
     condition: 'working',
-    assignedToId: 2, // Demo Employee
+    assignedToId: '2', // Demo Employee
     assignedTo: 'Demo Employee',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 3,
+    id: '3',
     name: 'Logitech MX Master 3S',
     type: 'Mouse',
     serialNumber: 'LOGI-MX-003',
@@ -58,21 +58,21 @@ export const devicesDb = {
     return selectAllDevices(store.getState());
   },
 
-  getById: async (id: number): Promise<Device | null> => {
+  getById: async (id: string): Promise<Device | null> => {
     const devices = selectAllDevices(store.getState());
     return devices.find(d => d.id === id) || null;
   },
 
-  getByEmployeeId: async (employeeId: number): Promise<Device[]> => {
+  getByEmployeeId: async (employeeId: string): Promise<Device[]> => {
     const devices = selectAllDevices(store.getState());
     return devices.filter(d => d.assignedToId === employeeId);
   },
 
   add: async (
     device: Omit<Device, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<number> => {
+  ): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
     const newDevice: Device = {
       ...device,
       id,
@@ -83,7 +83,7 @@ export const devicesDb = {
     return id;
   },
 
-  update: async (id: number, updates: Partial<Device>): Promise<void> => {
+  update: async (id: string, updates: Partial<Device>): Promise<void> => {
     const devices = selectAllDevices(store.getState());
     const existing = devices.find(d => d.id === id);
     if (existing) {
@@ -96,12 +96,12 @@ export const devicesDb = {
     }
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteDeviceAction(id));
   },
 
   updateStatus: async (
-    id: number,
+    id: string,
     condition: 'working' | 'faulty',
   ): Promise<void> => {
     store.dispatch(updateDeviceStatusAction({ id, condition }));

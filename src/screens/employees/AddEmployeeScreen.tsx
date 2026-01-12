@@ -51,7 +51,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [department, setDepartment] = useState('');
-  const [location, setLocation] = useState('');
+  const [, setLocation] = useState('');
   const [services, setServices] = useState<Service[]>([]);
   const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
   const [role, setRole] = useState<UserRole>('employee');
@@ -76,8 +76,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const [website, setWebsite] = useState('');
   const [skills, setSkills] = useState('');
 
-  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
-  const [teamId, setTeamId] = useState<number | undefined>(undefined);
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+  const [teamId, setTeamId] = useState<string | undefined>(undefined);
 
   const companies = useSelector((state: RootState) =>
     selectAllCompanies(state),
@@ -567,7 +567,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                         value: String(c.id),
                       }))}
                       value={companyId ? String(companyId) : ''}
-                      onSelect={val => setCompanyId(Number(val))}
+                      onSelect={val => setCompanyId(val)}
                       placeholder={t('companies.selectCompany')}
                     />
                   </View>
@@ -601,7 +601,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                         .filter(t => !companyId || t.companyId === companyId)
                         .map(t => ({ label: t.name, value: String(t.id) }))}
                       value={teamId ? String(teamId) : ''}
-                      onSelect={val => setTeamId(Number(val))}
+                      onSelect={val => setTeamId(val)}
                       placeholder={t('teams.selectTeam')}
                     />
                   </View>

@@ -29,7 +29,7 @@ const departmentsSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteDepartment: (state, action: PayloadAction<number>) => {
+    deleteDepartment: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(d => d.id !== action.payload);
     },
   },

@@ -50,7 +50,7 @@ export const AddLeaveScreen = ({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const params = route.params as
-    | { leaveId?: string; employeeName?: string; employeeId?: number }
+    | { leaveId?: string; employeeName?: string; employeeId?: string }
     | undefined;
   const leaveId = params?.leaveId;
   const isEdit = !!leaveId;
@@ -84,10 +84,10 @@ export const AddLeaveScreen = ({
   const allLeaves = useSelector((state: RootState) => selectAllLeaves(state));
   const allIllnesses = useSelector((state: RootState) => selectAllIllnesses(state));
 
-  const [companyId, setCompanyId] = useState<number | undefined>(undefined);
-  const [teamId, setTeamId] = useState<number | undefined>(undefined);
-  const [employeeId, setEmployeeId] = useState<number | undefined>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : undefined,
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+  const [teamId, setTeamId] = useState<string | undefined>(undefined);
+  const [employeeId, setEmployeeId] = useState<string | undefined>(
+    user?.role === 'employee' && user?.id ? user.id : undefined,
   );
 
   // Cascading lists
@@ -195,7 +195,7 @@ export const AddLeaveScreen = ({
   const loadLeave = async () => {
     if (!leaveId) return;
     try {
-      const leave = await leavesDb.getById(Number(params?.leaveId));
+      const leave = await leavesDb.getById(params?.leaveId || '');
       if (leave) {
         setTitle(leave.title || '');
         setEmployeeName(leave.employeeName || '');
@@ -282,8 +282,8 @@ export const AddLeaveScreen = ({
     const hasCollision = allLeaves.some((l: Leave) => {
       if (l.id === leaveId) return false;
       if (
-        Number(l.employeeId) !==
-        Number(user?.role === 'employee' ? user?.employeeId : employeeId)
+        l.employeeId !==
+        (user?.role === 'employee' ? user?.employeeId : employeeId)
       )
         return false;
       if (l.status === 'declined') return false;
@@ -295,9 +295,9 @@ export const AddLeaveScreen = ({
     });
 
     if (!hasCollision) {
-      const targetEmpId = Number(user?.role === 'employee' ? user?.employeeId : employeeId);
+      const targetEmpId = user?.role === 'employee' ? user?.employeeId : employeeId;
       const hasIllnessCollision = allIllnesses.some((i: Illness) => {
-        if (Number(i.employeeId) !== targetEmpId) return false;
+        if (i.employeeId !== targetEmpId) return false;
 
         const iStart = new Date(i.issueDate);
         const iEnd = i.expiryDate ? new Date(i.expiryDate) : iStart;
@@ -332,7 +332,7 @@ export const AddLeaveScreen = ({
           : selectedEmp?.name || employeeName
         ).trim(),
         employeeId:
-          (rbacService.isEmployee(user) ? user?.employeeId : employeeId) || 0,
+          (rbacService.isEmployee(user) ? user?.employeeId : employeeId) || '',
         location: location.trim() || undefined,
         dateTime:
           type === 'permission' || type === 'authorization'
@@ -356,12 +356,13 @@ export const AddLeaveScreen = ({
         photoUri: photoUri || undefined, // Added photoUri to leaveData
       };
 
-      let id: number;
+      let id: string;
       if (isEdit && leaveId) {
-        await leavesDb.update(Number(leaveId), leaveData);
-        id = Number(leaveId);
+        await leavesDb.update(leaveId, leaveData);
+        id = leaveId;
       } else {
-        id = await leavesDb.add(leaveData);
+        const addedId = await leavesDb.add(leaveData);
+        id = addedId!;
 
         // Notify HR/Admin (Simulated via local notification for now)
         await notificationService.notifyNewLeaveRequest(
@@ -500,9 +501,9 @@ export const AddLeaveScreen = ({
                           value: String(c.id),
                         })),
                       ]}
-                      value={companyId ? String(companyId) : ''}
+                      value={companyId || ''}
                       onSelect={val => {
-                        setCompanyId(val ? Number(val) : undefined);
+                        setCompanyId(val || undefined);
                         setTeamId(undefined);
                         setEmployeeId(undefined);
                       }}
@@ -518,9 +519,9 @@ export const AddLeaveScreen = ({
                           value: String(t.id),
                         })),
                       ]}
-                      value={teamId ? String(teamId) : ''}
+                      value={teamId || ''}
                       onSelect={val => {
-                        setTeamId(val ? Number(val) : undefined);
+                        setTeamId(val || undefined);
                         setEmployeeId(undefined);
                       }}
                     />
@@ -534,9 +535,9 @@ export const AddLeaveScreen = ({
                       label: e.name,
                       value: String(e.id),
                     }))}
-                    value={employeeId ? String(employeeId) : ''}
+                    value={employeeId || ''}
                     onSelect={val => {
-                      setEmployeeId(Number(val));
+                      setEmployeeId(val || undefined);
                       if (errors.employeeId)
                         setErrors({ ...errors, employeeId: '' });
                     }}

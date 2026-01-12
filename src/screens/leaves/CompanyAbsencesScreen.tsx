@@ -15,7 +15,7 @@ import { notificationService } from '../../services/notificationService';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { formatDate } from '../../utils/dateUtils';
-import { Leave, Employee } from '../../database/schema';
+import { Leave } from '../../database/schema';
 import { useAuth } from '../../context/AuthContext';
 import { rbacService } from '../../services/rbacService';
 import { Dropdown } from '../../components/Dropdown';

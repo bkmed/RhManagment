@@ -144,7 +144,7 @@ export const analyticsService = {
   },
 
   // Get personal analytics for a specific employee
-  getPersonalAnalytics: async (employeeId: number): Promise<AnalyticsData> => {
+  getPersonalAnalytics: async (employeeId: string): Promise<AnalyticsData> => {
     try {
       const now = new Date();
       const nextWeek = new Date();

@@ -27,7 +27,7 @@ export const payrollDb = {
   },
 
   // Get payroll item by ID
-  getById: async (id: number): Promise<Payroll | null> => {
+  getById: async (id: string): Promise<Payroll | null> => {
     const items = selectAllPayroll(store.getState());
     return items.find(m => m.id === id) || null;
   },
@@ -35,9 +35,9 @@ export const payrollDb = {
   // Add new payroll item
   add: async (
     item: Omit<Payroll, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<number> => {
+  ): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
 
     const newItem: Payroll = {
       ...item,
@@ -51,7 +51,7 @@ export const payrollDb = {
   },
 
   // Update payroll item
-  update: async (id: number, updates: Partial<Payroll>): Promise<void> => {
+  update: async (id: string, updates: Partial<Payroll>): Promise<void> => {
     const items = selectAllPayroll(store.getState());
     const existing = items.find(m => m.id === id);
 
@@ -66,7 +66,7 @@ export const payrollDb = {
   },
 
   // Delete payroll item
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deletePayrollAction(id));
 
     // Also delete associated history
@@ -76,7 +76,7 @@ export const payrollDb = {
   },
 
   // Get payroll history
-  getHistory: async (payrollId: number): Promise<PayrollHistory[]> => {
+  getHistory: async (payrollId: string): Promise<PayrollHistory[]> => {
     const history = getAllHistory();
     return history
       .filter(h => h.payrollId === payrollId)
@@ -87,13 +87,13 @@ export const payrollDb = {
 
   // Add history entry
   addHistory: async (
-    payrollId: number,
+    payrollId: string,
     status: 'paid' | 'missed' | 'skipped',
     notes?: string,
   ): Promise<void> => {
     const history = getAllHistory();
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
 
     const newEntry: PayrollHistory = {
       id,

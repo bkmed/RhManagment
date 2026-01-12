@@ -54,7 +54,7 @@ export const AnalyticsScreen = () => {
 
       if (user?.role === 'employee') {
         [data, adherence] = await Promise.all([
-          analyticsService.getPersonalAnalytics(user.employeeId!),
+          analyticsService.getPersonalAnalytics(user.id!),
           analyticsService.getPayrollAdherence(), // We might want a personal adherence but history filter is complex
           // For employees, we don't show the "Upcoming Leaves" bar chart of the whole company
         ]);

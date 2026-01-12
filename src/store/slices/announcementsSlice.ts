@@ -32,7 +32,7 @@ const announcementsSlice = createSlice({
         state.announcements[index] = action.payload;
       }
     },
-    deleteAnnouncement: (state, action: PayloadAction<number>) => {
+    deleteAnnouncement: (state, action: PayloadAction<string>) => {
       state.announcements = state.announcements.filter(
         a => a.id !== action.payload,
       );

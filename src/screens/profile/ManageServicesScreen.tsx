@@ -24,7 +24,7 @@ export const ManageServicesScreen = () => {
 
   const [services, setServices] = useState<Service[]>([]);
   const [newServiceName, setNewServiceName] = useState('');
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const ManageServicesScreen = () => {
     loadServices();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     showModal({
       title: t('common.confirm'),
       message: t('common.confirmDelete'),

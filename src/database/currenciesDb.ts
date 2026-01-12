@@ -22,7 +22,7 @@ export const currenciesDb = {
     if (existing.length === 0) {
       const now = new Date().toISOString();
       const initial = DEFAULT_CURRENCIES.map((desc, index) => ({
-        id: index + 1,
+        id: (index + 1).toString(),
         ...desc,
         createdAt: now,
         updatedAt: now,
@@ -35,9 +35,9 @@ export const currenciesDb = {
     return selectAllCurrencies(store.getState());
   },
 
-  add: async (code: string, symbol: string): Promise<number> => {
+  add: async (code: string, symbol: string): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
     const newCurrency: Currency = {
       id,
       code,
@@ -49,7 +49,7 @@ export const currenciesDb = {
     return id;
   },
 
-  update: async (id: number, code: string, symbol: string): Promise<void> => {
+  update: async (id: string, code: string, symbol: string): Promise<void> => {
     const existing = selectAllCurrencies(store.getState()).find(
       c => c.id === id,
     );
@@ -65,7 +65,7 @@ export const currenciesDb = {
     }
   },
 
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteCurrencyAction(id));
   },
 };

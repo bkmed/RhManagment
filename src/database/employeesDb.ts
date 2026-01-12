@@ -13,60 +13,47 @@ export const employeesDb = {
   getAll: async (): Promise<Employee[]> => {
     let employees = selectAllEmployees(store.getState());
 
-    // Seed 50 employees if empty (or legacy demo data)
+    // Seed employees if empty
     if (employees.length < 5) {
       const generated: Employee[] = [];
       const now = new Date().toISOString();
 
-      // 1. Admin (ID: 1)
-      generated.push({
-        id: 1,
-        name: 'Admin Principal',
-        role: 'admin',
-        email: 'admin@demo.com',
-        hiringDate: '2020-01-01',
-        companyId: 1,
-        country: 'France',
-        vacationDaysPerYear: 25,
-        remainingVacationDays: 15,
-        statePaidLeaves: 30,
-        createdAt: now,
-        updatedAt: now,
-      });
-
-      // 2. RH (ID: 2)
-      generated.push({
-        id: 2,
-        name: 'Responsable RH',
-        role: 'rh',
-        email: 'rh@demo.com',
-        hiringDate: '2020-02-15',
-        companyId: 1,
-        country: 'France',
-        vacationDaysPerYear: 25,
-        remainingVacationDays: 20,
-        statePaidLeaves: 30,
-        createdAt: now,
-        updatedAt: now,
-      });
-
-      // 3. Chefs de groupe (IDs: 3-7)
-      const managers = [
-        'Marc Lavoine',
-        'Julie Gayet',
-        'Omar Sy',
-        'Marion Cotillard',
-        'Jean Dujardin',
+      // 1. HRs (one per company)
+      const hrs = [
+        { id: '1', name: 'HR Admin TechGlobe', email: 'hr1@techglobe.com', companyId: '1' },
+        { id: '2', name: 'HR Admin EcoFlow', email: 'hr2@ecoflow.com', companyId: '2' },
       ];
-      managers.forEach((name, i) => {
+
+      hrs.forEach(hr => {
         generated.push({
-          id: 3 + i,
-          name,
+          ...hr,
+          role: 'rh',
+          hiringDate: '2020-01-01',
+          country: 'France',
+          vacationDaysPerYear: 25,
+          remainingVacationDays: 15,
+          statePaidLeaves: 30,
+          createdAt: now,
+          updatedAt: now,
+        });
+      });
+
+      // 2. Managers (3 per company, total 6)
+      const managersData = [
+        { id: '3', name: 'Marc Lavoine', companyId: '1', teamId: '1' },
+        { id: '4', name: 'Julie Gayet', companyId: '1', teamId: '2' },
+        { id: '5', name: 'Omar Sy', companyId: '1', teamId: '3' },
+        { id: '6', name: 'Marion Cotillard', companyId: '2', teamId: '4' },
+        { id: '7', name: 'Jean Dujardin', companyId: '2', teamId: '5' },
+        { id: '8', name: 'Sophie Marceau', companyId: '2', teamId: '6' },
+      ];
+
+      managersData.forEach(m => {
+        generated.push({
+          ...m,
           role: 'manager',
-          email: `chef${i + 1}@demo.com`,
+          email: `${m.name.toLowerCase().replace(' ', '.')}@demo.com`,
           hiringDate: '2021-03-10',
-          companyId: (i % 2) + 1,
-          teamId: i + 1,
           country: 'France',
           vacationDaysPerYear: 25,
           remainingVacationDays: 10,
@@ -76,80 +63,25 @@ export const employeesDb = {
         });
       });
 
-      // 4. Cleaners (Femmes de ménage) (IDs: 49-50)
-      for (let i = 49; i <= 50; i++) {
-        generated.push({
-          id: i,
-          name: i === 49 ? 'Fatima Managi' : 'Aicha Agent',
-          role: 'employee',
-          email: `cleaner${i}@demo.com`,
-          hiringDate: '2023-01-05',
-          companyId: 2,
-          teamId: 5,
-          country: 'France',
-          vacationDaysPerYear: 25,
-          remainingVacationDays: 25,
-          statePaidLeaves: 30,
-          createdAt: now,
-          updatedAt: now,
-        });
-      }
-
-      // 5. Regular Employees (IDs: 8-48)
+      // 3. Employees (10 per company, total 20)
       const names = [
-        'Thomas',
-        'Ines',
-        'Yassine',
-        'Sarah',
-        'Lucas',
-        'Leila',
-        'Adam',
-        'Eva',
-        'Karim',
-        'Sofia',
-        'Zied',
-        'Rim',
-        'Walid',
-        'Amira',
-        'Hedi',
-        'Ons',
-        'Mahdi',
-        'Sana',
-        'Fedi',
-        'Ghofrane',
-        'Nabil',
-        'Rania',
-        'Sofiane',
-        'Dora',
-        'Anis',
-        'Jihene',
-        'Sami',
-        'Ines',
-        'Ali',
-        'May',
-        'Omar',
-        'Salma',
-        'Kais',
-        'Amel',
-        'Bassem',
-        'Nour',
-        'Wissem',
-        'Aya',
-        'Hassen',
-        'Nada',
-        'Elyes',
+        'Thomas', 'Ines', 'Yassine', 'Sarah', 'Lucas', 'Leila', 'Adam', 'Eva', 'Karim', 'Sofia',
+        'Zied', 'Rim', 'Walid', 'Amira', 'Hedi', 'Ons', 'Mahdi', 'Sana', 'Fedi', 'Ghofrane'
       ];
 
-      for (let i = 8; i <= 48; i++) {
-        const nameIndex = (i - 8) % names.length;
-        const teamId = ((i - 8) % 5) + 1; // Distribute across 5 teams
+      for (let i = 0; i < 20; i++) {
+        const companyId = i < 10 ? '1' : '2';
+        const teamOffset = i < 10 ? 0 : 3;
+        const teamId = ((i % 3) + 1 + teamOffset).toString();
+        const id = (9 + i).toString();
+
         generated.push({
-          id: i,
-          name: `${names[nameIndex]} ${String.fromCharCode(65 + (i % 26))}.`,
+          id,
+          name: `${names[i]} ${String.fromCharCode(65 + (i % 26))}.`,
           role: 'employee',
-          email: `${names[nameIndex].toLowerCase()}${i}@demo.com`,
+          email: `${names[i].toLowerCase()}${id}@demo.com`,
           hiringDate: '2022-06-20',
-          companyId: (teamId % 2) + 1,
+          companyId,
           teamId,
           country: 'France',
           vacationDaysPerYear: 25,
@@ -169,7 +101,7 @@ export const employeesDb = {
   },
 
   // Get employee by ID
-  getById: async (id: number): Promise<Employee | null> => {
+  getById: async (id: string): Promise<Employee | null> => {
     return selectEmployeeById(id)(store.getState()) || null;
   },
 
@@ -177,7 +109,7 @@ export const employeesDb = {
   add: async (
     employee: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>,
     companyName?: string,
-  ): Promise<number> => {
+  ): Promise<string> => {
     // Check for duplicate email
     const allEmployees = selectAllEmployees(store.getState());
     const emailExists = allEmployees.some(
@@ -189,7 +121,7 @@ export const employeesDb = {
     }
 
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
 
     const newEmployee: Employee = {
       ...employee,
@@ -203,7 +135,7 @@ export const employeesDb = {
   },
 
   // Update employee
-  update: async (id: number, updates: Partial<Employee>): Promise<void> => {
+  update: async (id: string, updates: Partial<Employee>): Promise<void> => {
     const existing = selectEmployeeById(id)(store.getState());
 
     if (existing) {
@@ -228,7 +160,7 @@ export const employeesDb = {
   },
 
   // Delete employee
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteEmployeeAction(id));
   },
 };

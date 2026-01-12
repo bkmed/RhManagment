@@ -25,7 +25,7 @@ const illnessesSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteIllness: (state, action: PayloadAction<number>) => {
+    deleteIllness: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(i => i.id !== action.payload);
     },
   },

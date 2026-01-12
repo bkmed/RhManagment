@@ -40,13 +40,13 @@ export const ManageDevicesScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const initialFormState = {
-    id: undefined as number | undefined,
+    id: undefined as string | undefined,
     name: '',
     type: '',
     serialNumber: '',
     status: 'available' as Device['status'],
     condition: 'working' as Device['condition'],
-    assignedToId: undefined as number | undefined,
+    assignedToId: undefined as string | undefined,
     assignedTo: undefined as string | undefined,
   };
 
@@ -79,7 +79,7 @@ export const ManageDevicesScreen = () => {
     }
 
     const deviceData: Device = {
-      id: deviceForm.id || Date.now(),
+      id: deviceForm.id || Date.now().toString(),
       name: deviceForm.name,
       type: deviceForm.type,
       serialNumber: deviceForm.serialNumber,
@@ -115,7 +115,7 @@ export const ManageDevicesScreen = () => {
     setIsModalVisible(true);
   };
 
-  const handleDeleteDevice = (id: number) => {
+  const handleDeleteDevice = (id: string) => {
     showModal({
       title: t('common.deleteTitle'),
       message: t('common.deleteMessage'),
@@ -283,13 +283,13 @@ export const ManageDevicesScreen = () => {
               label={t('devices.assigned')}
               data={[
                 { label: t('devices.unassigned'), value: '' },
-                ...employees.map(e => ({ label: e.name, value: String(e.id) })),
+                ...employees.map(e => ({ label: e.name, value: e.id || '' })),
               ]}
               value={
                 deviceForm.assignedToId ? String(deviceForm.assignedToId) : ''
               }
               onSelect={val => {
-                const emp = employees.find(e => String(e.id) === val);
+                const emp = employees.find(e => e.id === val);
                 if (emp) {
                   setDeviceForm({
                     ...deviceForm,

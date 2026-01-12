@@ -11,13 +11,13 @@ import { Company } from './schema';
 
 const MOCK_COMPANIES: Company[] = [
   {
-    id: 1,
+    id: '1',
     name: 'TechGlobe Solutions',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 2,
+    id: '2',
     name: 'EcoFlow Dynamics',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -36,16 +36,16 @@ export const companiesDb = {
   },
 
   // Get company by ID
-  getById: async (id: number): Promise<Company | null> => {
+  getById: async (id: string): Promise<Company | null> => {
     return selectCompanyById(id)(store.getState()) || null;
   },
 
   // Add new company
   add: async (
     company: Omit<Company, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<number> => {
+  ): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
 
     const newCompany: Company = {
       ...company,
@@ -59,7 +59,7 @@ export const companiesDb = {
   },
 
   // Update company
-  update: async (id: number, updates: Partial<Company>): Promise<void> => {
+  update: async (id: string, updates: Partial<Company>): Promise<void> => {
     const existing = selectCompanyById(id)(store.getState());
 
     if (existing) {
@@ -73,7 +73,7 @@ export const companiesDb = {
   },
 
   // Delete company
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteCompanyAction(id));
   },
 };

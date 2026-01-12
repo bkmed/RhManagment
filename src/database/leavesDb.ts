@@ -12,9 +12,9 @@ import { Leave } from './schema';
 
 const MOCK_LEAVES: Leave[] = [
   {
-    id: 1,
+    id: '1',
     title: 'Congés Annuel',
-    employeeId: 10,
+    employeeId: '10',
     employeeName: 'Ines B.',
     dateTime: new Date(Date.now() + 86400000 * 5).toISOString(),
     reminderEnabled: true,
@@ -24,9 +24,9 @@ const MOCK_LEAVES: Leave[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 2,
+    id: '2',
     title: 'Formation React',
-    employeeId: 12,
+    employeeId: '12',
     employeeName: 'Yassine C.',
     dateTime: new Date(Date.now() + 86400000 * 10).toISOString(),
     reminderEnabled: true,
@@ -36,9 +36,9 @@ const MOCK_LEAVES: Leave[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 3,
+    id: '3',
     title: 'Déménagement',
-    employeeId: 25,
+    employeeId: '25',
     employeeName: 'Rania D.',
     dateTime: new Date(Date.now() + 86400000 * 2).toISOString(),
     reminderEnabled: true,
@@ -48,9 +48,9 @@ const MOCK_LEAVES: Leave[] = [
     updatedAt: new Date().toISOString(),
   },
   {
-    id: 4,
+    id: '4',
     title: 'Rendez-vous Dentiste',
-    employeeId: 40,
+    employeeId: '40',
     employeeName: 'Hassen E.',
     dateTime: new Date(Date.now() + 3600000 * 3).toISOString(),
     reminderEnabled: true,
@@ -80,7 +80,7 @@ export const leavesDb = {
   },
 
   // Get leaves by employee ID
-  getByEmployeeId: async (employeeId: number): Promise<Leave[]> => {
+  getByEmployeeId: async (employeeId: string): Promise<Leave[]> => {
     const leaves = selectAllLeaves(store.getState());
     return leaves
       .filter(a => a.employeeId === employeeId)
@@ -91,7 +91,7 @@ export const leavesDb = {
   },
 
   // Get leave by ID
-  getById: async (id: number): Promise<Leave | null> => {
+  getById: async (id: string): Promise<Leave | null> => {
     const leaves = selectAllLeaves(store.getState());
     return leaves.find(a => a.id === id) || null;
   },
@@ -99,9 +99,9 @@ export const leavesDb = {
   // Add new leave
   add: async (
     leave: Omit<Leave, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<number> => {
+  ): Promise<string> => {
     const now = new Date().toISOString();
-    const id = Date.now();
+    const id = Date.now().toString();
 
     const newLeave: Leave = {
       ...leave,
@@ -117,7 +117,7 @@ export const leavesDb = {
   },
 
   // Update leave
-  update: async (id: number, updates: Partial<Leave>): Promise<void> => {
+  update: async (id: string, updates: Partial<Leave>): Promise<void> => {
     const leaves = selectAllLeaves(store.getState());
     const existing = leaves.find(a => a.id === id);
 
@@ -132,7 +132,7 @@ export const leavesDb = {
   },
 
   // Delete leave
-  delete: async (id: number): Promise<void> => {
+  delete: async (id: string): Promise<void> => {
     store.dispatch(deleteLeaveAction(id));
   },
 
@@ -142,7 +142,7 @@ export const leavesDb = {
   },
 
   // Get approved leaves for an employee
-  getApprovedByEmployeeId: async (employeeId: number): Promise<Leave[]> => {
+  getApprovedByEmployeeId: async (employeeId: string): Promise<Leave[]> => {
     const leaves = selectAllLeaves(store.getState());
     return leaves.filter(
       l => l.employeeId === employeeId && l.status === 'approved',

@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Permission, rbacService } from '../services/rbacService';
 

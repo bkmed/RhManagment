@@ -27,7 +27,7 @@ export const CompanySettingsScreen = ({ navigation }: any) => {
   const { setActiveTab } = React.useContext(WebNavigationContext) as any;
 
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(
     null,
   );
   const [settings, setSettings] = useState<CompanySettings | null>(null);
@@ -52,7 +52,7 @@ export const CompanySettingsScreen = ({ navigation }: any) => {
     }
   };
 
-  const loadSettings = async (companyId: number) => {
+  const loadSettings = async (companyId: string) => {
     const s = await companySettingsDb.getSettingsByCompany(companyId);
     setSettings(s);
     setMaxHours(s.maxPermissionHours.toString());
@@ -107,7 +107,7 @@ export const CompanySettingsScreen = ({ navigation }: any) => {
                   style={[
                     styles.companyButtonText,
                     selectedCompanyId === c.id &&
-                      styles.selectedCompanyButtonText,
+                    styles.selectedCompanyButtonText,
                   ]}
                 >
                   {c.name}

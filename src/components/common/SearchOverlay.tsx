@@ -114,7 +114,7 @@ export const SearchOverlay = ({
     }
 
     // Search Teams
-    const canViewAllTeams = rbacService.isAdmin(user) || rbacService.isRH(user);
+    //const canViewAllTeams = rbacService.isAdmin(user) || rbacService.isRH(user);
     const canViewMyTeam = rbacService.isManager(user) || rbacService.isEmployee(user);
 
     if (canViewTeams) {

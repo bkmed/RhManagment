@@ -26,7 +26,7 @@ const claimsSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteClaim: (state, action: PayloadAction<number>) => {
+    deleteClaim: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(c => c.id !== action.payload);
     },
   },

@@ -31,7 +31,7 @@ const currenciesSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    deleteCurrency: (state, action: PayloadAction<number>) => {
+    deleteCurrency: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(item => item.id !== action.payload);
     },
   },
@@ -43,7 +43,7 @@ export const { setCurrencies, addCurrency, updateCurrency, deleteCurrency } =
 export const selectAllCurrencies = (state: { currencies: CurrenciesState }) =>
   state.currencies.items;
 export const selectCurrencyById =
-  (id: number) => (state: { currencies: CurrenciesState }) =>
+  (id: string) => (state: { currencies: CurrenciesState }) =>
     state.currencies.items.find(c => c.id === id);
 
 export default currenciesSlice.reducer;
