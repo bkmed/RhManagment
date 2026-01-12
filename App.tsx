@@ -26,10 +26,14 @@ const App = () => {
         const { storageService } = await import('./src/services/storage');
         const { store } = await import('./src/store');
         const { setLeaves } = await import('./src/store/slices/leavesSlice');
-        const { setEmployees } = await import('./src/store/slices/employeesSlice');
+        const { setEmployees } = await import(
+          './src/store/slices/employeesSlice'
+        );
         const { setPayroll } = await import('./src/store/slices/payrollSlice');
         const { setClaims } = await import('./src/store/slices/claimsSlice');
-        const { setIllnesses } = await import('./src/store/slices/illnessesSlice');
+        const { setIllnesses } = await import(
+          './src/store/slices/illnessesSlice'
+        );
 
         if (!storageService.getBoolean('redux_migrated')) {
           console.log('Migrating old MMKV data to Redux...');
@@ -39,7 +43,8 @@ const App = () => {
           if (oldLeaves) store.dispatch(setLeaves(JSON.parse(oldLeaves)));
 
           const oldEmployees = storageService.getString('employees');
-          if (oldEmployees) store.dispatch(setEmployees(JSON.parse(oldEmployees)));
+          if (oldEmployees)
+            store.dispatch(setEmployees(JSON.parse(oldEmployees)));
 
           const oldPayroll = storageService.getString('payroll');
           if (oldPayroll) store.dispatch(setPayroll(JSON.parse(oldPayroll)));
@@ -48,7 +53,8 @@ const App = () => {
           if (oldClaims) store.dispatch(setClaims(JSON.parse(oldClaims)));
 
           const oldIllnesses = storageService.getString('illnesses');
-          if (oldIllnesses) store.dispatch(setIllnesses(JSON.parse(oldIllnesses)));
+          if (oldIllnesses)
+            store.dispatch(setIllnesses(JSON.parse(oldIllnesses)));
 
           // Mark as migrated
           storageService.setBoolean('redux_migrated', true);
@@ -71,7 +77,9 @@ const App = () => {
     const initializeSession = async () => {
       try {
         const { authService } = await import('./src/services/authService');
-        const { sessionService } = await import('./src/services/sessionService');
+        const { sessionService } = await import(
+          './src/services/sessionService'
+        );
 
         // Get current user from auth
         const currentUser = await authService.getCurrentUser();
@@ -84,7 +92,10 @@ const App = () => {
           const handleSessionExpiry = () => {
             console.log('Session expired - redirecting to login');
           };
-          (window as any).addEventListener('session_expired', handleSessionExpiry);
+          (window as any).addEventListener(
+            'session_expired',
+            handleSessionExpiry,
+          );
         }
 
         console.log('Session service initialized');

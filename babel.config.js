@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 plugins = () => {
   const defaultPlugins = [
-    ["module-resolver", {"root": ["./"], "alias": {"src": "./src"}}],
+    ['module-resolver', { root: ['./'], alias: { src: './src' } }],
     [
       'babel-plugin-inline-import',
       {
@@ -17,6 +17,10 @@ plugins = () => {
 };
 
 module.exports = {
-  presets: ['@babel/preset-react', 'module:@react-native/babel-preset', 'nativewind/babel'],
+  presets: [
+    '@babel/preset-react',
+    'module:@react-native/babel-preset',
+    'nativewind/babel',
+  ],
   plugins: plugins(),
 };
