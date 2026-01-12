@@ -292,17 +292,35 @@ const seedDemoData = async () => {
   console.log('SEEDING DEMO DATA...');
 
   // 1. Create Companies (2)
-  const company1Id = await companiesDb.add({ name: 'Tech Solutions Inc.', logo: 'https://via.placeholder.com/150', address: '123 Tech Park', country: 'France' });
-  const company2Id = await companiesDb.add({ name: 'Global Services Ltd', logo: 'https://via.placeholder.com/150', address: '456 Business Blvd', country: 'Tunisia' });
+  const company1Id = await companiesDb.add({
+    name: 'Tech Solutions Inc.',
+    logo: 'https://via.placeholder.com/150',
+    address: '123 Tech Park',
+    country: 'France',
+  });
+  const company2Id = await companiesDb.add({
+    name: 'Global Services Ltd',
+    logo: 'https://via.placeholder.com/150',
+    address: '456 Business Blvd',
+    country: 'Tunisia',
+  });
 
   // 2. Create Teams (8) - 4 per company
   const teamIds: string[] = [];
   for (let i = 1; i <= 4; i++) {
-    const tId = await teamsDb.add({ name: `Tech Team ${i}`, department: 'IT', companyId: company1Id });
+    const tId = await teamsDb.add({
+      name: `Tech Team ${i}`,
+      department: 'IT',
+      companyId: company1Id,
+    });
     teamIds.push(tId);
   }
   for (let i = 1; i <= 4; i++) {
-    const tId = await teamsDb.add({ name: `Service Team ${i}`, department: 'Operations', companyId: company2Id });
+    const tId = await teamsDb.add({
+      name: `Service Team ${i}`,
+      department: 'Operations',
+      companyId: company2Id,
+    });
     teamIds.push(tId);
   }
 
@@ -321,7 +339,7 @@ const seedDemoData = async () => {
     vacationDaysPerYear: 30,
     remainingVacationDays: 30,
     statePaidLeaves: 0,
-    password: 'admin' // In real app, password is part of auth record, simpler here for mapping
+    password: 'admin', // In real app, password is part of auth record, simpler here for mapping
   });
 
   // RH (3)
@@ -336,7 +354,7 @@ const seedDemoData = async () => {
       position: 'HR Specialist',
       vacationDaysPerYear: 30,
       remainingVacationDays: 25,
-      statePaidLeaves: 0
+      statePaidLeaves: 0,
     });
   }
 
@@ -358,7 +376,7 @@ const seedDemoData = async () => {
       position: 'Team Lead',
       vacationDaysPerYear: 28,
       remainingVacationDays: 20,
-      statePaidLeaves: 5
+      statePaidLeaves: 5,
     });
 
     // Update team with managerId
@@ -369,8 +387,34 @@ const seedDemoData = async () => {
   }
 
   // Employees (78)
-  const firstNames = ['Sarah', 'John', 'Mohamed', 'Fatima', 'Lucas', 'Emma', 'Thomas', 'Sophie', 'Ahmed', 'Yasmine', 'Nicolas', 'Julie'];
-  const lastNames = ['Smith', 'Doe', 'Ben Ali', 'Dubois', 'Martin', 'Bernard', 'Petit', 'Durand', 'Leroy', 'Moreau', 'Simon', 'Laurent'];
+  const firstNames = [
+    'Sarah',
+    'John',
+    'Mohamed',
+    'Fatima',
+    'Lucas',
+    'Emma',
+    'Thomas',
+    'Sophie',
+    'Ahmed',
+    'Yasmine',
+    'Nicolas',
+    'Julie',
+  ];
+  const lastNames = [
+    'Smith',
+    'Doe',
+    'Ben Ali',
+    'Dubois',
+    'Martin',
+    'Bernard',
+    'Petit',
+    'Durand',
+    'Leroy',
+    'Moreau',
+    'Simon',
+    'Laurent',
+  ];
 
   for (let i = 0; i < 78; i++) {
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -395,7 +439,13 @@ const seedDemoData = async () => {
       vacationDaysPerYear: 25,
       remainingVacationDays: Math.floor(Math.random() * 25),
       statePaidLeaves: Math.floor(Math.random() * 10),
-      hiringDate: new Date(2020 + Math.floor(Math.random() * 4), Math.floor(Math.random() * 12), 1).toISOString().split('T')[0]
+      hiringDate: new Date(
+        2020 + Math.floor(Math.random() * 4),
+        Math.floor(Math.random() * 12),
+        1,
+      )
+        .toISOString()
+        .split('T')[0],
     });
 
     // Generate some leaves and payroll for the first few employees
@@ -409,7 +459,7 @@ const seedDemoData = async () => {
         endDate: new Date(Date.now() + 86400000 * 3).toISOString(),
         status: 'approved',
         type: 'leave',
-        reminderEnabled: false
+        reminderEnabled: false,
       });
 
       await payrollDb.add({
@@ -421,7 +471,7 @@ const seedDemoData = async () => {
         startDate: new Date().toISOString(),
         reminderEnabled: true,
         employeeId: empId,
-        companyId: assignedCompanyId
+        companyId: assignedCompanyId,
       });
     }
   }
@@ -431,7 +481,7 @@ const seedDemoData = async () => {
     name: 'Q1 2024 Performance Review',
     startDate: '2024-01-01',
     endDate: '2024-03-31',
-    status: 'active'
+    status: 'active',
   });
 
   console.log('DEMO DATA SEEDED SUCCESSFULLY');

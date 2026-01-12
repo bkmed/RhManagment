@@ -224,7 +224,8 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 )}
               </View>
             </View>
-            {(rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) || rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES)) && (
+            {(rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) ||
+              rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES)) && (
               <View style={styles.actions}>
                 {rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) && (
                   <TouchableOpacity
@@ -234,7 +235,10 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                     <Text style={styles.actionText}>{t('common.edit')}</Text>
                   </TouchableOpacity>
                 )}
-                {rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES) && (
+                {rbacService.hasPermission(
+                  user,
+                  Permission.DELETE_EMPLOYEES,
+                ) && (
                   <TouchableOpacity
                     onPress={handleDelete}
                     style={[styles.actionButton, styles.deleteButton]}
@@ -272,10 +276,11 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.detailValue}>
                   {employee.gender
                     ? t(
-                      `employees.gender${employee.gender.charAt(0).toUpperCase() +
-                      employee.gender.slice(1)
-                      }`,
-                    )
+                        `employees.gender${
+                          employee.gender.charAt(0).toUpperCase() +
+                          employee.gender.slice(1)
+                        }`,
+                      )
                     : '-'}
                 </Text>
               </View>
@@ -407,27 +412,27 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
           <Text style={styles.sectionTitle}>{t('leaves.title')}</Text>
           {(rbacService.hasPermission(user, Permission.MANAGE_PAYROLL) ||
             rbacService.hasPermission(user, Permission.APPROVE_LEAVES)) && (
-              <View style={styles.headerActions}>
-                <TouchableOpacity
-                  onPress={() => navigateToAddIllness(employee)}
-                  style={[styles.addButton, styles.secondaryButton]}
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                onPress={() => navigateToAddIllness(employee)}
+                style={[styles.addButton, styles.secondaryButton]}
+              >
+                <Text
+                  style={[styles.addButtonText, styles.secondaryButtonText]}
                 >
-                  <Text
-                    style={[styles.addButtonText, styles.secondaryButtonText]}
-                  >
-                    + {t('employees.addIllness')}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={navigateToAddLeave}
-                  style={styles.addButton}
-                >
-                  <Text style={styles.addButtonText}>
-                    + {t('employees.addLeave')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+                  + {t('employees.addIllness')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={navigateToAddLeave}
+                style={styles.addButton}
+              >
+                <Text style={styles.addButtonText}>
+                  + {t('employees.addLeave')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {leaves.length > 0 ? (

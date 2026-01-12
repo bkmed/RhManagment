@@ -37,10 +37,18 @@ export const ClaimDetailsScreen = ({ route }: any) => {
       const data = await claimsDb.getById(claimId);
       if (data) {
         // Access Control
-        const isOwner = user?.employeeId && Number(data.employeeId) === Number(user.employeeId);
+        const isOwner =
+          user?.employeeId &&
+          Number(data.employeeId) === Number(user.employeeId);
         const isAdmin = user?.role === 'admin';
-        const isRHInCompany = user?.role === 'rh' && user?.companyId && Number(data.companyId) === Number(user.companyId);
-        const isManagerInTeam = user?.role === 'manager' && user?.teamId && Number(data.teamId) === Number(user.teamId);
+        const isRHInCompany =
+          user?.role === 'rh' &&
+          user?.companyId &&
+          Number(data.companyId) === Number(user.companyId);
+        const isManagerInTeam =
+          user?.role === 'manager' &&
+          user?.teamId &&
+          Number(data.teamId) === Number(user.teamId);
 
         if (!isAdmin && !isOwner && !isRHInCompany && !isManagerInTeam) {
           showToast(t('common.accessDenied'), 'error');
@@ -95,7 +103,8 @@ export const ClaimDetailsScreen = ({ route }: any) => {
             <View style={styles.typeTag}>
               <Text style={styles.typeText}>
                 {t(
-                  `claims.type${claim.type.charAt(0).toUpperCase() + claim.type.slice(1)
+                  `claims.type${
+                    claim.type.charAt(0).toUpperCase() + claim.type.slice(1)
                   }`,
                 )}
               </Text>
@@ -124,7 +133,8 @@ export const ClaimDetailsScreen = ({ route }: any) => {
               ]}
             >
               {t(
-                `claims.status${claim.status.charAt(0).toUpperCase() + claim.status.slice(1)
+                `claims.status${
+                  claim.status.charAt(0).toUpperCase() + claim.status.slice(1)
                 }`,
               )}
             </Text>
@@ -132,8 +142,12 @@ export const ClaimDetailsScreen = ({ route }: any) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>{t('claims.requester') || 'Requester'}</Text>
-          <Text style={styles.value}>{claim.employeeName || t('common.unknown')}</Text>
+          <Text style={styles.label}>
+            {t('claims.requester') || 'Requester'}
+          </Text>
+          <Text style={styles.value}>
+            {claim.employeeName || t('common.unknown')}
+          </Text>
         </View>
 
         <View style={styles.section}>
@@ -143,8 +157,12 @@ export const ClaimDetailsScreen = ({ route }: any) => {
 
         {claim.status !== 'pending' && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('claims.handler') || 'Processed By'}</Text>
-            <Text style={styles.value}>{claim.processedByName || t('common.unknown')}</Text>
+            <Text style={styles.label}>
+              {t('claims.handler') || 'Processed By'}
+            </Text>
+            <Text style={styles.value}>
+              {claim.processedByName || t('common.unknown')}
+            </Text>
           </View>
         )}
 

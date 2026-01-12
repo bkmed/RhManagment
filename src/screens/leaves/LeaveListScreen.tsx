@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useContext, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useContext,
+  useEffect,
+} from 'react';
 import {
   View,
   Text,
@@ -23,7 +29,6 @@ import { formatDate } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
-
 export const LeaveListScreen = ({
   navigation,
 }: {
@@ -44,14 +49,19 @@ export const LeaveListScreen = ({
 
   const loadData = async () => {
     try {
-      const [leavesData, illnessesData, employeesData, companiesData, teamsData] =
-        await Promise.all([
-          leavesDb.getAll(),
-          illnessesDb.getAll(),
-          employeesDb.getAll(),
-          companiesDb.getAll(),
-          teamsDb.getAll(),
-        ]);
+      const [
+        leavesData,
+        illnessesData,
+        employeesData,
+        companiesData,
+        teamsData,
+      ] = await Promise.all([
+        leavesDb.getAll(),
+        illnessesDb.getAll(),
+        employeesDb.getAll(),
+        companiesDb.getAll(),
+        teamsDb.getAll(),
+      ]);
 
       // Normalize illnesses to look like leaves for the list display
       const normalizedIllnesses = illnessesData.map(i => ({
@@ -61,7 +71,7 @@ export const LeaveListScreen = ({
         endDate: i.expiryDate,
         type: 'sick_leave' as const,
         dateTime: i.issueDate,
-        status: 'approved' // Illnesses are usually auto-approved or handled differently
+        status: 'approved', // Illnesses are usually auto-approved or handled differently
       }));
 
       const allAbsences = [...leavesData, ...normalizedIllnesses];
@@ -95,7 +105,11 @@ export const LeaveListScreen = ({
       // Admin sees everything (filteredAbsences = allAbsences)
 
       // Sort by date desc
-      filteredAbsences.sort((a, b) => new Date((b as any).startDate || (b as any).dateTime).getTime() - new Date((a as any).startDate || (a as any).dateTime).getTime());
+      filteredAbsences.sort(
+        (a, b) =>
+          new Date((b as any).startDate || (b as any).dateTime).getTime() -
+          new Date((a as any).startDate || (a as any).dateTime).getTime(),
+      );
 
       setLeaves(filteredAbsences);
       setEmployees(employeesData);
@@ -133,7 +147,15 @@ export const LeaveListScreen = ({
     );
 
     if (user?.role !== 'admin' && user?.role !== 'rh') {
-      return [{ type: 'direct', id: 'direct', name: 'direct', teams: [], items: filtered }];
+      return [
+        {
+          type: 'direct',
+          id: 'direct',
+          name: 'direct',
+          teams: [],
+          items: filtered,
+        },
+      ];
     }
 
     // Grouping logic for Admin/HR
@@ -172,7 +194,7 @@ export const LeaveListScreen = ({
     return Array.from(companiesMap.values()).map(c => ({
       ...c,
       teams: Array.from(c.teamsMap.values()),
-      items: [] // In hierarchical mode, items are in teams
+      items: [], // In hierarchical mode, items are in teams
     }));
   }, [leaves, searchQuery, user?.role, employees, companies, teams]);
 
@@ -180,7 +202,8 @@ export const LeaveListScreen = ({
     const startStr = formatDate((item.startDate || item.dateTime) as string);
     const endStr = item.endDate ? formatDate(item.endDate) : null;
     const isIllness = 'payrollName' in item;
-    const itemTitle = item.title || item.payrollName || t('leaveTypes.sick_leave');
+    const itemTitle =
+      item.title || item.payrollName || t('leaveTypes.sick_leave');
 
     return (
       <TouchableOpacity
@@ -210,7 +233,10 @@ export const LeaveListScreen = ({
           <View
             style={[
               styles.statusBadge,
-              { backgroundColor: getStatusColor(item.status || 'approved', theme) + '20' },
+              {
+                backgroundColor:
+                  getStatusColor(item.status || 'approved', theme) + '20',
+              },
             ]}
           >
             <Text
@@ -219,7 +245,9 @@ export const LeaveListScreen = ({
                 { color: getStatusColor(item.status || 'approved', theme) },
               ]}
             >
-              {isIllness ? t('leaveTypes.sick_leave') : t(`leaveStatus.${item.status}`)}
+              {isIllness
+                ? t('leaveTypes.sick_leave')
+                : t(`leaveStatus.${item.status}`)}
             </Text>
           </View>
         </View>
@@ -277,7 +305,9 @@ export const LeaveListScreen = ({
               </View>
             ))}
 
-            {group.items && group.items.length > 0 && group.items.map((item: any) => renderLeaveItem(item))}
+            {group.items &&
+              group.items.length > 0 &&
+              group.items.map((item: any) => renderLeaveItem(item))}
           </View>
         ))}
       </ScrollView>

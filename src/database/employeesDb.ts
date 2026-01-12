@@ -20,8 +20,18 @@ export const employeesDb = {
 
       // 1. HRs (one per company)
       const hrs = [
-        { id: '1', name: 'HR Admin TechGlobe', email: 'hr1@techglobe.com', companyId: '1' },
-        { id: '2', name: 'HR Admin EcoFlow', email: 'hr2@ecoflow.com', companyId: '2' },
+        {
+          id: '1',
+          name: 'HR Admin TechGlobe',
+          email: 'hr1@techglobe.com',
+          companyId: '1',
+        },
+        {
+          id: '2',
+          name: 'HR Admin EcoFlow',
+          email: 'hr2@ecoflow.com',
+          companyId: '2',
+        },
       ];
 
       hrs.forEach(hr => {
@@ -65,8 +75,26 @@ export const employeesDb = {
 
       // 3. Employees (10 per company, total 20)
       const names = [
-        'Thomas', 'Ines', 'Yassine', 'Sarah', 'Lucas', 'Leila', 'Adam', 'Eva', 'Karim', 'Sofia',
-        'Zied', 'Rim', 'Walid', 'Amira', 'Hedi', 'Ons', 'Mahdi', 'Sana', 'Fedi', 'Ghofrane'
+        'Thomas',
+        'Ines',
+        'Yassine',
+        'Sarah',
+        'Lucas',
+        'Leila',
+        'Adam',
+        'Eva',
+        'Karim',
+        'Sofia',
+        'Zied',
+        'Rim',
+        'Walid',
+        'Amira',
+        'Hedi',
+        'Ons',
+        'Mahdi',
+        'Sana',
+        'Fedi',
+        'Ghofrane',
       ];
 
       for (let i = 0; i < 20; i++) {
@@ -113,7 +141,7 @@ export const employeesDb = {
     // Check for duplicate email
     const allEmployees = selectAllEmployees(store.getState());
     const emailExists = allEmployees.some(
-      e => e.email.toLowerCase() === employee.email.toLowerCase()
+      e => e.email.toLowerCase() === employee.email.toLowerCase(),
     );
 
     if (emailExists) {
@@ -140,10 +168,15 @@ export const employeesDb = {
 
     if (existing) {
       // Check for duplicate email if email is being updated
-      if (updates.email && updates.email.toLowerCase() !== existing.email.toLowerCase()) {
+      if (
+        updates.email &&
+        updates.email.toLowerCase() !== existing.email.toLowerCase()
+      ) {
         const allEmployees = selectAllEmployees(store.getState());
         const emailExists = allEmployees.some(
-          e => e.id !== id && e.email.toLowerCase() === updates.email!.toLowerCase()
+          e =>
+            e.id !== id &&
+            e.email.toLowerCase() === updates.email!.toLowerCase(),
         );
         if (emailExists) {
           throw new Error('Email already exists');

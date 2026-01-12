@@ -27,22 +27,35 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
 
     const [title, setTitle] = useState('');
     const [message, setMessage] = useState('');
-    const [targetType, setTargetType] = useState<'all' | 'company' | 'team'>('all');
+    const [targetType, setTargetType] = useState<'all' | 'company' | 'team'>(
+        'all',
+    );
     const [targetId, setTargetId] = useState<string>('');
 
-    const [teams, setTeams] = useState<{ label: string, value: string }[]>([]);
-    const [companies, setCompanies] = useState<{ label: string, value: string }[]>([]);
+    const [teams, setTeams] = useState<{ label: string; value: string }[]>([]);
+    const [companies, setCompanies] = useState<
+        { label: string; value: string }[]
+    >([]);
 
     useEffect(() => {
-        if (!rbacService.isAdmin(user) && !rbacService.isRH(user) && !rbacService.isManager(user)) {
+        const isAllowed =
+            rbacService.isAdmin(user) ||
+            rbacService.isRH(user) ||
+            rbacService.isFullyAssignedManager(user);
+
+        if (!isAllowed) {
             showModal({
                 title: t('common.error'),
                 message: t('common.unauthorized'),
-                buttons: [{ text: 'OK', onPress: () => navigation.goBack() }]
+                buttons: [{ text: 'OK', onPress: () => navigation.goBack() }],
             });
             return;
         }
         loadData();
+        if (rbacService.isFullyAssignedManager(user)) {
+            setTargetType('team');
+            setTargetId(user?.teamId || '');
+        }
     }, []);
 
     const loadData = async () => {
@@ -50,17 +63,27 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
         setTeams(allTeams.map(t => ({ label: t.name, value: t.id.toString() })));
 
         const allCompanies = await companiesDb.getAll();
-        setCompanies(allCompanies.map(c => ({ label: c.name, value: c.id.toString() })));
+        setCompanies(
+            allCompanies.map(c => ({ label: c.name, value: c.id.toString() })),
+        );
     };
 
     const handleSend = async () => {
         if (!title || !message) {
-            showModal({ title: t('common.error'), message: t('common.required'), buttons: [{ text: 'OK' }] });
+            showModal({
+                title: t('common.error'),
+                message: t('common.required'),
+                buttons: [{ text: 'OK' }],
+            });
             return;
         }
 
         if ((targetType === 'team' || targetType === 'company') && !targetId) {
-            showModal({ title: t('common.error'), message: t('common.required'), buttons: [{ text: 'OK' }] });
+            showModal({
+                title: t('common.error'),
+                message: t('common.required'),
+                buttons: [{ text: 'OK' }],
+            });
             return;
         }
 
@@ -70,28 +93,33 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                 body: message,
                 targetType,
                 targetId: targetId || undefined,
-                senderId: user?.id
+                senderId: user?.id,
             });
 
             showModal({
                 title: t('common.success'),
                 message: t('notifications.sent'),
-                buttons: [{ text: 'OK' }]
+                buttons: [{ text: 'OK' }],
             });
             setTitle('');
             setMessage('');
             setTargetType('all');
             setTargetId('');
-
         } catch (error) {
             console.error(error);
-            showModal({ title: t('common.error'), message: t('common.saveError'), buttons: [{ text: 'OK' }] });
+            showModal({
+                title: t('common.error'),
+                message: t('common.saveError'),
+                buttons: [{ text: 'OK' }],
+            });
         }
     };
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-            <Text style={styles.header}>{t('notifications.broadcastTitle') || 'Broadcast Notification'}</Text>
+            <Text style={styles.header}>
+                {t('notifications.broadcastTitle') || 'Broadcast Notification'}
+            </Text>
 
             <Text style={styles.label}>{t('common.title')}</Text>
             <TextInput
@@ -113,19 +141,39 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                 numberOfLines={4}
             />
 
-            <Text style={styles.label}>{t('notifications.target') || 'Target Audience'}</Text>
+            <Text style={styles.label}>
+                {t('notifications.target') || 'Target Audience'}
+            </Text>
             <View style={styles.targetRow}>
-                {['all', 'company', 'team'].map(type => (
-                    <TouchableOpacity
-                        key={type}
-                        style={[styles.targetBtn, targetType === type && styles.targetBtnSelected]}
-                        onPress={() => setTargetType(type as any)}
+                {(rbacService.isAdmin(user) || rbacService.isRH(user)) &&
+                    ['all', 'company', 'team'].map(type => (
+                        <TouchableOpacity
+                            key={type}
+                            style={[
+                                styles.targetBtn,
+                                targetType === type && styles.targetBtnSelected,
+                            ]}
+                            onPress={() => setTargetType(type as any)}
+                        >
+                            <Text
+                                style={[
+                                    styles.targetBtnText,
+                                    targetType === type && styles.targetBtnTextSelected,
+                                ]}
+                            >
+                                {t(`common.${type}`) || type}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                {rbacService.isFullyAssignedManager(user) && (
+                    <View
+                        style={[styles.targetBtn, styles.targetBtnSelected, { flex: 1 }]}
                     >
-                        <Text style={[styles.targetBtnText, targetType === type && styles.targetBtnTextSelected]}>
-                            {t(`common.${type}`) || type}
+                        <Text style={[styles.targetBtnText, styles.targetBtnTextSelected]}>
+                            {t('common.team')}
                         </Text>
-                    </TouchableOpacity>
-                ))}
+                    </View>
+                )}
             </View>
 
             {targetType === 'team' && (
@@ -137,6 +185,7 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                         data={teams}
                         value={targetId}
                         onSelect={setTargetId}
+                        disabled={rbacService.isFullyAssignedManager(user)}
                     />
                 </View>
             )}
@@ -161,72 +210,73 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
     );
 };
 
-const createStyles = (theme: Theme) => StyleSheet.create({
-    container: { flex: 1, backgroundColor: theme.colors.background },
-    content: { padding: theme.spacing.l },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: theme.colors.text,
-        marginBottom: theme.spacing.xl
-    },
-    label: {
-        color: theme.colors.text,
-        marginBottom: theme.spacing.s,
-        fontWeight: '600'
-    },
-    input: {
-        backgroundColor: theme.colors.surface,
-        borderRadius: theme.spacing.s,
-        padding: theme.spacing.m,
-        color: theme.colors.text,
-        marginBottom: theme.spacing.l,
-        borderWidth: 1,
-        borderColor: theme.colors.border
-    },
-    textArea: {
-        height: 100,
-        textAlignVertical: 'top'
-    },
-    targetRow: {
-        flexDirection: 'row',
-        marginBottom: theme.spacing.l,
-        gap: theme.spacing.m
-    },
-    targetBtn: {
-        flex: 1,
-        padding: theme.spacing.m,
-        borderRadius: theme.spacing.s,
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-        alignItems: 'center'
-    },
-    targetBtnSelected: {
-        backgroundColor: theme.colors.primary,
-        borderColor: theme.colors.primary
-    },
-    targetBtnText: {
-        color: theme.colors.text,
-        fontWeight: '600',
-        textTransform: 'capitalize'
-    },
-    targetBtnTextSelected: {
-        color: '#fff'
-    },
-    dropdownContainer: {
-        marginBottom: theme.spacing.l,
-        zIndex: 1000
-    },
-    sendBtn: {
-        backgroundColor: theme.colors.primary,
-        padding: theme.spacing.l,
-        borderRadius: theme.spacing.s,
-        alignItems: 'center',
-        marginTop: theme.spacing.l
-    },
-    sendBtnText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 16
-    }
-});
+const createStyles = (theme: Theme) =>
+    StyleSheet.create({
+        container: { flex: 1, backgroundColor: theme.colors.background },
+        content: { padding: theme.spacing.l },
+        header: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginBottom: theme.spacing.xl,
+        },
+        label: {
+            color: theme.colors.text,
+            marginBottom: theme.spacing.s,
+            fontWeight: '600',
+        },
+        input: {
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.spacing.s,
+            padding: theme.spacing.m,
+            color: theme.colors.text,
+            marginBottom: theme.spacing.l,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+        },
+        textArea: {
+            height: 100,
+            textAlignVertical: 'top',
+        },
+        targetRow: {
+            flexDirection: 'row',
+            marginBottom: theme.spacing.l,
+            gap: theme.spacing.m,
+        },
+        targetBtn: {
+            flex: 1,
+            padding: theme.spacing.m,
+            borderRadius: theme.spacing.s,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+            alignItems: 'center',
+        },
+        targetBtnSelected: {
+            backgroundColor: theme.colors.primary,
+            borderColor: theme.colors.primary,
+        },
+        targetBtnText: {
+            color: theme.colors.text,
+            fontWeight: '600',
+            textTransform: 'capitalize',
+        },
+        targetBtnTextSelected: {
+            color: '#fff',
+        },
+        dropdownContainer: {
+            marginBottom: theme.spacing.l,
+            zIndex: 1000,
+        },
+        sendBtn: {
+            backgroundColor: theme.colors.primary,
+            padding: theme.spacing.l,
+            borderRadius: theme.spacing.s,
+            alignItems: 'center',
+            marginTop: theme.spacing.l,
+        },
+        sendBtnText: {
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: 16,
+        },
+    });

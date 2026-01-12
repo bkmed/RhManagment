@@ -169,35 +169,39 @@ export const AnalyticsScreen = () => {
         )}
 
         {/* Upcoming Leaves Chart (Admin/RH/Manager Only) */}
-        {user?.role !== 'employee' && leavesChart && leavesChart.data.some(val => val > 0) && (
-          <View style={styles.chartSection}>
-            <Text style={styles.chartTitle}>
-              {t('analytics.upcomingLeavesChart')}
-            </Text>
-            <BarChart
-              data={{
-                labels: leavesChart.labels,
-                datasets: [{ data: leavesChart.data }],
-              }}
-              width={chartWidth}
-              height={220}
-              yAxisLabel=""
-              yAxisSuffix=""
-              chartConfig={{
-                ...chartConfig,
-                color: (opacity = 1) => `rgba(52, 199, 89, ${opacity})`, // Keep green for success/leaves
-              }}
-              style={styles.chart}
-              showValuesOnTopOfBars
-              withInnerLines={false}
-            />
-          </View>
-        )}
+        {user?.role !== 'employee' &&
+          leavesChart &&
+          leavesChart.data.some(val => val > 0) && (
+            <View style={styles.chartSection}>
+              <Text style={styles.chartTitle}>
+                {t('analytics.upcomingLeavesChart')}
+              </Text>
+              <BarChart
+                data={{
+                  labels: leavesChart.labels,
+                  datasets: [{ data: leavesChart.data }],
+                }}
+                width={chartWidth}
+                height={220}
+                yAxisLabel=""
+                yAxisSuffix=""
+                chartConfig={{
+                  ...chartConfig,
+                  color: (opacity = 1) => `rgba(52, 199, 89, ${opacity})`, // Keep green for success/leaves
+                }}
+                style={styles.chart}
+                showValuesOnTopOfBars
+                withInnerLines={false}
+              />
+            </View>
+          )}
 
         {/* HR Insights (Personalized for employees) */}
         <View style={styles.insightsSection}>
           <Text style={styles.sectionTitle}>
-            {user?.role === 'employee' ? t('analytics.personalInsights') || 'Mes Insights' : t('analytics.hrInsights')}
+            {user?.role === 'employee'
+              ? t('analytics.personalInsights') || 'Mes Insights'
+              : t('analytics.hrInsights')}
           </Text>
 
           {analytics.payrollAdherence >= 90 && (

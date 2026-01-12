@@ -145,6 +145,7 @@
     "none": "None",
     "notifyHr": "Notify HR",
     "ok": "OK",
+    "unauthorized": "Unauthorized access",
     "online": "Online",
     "organization": {
       "manageDepartments": "Manage Departments"

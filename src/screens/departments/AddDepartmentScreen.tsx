@@ -89,13 +89,17 @@ export const AddDepartmentScreen = ({ navigation, route }: any) => {
 
       showModal({
         title: t('common.success'),
-        message: isEdit ? t('departments.updateSuccess') || t('common.saved') : t('departments.saveSuccess') || t('common.saved'),
+        message: isEdit
+          ? t('departments.updateSuccess') || t('common.saved')
+          : t('departments.saveSuccess') || t('common.saved'),
         buttons: [
           {
             text: t('common.ok'),
             onPress: () => {
               if (Platform.OS === 'web') {
-                setActiveTab?.('CompanySettings', 'Departments', { companyId: selectedCompanyId });
+                setActiveTab?.('CompanySettings', 'Departments', {
+                  companyId: selectedCompanyId,
+                });
               } else {
                 if (navigation && navigation.canGoBack()) {
                   navigation.goBack();

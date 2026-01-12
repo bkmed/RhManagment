@@ -9,6 +9,6 @@ export const WebNavigationContext = createContext({
     _tab: string,
     _subScreen?: string,
     _params?: Record<string, unknown>,
-  ) => { },
+  ) => {},
   /* eslint-enable @typescript-eslint/no-unused-vars */
 });

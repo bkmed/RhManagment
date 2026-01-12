@@ -92,7 +92,6 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
     }
   };
 
-
   if (loading || !illness) {
     return (
       <View style={styles.container}>
@@ -133,7 +132,6 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
             <Text style={styles.value}>{illness.notes}</Text>
           </View>
         )}
-
 
         {(user?.role === 'admin' ||
           user?.role === 'rh' ||

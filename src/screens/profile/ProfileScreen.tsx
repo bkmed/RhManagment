@@ -287,13 +287,17 @@ export const ProfileScreen = ({ navigation }: any) => {
       const { employeesDb } = require('../../database/employeesDb');
       const allEmployees = await employeesDb.getAll();
       const emailExists = allEmployees.some(
-        (e: any) => e.id !== user?.employeeId && e.email.toLowerCase() === email.trim().toLowerCase()
+        (e: any) =>
+          e.id !== user?.employeeId &&
+          e.email.toLowerCase() === email.trim().toLowerCase(),
       );
 
       if (emailExists) {
         showModal({
           title: t('common.error'),
-          message: t('auth.emailExists') || 'This email is already associated with another account.',
+          message:
+            t('auth.emailExists') ||
+            'This email is already associated with another account.',
         });
         setLoading(false);
         return;
@@ -313,24 +317,24 @@ export const ProfileScreen = ({ navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-            name: emergencyName,
-            phone: emergencyPhone,
-            relationship: emergencyRelationship,
-          }
+              name: emergencyName,
+              phone: emergencyPhone,
+              relationship: emergencyRelationship,
+            }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-              linkedin,
-              skype,
-              website,
-            }
+                linkedin,
+                skype,
+                website,
+              }
             : undefined,
         skills: skills
           ? skills
-            .split(',')
-            .map(s => s.trim())
-            .filter(s => s)
+              .split(',')
+              .map(s => s.trim())
+              .filter(s => s)
           : undefined,
       });
       setIsEditing(false);
@@ -493,10 +497,12 @@ export const ProfileScreen = ({ navigation }: any) => {
                 onPress={isEditing ? handlePickPhoto : undefined}
                 disabled={!isEditing}
               >
-                <View style={[
-                  styles.avatar,
-                  { borderColor: theme.colors.surface, borderWidth: 4 },
-                ]}>
+                <View
+                  style={[
+                    styles.avatar,
+                    { borderColor: theme.colors.surface, borderWidth: 4 },
+                  ]}
+                >
                   {photoUri ? (
                     <Image
                       source={{ uri: photoUri }}
@@ -504,7 +510,9 @@ export const ProfileScreen = ({ navigation }: any) => {
                     />
                   ) : (
                     <Text style={styles.avatarText}>
-                      {alias?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase() || 'U'}
+                      {alias?.charAt(0).toUpperCase() ||
+                        user?.name?.charAt(0).toUpperCase() ||
+                        'U'}
                     </Text>
                   )}
                   {isEditing && (
@@ -543,7 +551,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                     if (!userCompany) {
                       notificationService.showAlert(
                         t('common.error'),
-                        t('companies.noCompanyAssigned')
+                        t('companies.noCompanyAssigned'),
                       );
                       return;
                     }
@@ -662,7 +670,9 @@ export const ProfileScreen = ({ navigation }: any) => {
                 <View style={styles.responsiveRow}>
                   <View style={styles.fieldContainerFlex}>
                     <DateTimePickerField
-                      label={`${t('profile.birthDate') || 'Birth Date'} ${userAge ? `(${userAge} ${t('common.years')})` : ''}`}
+                      label={`${t('profile.birthDate') || 'Birth Date'} ${
+                        userAge ? `(${userAge} ${t('common.years')})` : ''
+                      }`}
                       value={birthDate ? new Date(birthDate) : null}
                       onChange={(date: Date | null) =>
                         setBirthDate(date ? date.toISOString() : '')
@@ -715,7 +725,9 @@ export const ProfileScreen = ({ navigation }: any) => {
 
                 <View style={styles.responsiveRow}>
                   <View style={styles.fieldContainerFlex}>
-                    <Text style={styles.label}>{t('profile.contactPhone')}</Text>
+                    <Text style={styles.label}>
+                      {t('profile.contactPhone')}
+                    </Text>
                     <TextInput
                       style={styles.input}
                       value={emergencyPhone}
@@ -726,7 +738,9 @@ export const ProfileScreen = ({ navigation }: any) => {
                     />
                   </View>
                   <View style={styles.fieldContainerFlex}>
-                    <Text style={styles.label}>{t('profile.relationship')}</Text>
+                    <Text style={styles.label}>
+                      {t('profile.relationship')}
+                    </Text>
                     <TextInput
                       style={styles.input}
                       value={emergencyRelationship}
@@ -738,7 +752,9 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </View>
 
                 <View style={styles.sectionDivider} />
-                <Text style={styles.sectionTitle}>{t('profile.socialLinks')}</Text>
+                <Text style={styles.sectionTitle}>
+                  {t('profile.socialLinks')}
+                </Text>
 
                 <View style={styles.fieldContainer}>
                   <Text style={styles.label}>LinkedIn</Text>
@@ -821,15 +837,21 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </Text>
                 <View style={styles.responsiveRow}>
                   <View style={styles.fieldContainerFlex}>
-                    <Text style={styles.fieldLabel}>{t('employees.alias') || 'Alias'}</Text>
-                    <Text style={styles.fieldValue}>{alias || t('common.noData')}</Text>
+                    <Text style={styles.fieldLabel}>
+                      {t('employees.alias') || 'Alias'}
+                    </Text>
+                    <Text style={styles.fieldValue}>
+                      {alias || t('common.noData')}
+                    </Text>
                   </View>
                   <View style={styles.fieldContainerFlex}>
                     <Text style={styles.fieldLabel}>
                       {t('profile.birthDate') || 'Date of Birth'}
                     </Text>
                     <Text style={styles.fieldValue}>
-                      {birthDate ? new Date(birthDate).toLocaleDateString() : t('common.noData')}
+                      {birthDate
+                        ? new Date(birthDate).toLocaleDateString()
+                        : t('common.noData')}
                       {userAge ? ` (${userAge} ${t('common.years')})` : ''}
                     </Text>
                   </View>
@@ -840,19 +862,27 @@ export const ProfileScreen = ({ navigation }: any) => {
                     <Text style={styles.fieldLabel}>
                       {t('employees.jobTitle') || 'Job Title'}
                     </Text>
-                    <Text style={styles.fieldValue}>{jobTitle || t('common.noData')}</Text>
+                    <Text style={styles.fieldValue}>
+                      {jobTitle || t('common.noData')}
+                    </Text>
                   </View>
                   <View style={styles.fieldContainerFlex}>
                     <Text style={styles.fieldLabel}>{t('profile.gender')}</Text>
                     <Text style={styles.fieldValue}>
-                      {t(`employees.gender${gender.charAt(0).toUpperCase() + gender.slice(1)}`)}
+                      {t(
+                        `employees.gender${
+                          gender.charAt(0).toUpperCase() + gender.slice(1)
+                        }`,
+                      )}
                     </Text>
                   </View>
                 </View>
 
                 <View style={styles.divider} />
                 <Text style={styles.fieldLabel}>{t('profile.address')}</Text>
-                <Text style={styles.fieldValue}>{address || t('common.noData')}</Text>
+                <Text style={styles.fieldValue}>
+                  {address || t('common.noData')}
+                </Text>
               </View>
 
               {/* Professional Profile View */}
@@ -887,8 +917,8 @@ export const ProfileScreen = ({ navigation }: any) => {
                       <Text style={styles.tagText}>{skill}</Text>
                     </View>
                   )) || (
-                      <Text style={styles.emptyText}>{t('common.noData')}</Text>
-                    )}
+                    <Text style={styles.emptyText}>{t('common.noData')}</Text>
+                  )}
                 </View>
 
                 <View style={styles.divider} />
@@ -948,7 +978,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                       t('settings.pushNotifications') || 'Push Notifications',
                     status:
                       user?.notificationPreferences?.push &&
-                        notificationPermission === 'granted'
+                      notificationPermission === 'granted'
                         ? 'granted'
                         : notificationPermission,
                     onValueChange: handleNotificationPermission,

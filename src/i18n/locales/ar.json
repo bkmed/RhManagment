@@ -146,6 +146,7 @@
     "none": "لا يوجد",
     "notifyHr": "إخطار الموارد البشرية",
     "ok": "موافق",
+    "unauthorized": "وصول غير مصرح به",
     "online": "متصل",
     "organization": {
       "manageDepartments": "إدارة الأقسام"

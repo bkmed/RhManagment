@@ -53,10 +53,18 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
       const payrollItem = await payrollDb.getById(payrollId);
       if (payrollItem) {
         // Access Control Check
-        const isOwner = user?.employeeId && Number(payrollItem.employeeId) === Number(user.employeeId);
+        const isOwner =
+          user?.employeeId &&
+          Number(payrollItem.employeeId) === Number(user.employeeId);
         const isAdmin = user?.role === 'admin';
-        const isRHInCompany = user?.role === 'rh' && user?.companyId && Number(payrollItem.companyId) === Number(user.companyId);
-        const isManagerInTeam = user?.role === 'manager' && user?.teamId && Number(payrollItem.teamId) === Number(user.teamId);
+        const isRHInCompany =
+          user?.role === 'rh' &&
+          user?.companyId &&
+          Number(payrollItem.companyId) === Number(user.companyId);
+        const isManagerInTeam =
+          user?.role === 'manager' &&
+          user?.teamId &&
+          Number(payrollItem.teamId) === Number(user.teamId);
 
         if (!isAdmin && !isOwner && !isRHInCompany && !isManagerInTeam) {
           showToast(t('common.accessDenied') || 'Access Denied', 'error');
@@ -193,10 +201,11 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
               <Text style={styles.infoValue}>
                 {payroll.month && payroll.year
                   ? `${new Date(
-                    0,
-                    (parseInt(payroll.month) || 1) - 1,
-                  ).toLocaleString(undefined, { month: 'long' })} ${payroll.year
-                  }`
+                      0,
+                      (parseInt(payroll.month) || 1) - 1,
+                    ).toLocaleString(undefined, { month: 'long' })} ${
+                      payroll.year
+                    }`
                   : '-'}
               </Text>
               <Text style={styles.infoLabel}>
@@ -233,10 +242,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
                 t('payroll.giftVouchers'),
                 cleanAmount(payroll.giftVouchers),
               )}
-              {renderEarningRow(
-                t('payroll.overtime'),
-                totals.overtime || 0,
-              )}
+              {renderEarningRow(t('payroll.overtime'), totals.overtime || 0)}
 
               <View style={[styles.tableRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>

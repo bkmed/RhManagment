@@ -21,7 +21,8 @@ module.exports = {
     rules: [
       {
         test: /\.(js|ts)x?$/,
-        exclude: /node_modules[/\\](?!(react-native-chart-kit|@react-native-community[\\/]datetimepicker|react-native-image-picker|)[/\\])/,
+        exclude:
+          /node_modules[/\\](?!(react-native-chart-kit|@react-native-community[\\/]datetimepicker|react-native-image-picker|)[/\\])/,
 
         use: {
           loader: 'babel-loader',
@@ -88,11 +89,26 @@ module.exports = {
   resolve: {
     alias: {
       'react-native$': 'react-native-web',
-      'react-native-mmkv': path.resolve(__dirname, 'src/services/mocks/react-native-mmkv'),
-      '@react-native-firebase/analytics': path.resolve(__dirname, 'src/services/mocks/firebase-analytics'),
-      '@react-native-firebase/crashlytics': path.resolve(__dirname, 'src/services/mocks/firebase-crashlytics'),
-      '@sentry/react': path.resolve(__dirname, 'src/services/mocks/sentry-react'),
-      '@react-native-community/netinfo': path.resolve(__dirname, 'src/services/mocks/netinfo'),
+      'react-native-mmkv': path.resolve(
+        __dirname,
+        'src/services/mocks/react-native-mmkv',
+      ),
+      '@react-native-firebase/analytics': path.resolve(
+        __dirname,
+        'src/services/mocks/firebase-analytics',
+      ),
+      '@react-native-firebase/crashlytics': path.resolve(
+        __dirname,
+        'src/services/mocks/firebase-crashlytics',
+      ),
+      '@sentry/react': path.resolve(
+        __dirname,
+        'src/services/mocks/sentry-react',
+      ),
+      '@react-native-community/netinfo': path.resolve(
+        __dirname,
+        'src/services/mocks/netinfo',
+      ),
     },
     extensions: [
       '.web.ts',

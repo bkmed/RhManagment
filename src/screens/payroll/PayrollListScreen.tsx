@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useContext, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useContext,
+  useEffect,
+} from 'react';
 import {
   View,
   Text,
@@ -36,7 +42,9 @@ export const PayrollListScreen = ({ navigation }: any) => {
       // Role-based filtering (Strict isolation)
       if (user?.role === 'employee') {
         if (user?.employeeId) {
-          data = data.filter(item => Number(item.employeeId) === Number(user.employeeId));
+          data = data.filter(
+            item => Number(item.employeeId) === Number(user.employeeId),
+          );
         } else {
           data = []; // Deny by default if ID is missing
         }
@@ -45,7 +53,9 @@ export const PayrollListScreen = ({ navigation }: any) => {
         data = data.filter(item => Number(item.teamId) === Number(user.teamId));
       } else if (user?.role === 'rh' && user?.companyId) {
         // HR sees their company's payroll
-        data = data.filter(item => Number(item.companyId) === Number(user.companyId));
+        data = data.filter(
+          item => Number(item.companyId) === Number(user.companyId),
+        );
       } else if (user?.role !== 'admin') {
         // Any other non-admin role with missing affiliations
         data = [];
@@ -83,7 +93,9 @@ export const PayrollListScreen = ({ navigation }: any) => {
         item =>
           (item.name || '').toLowerCase().includes(lowerQuery) ||
           (item.employeeName || '').toLowerCase().includes(lowerQuery) ||
-          String(item.amount || '').toLowerCase().includes(lowerQuery),
+          String(item.amount || '')
+            .toLowerCase()
+            .includes(lowerQuery),
       )
       .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }, [payrollItems, searchQuery]);

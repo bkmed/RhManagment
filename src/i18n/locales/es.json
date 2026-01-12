@@ -146,6 +146,7 @@
     "none": "Ninguno",
     "notifyHr": "Notificar a RRHH",
     "ok": "Aceptar",
+    "unauthorized": "Acceso no autorizado",
     "online": "En línea",
     "organization": {
       "manageDepartments": "Gestionar departamentos"

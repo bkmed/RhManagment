@@ -50,7 +50,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
   /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
   /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
   const [employeeId, setEmployeeId] = useState<string | undefined>(
-    user?.role === 'employee' ? (user?.employeeId || user?.id) : undefined,
+    user?.role === 'employee' ? user?.employeeId || user?.id : undefined,
   );
 
   // Load devices for selected employee - Moved here to fix scoping issue
@@ -78,11 +78,15 @@ export const AddClaimScreen = ({ navigation }: any) => {
   useEffect(() => {
     if (user?.role === 'employee' && !employeeId) {
       // First try to match by exact ID if available
-      let found = user.employeeId ? employees.find(e => e.id === user.employeeId) : undefined;
+      let found = user.employeeId
+        ? employees.find(e => e.id === user.employeeId)
+        : undefined;
 
       // Fallback: Match by email if not found or if user.employeeId was missing
       if (!found && user.email) {
-        found = employees.find(e => e.email.toLowerCase() === user.email.toLowerCase());
+        found = employees.find(
+          e => e.email.toLowerCase() === user.email.toLowerCase(),
+        );
       }
 
       if (found) {
@@ -165,7 +169,11 @@ export const AddClaimScreen = ({ navigation }: any) => {
     if (!description.trim() && type !== 'material') {
       newErrors.description = t('common.required');
     }
-    if (type === 'material' && selectedDevice === 'other' && !description.trim()) {
+    if (
+      type === 'material' &&
+      selectedDevice === 'other' &&
+      !description.trim()
+    ) {
       newErrors.description = t('common.required');
     }
     if ((user?.role === 'admin' || user?.role === 'rh') && !employeeId) {
@@ -176,7 +184,10 @@ export const AddClaimScreen = ({ navigation }: any) => {
     if (user?.role === 'employee' && !user?.teamId) {
       // Allow if we found the teamId via auto-resolve
       if (!teamId) {
-        notificationService.showAlert(t('common.error'), t('claims.noTeamError') || 'You must be in a team to submit a claim.');
+        notificationService.showAlert(
+          t('common.error'),
+          t('claims.noTeamError') || 'You must be in a team to submit a claim.',
+        );
         return;
       }
     }
@@ -185,20 +196,28 @@ export const AddClaimScreen = ({ navigation }: any) => {
     if (Object.keys(newErrors).length > 0) return;
 
     // Resolve proper ids
-    let currentEmployeeId = employeeId || (user?.role === 'employee' && user?.employeeId ? user.employeeId : undefined);
+    let currentEmployeeId =
+      employeeId ||
+      (user?.role === 'employee' && user?.employeeId
+        ? user.employeeId
+        : undefined);
 
     // Fallback: Try to find employee by email if ID is missing
     if (!currentEmployeeId && user?.email && user?.role === 'employee') {
       // First try from Redux list
-      let foundEmployee = employees.find(e => e.email.toLowerCase() === user.email.toLowerCase());
+      let foundEmployee = employees.find(
+        e => e.email.toLowerCase() === user.email.toLowerCase(),
+      );
 
       // If not found in Redux, try direct DB fetch (async)
       if (!foundEmployee) {
         try {
           const allEmps = await employeesDb.getAll();
-          foundEmployee = allEmps.find(e => e.email.toLowerCase() === user.email.toLowerCase());
+          foundEmployee = allEmps.find(
+            e => e.email.toLowerCase() === user.email.toLowerCase(),
+          );
         } catch (err) {
-          console.error("Failed to fetch employees for fallback", err);
+          console.error('Failed to fetch employees for fallback', err);
         }
       }
 
@@ -208,7 +227,10 @@ export const AddClaimScreen = ({ navigation }: any) => {
     }
 
     if (!currentEmployeeId) {
-      notificationService.showAlert(t('common.error'), "Employee profile not linked. Please contact HR.");
+      notificationService.showAlert(
+        t('common.error'),
+        'Employee profile not linked. Please contact HR.',
+      );
       return;
     }
 
@@ -219,7 +241,9 @@ export const AddClaimScreen = ({ navigation }: any) => {
       try {
         const fetched = await employeesDb.getById(currentEmployeeId);
         selectedEmployee = fetched || undefined;
-      } catch (e) { console.log("Error fetching emp details", e); }
+      } catch (e) {
+        console.log('Error fetching emp details', e);
+      }
     }
 
     // Last check
@@ -228,10 +252,15 @@ export const AddClaimScreen = ({ navigation }: any) => {
       try {
         const allEmps = await employeesDb.getAll();
         selectedEmployee = allEmps.find(e => e.id === currentEmployeeId);
-      } catch (e) { console.error(e) }
+      } catch (e) {
+        console.error(e);
+      }
 
       if (!selectedEmployee) {
-        notificationService.showAlert(t('common.error'), "Employee profile not found in database.");
+        notificationService.showAlert(
+          t('common.error'),
+          'Employee profile not found in database.',
+        );
         return;
       }
     }
@@ -239,7 +268,13 @@ export const AddClaimScreen = ({ navigation }: any) => {
     try {
       const claimData = {
         type,
-        title: type === 'material' ? (selectedDevice === 'other' ? 'Other Material' : availableDevices.find(d => String(d.id) === selectedDevice)?.name) : t(`claims.type_${type}`),
+        title:
+          type === 'material'
+            ? selectedDevice === 'other'
+              ? 'Other Material'
+              : availableDevices.find(d => String(d.id) === selectedDevice)
+                  ?.name
+            : t(`claims.type_${type}`),
         description: description.trim(),
         isUrgent,
         status: 'pending' as const,
@@ -250,7 +285,10 @@ export const AddClaimScreen = ({ navigation }: any) => {
         teamId: teamId || selectedEmployee?.teamId,
         employeeId: currentEmployeeId,
         employeeName: selectedEmployee?.name || user?.name || 'Unknown',
-        deviceId: type === 'material' && selectedDevice !== 'other' ? selectedDevice : undefined,
+        deviceId:
+          type === 'material' && selectedDevice !== 'other'
+            ? selectedDevice
+            : undefined,
       };
 
       await claimsDb.add(claimData);
@@ -311,8 +349,11 @@ export const AddClaimScreen = ({ navigation }: any) => {
                 <Dropdown
                   label={t('profile.myMaterial')}
                   data={[
-                    ...availableDevices.map(d => ({ label: d.name, value: String(d.id) })),
-                    { label: t('common.other'), value: 'other' }
+                    ...availableDevices.map(d => ({
+                      label: d.name,
+                      value: String(d.id),
+                    })),
+                    { label: t('common.other'), value: 'other' },
                   ]}
                   value={selectedDevice}
                   onSelect={setSelectedDevice}
@@ -372,7 +413,8 @@ export const AddClaimScreen = ({ navigation }: any) => {
                     label={t('employees.name') + ' *'}
                     data={employees
                       .filter(e => {
-                        if (companyId && e.companyId !== companyId) return false;
+                        if (companyId && e.companyId !== companyId)
+                          return false;
                         if (teamId && e.teamId !== teamId) return false;
                         return true;
                       })
@@ -383,7 +425,8 @@ export const AddClaimScreen = ({ navigation }: any) => {
                     value={employeeId || ''}
                     onSelect={val => {
                       setEmployeeId(val || undefined);
-                      if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                      if (errors.employeeId)
+                        setErrors({ ...errors, employeeId: '' });
                     }}
                     error={errors.employeeId}
                   />

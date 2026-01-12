@@ -161,7 +161,9 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
             <Text style={styles.benefitIcon}>🕒</Text>
             <Text style={styles.benefitText}>
               {t('payroll.overtime')}: {payroll.overtimeHours}h
-              {payroll.overtimeRate ? ` @ ${payroll.overtimeRate}${payroll.currency || '€'}/h` : ''}
+              {payroll.overtimeRate
+                ? ` @ ${payroll.overtimeRate}${payroll.currency || '€'}/h`
+                : ''}
             </Text>
           </View>
         ) : null}

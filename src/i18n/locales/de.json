@@ -146,6 +146,7 @@
     "none": "Keiner",
     "notifyHr": "HR benachrichtigen",
     "ok": "OK",
+    "unauthorized": "Nicht autorisierter Zugriff",
     "online": "Online",
     "organization": {
       "manageDepartments": "Abteilungen verwalten"

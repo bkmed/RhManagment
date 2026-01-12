@@ -1,9 +1,9 @@
-import * as Sentry from "@sentry/react";
+import * as Sentry from '@sentry/react';
 
 export const initSentry = () => {
   if (process.env.NODE_ENV === 'production') {
     Sentry.init({
-      dsn: "https://example@sentry.io/placeholder", // Placeholder DSN
+      dsn: 'https://example@sentry.io/placeholder', // Placeholder DSN
       integrations: [
         Sentry.browserTracingIntegration(),
         Sentry.replayIntegration(),
@@ -17,6 +17,6 @@ export const initSentry = () => {
   }
 };
 
-export const captureException = (error) => {
+export const captureException = error => {
   Sentry.captureException(error);
 };

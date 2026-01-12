@@ -137,7 +137,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
         await employeesDb.update(memberId, {
           teamId,
           // Ensure they are attached to the company too
-          ...(companyId ? { companyId } : {})
+          ...(companyId ? { companyId } : {}),
         });
       }
 
@@ -145,13 +145,15 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
       if (managerId) {
         await employeesDb.update(managerId, {
           teamId,
-          ...(companyId ? { companyId } : {})
+          ...(companyId ? { companyId } : {}),
         });
       }
 
       showModal({
         title: t('common.success'),
-        message: isEdit ? t('teams.updateSuccess') || t('common.saved') : t('teams.saveSuccess') || t('common.saved'),
+        message: isEdit
+          ? t('teams.updateSuccess') || t('common.saved')
+          : t('teams.saveSuccess') || t('common.saved'),
         buttons: [
           {
             text: t('common.ok'),
@@ -317,10 +319,14 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
               <Text style={styles.label}>
                 {t('teams.members') || 'Team Members'}
               </Text>
-              <Text style={[
-                styles.memberCount,
-                (selectedMemberIds.length === 0 || selectedMemberIds.length > 10) && styles.errorText
-              ]}>
+              <Text
+                style={[
+                  styles.memberCount,
+                  (selectedMemberIds.length === 0 ||
+                    selectedMemberIds.length > 10) &&
+                    styles.errorText,
+                ]}
+              >
                 {selectedMemberIds.length} / 10
               </Text>
             </View>

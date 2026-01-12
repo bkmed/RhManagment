@@ -121,6 +121,19 @@ class RbacService {
     isEmployee(user: User | null): boolean {
         return this.getUserRole(user as User) === Role.EMPLOYEE;
     }
+
+    /**
+     * Check if user is a Manager with a team and company assigned
+     */
+    isFullyAssignedManager(user: User | null): boolean {
+        if (!user) return false;
+        return (
+            this.isManager(user) &&
+            !!user.teamId &&
+            !!user.companyId &&
+            !!user.employeeId
+        );
+    }
 }
 
 export const rbacService = new RbacService();

@@ -107,7 +107,7 @@ export const CompanySettingsScreen = ({ navigation }: any) => {
                   style={[
                     styles.companyButtonText,
                     selectedCompanyId === c.id &&
-                    styles.selectedCompanyButtonText,
+                      styles.selectedCompanyButtonText,
                   ]}
                 >
                   {c.name}

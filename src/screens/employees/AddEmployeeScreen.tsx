@@ -92,7 +92,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
 
   useEffect(() => {
     // RBAC Check: Must have ADD or EDIT permission
-    const requiredPermission = isEdit ? Permission.EDIT_EMPLOYEES : Permission.ADD_EMPLOYEES;
+    const requiredPermission = isEdit
+      ? Permission.EDIT_EMPLOYEES
+      : Permission.ADD_EMPLOYEES;
     if (!rbacService.hasPermission(currentUser, requiredPermission)) {
       showToast(t('common.unauthorized'), 'error');
       navigateBack();
@@ -280,24 +282,24 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-            name: emergencyName,
-            phone: emergencyPhone,
-            relationship: emergencyRelationship,
-          }
+              name: emergencyName,
+              phone: emergencyPhone,
+              relationship: emergencyRelationship,
+            }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-              linkedin,
-              skype,
-              website,
-            }
+                linkedin,
+                skype,
+                website,
+              }
             : undefined,
         skills: skills
           ? skills
-            .split(',')
-            .map(s => s.trim())
-            .filter(s => s)
+              .split(',')
+              .map(s => s.trim())
+              .filter(s => s)
           : undefined,
       };
 
@@ -401,7 +403,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
             </View>
 
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>{t('employees.alias') || 'Alias'}</Text>
+              <Text style={styles.label}>
+                {t('employees.alias') || 'Alias'}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={alias}
@@ -450,7 +454,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   onChange={setBirthDate}
                   mode="date"
                 />
-                {errors.birthDate && <Text style={styles.errorText}>{errors.birthDate}</Text>}
+                {errors.birthDate && (
+                  <Text style={styles.errorText}>{errors.birthDate}</Text>
+                )}
               </View>
               <View style={styles.fieldContainer}>
                 <Dropdown
@@ -660,12 +666,16 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
               </View>
 
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('employees.jobTitle') || 'Job Title'}</Text>
+                <Text style={styles.label}>
+                  {t('employees.jobTitle') || 'Job Title'}
+                </Text>
                 <TextInput
                   style={styles.input}
                   value={jobTitle}
                   onChangeText={setJobTitle}
-                  placeholder={t('employees.jobTitle') || 'e.g. Senior Developer'}
+                  placeholder={
+                    t('employees.jobTitle') || 'e.g. Senior Developer'
+                  }
                   placeholderTextColor={theme.colors.subText}
                 />
               </View>
@@ -764,8 +774,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
             {loading
               ? t('common.loading')
               : employeeId
-                ? t('common.save')
-                : t('common.add')}
+              ? t('common.save')
+              : t('common.add')}
           </Text>
         </TouchableOpacity>
 

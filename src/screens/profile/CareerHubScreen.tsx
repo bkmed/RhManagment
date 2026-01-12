@@ -13,7 +13,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { Goal } from '../../database/schema';
-import { addGoal, updateGoal, selectGoalsByEmployeeId } from '../../store/slices/goalsSlice';
+import {
+  addGoal,
+  updateGoal,
+  selectGoalsByEmployeeId,
+} from '../../store/slices/goalsSlice';
 import { Theme } from '../../theme';
 import { formatDate } from '../../utils/dateUtils';
 
@@ -47,21 +51,21 @@ export const CareerHubScreen = () => {
 
     const goalData: Goal = editingGoal
       ? {
-        ...editingGoal,
-        title,
-        description,
-        deadline,
-      }
+          ...editingGoal,
+          title,
+          description,
+          deadline,
+        }
       : {
-        id: Date.now().toString(),
-        employeeId,
-        title,
-        description,
-        deadline,
-        progress: 0,
-        status: 'todo',
-        createdAt: new Date().toISOString(),
-      };
+          id: Date.now().toString(),
+          employeeId,
+          title,
+          description,
+          deadline,
+          progress: 0,
+          status: 'todo',
+          createdAt: new Date().toISOString(),
+        };
 
     if (editingGoal) {
       dispatch(updateGoal(goalData));
@@ -85,8 +89,8 @@ export const CareerHubScreen = () => {
       newProgress === 100
         ? 'completed'
         : newProgress > 0
-          ? 'in_progress'
-          : 'todo';
+        ? 'in_progress'
+        : 'todo';
     dispatch(updateGoal({ ...goal, progress: newProgress, status }));
   };
 

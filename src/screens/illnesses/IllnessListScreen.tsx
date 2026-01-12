@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useContext, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useContext,
+  useEffect,
+} from 'react';
 import {
   View,
   Text,
@@ -238,37 +244,37 @@ export const IllnessListScreen = ({ navigation }: any) => {
         {(user?.role === 'admin' ||
           user?.role === 'rh' ||
           user?.role === 'manager') && (
-            <View style={styles.tabContainer}>
-              <TouchableOpacity
-                style={[styles.tab, activeTab === 'mine' && styles.activeTab]}
-                onPress={() => setActiveTab('mine')}
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'mine' && styles.activeTab]}
+              onPress={() => setActiveTab('mine')}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === 'mine' && styles.activeTabText,
+                ]}
               >
-                <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === 'mine' && styles.activeTabText,
-                  ]}
-                >
-                  {t('illnesses.myIllnesses')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.tab, activeTab === 'all' && styles.activeTab]}
-                onPress={() => setActiveTab('all')}
+                {t('illnesses.myIllnesses')}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, activeTab === 'all' && styles.activeTab]}
+              onPress={() => setActiveTab('all')}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === 'all' && styles.activeTabText,
+                ]}
               >
-                <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === 'all' && styles.activeTabText,
-                  ]}
-                >
-                  {user?.role === 'manager'
-                    ? t('illnesses.teamIllnesses')
-                    : t('illnesses.allIllnesses')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
+                {user?.role === 'manager'
+                  ? t('illnesses.teamIllnesses')
+                  : t('illnesses.allIllnesses')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {activeTab === 'all' &&
           (user?.role === 'admin' || user?.role === 'rh') && (
@@ -378,7 +384,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
                           style={[
                             styles.filterChipText,
                             filterTeamId === team.id &&
-                            styles.activeFilterChipText,
+                              styles.activeFilterChipText,
                           ]}
                         >
                           {team.name}
@@ -400,9 +406,9 @@ export const IllnessListScreen = ({ navigation }: any) => {
       ) : (
         <ScrollView contentContainerStyle={styles.listContent}>
           {groupedData.length === 0 ||
-            (groupedData[0].items &&
-              groupedData[0].items.length === 0 &&
-              groupedData[0].id === 'mine') ? (
+          (groupedData[0].items &&
+            groupedData[0].items.length === 0 &&
+            groupedData[0].id === 'mine') ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyIcon}>🏥</Text>
               <Text style={styles.emptyText}>{t('illnesses.empty')}</Text>
@@ -430,11 +436,11 @@ export const IllnessListScreen = ({ navigation }: any) => {
                 )}
                 {group.teams
                   ? group.teams.map((tGroup: any) => (
-                    <View key={tGroup.id} style={styles.teamSection}>
-                      <Text style={styles.teamTitle}>{tGroup.name}</Text>
-                      {tGroup.items.map((ill: Illness) => renderIllness(ill))}
-                    </View>
-                  ))
+                      <View key={tGroup.id} style={styles.teamSection}>
+                        <Text style={styles.teamTitle}>{tGroup.name}</Text>
+                        {tGroup.items.map((ill: Illness) => renderIllness(ill))}
+                      </View>
+                    ))
                   : group.items.map((ill: Illness) => renderIllness(ill))}
               </View>
             ))

@@ -98,7 +98,9 @@ export const AddCompanyScreen = ({ navigation, route }: any) => {
 
       showModal({
         title: t('common.success'),
-        message: isEdit ? t('companies.updateSuccess') || t('common.saved') : t('companies.saveSuccess') || t('common.saved'),
+        message: isEdit
+          ? t('companies.updateSuccess') || t('common.saved')
+          : t('companies.saveSuccess') || t('common.saved'),
         buttons: [
           {
             text: t('common.ok'),

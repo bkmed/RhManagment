@@ -39,9 +39,13 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
 
   const currencies = useSelector(selectAllCurrencies);
   const services = useSelector(selectAllServices);
-  const companies = useSelector((state: RootState) => selectAllCompanies(state));
+  const companies = useSelector((state: RootState) =>
+    selectAllCompanies(state),
+  );
   const teams = useSelector((state: RootState) => selectAllTeams(state));
-  const employees = useSelector((state: RootState) => selectAllEmployees(state));
+  const employees = useSelector((state: RootState) =>
+    selectAllEmployees(state),
+  );
 
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -182,13 +186,15 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.section}>
-
           {/* Admin/RH Selection Section */}
           {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
             <View style={{ marginBottom: theme.spacing.m }}>
               <Dropdown
                 label={t('companies.selectCompany')}
-                data={companies.map(c => ({ label: c.name, value: String(c.id) }))}
+                data={companies.map(c => ({
+                  label: c.name,
+                  value: String(c.id),
+                }))}
                 value={companyId ? String(companyId) : ''}
                 onSelect={val => {
                   setCompanyId(val || undefined);
@@ -199,7 +205,10 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
               <View style={{ height: theme.spacing.m }} />
               <Dropdown
                 label={t('teams.selectTeam')}
-                data={filteredTeams.map(t => ({ label: t.name, value: String(t.id) }))}
+                data={filteredTeams.map(t => ({
+                  label: t.name,
+                  value: String(t.id),
+                }))}
                 value={teamId ? String(teamId) : ''}
                 onSelect={val => {
                   setTeamId(val || undefined);
@@ -209,7 +218,10 @@ export const AddInvoiceScreen = ({ navigation }: any) => {
               <View style={{ height: theme.spacing.m }} />
               <Dropdown
                 label={t('employees.name')}
-                data={filteredEmployees.map(e => ({ label: e.name, value: String(e.id) }))}
+                data={filteredEmployees.map(e => ({
+                  label: e.name,
+                  value: String(e.id),
+                }))}
                 value={employeeId ? String(employeeId) : ''}
                 onSelect={val => setEmployeeId(val)}
               />

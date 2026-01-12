@@ -2,12 +2,11 @@
 
 // Global declarations for web compatibility
 declare global {
-    interface Window {
-        localStorage: Storage;
-    }
+  interface Window {
+    localStorage: Storage;
+  }
 
-    let window: Window & typeof globalThis;
+  let window: Window & typeof globalThis;
 }
 
-export { };
-
+export {};

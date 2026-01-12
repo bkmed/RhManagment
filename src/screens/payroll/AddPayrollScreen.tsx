@@ -217,8 +217,14 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         startDate: new Date().toISOString().split('T')[0], // Default to today
         reminderEnabled: false,
         isUrgent: false,
-        mealVouchers: mealVoucherCount && mealVoucherValue ? parseFloat(mealVoucherCount) * parseFloat(mealVoucherValue) : undefined,
-        giftVouchers: giftVoucherCount && giftVoucherValue ? parseFloat(giftVoucherCount) * parseFloat(giftVoucherValue) : undefined,
+        mealVouchers:
+          mealVoucherCount && mealVoucherValue
+            ? parseFloat(mealVoucherCount) * parseFloat(mealVoucherValue)
+            : undefined,
+        giftVouchers:
+          giftVoucherCount && giftVoucherValue
+            ? parseFloat(giftVoucherCount) * parseFloat(giftVoucherValue)
+            : undefined,
         bonusAmount: bonusAmount ? parseFloat(bonusAmount) : undefined,
         bonusType,
         department,
@@ -244,7 +250,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
       showModal({
         title: t('common.success'),
-        message: isEdit ? t('payroll.updateSuccess') || t('common.saved') : t('payroll.saveSuccess') || t('common.saved'),
+        message: isEdit
+          ? t('payroll.updateSuccess') || t('common.saved')
+          : t('payroll.saveSuccess') || t('common.saved'),
         buttons: [
           {
             text: t('common.ok'),
@@ -405,7 +413,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                   value={employeeId ? String(employeeId) : ''}
                   onSelect={val => {
                     setEmployeeId(val || undefined);
-                    if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                    if (errors.employeeId)
+                      setErrors({ ...errors, employeeId: '' });
                   }}
                   error={errors.employeeId}
                 />
@@ -514,7 +523,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               <View style={styles.fieldContainer}>
                 <Text style={styles.label}>{t('payroll.hoursWorked')}</Text>
                 <TextInput
-                  style={[styles.input, errors.hoursWorked && styles.inputError]}
+                  style={[
+                    styles.input,
+                    errors.hoursWorked && styles.inputError,
+                  ]}
                   value={hoursWorked}
                   onChangeText={setHoursWorked}
                   keyboardType="numeric"
@@ -529,7 +541,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('payroll.overtimeHours') || 'Overtime Hours'}</Text>
+                <Text style={styles.label}>
+                  {t('payroll.overtimeHours') || 'Overtime Hours'}
+                </Text>
                 <TextInput
                   style={styles.input}
                   value={overtimeHours}
@@ -540,7 +554,9 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
                 />
               </View>
               <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('payroll.overtimeRate') || 'Overtime Rate / Hour'}</Text>
+                <Text style={styles.label}>
+                  {t('payroll.overtimeRate') || 'Overtime Rate / Hour'}
+                </Text>
                 <TextInput
                   style={styles.input}
                   value={overtimeRate}
@@ -604,8 +620,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             {loading
               ? t('common.loading')
               : isEdit
-                ? t('payroll.update')
-                : t('common.save')}{' '}
+              ? t('payroll.update')
+              : t('common.save')}{' '}
             {t('payroll.payroll')}
           </Text>
         </TouchableOpacity>

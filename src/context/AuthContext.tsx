@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, ReactNode, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  ReactNode,
+  useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setUser, logout } from '../store/slices/authSlice';
@@ -76,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (navigation) {
         navigation.replace('Login');
       }
-      // Note: If called from auto-logout (no navigation param), 
+      // Note: If called from auto-logout (no navigation param),
       // the AppNavigator should ideally react to user being null and switch stacks,
       // or we rely on the Redux state change to trigger re-render of navigation.
     }

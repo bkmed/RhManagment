@@ -32,7 +32,9 @@ export const InvoiceListScreen = ({ navigation }: any) => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<'all' | 'mine'>('mine');
-  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(
+    null,
+  );
 
   const loadData = async () => {
     try {
@@ -185,7 +187,8 @@ export const InvoiceListScreen = ({ navigation }: any) => {
             style={[styles.statusText, { color: getStatusColor(item.status) }]}
           >
             {t(
-              `invoices.status${item.status.charAt(0).toUpperCase() + item.status.slice(1)
+              `invoices.status${
+                item.status.charAt(0).toUpperCase() + item.status.slice(1)
               }`,
             )}
           </Text>
@@ -210,45 +213,50 @@ export const InvoiceListScreen = ({ navigation }: any) => {
       {(user?.role === 'admin' ||
         user?.role === 'rh' ||
         user?.role === 'manager') && (
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[styles.tab, activeView === 'mine' && styles.activeTab]}
-              onPress={() => setActiveView('mine')}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, activeView === 'mine' && styles.activeTab]}
+            onPress={() => setActiveView('mine')}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeView === 'mine' && styles.activeTabText,
+              ]}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeView === 'mine' && styles.activeTabText,
-                ]}
-              >
-                {t('invoices.myInvoices')}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.tab, activeView === 'all' && styles.activeTab]}
-              onPress={() => setActiveView('all')}
+              {t('invoices.myInvoices')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeView === 'all' && styles.activeTab]}
+            onPress={() => setActiveView('all')}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeView === 'all' && styles.activeTabText,
+              ]}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeView === 'all' && styles.activeTabText,
-                ]}
-              >
-                {user?.role === 'manager'
-                  ? t('invoices.teamInvoices')
-                  : t('invoices.allInvoices')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
+              {user?.role === 'manager'
+                ? t('invoices.teamInvoices')
+                : t('invoices.allInvoices')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
-      {activeView === 'all' && (user?.role === 'admin') && (
-        <View style={{ padding: theme.spacing.m, backgroundColor: theme.colors.surface }}>
+      {activeView === 'all' && user?.role === 'admin' && (
+        <View
+          style={{
+            padding: theme.spacing.m,
+            backgroundColor: theme.colors.surface,
+          }}
+        >
           <Dropdown
             label={t('companies.selectCompany')}
             data={[
               { label: t('common.all'), value: '' },
-              ...companies.map(c => ({ label: c.name, value: String(c.id) }))
+              ...companies.map(c => ({ label: c.name, value: String(c.id) })),
             ]}
             value={selectedCompanyId ? String(selectedCompanyId) : ''}
             onSelect={val => setSelectedCompanyId(val || null)}
@@ -265,7 +273,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
       ) : (
         <ScrollView contentContainerStyle={styles.listContent}>
           {groupedData.length === 0 ||
-            (groupedData[0].items && groupedData[0].items.length === 0) ? (
+          (groupedData[0].items && groupedData[0].items.length === 0) ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>{t('invoices.empty')}</Text>
             </View>

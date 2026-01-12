@@ -146,6 +146,7 @@
     "none": "无",
     "notifyHr": "通知人力资源",
     "ok": "确定",
+    "unauthorized": "未经授权的访问",
     "online": "在线",
     "organization": {
       "manageDepartments": "管理部门"

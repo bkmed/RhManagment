@@ -1,13 +1,13 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './index.server.js',
 
   target: 'node',
 
-  externalsPresets: {node: true},
+  externalsPresets: { node: true },
   externals: [nodeExternals()],
 
   output: {
@@ -22,17 +22,17 @@ module.exports = {
         test: /\.js$/,
         use: 'babel-loader',
       },
-      {test: /\.(scss|css)$/, loader: 'ignore-loader'},
+      { test: /\.(scss|css)$/, loader: 'ignore-loader' },
     ],
   },
   plugins: [
     {
-      apply: (compiler) => {
-        compiler.hooks.done.tap('done', (stats) => {
+      apply: compiler => {
+        compiler.hooks.done.tap('done', stats => {
           console.info('webpack compiler done');
           if (stats.compilation.errors.length > 0) {
             throw new Error(
-              stats.compilation.errors.map((err) => err.message || err),
+              stats.compilation.errors.map(err => err.message || err),
             );
           }
           setTimeout(() => {

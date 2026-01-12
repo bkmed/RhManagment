@@ -68,7 +68,9 @@ export const AddLeaveScreen = ({
   const [type, setType] = useState<
     'leave' | 'sick_leave' | 'carer_leave' | 'permission' | 'authorization'
   >('leave');
-  const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>('pending');
+  const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>(
+    'pending',
+  );
   const [photoUri, setPhotoUri] = useState<string | undefined>();
   const [department, setDepartment] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -82,7 +84,9 @@ export const AddLeaveScreen = ({
     selectAllEmployees(state),
   );
   const allLeaves = useSelector((state: RootState) => selectAllLeaves(state));
-  const allIllnesses = useSelector((state: RootState) => selectAllIllnesses(state));
+  const allIllnesses = useSelector((state: RootState) =>
+    selectAllIllnesses(state),
+  );
 
   const [companyId, setCompanyId] = useState<string | undefined>(undefined);
   const [teamId, setTeamId] = useState<string | undefined>(undefined);
@@ -231,7 +235,7 @@ export const AddLeaveScreen = ({
     if (!rbacService.isAdmin(user) && !user?.companyId) {
       notificationService.showAlert(
         t('common.error'),
-        t('leaves.noCompanyError')
+        t('leaves.noCompanyError'),
       );
       return;
     }
@@ -304,7 +308,8 @@ export const AddLeaveScreen = ({
     });
 
     if (!hasCollision) {
-      const targetEmpId = user?.role === 'employee' ? user?.employeeId : employeeId;
+      const targetEmpId =
+        user?.role === 'employee' ? user?.employeeId : employeeId;
       const hasIllnessCollision = allIllnesses.some((i: Illness) => {
         if (i.employeeId !== targetEmpId) return false;
 
@@ -333,7 +338,9 @@ export const AddLeaveScreen = ({
     setLoading(true);
 
     try {
-      const selectedEmp = allEmployees.find((e: Employee) => e.id === employeeId);
+      const selectedEmp = allEmployees.find(
+        (e: Employee) => e.id === employeeId,
+      );
       const leaveData = {
         title: title.trim(),
         employeeName: (rbacService.isEmployee(user)
@@ -387,7 +394,7 @@ export const AddLeaveScreen = ({
               leaveData.employeeName,
               t(`leaveTypes.${type}`),
               startDate?.toLocaleDateString() ||
-              new Date().toLocaleDateString(),
+                new Date().toLocaleDateString(),
               endDate?.toLocaleDateString() || new Date().toLocaleDateString(),
               notes || '',
             )
@@ -407,7 +414,9 @@ export const AddLeaveScreen = ({
 
       showModal({
         title: t('common.success'),
-        message: isEdit ? t('leaves.updateSuccess') : t('leaves.successMessage'),
+        message: isEdit
+          ? t('leaves.updateSuccess')
+          : t('leaves.successMessage'),
         buttons: [
           {
             text: t('common.ok'),
@@ -481,7 +490,9 @@ export const AddLeaveScreen = ({
             <View style={styles.divider} />
 
             <View style={styles.fieldContainer}>
-              <Text style={styles.label}>{t('leaves.subject') || 'Objet'} *</Text>
+              <Text style={styles.label}>
+                {t('leaves.subject') || 'Objet'} *
+              </Text>
               <TextInput
                 style={[styles.input, errors.title && styles.inputError]}
                 value={title}
@@ -489,7 +500,9 @@ export const AddLeaveScreen = ({
                   setTitle(text);
                   if (errors.title) setErrors({ ...errors, title: '' });
                 }}
-                placeholder={t('leaves.subjectPlaceholder') || 'Objet de la demande'}
+                placeholder={
+                  t('leaves.subjectPlaceholder') || 'Objet de la demande'
+                }
                 placeholderTextColor={theme.colors.subText}
               />
               {errors.title && (
@@ -556,7 +569,9 @@ export const AddLeaveScreen = ({
               </>
             )}
 
-            {(rbacService.isAdmin(user) || rbacService.isRH(user) || rbacService.isManager(user)) && (
+            {(rbacService.isAdmin(user) ||
+              rbacService.isRH(user) ||
+              rbacService.isManager(user)) && (
               <View style={styles.fieldContainer}>
                 <Dropdown
                   label={t('leaves.status')}
@@ -663,7 +678,9 @@ export const AddLeaveScreen = ({
                 style={styles.input}
                 value={location}
                 onChangeText={setLocation}
-                placeholder={t('leaves.causePlaceholder') || 'Cause de la demande'}
+                placeholder={
+                  t('leaves.causePlaceholder') || 'Cause de la demande'
+                }
                 placeholderTextColor={theme.colors.subText}
               />
             </View>
@@ -732,10 +749,10 @@ export const AddLeaveScreen = ({
                 time={
                   startDate
                     ? startDate.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: false,
-                    })
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })
                     : '12:00'
                 }
                 location={location}
@@ -754,8 +771,8 @@ export const AddLeaveScreen = ({
             {loading
               ? t('common.loading')
               : isEdit
-                ? t('leaves.update')
-                : t('leaves.save')}
+              ? t('leaves.update')
+              : t('leaves.save')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

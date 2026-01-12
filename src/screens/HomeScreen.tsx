@@ -80,7 +80,9 @@ const StatCard = ({
           {title}
         </Text>
       </View>
-      <View style={[styles.statDecoration, { backgroundColor: color + '05' }]} />
+      <View
+        style={[styles.statDecoration, { backgroundColor: color + '05' }]}
+      />
     </TouchableOpacity>
   );
 };
@@ -208,40 +210,72 @@ const AdminDashboard = ({
       <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
       <View style={styles.quickActionsGrid}>
         <TouchableOpacity
-          style={[styles.premiumActionCard, { backgroundColor: theme.colors.primary + '10' }]}
+          style={[
+            styles.premiumActionCard,
+            { backgroundColor: theme.colors.primary + '10' },
+          ]}
           onPress={() => navigateToTab('Employees', 'AddEmployee')}
         >
-          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.primary + '20' }]}>
+          <View
+            style={[
+              styles.premiumActionIcon,
+              { backgroundColor: theme.colors.primary + '20' },
+            ]}
+          >
             <Text style={styles.actionIcon}>➕</Text>
           </View>
           <Text style={styles.premiumActionText}>{t('employees.add')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.premiumActionCard, { backgroundColor: theme.colors.secondary + '10' }]}
+          style={[
+            styles.premiumActionCard,
+            { backgroundColor: theme.colors.secondary + '10' },
+          ]}
           onPress={() => navigateToTab('Companies')}
         >
-          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.secondary + '20' }]}>
+          <View
+            style={[
+              styles.premiumActionIcon,
+              { backgroundColor: theme.colors.secondary + '20' },
+            ]}
+          >
             <Text style={styles.actionIcon}>🏢</Text>
           </View>
           <Text style={styles.premiumActionText}>{t('home.companies')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.premiumActionCard, { backgroundColor: theme.colors.success + '10' }]}
+          style={[
+            styles.premiumActionCard,
+            { backgroundColor: theme.colors.success + '10' },
+          ]}
           onPress={() => navigateToTab('Teams')}
         >
-          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.success + '20' }]}>
+          <View
+            style={[
+              styles.premiumActionIcon,
+              { backgroundColor: theme.colors.success + '20' },
+            ]}
+          >
             <Text style={styles.actionIcon}>🚀</Text>
           </View>
           <Text style={styles.premiumActionText}>{t('home.teams')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.premiumActionCard, { backgroundColor: theme.colors.accent + '10' }]}
+          style={[
+            styles.premiumActionCard,
+            { backgroundColor: theme.colors.accent + '10' },
+          ]}
           onPress={() => navigateToTab('Leaves', 'TeamVacations')}
         >
-          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.accent + '20' }]}>
+          <View
+            style={[
+              styles.premiumActionIcon,
+              { backgroundColor: theme.colors.accent + '20' },
+            ]}
+          >
             <Text style={styles.actionIcon}>🏖️</Text>
           </View>
           <Text style={styles.premiumActionText}>{t('navigation.leaves')}</Text>
@@ -332,37 +366,85 @@ const EmployeeDashboard = ({
       <View style={styles.balanceSection}>
         <Text style={styles.sectionTitle}>{t('leavePolicy.title')}</Text>
         <View style={styles.balanceCardsContainer}>
-          <View style={[styles.balanceGridCard, { backgroundColor: theme.colors.primary + '10' }]}>
-            <View style={[styles.balanceIconWrapper, { backgroundColor: theme.colors.primary + '20' }]}>
+          <View
+            style={[
+              styles.balanceGridCard,
+              { backgroundColor: theme.colors.primary + '10' },
+            ]}
+          >
+            <View
+              style={[
+                styles.balanceIconWrapper,
+                { backgroundColor: theme.colors.primary + '20' },
+              ]}
+            >
               <Text style={styles.balanceIcon}>📅</Text>
             </View>
             <View>
-              <Text style={styles.balanceCardValue}>{user?.vacationDaysPerYear || 25}</Text>
-              <Text style={styles.balanceCardLabel}>{t('leavePolicy.perYear')}</Text>
+              <Text style={styles.balanceCardValue}>
+                {user?.vacationDaysPerYear || 25}
+              </Text>
+              <Text style={styles.balanceCardLabel}>
+                {t('leavePolicy.perYear')}
+              </Text>
             </View>
           </View>
 
-          <View style={[styles.balanceGridCard, { backgroundColor: theme.colors.success + '10' }]}>
-            <View style={[styles.balanceIconWrapper, { backgroundColor: theme.colors.success + '20' }]}>
+          <View
+            style={[
+              styles.balanceGridCard,
+              { backgroundColor: theme.colors.success + '10' },
+            ]}
+          >
+            <View
+              style={[
+                styles.balanceIconWrapper,
+                { backgroundColor: theme.colors.success + '20' },
+              ]}
+            >
               <Text style={styles.balanceIcon}>⏳</Text>
             </View>
             <View>
-              <Text style={[styles.balanceCardValue, { color: theme.colors.success }]}>
+              <Text
+                style={[
+                  styles.balanceCardValue,
+                  { color: theme.colors.success },
+                ]}
+              >
                 {user?.remainingVacationDays ?? 25}
               </Text>
-              <Text style={styles.balanceCardLabel}>{t('leavePolicy.remaining')}</Text>
+              <Text style={styles.balanceCardLabel}>
+                {t('leavePolicy.remaining')}
+              </Text>
             </View>
           </View>
 
-          <View style={[styles.balanceGridCard, { backgroundColor: theme.colors.warning + '10' }]}>
-            <View style={[styles.balanceIconWrapper, { backgroundColor: theme.colors.warning + '20' }]}>
+          <View
+            style={[
+              styles.balanceGridCard,
+              { backgroundColor: theme.colors.warning + '10' },
+            ]}
+          >
+            <View
+              style={[
+                styles.balanceIconWrapper,
+                { backgroundColor: theme.colors.warning + '20' },
+              ]}
+            >
               <Text style={styles.balanceIcon}>🏥</Text>
             </View>
             <View>
-              <Text style={[styles.balanceCardValue, { color: theme.colors.warning }]}>
+              <Text
+                style={[
+                  styles.balanceCardValue,
+                  { color: theme.colors.warning },
+                ]}
+              >
                 {user?.statePaidLeaves || 0}
               </Text>
-              <Text style={styles.balanceCardLabel}>{t('home.statePaidLeaves')}</Text>
+              <Text style={styles.balanceCardLabel}>
+                {t('home.statePaidLeaves')}
+              </Text>
             </View>
           </View>
         </View>
@@ -371,7 +453,9 @@ const EmployeeDashboard = ({
           <View style={styles.infoRow}>
             <View style={styles.infoCard}>
               <Text style={styles.infoLabel}>{t('home.hiringDate')}</Text>
-              <Text style={styles.infoValue}>{formatDate(user.hiringDate)}</Text>
+              <Text style={styles.infoValue}>
+                {formatDate(user.hiringDate)}
+              </Text>
             </View>
             <View style={styles.infoCard}>
               <Text style={styles.infoLabel}>{t('home.seniority')}</Text>
@@ -386,9 +470,13 @@ const EmployeeDashboard = ({
                     months += 12;
                   }
                   const parts = [];
-                  if (years > 0) parts.push(`${years}${t('common.yearUnit').charAt(0)}`);
-                  if (months > 0) parts.push(`${months}${t('common.monthUnit').charAt(0)}`);
-                  return parts.join(' ') || `0${t('common.monthUnit').charAt(0)}`;
+                  if (years > 0)
+                    parts.push(`${years}${t('common.yearUnit').charAt(0)}`);
+                  if (months > 0)
+                    parts.push(`${months}${t('common.monthUnit').charAt(0)}`);
+                  return (
+                    parts.join(' ') || `0${t('common.monthUnit').charAt(0)}`
+                  );
                 })()}
               </Text>
             </View>
@@ -399,33 +487,61 @@ const EmployeeDashboard = ({
       <Text style={styles.sectionTitle}>{t('home.quickActions')}</Text>
       <View style={styles.quickActionsGrid}>
         <TouchableOpacity
-          style={[styles.premiumActionCard, { backgroundColor: theme.colors.secondary + '10' }]}
+          style={[
+            styles.premiumActionCard,
+            { backgroundColor: theme.colors.secondary + '10' },
+          ]}
           onPress={() => navigateToTab('Claims', 'AddClaim')}
         >
-          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.secondary + '20' }]}>
+          <View
+            style={[
+              styles.premiumActionIcon,
+              { backgroundColor: theme.colors.secondary + '20' },
+            ]}
+          >
             <Text style={{ fontSize: 24 }}>📝</Text>
           </View>
           <Text style={styles.premiumActionText}>{t('claims.newClaim')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.premiumActionCard, { backgroundColor: theme.colors.success + '10' }]}
+          style={[
+            styles.premiumActionCard,
+            { backgroundColor: theme.colors.success + '10' },
+          ]}
           onPress={() => navigateToTab('Leaves', 'AddLeave')}
         >
-          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.success + '20' }]}>
+          <View
+            style={[
+              styles.premiumActionIcon,
+              { backgroundColor: theme.colors.success + '20' },
+            ]}
+          >
             <Text style={{ fontSize: 24 }}>📅</Text>
           </View>
-          <Text style={styles.premiumActionText}>{t('home.scheduleLeave')}</Text>
+          <Text style={styles.premiumActionText}>
+            {t('home.scheduleLeave')}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.premiumActionCard, { backgroundColor: theme.colors.primary + '10' }]}
+          style={[
+            styles.premiumActionCard,
+            { backgroundColor: theme.colors.primary + '10' },
+          ]}
           onPress={() => navigateToTab('Home', 'CareerHub')}
         >
-          <View style={[styles.premiumActionIcon, { backgroundColor: theme.colors.primary + '20' }]}>
+          <View
+            style={[
+              styles.premiumActionIcon,
+              { backgroundColor: theme.colors.primary + '20' },
+            ]}
+          >
             <Text style={{ fontSize: 24 }}>🚀</Text>
           </View>
-          <Text style={styles.premiumActionText}>{t('navigation.careerHub')}</Text>
+          <Text style={styles.premiumActionText}>
+            {t('navigation.careerHub')}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -453,7 +569,10 @@ export const HomeScreen = () => {
   const { width } = useWindowDimensions();
   const isWebMobile = Platform.OS === 'web' && width < 600;
 
-  const styles = useMemo(() => createStyles(theme, isWebMobile), [theme, isWebMobile]);
+  const styles = useMemo(
+    () => createStyles(theme, isWebMobile),
+    [theme, isWebMobile],
+  );
 
   const [summary, setSummary] = useState<HomeSummary>({
     payroll: 0,
@@ -495,8 +614,9 @@ export const HomeScreen = () => {
         const activity = [
           ...pendingLeaves.map(l => ({
             icon: '📅',
-            title: `${t('leaves.approvals')}: ${l.employeeName || t('common.unknown')
-              }`,
+            title: `${t('leaves.approvals')}: ${
+              l.employeeName || t('common.unknown')
+            }`,
             subtitle: l.title,
             date: l.createdAt,
           })),
@@ -553,9 +673,7 @@ export const HomeScreen = () => {
           }
         } else if (userRole === 'manager') {
           if (user?.teamId) {
-            allPayroll = allPayroll.filter(
-              p => p.teamId === user.teamId,
-            );
+            allPayroll = allPayroll.filter(p => p.teamId === user.teamId);
             upcomingLeaves = upcomingLeaves.filter(
               l => l.teamId === user.teamId,
             );
@@ -565,9 +683,7 @@ export const HomeScreen = () => {
           }
         } else if (userRole === 'rh') {
           if (user?.companyId) {
-            allPayroll = allPayroll.filter(
-              p => p.companyId === user.companyId,
-            );
+            allPayroll = allPayroll.filter(p => p.companyId === user.companyId);
             upcomingLeaves = upcomingLeaves.filter(
               l => l.companyId === user.companyId,
             );
@@ -613,14 +729,14 @@ export const HomeScreen = () => {
         tab === 'Payroll'
           ? 'PayrollTab'
           : tab === 'Leaves'
-            ? 'LeavesTab'
-            : tab === 'Analytics'
-              ? 'Analytics'
-              : tab === 'Employees'
-                ? 'Employees'
-                : tab === 'Claims'
-                  ? 'Claims'
-                  : undefined;
+          ? 'LeavesTab'
+          : tab === 'Analytics'
+          ? 'Analytics'
+          : tab === 'Employees'
+          ? 'Employees'
+          : tab === 'Claims'
+          ? 'Claims'
+          : undefined;
 
       if (stackScreen) {
         navigation.navigate('Main', {
@@ -645,7 +761,11 @@ export const HomeScreen = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ height: Platform.OS === 'web' ? (width < 768 ? 80 : 20) : 0 }} />
+        <View
+          style={{
+            height: Platform.OS === 'web' ? (width < 768 ? 80 : 20) : 0,
+          }}
+        />
 
         {user?.role === 'admin' || user?.role === 'rh' ? (
           <AdminDashboard
@@ -826,15 +946,16 @@ const createStyles = (theme: Theme, isWebMobile?: boolean) =>
       gap: 12,
       borderWidth: 1,
       borderColor: 'transparent',
-      ...(Platform.OS === 'web' && ({
-        transition: 'all 0.3s ease',
-        cursor: 'pointer',
-        '&:hover': {
-          transform: 'translateY(-5px)',
-          borderColor: 'rgba(0,0,0,0.1)',
-          boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
-        }
-      } as any)),
+      ...(Platform.OS === 'web' &&
+        ({
+          transition: 'all 0.3s ease',
+          cursor: 'pointer',
+          '&:hover': {
+            transform: 'translateY(-5px)',
+            borderColor: 'rgba(0,0,0,0.1)',
+            boxShadow: '0 8px 16px rgba(0,0,0,0.05)',
+          },
+        } as any)),
     },
     premiumActionIcon: {
       width: 56,

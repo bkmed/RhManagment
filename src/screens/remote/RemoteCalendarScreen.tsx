@@ -199,6 +199,10 @@ export const RemoteCalendarScreen = () => {
     }
   };
 
+  const isManagerLimited = useMemo(() => {
+    return rbacService.isFullyAssignedManager(user);
+  }, [user]);
+
   const renderCalendar = () => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
@@ -295,7 +299,7 @@ export const RemoteCalendarScreen = () => {
         {/* Toggle View Mode */}
         {(rbacService.isAdmin(user) ||
           rbacService.isRH(user) ||
-          rbacService.isManager(user)) && (
+          isManagerLimited) && (
             <View style={styles.toggleContainer}>
               <TouchableOpacity
                 style={[
@@ -323,7 +327,7 @@ export const RemoteCalendarScreen = () => {
                   if (
                     rbacService.isAdmin(user) ||
                     rbacService.isRH(user) ||
-                    rbacService.isManager(user)
+                    isManagerLimited
                   ) {
                     setViewMode('other');
                   } else {
@@ -481,6 +485,7 @@ export const RemoteCalendarScreen = () => {
         visible={isSearchVisible}
         onClose={() => setIsSearchVisible(false)}
         onSelect={handleSearchSelect}
+        teamId={isManagerLimited ? user?.teamId : undefined}
       />
     </SafeAreaView>
   );

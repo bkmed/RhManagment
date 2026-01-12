@@ -27,9 +27,7 @@ export const OrgChartScreen = () => {
     const admin = employees.find((e: Employee) => e.role === 'admin');
     if (!admin) return null;
 
-    const managers = employees.filter(
-      (e: Employee) => e.role === 'manager',
-    );
+    const managers = employees.filter((e: Employee) => e.role === 'manager');
 
     return {
       ...admin,

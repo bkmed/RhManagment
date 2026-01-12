@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useContext, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useContext,
+  useEffect,
+} from 'react';
 import {
   View,
   Text,
@@ -57,14 +63,10 @@ export const ClaimsListScreen = ({ navigation }: any) => {
         }
       } else if (user?.role === 'manager' && user?.teamId) {
         // Manager sees their team's claims
-        filteredClaims = claimsData.filter(
-          c => c.teamId === user.teamId,
-        );
+        filteredClaims = claimsData.filter(c => c.teamId === user.teamId);
       } else if (user?.role === 'rh' && user?.companyId) {
         // HR sees their company's claims
-        filteredClaims = claimsData.filter(
-          c => c.companyId === user.companyId,
-        );
+        filteredClaims = claimsData.filter(c => c.companyId === user.companyId);
       } else if (user?.role !== 'admin') {
         // Any other non-admin role with missing affiliations
         filteredClaims = [];
@@ -187,7 +189,8 @@ export const ClaimsListScreen = ({ navigation }: any) => {
         <View style={styles.typeTag}>
           <Text style={styles.typeText}>
             {t(
-              `claims.type${item.type.charAt(0).toUpperCase() + item.type.slice(1)
+              `claims.type${
+                item.type.charAt(0).toUpperCase() + item.type.slice(1)
               }`,
             )}
           </Text>
@@ -202,7 +205,8 @@ export const ClaimsListScreen = ({ navigation }: any) => {
             style={[styles.statusText, { color: getStatusColor(item.status) }]}
           >
             {t(
-              `claims.status${item.status.charAt(0).toUpperCase() + item.status.slice(1)
+              `claims.status${
+                item.status.charAt(0).toUpperCase() + item.status.slice(1)
               }`,
             )}
           </Text>

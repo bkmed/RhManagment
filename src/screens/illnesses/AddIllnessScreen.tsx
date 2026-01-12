@@ -218,7 +218,8 @@ export const AddIllnessScreen = ({
     });
 
     if (!hasCollision) {
-      const targetEmpId = user?.role === 'employee' ? user?.employeeId : employeeId;
+      const targetEmpId =
+        user?.role === 'employee' ? user?.employeeId : employeeId;
       const hasLeaveCollision = allLeaves.some((l: Leave) => {
         if (l.employeeId !== targetEmpId) return false;
         if (l.status === 'declined') return false;
@@ -251,8 +252,9 @@ export const AddIllnessScreen = ({
         employeeName:
           (user?.role === 'employee' ? user.name : employeeName).trim() ||
           undefined,
-        employeeId:
-          rbacService.isEmployee(user) ? user?.employeeId : initialEmployeeId,
+        employeeId: rbacService.isEmployee(user)
+          ? user?.employeeId
+          : initialEmployeeId,
         issueDate: issueDate!.toISOString().split('T')[0],
         expiryDate: expiryDate
           ? expiryDate.toISOString().split('T')[0]
@@ -267,10 +269,7 @@ export const AddIllnessScreen = ({
 
       let id: string;
       if (isEdit && illnessId) {
-        await illnessesDb.update(
-          illnessId,
-          illnessData as Partial<Illness>,
-        );
+        await illnessesDb.update(illnessId, illnessData as Partial<Illness>);
         id = illnessId;
       } else {
         id = await illnessesDb.add(illnessData as Omit<Illness, 'id'>);
@@ -286,7 +285,9 @@ export const AddIllnessScreen = ({
 
       showModal({
         title: t('common.success'),
-        message: isEdit ? t('illnesses.updateSuccess') || t('common.saved') : t('illnesses.saveSuccess') || t('common.saved'),
+        message: isEdit
+          ? t('illnesses.updateSuccess') || t('common.saved')
+          : t('illnesses.saveSuccess') || t('common.saved'),
         buttons: [
           {
             text: t('common.ok'),
@@ -416,7 +417,8 @@ export const AddIllnessScreen = ({
                   value={employeeId ? String(employeeId) : ''}
                   onSelect={val => {
                     setEmployeeId(val);
-                    if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                    if (errors.employeeId)
+                      setErrors({ ...errors, employeeId: '' });
                   }}
                   error={errors.employeeId}
                 />
@@ -470,7 +472,12 @@ export const AddIllnessScreen = ({
 
             {issueDate && expiryDate && (
               <Text style={styles.durationText}>
-                {t('leaves.duration')}: {Math.ceil((expiryDate.getTime() - issueDate.getTime()) / (1000 * 60 * 60 * 24)) + 1} {t('leaves.days')}
+                {t('leaves.duration')}:{' '}
+                {Math.ceil(
+                  (expiryDate.getTime() - issueDate.getTime()) /
+                    (1000 * 60 * 60 * 24),
+                ) + 1}{' '}
+                {t('leaves.days')}
               </Text>
             )}
           </View>
@@ -516,8 +523,8 @@ export const AddIllnessScreen = ({
             {loading
               ? t('common.loading')
               : isEdit
-                ? t('illnesses.updateButton')
-                : t('illnesses.saveButton')}
+              ? t('illnesses.updateButton')
+              : t('illnesses.saveButton')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -624,5 +631,5 @@ const createStyles = (theme: Theme) =>
       fontWeight: '600',
       marginTop: theme.spacing.m,
       textAlign: 'center',
-    }
+    },
   });

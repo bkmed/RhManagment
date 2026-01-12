@@ -24,13 +24,29 @@ import { selectAllServices } from '../../store/slices/servicesSlice';
 import { selectAllLeaves } from '../../store/slices/leavesSlice';
 import { selectAllClaims } from '../../store/slices/claimsSlice';
 import { selectAllIllnesses } from '../../store/slices/illnessesSlice';
-import { Employee, Team, Announcement, Leave, Claim, Illness } from '../../database/schema';
+import {
+  Employee,
+  Team,
+  Announcement,
+  Leave,
+  Claim,
+  Illness,
+} from '../../database/schema';
 
 interface SearchResult {
   id: string;
   title: string;
   subtitle: string;
-  type: 'employee' | 'team' | 'announcement' | 'company' | 'department' | 'service' | 'leave' | 'claim' | 'illness';
+  type:
+  | 'employee'
+  | 'team'
+  | 'announcement'
+  | 'company'
+  | 'department'
+  | 'service'
+  | 'leave'
+  | 'claim'
+  | 'illness';
   originalItem: any;
 }
 
@@ -38,10 +54,12 @@ export const SearchOverlay = ({
   visible,
   onClose,
   onSelect,
+  teamId,
 }: {
   visible: boolean;
   onClose: () => void;
   onSelect: (item: SearchResult) => void;
+  teamId?: string;
 }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -70,8 +88,13 @@ export const SearchOverlay = ({
     if (!query.trim()) return [];
 
     // RBAC Checks
-    const canViewEmployees = rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES);
-    const canViewTeams = rbacService.hasPermission(user, Permission.MANAGE_TEAMS) || canViewEmployees; // Assuming view employees implies view teams context
+    const canViewEmployees = rbacService.hasPermission(
+      user,
+      Permission.VIEW_EMPLOYEES,
+    );
+    const canViewTeams =
+      rbacService.hasPermission(user, Permission.MANAGE_TEAMS) ||
+      canViewEmployees; // Assuming view employees implies view teams context
 
     const lowerQuery = query.toLowerCase();
     const searchResults: SearchResult[] = [];
@@ -85,6 +108,9 @@ export const SearchOverlay = ({
         } else if (rbacService.isRH(user)) {
           // RH sees company employees
           if (e.companyId !== user?.companyId) return;
+        } else if (teamId) {
+          // If teamId is passed (e.g. from Remote Planning for Manager), restrict to that team
+          if (e.teamId !== teamId) return;
         } else if (rbacService.isManager(user)) {
           // Manager sees team members (including self usually)
           if (e.teamId !== user?.teamId) return;
@@ -115,7 +141,8 @@ export const SearchOverlay = ({
 
     // Search Teams
     //const canViewAllTeams = rbacService.isAdmin(user) || rbacService.isRH(user);
-    const canViewMyTeam = rbacService.isManager(user) || rbacService.isEmployee(user);
+    const canViewMyTeam =
+      rbacService.isManager(user) || rbacService.isEmployee(user);
 
     if (canViewTeams) {
       teams.forEach((tm: Team) => {
@@ -166,10 +193,13 @@ export const SearchOverlay = ({
     // Search Leaves
     leaves.forEach((l: Leave) => {
       const isOwner = Number(l.employeeId) === myEmpId;
-      const isRHInCompany = rbacService.isRH(user) && Number((l as any).companyId) === myCompanyId;
-      const isManagerInTeam = rbacService.isManager(user) && Number((l as any).teamId) === myTeamId;
+      const isRHInCompany =
+        rbacService.isRH(user) && Number((l as any).companyId) === myCompanyId;
+      const isManagerInTeam =
+        rbacService.isManager(user) && Number((l as any).teamId) === myTeamId;
 
-      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam) return;
+      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam)
+        return;
 
       if ((l.title || '').toLowerCase().includes(lowerQuery)) {
         searchResults.push({
@@ -185,15 +215,20 @@ export const SearchOverlay = ({
     // Search Claims
     claims.forEach((c: Claim) => {
       const isOwner = Number(c.employeeId) === myEmpId;
-      const isRHInCompany = rbacService.isRH(user) && Number((c as any).companyId) === myCompanyId;
-      const isManagerInTeam = rbacService.isManager(user) && Number((c as any).teamId) === myTeamId;
+      const isRHInCompany =
+        rbacService.isRH(user) && Number((c as any).companyId) === myCompanyId;
+      const isManagerInTeam =
+        rbacService.isManager(user) && Number((c as any).teamId) === myTeamId;
 
-      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam) return;
+      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam)
+        return;
 
       if ((c.description || '').toLowerCase().includes(lowerQuery)) {
         searchResults.push({
           id: String(c.id),
-          title: t(`claims.type${c.type.charAt(0).toUpperCase() + c.type.slice(1)}`),
+          title: t(
+            `claims.type${c.type.charAt(0).toUpperCase() + c.type.slice(1)}`,
+          ),
           subtitle: c.description,
           type: 'claim',
           originalItem: c,
@@ -204,10 +239,13 @@ export const SearchOverlay = ({
     // Search Illnesses
     illnesses.forEach((i: Illness) => {
       const isOwner = Number(i.employeeId) === myEmpId;
-      const isRHInCompany = rbacService.isRH(user) && Number(i.companyId) === myCompanyId;
-      const isManagerInTeam = rbacService.isManager(user) && Number(i.teamId) === myTeamId;
+      const isRHInCompany =
+        rbacService.isRH(user) && Number(i.companyId) === myCompanyId;
+      const isManagerInTeam =
+        rbacService.isManager(user) && Number(i.teamId) === myTeamId;
 
-      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam) return;
+      if (!canViewAllPersonal && !isOwner && !isRHInCompany && !isManagerInTeam)
+        return;
 
       if ((i.payrollName || '').toLowerCase().includes(lowerQuery)) {
         searchResults.push({
@@ -262,7 +300,16 @@ export const SearchOverlay = ({
     }
 
     return searchResults;
-  }, [query, employees, teams, announcements, leaves, claims, illnesses]);
+  }, [
+    query,
+    employees,
+    teams,
+    announcements,
+    leaves,
+    claims,
+    illnesses,
+    teamId,
+  ]);
 
   const getIcon = (type: string) => {
     switch (type) {

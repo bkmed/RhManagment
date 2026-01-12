@@ -24,6 +24,7 @@ interface DropdownProps {
   onSelect: (value: string) => void;
   placeholder?: string;
   error?: string;
+  disabled?: boolean;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -33,6 +34,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   onSelect,
   placeholder,
   error,
+  disabled,
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -64,8 +66,13 @@ export const Dropdown: React.FC<DropdownProps> = ({
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TouchableOpacity
-        style={[styles.selector, error ? styles.selectorError : null]}
-        onPress={() => setVisible(true)}
+        style={[
+          styles.selector,
+          error ? styles.selectorError : null,
+          disabled ? styles.selectorDisabled : null,
+        ]}
+        onPress={() => !disabled && setVisible(true)}
+        disabled={disabled}
       >
         <Text style={[styles.valueText, !value && styles.placeholderText]}>
           {selectedItem
@@ -121,6 +128,10 @@ const createStyles = (theme: Theme) =>
     },
     selectorError: {
       borderColor: theme.colors.error,
+    },
+    selectorDisabled: {
+      backgroundColor: theme.colors.background,
+      opacity: 0.6,
     },
     valueText: {
       fontSize: 16,

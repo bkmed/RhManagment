@@ -34,21 +34,17 @@ export const PerformanceReviewScreen = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const isManagerOrAdmin =
-    user?.role === 'admin' ||
-    user?.role === 'rh' ||
-    user?.role === 'manager';
+    user?.role === 'admin' || user?.role === 'rh' || user?.role === 'manager';
 
   const reviews = useSelector((state: RootState) => {
     if (user?.role === 'admin' || user?.role === 'rh')
       return state.performance.reviews;
     if (user?.role === 'manager')
       return state.performance.reviews.filter(
-        (r: PerformanceReview) =>
-          r.reviewerId === (user?.id || ''),
+        (r: PerformanceReview) => r.reviewerId === (user?.id || ''),
       );
     return state.performance.reviews.filter(
-      (r: PerformanceReview) =>
-        r.employeeId === (user?.id || ''),
+      (r: PerformanceReview) => r.employeeId === (user?.id || ''),
     );
   });
 

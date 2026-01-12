@@ -1,6 +1,7 @@
 # Use Cases by Role - RH Management System
 
 ## Overview
+
 This document describes typical use cases for each of the four user roles in the RH Management system.
 
 ---
@@ -8,6 +9,7 @@ This document describes typical use cases for each of the four user roles in the
 ## 1. Admin (System Administrator)
 
 ### Primary Responsibilities
+
 - Overall system management
 - Multi-company oversight
 - System configuration
@@ -16,9 +18,11 @@ This document describes typical use cases for each of the four user roles in the
 ### Use Cases
 
 #### UC-A1: Company Onboarding
+
 **Actor**: Admin  
 **Goal**: Set up a new company in the system  
 **Steps**:
+
 1. Navigate to Companies
 2. Click "Add Company"
 3. Enter company details (name, address, contact info)
@@ -28,9 +32,11 @@ This document describes typical use cases for each of the four user roles in the
 7. Configure company-specific settings
 
 #### UC-A2: System-Wide Analytics Review
+
 **Actor**: Admin  
 **Goal**: Review performance across all companies  
 **Steps**:
+
 1. Navigate to Analytics
 2. Select "All Companies" view
 3. Review key metrics (employee count, leave utilization, pending approvals)
@@ -38,9 +44,11 @@ This document describes typical use cases for each of the four user roles in the
 5. Export reports for executive review
 
 #### UC-A3: Global Notification Broadcast
+
 **Actor**: Admin  
 **Goal**: Send important system-wide notification  
 **Steps**:
+
 1. Navigate to Manage Notifications
 2. Click "Send to All"
 3. Compose notification title and message
@@ -49,9 +57,11 @@ This document describes typical use cases for each of the four user roles in the
 6. Track notification delivery and read status
 
 #### UC-A4: Employee Transfer Between Companies
+
 **Actor**: Admin  
 **Goal**: Move an employee from one company to another  
 **Steps**:
+
 1. Navigate to Employees
 2. Search and select employee
 3. Edit employee profile
@@ -61,9 +71,11 @@ This document describes typical use cases for each of the four user roles in the
 7. Update access permissions
 
 #### UC-A5: System Configuration
+
 **Actor**: Admin  
 **Goal**: Configure system-wide settings  
 **Steps**:
+
 1. Navigate to Settings
 2. Configure leave policies by country
 3. Set default working hours
@@ -76,6 +88,7 @@ This document describes typical use cases for each of the four user roles in the
 ## 2. RH (HR Manager)
 
 ### Primary Responsibilities
+
 - Company employee management
 - Team structure management
 - Leave and payroll administration
@@ -84,9 +97,11 @@ This document describes typical use cases for each of the four user roles in the
 ### Use Cases
 
 #### UC-R1: New Employee Onboarding
+
 **Actor**: RH  
 **Goal**: Add a new employee to the company  
 **Steps**:
+
 1. Navigate to Employees
 2. Click "Add Employee"
 3. Enter employee details:
@@ -100,9 +115,11 @@ This document describes typical use cases for each of the four user roles in the
 7. Send welcome notification
 
 #### UC-R2: Payroll Processing
+
 **Actor**: RH  
 **Goal**: Process monthly payroll for company employees  
 **Steps**:
+
 1. Navigate to Payroll
 2. Click "Add Payroll"
 3. Select payroll month/year
@@ -117,9 +134,11 @@ This document describes typical use cases for each of the four user roles in the
 7. Generate payslips
 
 #### UC-R3: Leave Approval Management
+
 **Actor**: RH  
 **Goal**: Review and process pending leave requests  
 **Steps**:
+
 1. Navigate to Pending Approvals
 2. Filter by company employees
 3. Review each request:
@@ -131,9 +150,11 @@ This document describes typical use cases for each of the four user roles in the
 6. Update leave balance
 
 #### UC-R4: Team Restructuring
+
 **Actor**: RH  
 **Goal**: Create new team and assign employees  
 **Steps**:
+
 1. Navigate to Teams
 2. Click "Add Team"
 3. Enter team name and department
@@ -146,9 +167,11 @@ This document describes typical use cases for each of the four user roles in the
 8. Notify team members
 
 #### UC-R5: Invoice Management
+
 **Actor**: RH  
 **Goal**: Process company expense invoices  
 **Steps**:
+
 1. Navigate to Invoices
 2. Filter by company
 3. Click "Add Invoice"
@@ -163,9 +186,11 @@ This document describes typical use cases for each of the four user roles in the
 8. Track for payment processing
 
 #### UC-R6: Company Analytics Review
+
 **Actor**: RH  
 **Goal**: Generate monthly HR report for management  
 **Steps**:
+
 1. Navigate to Analytics
 2. Select date range (current month)
 3. Review metrics:
@@ -183,6 +208,7 @@ This document describes typical use cases for each of the four user roles in the
 ## 3. Chef d'équipe (Team Leader)
 
 ### Primary Responsibilities
+
 - Team member oversight
 - Team leave/claim approval
 - Team performance monitoring
@@ -191,9 +217,11 @@ This document describes typical use cases for each of the four user roles in the
 ### Use Cases
 
 #### UC-C1: Team Leave Approval
+
 **Actor**: Chef d'équipe  
 **Goal**: Approve team member's leave request  
 **Steps**:
+
 1. Receive leave request notification
 2. Navigate to Pending Approvals
 3. Filter "My Team"
@@ -207,9 +235,11 @@ This document describes typical use cases for each of the four user roles in the
 8. Employee gets notified automatically
 
 #### UC-C2: Team Illness Tracking
+
 **Actor**: Chef d'équipe  
 **Goal**: Add illness record for team member  
 **Steps**:
+
 1. Navigate to Illnesses
 2. Click "Add Illness"
 3. Select team member from dropdown (filtered by team)
@@ -219,12 +249,14 @@ This document describes typical use cases for each of the four user roles in the
    - Subject/Object
 5. Upload medical certificate if available
 6. Save record
-7. View team's  overall illness planning
+7. View team's overall illness planning
 
 #### UC-C3: Team Analytics Review
+
 **Actor**: Chef d'équipe  
 **Goal**: Monitor team performance and attendance  
 **Steps**:
+
 1. Navigate to Analytics
 2. View team scope only
 3. Review:
@@ -236,9 +268,11 @@ This document describes typical use cases for each of the four user roles in the
 5. Plan team resources accordingly
 
 #### UC-C4: Own Leave Request
+
 **Actor**: Chef d'équipe  
 **Goal**: Request personal leave  
 **Steps**:
+
 1. Navigate to Leaves
 2. Click "Add Leave"
 3. Enter leave details:
@@ -252,9 +286,11 @@ This document describes typical use cases for each of the four user roles in the
 7. Cannot approve own request
 
 #### UC-C5: Team Member Profile Review
+
 **Actor**: Chef d'équipe  
 **Goal**: View team member's professional information  
 **Steps**:
+
 1. Navigate to My Team
 2. Select team member
 3. View profile information:
@@ -270,6 +306,7 @@ This document describes typical use cases for each of the four user roles in the
 ## 4. Employee
 
 ### Primary Responsibilities
+
 - Personal profile management
 - Leave and claim submission
 - Personal data viewing
@@ -278,9 +315,11 @@ This document describes typical use cases for each of the four user roles in the
 ### Use Cases
 
 #### UC-E1: Submit Leave Request
+
 **Actor**: Employee  
 **Goal**: Request vacation leave  
 **Steps**:
+
 1. Navigate to Leaves
 2. Click "Add Leave"
 3. Select leave type
@@ -293,9 +332,11 @@ This document describes typical use cases for each of the four user roles in the
 10. Wait for approval from chef_dequipe or RH
 
 #### UC-E2: Submit Expense Claim
+
 **Actor**: Employee  
 **Goal**: Claim reimbursement for business expense  
 **Steps**:
+
 1. Navigate to Claims
 2. Click "Add Claim"
 3. Select claim type:
@@ -313,9 +354,11 @@ This document describes typical use cases for each of the four user roles in the
 10. Track status in claims list
 
 #### UC-E3: View Personal Payroll
+
 **Actor**: Employee  
 **Goal**: Check monthly payslip  
 **Steps**:
+
 1. Navigate to Payroll
 2. View list of personal payroll entries only
 3. Select current month
@@ -330,9 +373,11 @@ This document describes typical use cases for each of the four user roles in the
 6. Cannot add or edit payroll
 
 #### UC-E4: Update Personal Profile
+
 **Actor**: Employee  
 **Goal**: Update contact information  
 **Steps**:
+
 1. Navigate to Profile
 2. Click "Edit Profile"
 3. Update allowed fields:
@@ -349,9 +394,11 @@ This document describes typical use cases for each of the four user roles in the
 6. Save changes
 
 #### UC-E5: View Team Members
+
 **Actor**: Employee  
 **Goal**: See who is on their team  
 **Steps**:
+
 1. If assigned to company:
    - Navigate to Profile → My Team
    - View team members list
@@ -361,9 +408,11 @@ This document describes typical use cases for each of the four user roles in the
    - See message: "Not assigned to company"
 
 #### UC-E6: Check Personal Analytics
+
 **Actor**: Employee  
 **Goal**: Review personal HR statistics  
 **Steps**:
+
 1. Navigate to Analytics
 2. View personal scope only:
    - Remaining vacation days
@@ -376,9 +425,11 @@ This document describes typical use cases for each of the four user roles in the
    - Company data
 
 #### UC-E7: Add Illness Record
+
 **Actor**: Employee  
 **Goal**: Record personal illness  
 **Steps**:
+
 1. Navigate to Illnesses
 2. Click "Add Illness"
 3. Employee name auto-filled (current user)
@@ -390,9 +441,11 @@ This document describes typical use cases for each of the four user roles in the
 9. Can only view own illness planning
 
 #### UC-E8: View Assigned Devices
+
 **Actor**: Employee  
 **Goal**: Check assigned company devices  
 **Steps**:
+
 1. Navigate to Profile → My Material
 2. View list of assigned devices:
    - Device name
@@ -407,6 +460,7 @@ This document describes typical use cases for each of the four user roles in the
 ## Cross-Role Scenarios
 
 ### Scenario 1: Leave Request Flow
+
 1. **Employee** submits leave request → status: pending
 2. **Chef d'équipe** receives notification, reviews, approves
 3. **RH** can see all company approvals, may review
@@ -415,6 +469,7 @@ This document describes typical use cases for each of the four user roles in the
 6. Leave balance automatically updated
 
 ### Scenario 2: New Employee Journey
+
 1. **Admin** creates company and initial structure
 2. **RH** adds new employee with profile details
 3. **RH** assigns employee to team
@@ -424,6 +479,7 @@ This document describes typical use cases for each of the four user roles in the
 7. **Employee** begins submitting leaves/claims
 
 ### Scenario 3: Performance Review Cycle
+
 1. **RH** creates review period for company
 2. **Admin** can see all review periods
 3. **Chef d'équipe** conducts reviews for team members
@@ -435,21 +491,21 @@ This document describes typical use cases for each of the four user roles in the
 
 ## Summary Matrix
 
-| Use Case Type | Admin | RH | Chef d'équipe | Employee |
-|---------------|-------|----|--------------| ---------|
-| System Management | ✅ | ❌ | ❌ | ❌ |
-| Company Management | ✅ | ✅ | ❌ | ❌ |
-| Employee Management | ✅ | ✅ | ❌ | ❌ |
-| Team Management | ✅ | ✅ | ✅ (view) | ✅ (view) |
-| Leave Requests | ✅ | ✅ | ✅ | ✅ |
-| Leave Approvals | ✅ (all) | ✅ (company) | ✅ (team) | ❌ |
-| Payroll Management | ✅ | ✅ | ❌ | ❌ |
-| Payroll Viewing | ✅ (all) | ✅ (company) | ✅ (own) | ✅ (own) |
-| Claims Processing | ✅ (all) | ✅ (company) | ✅ (team) | ❌ |
-| Analytics | ✅ (all) | ✅ (company) | ✅ (team) | ✅ (personal) |
-| Invoices | ✅ | ✅ | ❌ | ❌ |
-| Notifications | ✅ (all) | ✅ (company) | ✅ (team) | ❌ |
+| Use Case Type       | Admin    | RH           | Chef d'équipe | Employee      |
+| ------------------- | -------- | ------------ | ------------- | ------------- |
+| System Management   | ✅       | ❌           | ❌            | ❌            |
+| Company Management  | ✅       | ✅           | ❌            | ❌            |
+| Employee Management | ✅       | ✅           | ❌            | ❌            |
+| Team Management     | ✅       | ✅           | ✅ (view)     | ✅ (view)     |
+| Leave Requests      | ✅       | ✅           | ✅            | ✅            |
+| Leave Approvals     | ✅ (all) | ✅ (company) | ✅ (team)     | ❌            |
+| Payroll Management  | ✅       | ✅           | ❌            | ❌            |
+| Payroll Viewing     | ✅ (all) | ✅ (company) | ✅ (own)      | ✅ (own)      |
+| Claims Processing   | ✅ (all) | ✅ (company) | ✅ (team)     | ❌            |
+| Analytics           | ✅ (all) | ✅ (company) | ✅ (team)     | ✅ (personal) |
+| Invoices            | ✅       | ✅           | ❌            | ❌            |
+| Notifications       | ✅ (all) | ✅ (company) | ✅ (team)     | ❌            |
 
 ---
 
-*Last Updated: 2026-01-08*
+_Last Updated: 2026-01-08_
