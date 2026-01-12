@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -449,7 +450,10 @@ export const HomeScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { setActiveTab } = useContext(WebNavigationContext);
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const { width } = useWindowDimensions();
+  const isWebMobile = Platform.OS === 'web' && width < 600;
+
+  const styles = useMemo(() => createStyles(theme, isWebMobile), [theme, isWebMobile]);
 
   const [summary, setSummary] = useState<HomeSummary>({
     payroll: 0,
@@ -641,7 +645,7 @@ export const HomeScreen = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ height: Platform.OS === 'web' ? 20 : 0 }} />
+        <View style={{ height: Platform.OS === 'web' ? (width < 768 ? 80 : 20) : 0 }} />
 
         {user?.role === 'admin' || user?.role === 'rh' ? (
           <AdminDashboard
@@ -667,14 +671,14 @@ export const HomeScreen = () => {
   );
 };
 
-const createStyles = (theme: Theme) =>
+const createStyles = (theme: Theme, isWebMobile?: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
     },
     dashboardContainer: {
       flex: 1,
-      paddingHorizontal: 24,
+      paddingHorizontal: isWebMobile ? 16 : 24,
     },
     welcomeSection: {
       flexDirection: 'row',
@@ -701,10 +705,10 @@ const createStyles = (theme: Theme) =>
       color: 'rgba(255, 255, 255, 0.8)',
     },
     statsContainer: {
-      flexDirection: 'row',
+      flexDirection: isWebMobile ? 'column' : 'row',
       justifyContent: 'space-between',
       marginBottom: 20,
-      gap: 20,
+      gap: isWebMobile ? 12 : 20,
     },
     statCard: {
       flex: 1,
@@ -745,7 +749,7 @@ const createStyles = (theme: Theme) =>
       marginTop: 8,
     },
     balanceCardsContainer: {
-      flexDirection: 'row',
+      flexDirection: isWebMobile ? 'column' : 'row',
       gap: 16,
       marginBottom: 20,
     },
@@ -809,12 +813,13 @@ const createStyles = (theme: Theme) =>
     quickActionsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 16,
+      gap: isWebMobile ? 12 : 16,
       marginBottom: 32,
     },
     premiumActionCard: {
-      flex: 1,
-      minWidth: 140,
+      flex: isWebMobile ? 0 : 1,
+      width: isWebMobile ? '45%' : 'auto',
+      minWidth: isWebMobile ? 110 : 140,
       padding: 16,
       borderRadius: 24,
       alignItems: 'center',

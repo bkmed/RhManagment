@@ -56,10 +56,10 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
     },
     title: {
-      fontSize: 20,
+      fontSize: Platform.OS === 'web' ? 18 : 20,
       fontWeight: '700',
       color: theme.colors.text,
-      marginLeft: 12,
+      marginLeft: Platform.OS === 'web' ? 8 : 12,
     },
     iconButton: {
       padding: 8,

@@ -10,7 +10,11 @@ import {
   ScrollView,
 } from 'react-native';
 import { enableScreens } from 'react-native-screens';
-import { NavigationContainer, useNavigationContainerRef, DefaultTheme } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigationContainerRef,
+  DefaultTheme,
+} from '@react-navigation/native';
 import notifee, { EventType } from '@notifee/react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
@@ -601,7 +605,15 @@ const useNavigationSections = () => {
         title: t('sections.general'),
         items: [
           { key: 'Home', label: t('navigation.home'), icon: '🏠' },
-          ...(rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) ? [{ key: 'Analytics', label: t('navigation.analytics'), icon: '📊' }] : []),
+          ...(rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)
+            ? [
+                {
+                  key: 'Analytics',
+                  label: t('navigation.analytics'),
+                  icon: '📊',
+                },
+              ]
+            : []),
         ],
       },
       {
@@ -610,7 +622,9 @@ const useNavigationSections = () => {
           { key: 'Payroll', label: t('navigation.payroll'), icon: '💰' },
           { key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' },
           { key: 'Claims', label: t('navigation.claims'), icon: '📝' },
-          ...(rbacService.hasPermission(user, Permission.MANAGE_INVOICES) ? [{ key: 'Invoices', label: t('invoices.title'), icon: '🧾' }] : []),
+          ...(rbacService.hasPermission(user, Permission.MANAGE_INVOICES)
+            ? [{ key: 'Invoices', label: t('invoices.title'), icon: '🧾' }]
+            : []),
           { key: 'Remote', label: t('remote.title'), icon: '📅' },
         ],
       },
@@ -657,30 +671,28 @@ const useNavigationSections = () => {
       });
     }
 
-
-
     sections.push({
       title: t('sections.communication'),
       items: [
         ...(user?.companyId
           ? [
-            {
-              key: 'Announcements',
-              label: t('navigation.announcements'),
-              icon: '📢',
-            },
-          ]
+              {
+                key: 'Announcements',
+                label: t('navigation.announcements'),
+                icon: '📢',
+              },
+            ]
           : []),
         ...(rbacService.isAdmin(user) ||
-          rbacService.isRH(user) ||
-          rbacService.isManager(user)
+        rbacService.isRH(user) ||
+        rbacService.isManager(user)
           ? [
-            {
-              key: 'ManageNotifications',
-              label: t('notifications.broadcast') || 'Broadcast',
-              icon: '📡',
-            },
-          ]
+              {
+                key: 'ManageNotifications',
+                label: t('notifications.broadcast') || 'Broadcast',
+                icon: '📡',
+              },
+            ]
           : []),
         ...(user?.companyId
           ? [{ key: 'Chat', label: t('navigation.chat'), icon: '💬' }]
@@ -696,9 +708,9 @@ const useNavigationSections = () => {
     sections.push({
       title: t('sections.personal'),
       items: [
-        { key: 'Profile', label: t('navigation.profile'), icon: '👤' },
         { key: 'Settings', label: t('navigation.settings'), icon: '⚙️' },
         { key: 'Language', label: t('profile.language'), icon: '🌐' },
+        { key: 'Profile', label: t('navigation.profile'), icon: '👤' },
       ],
     });
 
@@ -823,9 +835,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                         : 'transparent',
                       ...(isFocused &&
                         themeMode === 'premium' && {
-                        borderWidth: 1,
-                        borderColor: theme.colors.primary,
-                      }),
+                          borderWidth: 1,
+                          borderColor: theme.colors.primary,
+                        }),
                     }}
                     onPress={() => navigation.navigate(item.key)}
                   >
@@ -867,7 +879,6 @@ const DrawerNavigator = () => {
       {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && (
         <Drawer.Screen name="Analytics" component={AnalyticsStack} />
       )}
-
 
       {/* Employees: VIEW_EMPLOYEES */}
       {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && (
@@ -960,13 +971,22 @@ const WebNavigator = () => {
     } else if (result.type === 'announcement') {
       contextValue.setActiveTab('Announcements');
     } else if (result.type === 'company') {
-      contextValue.setActiveTab('Companies', '', { companyId: Number(result.id) });
+      contextValue.setActiveTab('Companies', '', {
+        companyId: Number(result.id),
+      });
     } else if (result.type === 'department' || result.type === 'service') {
-      contextValue.setActiveTab('CompanySettings', result.type === 'department' ? 'Departments' : 'Services');
+      contextValue.setActiveTab(
+        'CompanySettings',
+        result.type === 'department' ? 'Departments' : 'Services',
+      );
     } else if (result.type === 'invoice') {
-      contextValue.setActiveTab('Invoices', '', { invoiceId: Number(result.id) });
+      contextValue.setActiveTab('Invoices', '', {
+        invoiceId: Number(result.id),
+      });
     } else if (result.type === 'payroll') {
-      contextValue.setActiveTab('Payroll', 'PayrollDetails', { id: Number(result.id) });
+      contextValue.setActiveTab('Payroll', 'PayrollDetails', {
+        id: Number(result.id),
+      });
     }
   };
   const getActiveComponent = () => {
@@ -1005,9 +1025,7 @@ const WebNavigator = () => {
             <AddLeaveScreen route={mockRoute} navigation={mockNavigation} />
           );
         if (subScreen === 'LeaveList')
-          return (
-            <LeaveListScreen navigation={mockNavigation} />
-          );
+          return <LeaveListScreen navigation={mockNavigation} />;
         if (subScreen === 'LeaveDetails')
           return (
             <LeaveDetailsScreen route={mockRoute} navigation={mockNavigation} />
@@ -1032,18 +1050,19 @@ const WebNavigator = () => {
               navigation={mockNavigation}
             />
           );
-        if (subScreen === 'IllnessHistory')
-          return <IllnessHistoryScreen />;
+        if (subScreen === 'IllnessHistory') return <IllnessHistoryScreen />;
         return <IllnessesStack />;
       case 'Remote':
         return <RemoteCalendarScreen />;
       case 'Analytics':
-        if (!rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)) return <HomeStack />;
+        if (!rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES))
+          return <HomeStack />;
         if (subScreen === 'PerformanceReview')
           return <PerformanceReviewScreen />;
         return <AnalyticsStack />;
       case 'Employees':
-        if (!rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)) return <HomeStack />;
+        if (!rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES))
+          return <HomeStack />;
         if (subScreen === 'AddEmployee')
           return (
             <AddEmployeeScreen route={mockRoute} navigation={mockNavigation} />
@@ -1077,7 +1096,8 @@ const WebNavigator = () => {
           );
         return <InvoicesStack />;
       case 'Companies':
-        if (!rbacService.hasPermission(user, Permission.MANAGE_COMPANY)) return <HomeStack />;
+        if (!rbacService.hasPermission(user, Permission.MANAGE_COMPANY))
+          return <HomeStack />;
         if (subScreen === 'AddCompany')
           return (
             <AddCompanyScreen route={mockRoute} navigation={mockNavigation} />
@@ -1085,14 +1105,16 @@ const WebNavigator = () => {
         if (subScreen === 'OrgChart') return <OrgChartScreen />;
         return <CompanyStack />;
       case 'Teams':
-        if (!rbacService.hasPermission(user, Permission.MANAGE_TEAMS)) return <HomeStack />;
+        if (!rbacService.hasPermission(user, Permission.MANAGE_TEAMS))
+          return <HomeStack />;
         if (subScreen === 'AddTeam')
           return (
             <AddTeamScreen route={mockRoute} navigation={mockNavigation} />
           );
         return <TeamListScreen />;
       case 'Departments':
-        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS)) return <HomeStack />;
+        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS))
+          return <HomeStack />;
         if (subScreen === 'AddDepartment')
           return (
             <AddDepartmentScreen
@@ -1102,7 +1124,8 @@ const WebNavigator = () => {
           );
         return <DepartmentListScreen />;
       case 'Services':
-        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS)) return <HomeStack />;
+        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS))
+          return <HomeStack />;
         if (subScreen === 'AddService')
           return (
             <AddServiceScreen route={mockRoute} navigation={mockNavigation} />
@@ -1135,7 +1158,8 @@ const WebNavigator = () => {
         // Personal Settings are available to all
         return <PersonalSettingsScreen />;
       case 'CompanySettings':
-        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS)) return <HomeStack />;
+        if (!rbacService.hasPermission(user, Permission.MANAGE_SETTINGS))
+          return <HomeStack />;
         if (subScreen === 'ManageDevices') return <ManageDevicesScreen />;
         if (subScreen === 'CustomThemeColors')
           return <CustomThemeColorsScreen />;
@@ -1160,7 +1184,7 @@ const WebNavigator = () => {
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
-      { }
+      {}
       <View
         style={
           [
@@ -1174,7 +1198,7 @@ const WebNavigator = () => {
           ] as any
         }
       >
-        { }
+        {}
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (
@@ -1387,6 +1411,7 @@ const WebNavigator = () => {
                   borderRightWidth: 1,
                   borderRightColor: theme.colors.border,
                   height: height,
+                  width: width < 375 ? width * 0.8 : 280,
                 },
               ]}
             >
@@ -1542,7 +1567,10 @@ export const AppNavigator = () => {
         if (data.type === 'leave' && data.leaveId) {
           (navigationRef.current as any)?.navigate('Main', {
             screen: 'LeavesTab',
-            params: { screen: 'LeaveDetails', params: { leaveId: parseInt(data.leaveId as string) } }
+            params: {
+              screen: 'LeaveDetails',
+              params: { leaveId: parseInt(data.leaveId as string) },
+            },
           });
         }
       }
@@ -1561,12 +1589,34 @@ export const AppNavigator = () => {
 
   if (user && user.status && user.status !== 'active') {
     return (
-      <View style={{ flex: 1, backgroundColor: '#FFF', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#FFF',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20,
+        }}
+      >
         <Text style={{ fontSize: 24, marginBottom: 16 }}>🚫</Text>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8, textAlign: 'center' }}>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 8,
+            textAlign: 'center',
+          }}
+        >
           {user.status === 'pending' ? 'Account Pending' : 'Account Rejected'}
         </Text>
-        <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 24 }}>
+        <Text
+          style={{
+            fontSize: 14,
+            color: '#666',
+            textAlign: 'center',
+            marginBottom: 24,
+          }}
+        >
           {user.status === 'pending'
             ? 'Your account is currently under review by the HR department. Please check back later.'
             : 'Your account access has been restricted. Please contact your manager.'}
@@ -1575,7 +1625,9 @@ export const AppNavigator = () => {
           style={{ backgroundColor: '#007AFF', padding: 12, borderRadius: 8 }}
           onPress={() => signOut()}
         >
-          <Text style={{ color: '#FFF', fontWeight: 'bold' }}>{t('common.logout')}</Text>
+          <Text style={{ color: '#FFF', fontWeight: 'bold' }}>
+            {t('common.logout')}
+          </Text>
         </TouchableOpacity>
       </View>
     );
