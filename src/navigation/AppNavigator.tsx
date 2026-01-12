@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { enableScreens } from 'react-native-screens';
-import { NavigationContainer, LinkingOptions, useNavigationContainerRef, DefaultTheme } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef, DefaultTheme } from '@react-navigation/native';
 import notifee, { EventType } from '@notifee/react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
@@ -78,7 +78,7 @@ import { MyDevicesScreen } from '../screens/settings/MyDevicesScreen';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { SearchOverlay } from '../components/common/SearchOverlay';
 import { ChatBot } from '../components/common/ChatBot';
-import { AuthProvider, useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { GlassHeader } from '../components/common/GlassHeader';
 
 enableScreens();
@@ -1004,7 +1004,10 @@ const WebNavigator = () => {
           return (
             <AddLeaveScreen route={mockRoute} navigation={mockNavigation} />
           );
-        if (subScreen === 'LeaveList') return <LeaveListScreen />;
+        if (subScreen === 'LeaveList')
+          return (
+            <LeaveListScreen navigation={mockNavigation} />
+          );
         if (subScreen === 'LeaveDetails')
           return (
             <LeaveDetailsScreen route={mockRoute} navigation={mockNavigation} />
@@ -1014,7 +1017,10 @@ const WebNavigator = () => {
         if (subScreen === 'TeamVacations') return <TeamVacationsScreen />;
         return <LeavesStack />;
       case 'Illnesses':
-        if (subScreen === 'IllnessList') return <IllnessListScreen />;
+        if (subScreen === 'IllnessList')
+          return (
+            <IllnessListScreen route={mockRoute} navigation={mockNavigation} />
+          );
         if (subScreen === 'AddIllness')
           return (
             <AddIllnessScreen route={mockRoute} navigation={mockNavigation} />
@@ -1054,6 +1060,10 @@ const WebNavigator = () => {
         if (subScreen === 'AddClaim')
           return (
             <AddClaimScreen route={mockRoute} navigation={mockNavigation} />
+          );
+        if (subScreen === 'ClaimsList')
+          return (
+            <ClaimsListScreen route={mockRoute} navigation={mockNavigation} />
           );
         if (subScreen === 'ClaimDetails')
           return (

@@ -151,8 +151,30 @@ export const AddClaimScreen = ({ navigation }: any) => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
+    // Resolve proper ids
+    let currentEmployeeId = employeeId || (user?.role === 'employee' && user?.employeeId ? Number(user.employeeId) : undefined);
+
+    // Fallback: Try to find employee by email if ID is missing
+    if (!currentEmployeeId && user?.email && user?.role === 'employee') {
+      const foundEmployee = employees.find(e => e.email.toLowerCase() === user.email.toLowerCase());
+      if (foundEmployee) {
+        currentEmployeeId = foundEmployee.id;
+      }
+    }
+
+    if (!currentEmployeeId) {
+      notificationService.showAlert(t('common.error'), "Employee profile not linked. Please contact HR.");
+      return;
+    }
+
+    const selectedEmployee = employees.find(e => e.id === currentEmployeeId);
+
+    if (!selectedEmployee && user?.role === 'employee') {
+      notificationService.showAlert(t('common.error'), "Employee profile not found.");
+      return;
+    }
+
     try {
-      const selectedEmployee = employees.find(e => e.id === employeeId);
       const claimData = {
         type,
         title: type === 'material' ? (selectedDevice === 'other' ? 'Other Material' : availableDevices.find(d => String(d.id) === selectedDevice)?.name) : t(`claims.type_${type}`),
@@ -164,8 +186,8 @@ export const AddClaimScreen = ({ navigation }: any) => {
         updatedAt: new Date().toISOString(),
         companyId: companyId || selectedEmployee?.companyId,
         teamId: teamId || selectedEmployee?.teamId,
-        employeeId: employeeId || 0,
-        employeeName: selectedEmployee?.name || user?.name,
+        employeeId: currentEmployeeId,
+        employeeName: selectedEmployee?.name || user?.name || 'Unknown',
         deviceId: type === 'material' && selectedDevice !== 'other' ? Number(selectedDevice) : undefined,
       };
 

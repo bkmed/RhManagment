@@ -101,6 +101,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
     );
 
     if (user?.role !== 'admin' && user?.role !== 'rh') {
+      if (searchedClaims.length === 0) return [];
       return [{ type: 'direct', id: 'direct', items: searchedClaims }];
     }
 
@@ -316,6 +317,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
+      flex: 1,
       backgroundColor: theme.colors.background,
     },
     listContent: {
@@ -323,6 +325,7 @@ const createStyles = (theme: Theme) =>
       maxWidth: 800,
       width: '100%',
       alignSelf: 'center',
+      paddingBottom: 80,
     },
     searchContainer: {
       padding: theme.spacing.m,
