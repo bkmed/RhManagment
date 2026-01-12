@@ -62,7 +62,7 @@ export const employeesDb = {
         generated.push({
           id: 3 + i,
           name,
-          role: 'chef_dequipe',
+          role: 'manager',
           email: `chef${i + 1}@demo.com`,
           hiringDate: '2021-03-10',
           companyId: (i % 2) + 1,

@@ -17,11 +17,13 @@ import { notificationService } from '../../services/notificationService';
 import { teamsDb } from '../../database/teamsDb';
 import { companiesDb } from '../../database/companiesDb';
 import { Dropdown } from '../../components/Dropdown';
+import { useModal } from '../../context/ModalContext';
 
 export const ManageNotificationsScreen = ({ navigation }: any) => {
     const { user } = useAuth();
     const { theme } = useTheme();
     const { t } = useTranslation();
+    const { showModal } = useModal();
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [title, setTitle] = useState('');
@@ -33,9 +35,12 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
     const [companies, setCompanies] = useState<{ label: string, value: string }[]>([]);
 
     useEffect(() => {
-        if (!rbacService.isAdmin(user) && !rbacService.isRH(user)) {
-            Alert.alert(t('common.error'), t('common.unauthorized'));
-            navigation.goBack();
+        if (!rbacService.isAdmin(user) && !rbacService.isRH(user) && !rbacService.isManager(user)) {
+            showModal({
+                title: t('common.error'),
+                message: t('common.unauthorized'),
+                buttons: [{ text: 'OK', onPress: () => navigation.goBack() }]
+            });
             return;
         }
         loadData();
@@ -51,12 +56,12 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
 
     const handleSend = async () => {
         if (!title || !message) {
-            Alert.alert(t('common.error'), t('common.required'));
+            showModal({ title: t('common.error'), message: t('common.required'), buttons: [{ text: 'OK' }] });
             return;
         }
 
         if ((targetType === 'team' || targetType === 'company') && !targetId) {
-            Alert.alert(t('common.error'), t('common.required'));
+            showModal({ title: t('common.error'), message: t('common.required'), buttons: [{ text: 'OK' }] });
             return;
         }
 
@@ -69,7 +74,11 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                 senderId: user?.id
             });
 
-            Alert.alert(t('common.success'), t('notifications.sent'));
+            showModal({
+                title: t('common.success'),
+                message: t('notifications.sent'),
+                buttons: [{ text: 'OK' }]
+            });
             setTitle('');
             setMessage('');
             setTargetType('all');
@@ -77,7 +86,7 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
 
         } catch (error) {
             console.error(error);
-            Alert.alert(t('common.error'), t('common.saveError'));
+            showModal({ title: t('common.error'), message: t('common.saveError'), buttons: [{ text: 'OK' }] });
         }
     };
 

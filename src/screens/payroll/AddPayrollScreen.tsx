@@ -82,18 +82,28 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
   // New state for company/team/employee
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [teamId, setTeamId] = useState<number | null>(null);
-  const [employeeId, setEmployeeId] = useState<number | null>(
-    user?.role === 'employee' && user?.id ? Number(user.id) : null,
-  );
+  const [employeeId, setEmployeeId] = useState<number | null>(null);
 
   useEffect(() => {
     loadInitialData();
-  }, [payrollId]); // Depend on payrollId to re-run if it changes (e.g., navigating from add to edit)
+  }, [payrollId]);
+
+  // Automated Overtime Calculation
+  useEffect(() => {
+    const hours = parseFloat(hoursWorked);
+    if (!isNaN(hours) && hours > 168) {
+      setOvertimeHours((hours - 168).toString());
+    } else {
+      setOvertimeHours('0');
+    }
+  }, [hoursWorked]);
 
   useEffect(() => {
-    navigation?.setOptions({
-      title: isEdit ? t('payroll.edit') : t('payroll.add'),
-    });
+    if (navigation && typeof navigation.setOptions === 'function') {
+      navigation.setOptions({
+        title: isEdit ? t('payroll.edit') : t('payroll.add'),
+      });
+    }
   }, [isEdit, navigation, t]);
 
   /* Removed require */
@@ -154,9 +164,12 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
           setYear(item.year || new Date().getFullYear() + '');
           setHoursWorked(item.hoursWorked ? item.hoursWorked.toString() : '');
           setCurrency(item.currency || '€');
-          setCompanyId(item.companyId ?? null);
-          setTeamId(item.teamId ?? null);
           setEmployeeId(item.employeeId ?? null);
+          if (item.employeeId) {
+            const emp = employees.find(e => e.id === item.employeeId);
+            setCompanyId(emp?.companyId ?? null);
+            setTeamId(emp?.teamId ?? null);
+          }
         }
       }
     } catch (error) {
@@ -176,8 +189,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
     if (hoursWorked) {
       const hours = parseFloat(hoursWorked);
-      if (isNaN(hours) || hours > 168) {
-        newErrors.hoursWorked = t('payroll.invalidHours') || 'Max 168 hours';
+      if (isNaN(hours)) {
+        newErrors.hoursWorked = t('common.invalidAmount');
+      } else if (hours > 168) {
+        newErrors.hoursWorked = t('payroll.invalidHours') || 'Max 168 hours (Standard working month)';
       }
     }
 
@@ -216,9 +231,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         overtimeRate: overtimeRate ? parseFloat(overtimeRate) : undefined,
         companyId: companyId ?? undefined,
         teamId: teamId ?? undefined,
-        employeeId:
-          (employeeId ?? undefined) ||
-          (user?.role === 'employee' ? Number(user.id) : undefined),
+        employeeId: employeeId ?? undefined,
+        employeeName: employees.find(e => e.id === employeeId)?.name || '',
       };
 
       if (isEdit && payrollId) {
@@ -357,37 +371,23 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
               <View style={styles.fieldContainer}>
                 <Dropdown
                   label={t('employees.name')}
-                  data={employees.map(e => ({
-                    label: e.name,
-                    value: String(e.id),
-                  }))}
+                  data={employees
+                    .filter(e => {
+                      if (companyId && e.companyId !== companyId) return false;
+                      if (teamId && e.teamId !== teamId) return false;
+                      return true;
+                    })
+                    .map(e => ({
+                      label: e.name,
+                      value: String(e.id),
+                    }))}
                   value={employeeId ? String(employeeId) : ''}
                   onSelect={val => setEmployeeId(Number(val))}
                 />
               </View>
             )}
 
-            <View style={styles.responsiveRow}>
-              <View style={styles.fieldContainer}>
-                <Dropdown
-                  label={t('common.service')}
-                  data={services.map(s => ({ label: s.name, value: s.name }))}
-                  value={department}
-                  onSelect={setDepartment}
-                />
-              </View>
-
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t('common.local')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={location}
-                  onChangeText={setLocation}
-                  placeholder={t('common.local')}
-                  placeholderTextColor={theme.colors.subText}
-                />
-              </View>
-            </View>
+            {/* Removed Department and Location fields as per Phase 7 */}
 
             <View style={styles.divider} />
             <Text style={styles.sectionTitle}>

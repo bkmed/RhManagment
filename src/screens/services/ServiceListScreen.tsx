@@ -44,7 +44,7 @@ export const ServiceListScreen = ({ navigation, route }: any) => {
 
   const handleBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab?.('Settings', 'CompanySettings');
+      setActiveTab?.('CompanySettings', '');
     } else {
       navigation.goBack();
     }

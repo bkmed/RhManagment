@@ -173,7 +173,10 @@
     "weekend": "Weekend",
     "yearUnit": "an",
     "yearsUnit": "ans",
-    "yes": "Oui"
+    "yes": "Oui",
+    "all": "Tous",
+    "company": "Entreprise",
+    "team": "Équipe"
   },
   "companies": {
     "add": "Ajouter une entreprise",
@@ -477,30 +480,33 @@
   },
   "leaves": {
     "add": "Ajouter un congé",
-    "collisionError": "Cet employé a déjà un congé ou une autorisation prévu pendant cette période.",
     "addFirst": "Appuyez sur + pour planifier un congé",
-    "approvals": "Approbations en attente",
+    "approvals": "Approbations",
+    "approvalsSubtitle": "Gérer les demandes",
     "approve": "Approuver",
-    "cause": "Cause/Raison",
-    "causePlaceholder": "ex: Raisons personnelles",
+    "cause": "Cause",
+    "causePlaceholder": "Cause de la demande",
+    "collisionError": "Collision : Un autre congé existe déjà sur cette période.",
+    "companyAbsences": "Absences de l'entreprise",
     "date": "Date",
     "decline": "Refuser",
     "details": "Détails du congé",
+    "duration": "Durée",
     "edit": "Modifier le congé",
     "employee": "Employé",
     "employeePlaceholder": "ex: Jean Dupont",
-    "enableReminder": "Activer le rappel (1 heure avant)",
+    "enableReminder": "Activer le rappel",
     "fillRequired": "Veuillez saisir un titre",
     "leaveTitle": "Titre",
-    "leaveType": "Type de demande",
-    "loadError": "Échec du chargement du congé",
+    "leaveType": "Type de congé",
+    "loadError": "Échec du chargement des congés",
     "location": "Lieu / Type",
     "locationPlaceholder": "ex: Télétravail / Bureau",
-    "noLeaves": "Aucun congé à venir",
+    "noLeaves": "Aucun congé trouvé",
     "notes": "Notes",
+    "notesPlaceholder": "Notes additionnelles...",
     "object": "Objet",
     "objectPlaceholder": "ex: Congé annuel",
-    "notesPlaceholder": "Notes supplémentaires...",
     "past": "Passés",
     "reason": "Raison",
     "save": "Enregistrer",
@@ -562,10 +568,10 @@
     "params": "Paramètres",
     "payroll": "Paie",
     "profile": "Profil",
+    "personalInfo": "Informations personnelles",
     "services": "Services",
     "settings": "Paramètres",
     "teams": "Équipes",
-    "personalInfo": "Informations personnelles",
     "manageNotifications": "Gérer les notifications"
   },
   "notifications": {
@@ -578,7 +584,10 @@
     "title": "Notifications",
     "welcomeTitle": "Bienvenue sur RH Management !",
     "welcomeMessage": "Votre solution complète de gestion des ressources humaines. Gérez les employés, congés, paie et plus encore - le tout en un seul endroit.",
-    "unread": "Non lu"
+    "unread": "Non lu",
+    "broadcastTitle": "Diffuser une notification",
+    "target": "Audience cible",
+    "sent": "Notification diffusée avec succès"
   },
   "offline": {
     "limitedFunctionality": "Certaines fonctionnalités peuvent être indisponibles",
@@ -625,8 +634,9 @@
     "manageServices": "Gérer les Départements/Services",
     "manageCurrencies": "Gérer les Devises",
     "mealVouchers": "Ticket restaurant",
+    "method": "Type de paiement",
     "month": "Mois de paie",
-    "name": "Type de Paiement",
+    "name": "Nom de l'élément",
     "namePlaceholder": "Sélectionner le type",
     "noPayroll": "Aucun élément de paie trouvé",
     "none": "Aucun",
@@ -771,10 +781,10 @@
   },
   "roles": {
     "admin": "Administrateur",
-    "chef_dequipe": "Chef d'équipe",
+    "manager": "Chef d'équipe",
     "employee": "Employé",
     "rh": "RH",
-    "undefined": "Rôle non défini"
+    "undefined": "Rôle non assigné"
   },
   "sections": {
     "analytics": "Analytiques",
@@ -793,7 +803,7 @@
   },
   "settings": {
     "personal": "Paramètres Personnels",
-    "company": "Paramètres de l'entreprise",
+    "company": "Administration Entreprise",
     "language": "Langue",
     "theme": "Thème",
     "themeLight": "Clair",
@@ -808,8 +818,8 @@
     "notifications": "Notifications",
     "pushNotifications": "Notifications Push",
     "emailNotifications": "Notifications Email",
-    "companySettings": "Paramètres de l'entreprise",
-    "params": "Paramètres de l'entreprise",
+    "companySettings": "Configuration Entreprise",
+    "params": "Espace Entreprise",
     "management": "Gestion des ressources"
   },
   "signUp": {

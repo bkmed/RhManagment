@@ -82,7 +82,11 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
   const companies = useSelector((state: RootState) =>
     selectAllCompanies(state),
   );
-  const teams = useSelector((state: RootState) => selectAllTeams(state));
+  const allTeams = useSelector((state: RootState) => selectAllTeams(state));
+  const teams = useMemo(() => {
+    if (!companyId) return [];
+    return allTeams.filter(t => t.companyId === companyId);
+  }, [allTeams, companyId]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -180,10 +184,10 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
     if (!name.trim()) newErrors.name = t('employees.nameRequired');
 
     // Email validation
-    if (email) {
-      if (!isValidEmail(email)) {
-        newErrors.email = t('common.invalidEmail');
-      }
+    if (!email.trim()) {
+      newErrors.email = t('signUp.errorEmptyEmail');
+    } else if (!isValidEmail(email)) {
+      newErrors.email = t('common.invalidEmail');
     }
 
     // Phone validation
@@ -344,7 +348,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
 
   const departmentOptions = [
     { label: t('roles.rh'), value: 'rh' },
-    { label: t('roles.chef_dequipe'), value: 'chef_dequipe' },
+    { label: t('roles.manager'), value: 'manager' },
     { label: t('roles.employee'), value: 'employee' },
   ];
 

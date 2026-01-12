@@ -36,32 +36,28 @@ export const LeaveApprovalListScreen = () => {
       let leaves = await leavesDb.getPending();
       const currentUser = await employeesDb.getById(user?.employeeId!);
 
+      const allEmployees = await employeesDb.getAll();
+
       // RBAC Filtering
-      if (rbacService.isRH(user) || rbacService.isAdmin(user)) {
-        // RH/Admin see all pending leaves
+      if (rbacService.isAdmin(user)) {
+        // Admin see all pending leaves
+        setPendingLeaves(leaves);
+      } else if (rbacService.isRH(user)) {
+        // RH sees their company's pending leaves
+        const companyEmployeeIds = allEmployees
+          .filter(e => e.companyId === user?.companyId)
+          .map(e => e.id);
+        leaves = leaves.filter(l => companyEmployeeIds.includes(l.employeeId));
         setPendingLeaves(leaves);
       } else if (rbacService.hasPermission(user, Permission.APPROVE_LEAVES)) {
-        // Managers see only their team's leaves (excluding themselves typically, but let's include all to be safe for now, filtering out their own requests if needed)
-        // Logic: Get users in manager's team
-        // If user is chef_dequipe (Manager), they should have a teamId or Department?
-        // Let's assume manager filters by teamId matching the leave creator's teamId
-
-        // We need to fetch employees to match IDs to teams if leaves don't have teamId
-        // Leaves have employeeId.
-
-        const allEmployees = await employeesDb.getAll();
+        // Managers see only their team's leaves
         const myTeamIds = allEmployees
-          .filter(e => e.teamId === currentUser?.teamId && e.id !== currentUser?.id) // Filter out self?
+          .filter(e => e.teamId === user?.teamId)
           .map(e => e.id);
 
-        if (myTeamIds.length > 0) {
-          leaves = leaves.filter(l => myTeamIds.includes(l.employeeId));
-          setPendingLeaves(leaves);
-        } else {
-          setPendingLeaves([]); // No team members found or no team assigned
-        }
+        leaves = leaves.filter(l => myTeamIds.includes(l.employeeId));
+        setPendingLeaves(leaves);
       } else {
-        // Employees shouldn't be here, but just in case
         setPendingLeaves([]);
       }
     } catch (error) {

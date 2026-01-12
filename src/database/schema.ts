@@ -30,6 +30,7 @@ export interface Currency {
 export interface Payroll {
   id?: number;
   name: string;
+  employeeName?: string;
   amount: number;
   currency: string;
   frequency: string; // e.g., "Daily", "Twice a day", "Weekly"
@@ -81,6 +82,7 @@ export interface Leave {
   createdAt: string;
   updatedAt: string;
   department?: string; // Service
+  photoUri?: string; // NEW: Photo for sick leaves
 }
 
 export interface RemoteWork {
@@ -256,7 +258,7 @@ export interface Employee {
   photoUri?: string;
   notes?: string;
   department?: string;
-  role?: string; // 'admin' | 'rh' | 'chef_dequipe' | 'employee'
+  role?: string; // 'admin' | 'rh' | 'manager' | 'employee'
   teamId?: number; // CONSTRAINT: One team per employee
   companyId?: number; // CONSTRAINT: One company per employee
   vacationDaysPerYear: number;

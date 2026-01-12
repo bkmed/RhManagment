@@ -34,5 +34,10 @@ export const menuPreferencesService = {
 
     isHidden: (key: string, preferences: MenuPreferences): boolean => {
         return preferences.hiddenItems.includes(key);
+    },
+
+    reorderItems: async (newOrder: string[]): Promise<void> => {
+        const prefs = await menuPreferencesService.getPreferences();
+        await menuPreferencesService.savePreferences({ ...prefs, customOrder: newOrder });
     }
 };

@@ -35,11 +35,14 @@ export const PayrollListScreen = ({ navigation }: any) => {
       // Role-based filtering
       if (user?.role === 'employee' && user?.employeeId) {
         data = data.filter(item => item.employeeId === user.employeeId);
-      } else if (user?.role === 'chef_dequipe' && user?.department) {
-        // Chef sees payroll for their department (need to join with employee data usually,
-        // but for now filtering if payroll itself has department or via external join)
-        // Simplified: Chef sees all for now if not filtered by employeeId
+      } else if (user?.role === 'manager' && user?.teamId) {
+        // Manager sees their team's payroll
+        data = data.filter(item => item.teamId === user.teamId);
+      } else if (user?.role === 'rh' && user?.companyId) {
+        // HR sees their company's payroll
+        data = data.filter(item => item.companyId === user.companyId);
       }
+      // Admin sees everything
 
       setPayrollItems(data);
     } catch (error) {
@@ -62,10 +65,11 @@ export const PayrollListScreen = ({ navigation }: any) => {
     return payrollItems
       .filter(
         item =>
-          item.name.toLowerCase().includes(lowerQuery) ||
-          String(item.amount).toLowerCase().includes(lowerQuery),
+          (item.name || '').toLowerCase().includes(lowerQuery) ||
+          (item.employeeName || '').toLowerCase().includes(lowerQuery) ||
+          String(item.amount || '').toLowerCase().includes(lowerQuery),
       )
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }, [payrollItems, searchQuery]);
 
   const handlePayrollPress = (payroll: Payroll) => {

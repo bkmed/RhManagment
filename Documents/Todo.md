@@ -18,6 +18,8 @@ The goal is to deliver a **secure, role-based, multilingual, and production-read
 - One **company per employee**
 - One **team per employee**
 - One **company per team**
+- One **Rh per company**
+- One **Team Leader per team**
 - Missing role key:
   - `roles.undefined`
 
@@ -26,7 +28,6 @@ The goal is to deliver a **secure, role-based, multilingual, and production-read
 ## 2. Navigation, Menu & Layout
 
 ### Main Menu
-- Remove **“Mon équipe / My Team”** from main navigation
 - Add **Analytics** page under **General** section
 - Menu must be fully responsive (height & width on resize)
 - Allow users (with permission) to rearrange and edit menu items

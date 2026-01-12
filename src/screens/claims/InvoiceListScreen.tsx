@@ -18,6 +18,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 import { formatDate } from '../../utils/dateUtils';
+import { Dropdown } from '../../components/Dropdown';
 
 export const InvoiceListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -31,6 +32,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<'all' | 'mine'>('mine');
+  const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
 
   const loadData = async () => {
     try {
@@ -65,10 +67,23 @@ export const InvoiceListScreen = ({ navigation }: any) => {
     }
 
     if (user?.role === 'admin' || user?.role === 'rh') {
-      return invoices;
+      let filtered = invoices;
+      if (selectedCompanyId) {
+        filtered = filtered.filter(i => {
+          const emp = employees.find(e => e.id === i.employeeId);
+          return emp?.companyId === selectedCompanyId;
+        });
+      }
+      if (user.role === 'rh' && user.companyId) {
+        filtered = filtered.filter(i => {
+          const emp = employees.find(e => e.id === i.employeeId);
+          return emp?.companyId === user.companyId;
+        });
+      }
+      return filtered;
     }
 
-    if (user?.role === 'chef_dequipe') {
+    if (user?.role === 'manager') {
       // Find team members
       const teamEmployees = employees.filter(e => e.teamId === user?.teamId);
       const teamEmployeeIds = teamEmployees.map(e => e.id);
@@ -76,21 +91,21 @@ export const InvoiceListScreen = ({ navigation }: any) => {
     }
 
     return invoices.filter(i => i.employeeId === user?.employeeId);
-  }, [invoices, user, activeView, employees]);
+  }, [invoices, user, activeView, employees, selectedCompanyId]);
 
   const groupedData = useMemo(() => {
     if (
       activeView === 'mine' ||
       (user?.role !== 'admin' &&
         user?.role !== 'rh' &&
-        user?.role !== 'chef_dequipe')
+        user?.role !== 'manager')
     ) {
       return [
         { id: 'mine', name: t('invoices.myInvoices'), items: filteredInvoices },
       ];
     }
 
-    if (user?.role === 'chef_dequipe') {
+    if (user?.role === 'manager') {
       return [
         {
           id: 'team',
@@ -170,8 +185,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
             style={[styles.statusText, { color: getStatusColor(item.status) }]}
           >
             {t(
-              `invoices.status${
-                item.status.charAt(0).toUpperCase() + item.status.slice(1)
+              `invoices.status${item.status.charAt(0).toUpperCase() + item.status.slice(1)
               }`,
             )}
           </Text>
@@ -195,36 +209,50 @@ export const InvoiceListScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       {(user?.role === 'admin' ||
         user?.role === 'rh' ||
-        user?.role === 'chef_dequipe') && (
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[styles.tab, activeView === 'mine' && styles.activeTab]}
-            onPress={() => setActiveView('mine')}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeView === 'mine' && styles.activeTabText,
-              ]}
+        user?.role === 'manager') && (
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[styles.tab, activeView === 'mine' && styles.activeTab]}
+              onPress={() => setActiveView('mine')}
             >
-              {t('invoices.myInvoices')}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, activeView === 'all' && styles.activeTab]}
-            onPress={() => setActiveView('all')}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeView === 'all' && styles.activeTabText,
-              ]}
+              <Text
+                style={[
+                  styles.tabText,
+                  activeView === 'mine' && styles.activeTabText,
+                ]}
+              >
+                {t('invoices.myInvoices')}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, activeView === 'all' && styles.activeTab]}
+              onPress={() => setActiveView('all')}
             >
-              {user?.role === 'chef_dequipe'
-                ? t('invoices.teamInvoices')
-                : t('invoices.allInvoices')}
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.tabText,
+                  activeView === 'all' && styles.activeTabText,
+                ]}
+              >
+                {user?.role === 'manager'
+                  ? t('invoices.teamInvoices')
+                  : t('invoices.allInvoices')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+      {activeView === 'all' && (user?.role === 'admin') && (
+        <View style={{ padding: theme.spacing.m, backgroundColor: theme.colors.surface }}>
+          <Dropdown
+            label={t('companies.selectCompany')}
+            data={[
+              { label: t('common.all'), value: '' },
+              ...companies.map(c => ({ label: c.name, value: String(c.id) }))
+            ]}
+            value={selectedCompanyId ? String(selectedCompanyId) : ''}
+            onSelect={val => setSelectedCompanyId(val ? Number(val) : null)}
+          />
         </View>
       )}
 
@@ -237,7 +265,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
       ) : (
         <ScrollView contentContainerStyle={styles.listContent}>
           {groupedData.length === 0 ||
-          (groupedData[0].items && groupedData[0].items.length === 0) ? (
+            (groupedData[0].items && groupedData[0].items.length === 0) ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>{t('invoices.empty')}</Text>
             </View>
@@ -386,6 +414,8 @@ const createStyles = (theme: Theme) =>
     emptyContainer: {
       alignItems: 'center',
       marginTop: 40,
+      backgroundColor: theme.colors.background,
+      flex: 1,
     },
     emptyText: {
       ...theme.textVariants.body,

@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  Image,
 } from 'react-native';
 import { leavesDb } from '../../database/leavesDb';
 import { notificationService } from '../../services/notificationService';
@@ -166,7 +167,7 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
 
         {(user?.role === 'admin' ||
           user?.role === 'rh' ||
-          user?.role === 'chef_dequipe') &&
+          user?.role === 'manager') &&
           leave.status === 'pending' && (
             <View style={styles.approvalActions}>
               <TouchableOpacity
@@ -184,10 +185,14 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
             </View>
           )}
 
-        {leave.employeeName && (
+        {(leave.employeeName || leave.department) && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('leaveDetails.employeeLabel')}</Text>
-            <Text style={styles.value}>{leave.employeeName}</Text>
+            {leave.employeeName && (
+              <>
+                <Text style={styles.label}>{t('leaveDetails.employeeLabel')}</Text>
+                <Text style={styles.value}>{leave.employeeName}</Text>
+              </>
+            )}
             {leave.department && (
               <View style={{ marginTop: 8 }}>
                 <Text style={styles.label}>{t('common.service')}</Text>
@@ -197,10 +202,24 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
           </View>
         )}
 
-        {leave.location && (
+        <View style={styles.section}>
+          <Text style={styles.label}>{t('leaves.subject')}</Text>
+          <Text style={styles.value}>{leave.title}</Text>
+
+          <View style={{ marginTop: 8 }}>
+            <Text style={styles.label}>{t('leaves.cause')}</Text>
+            <Text style={styles.value}>{leave.location || '-'}</Text>
+          </View>
+        </View>
+
+        {leave.photoUri && (
           <View style={styles.section}>
-            <Text style={styles.label}>{t('leaveDetails.locationLabel')}</Text>
-            <Text style={styles.value}>{leave.location}</Text>
+            <Text style={styles.label}>{t('illnesses.photoButton')}</Text>
+            <Image
+              source={{ uri: leave.photoUri }}
+              style={{ width: '100%', height: 200, borderRadius: 8, marginTop: 8 }}
+              resizeMode="contain"
+            />
           </View>
         )}
 
@@ -224,28 +243,28 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
           user?.role === 'rh' ||
           (user?.role === 'employee' &&
             leave.employeeId === user.employeeId)) && (
-          <>
-            <TouchableOpacity
-              style={[styles.button, styles.editButton]}
-              onPress={handleEdit}
-            >
-              <Text style={styles.buttonText}>
-                {t('leaveDetails.editButton')}
-              </Text>
-            </TouchableOpacity>
-
-            {(user?.role === 'admin' || user?.role === 'rh') && (
+            <View style={{ paddingBottom: 20 }}>
               <TouchableOpacity
-                style={[styles.button, styles.deleteButton]}
-                onPress={handleDelete}
+                style={[styles.button, styles.editButton]}
+                onPress={handleEdit}
               >
                 <Text style={styles.buttonText}>
-                  {t('leaveDetails.deleteButton')}
+                  {t('leaveDetails.editButton')}
                 </Text>
               </TouchableOpacity>
-            )}
-          </>
-        )}
+
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <TouchableOpacity
+                  style={[styles.button, styles.deleteButton]}
+                  onPress={handleDelete}
+                >
+                  <Text style={styles.buttonText}>
+                    {t('leaveDetails.deleteButton')}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
       </ScrollView>
     </View>
   );

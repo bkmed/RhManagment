@@ -11,7 +11,7 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { notificationService } from '../../services/notificationService';
 import { useTranslation } from 'react-i18next';
@@ -36,15 +36,14 @@ import { selectAllDevices } from '../../store/slices/devicesSlice';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { Device } from '../../database/schema';
 
-const { width } = Dimensions.get('window');
+const { width: _width } = Dimensions.get('window');
 
 export const ProfileScreen = ({ navigation }: any) => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { showModal } = useModal();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
   const { showToast } = useToast();
-  // const dispatch = useDispatch(); // Unused for now, commenting out or removing.
   const { setActiveTab } = React.useContext(WebNavigationContext) as any;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -61,15 +60,14 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [alias, setAlias] = useState(user?.alias || '');
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
-  const [jobTitle, setJobTitle] = useState(user?.jobTitle || user?.position || '');
-  // const [age, setAge] = useState(user?.age ? String(user.age) : '');
+  const [jobTitle, setJobTitle] = useState(user?.jobTitle || '');
   const [birthDate, setBirthDate] = useState<string | null>(
     user?.birthDate || null,
   );
   const [gender, setGender] = useState<'male' | 'female' | 'other'>(
     user?.gender || 'male',
   );
-  const [address, setAddress] = useState(user?.address || ''); // Added address
+  const [address, setAddress] = useState(user?.address || '');
   const [emergencyName, setEmergencyName] = useState(
     user?.emergencyContact?.name || '',
   );
@@ -83,6 +81,16 @@ export const ProfileScreen = ({ navigation }: any) => {
   const [skype, setSkype] = useState(user?.socialLinks?.skype || '');
   const [website, setWebsite] = useState(user?.socialLinks?.website || '');
   const [skills, setSkills] = useState(user?.skills?.join(', ') || '');
+
+  // Permissions state
+  const [cameraPermission, setCameraPermission] =
+    useState<PermissionStatus>('unavailable');
+  const [notificationPermission, setNotificationPermission] =
+    useState<PermissionStatus>('unavailable');
+  const [calendarPermission, setCalendarPermission] =
+    useState<PermissionStatus>('unavailable');
+  const [storagePermission, setStoragePermission] =
+    useState<PermissionStatus>('unavailable');
 
   // Stats from Redux
   const pendingLeaves = useSelector(selectPendingLeaves);
@@ -105,14 +113,19 @@ export const ProfileScreen = ({ navigation }: any) => {
     return companies.find(c => c.id === user?.companyId);
   }, [companies, user]);
 
-  const [cameraPermission, setCameraPermission] =
-    useState<PermissionStatus>('unavailable');
-  const [notificationPermission, setNotificationPermission] =
-    useState<PermissionStatus>('unavailable');
-  const [calendarPermission, setCalendarPermission] =
-    useState<PermissionStatus>('unavailable');
-  const [storagePermission, setStoragePermission] =
-    useState<PermissionStatus>('unavailable');
+  const calculateAge = (dob: string | null) => {
+    if (!dob) return '';
+    const birthDateDate = new Date(dob);
+    const today = new Date();
+    let calculatedAge = today.getFullYear() - birthDateDate.getFullYear();
+    const m = today.getMonth() - birthDateDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDateDate.getDate())) {
+      calculatedAge--;
+    }
+    return calculatedAge;
+  };
+
+  const userAge = useMemo(() => calculateAge(birthDate), [birthDate]);
 
   useEffect(() => {
     checkPermissions();
@@ -273,6 +286,22 @@ export const ProfileScreen = ({ navigation }: any) => {
 
     setLoading(true);
     try {
+      // Enforce email uniqueness
+      const { employeesDb } = require('../../database/employeesDb');
+      const allEmployees = await employeesDb.getAll();
+      const emailExists = allEmployees.some(
+        (e: any) => e.id !== user?.employeeId && e.email.toLowerCase() === email.trim().toLowerCase()
+      );
+
+      if (emailExists) {
+        showModal({
+          title: t('common.error'),
+          message: t('auth.emailExists') || 'This email is already associated with another account.',
+        });
+        setLoading(false);
+        return;
+      }
+
       await updateProfile({
         name: name.trim(),
         email: email.trim(),
@@ -283,7 +312,6 @@ export const ProfileScreen = ({ navigation }: any) => {
         alias,
         jobTitle,
         address,
-        // age: parseInt(age) || undefined,
         birthDate: birthDate || undefined,
         gender,
         emergencyContact: emergencyName
@@ -341,7 +369,6 @@ export const ProfileScreen = ({ navigation }: any) => {
       setNotificationPermission('denied');
     }
 
-    // Persist preference
     try {
       await updateProfile({
         notificationPreferences: {
@@ -444,7 +471,6 @@ export const ProfileScreen = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} bounces={false}>
-        {/* Header Background */}
         <View style={styles.headerBackground}>
           {backgroundPhotoUri ? (
             <Image
@@ -463,7 +489,6 @@ export const ProfileScreen = ({ navigation }: any) => {
         </View>
 
         <View style={styles.mainContent}>
-          {/* Profile Header Card */}
           <View style={styles.headerCard}>
             <View style={styles.headerTop}>
               <TouchableOpacity
@@ -471,12 +496,10 @@ export const ProfileScreen = ({ navigation }: any) => {
                 onPress={isEditing ? handlePickPhoto : undefined}
                 disabled={!isEditing}
               >
-                <View
-                  style={[
-                    styles.avatar,
-                    { borderColor: theme.colors.surface, borderWidth: 4 },
-                  ]}
-                >
+                <View style={[
+                  styles.avatar,
+                  { borderColor: theme.colors.surface, borderWidth: 4 },
+                ]}>
                   {photoUri ? (
                     <Image
                       source={{ uri: photoUri }}
@@ -484,7 +507,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                     />
                   ) : (
                     <Text style={styles.avatarText}>
-                      {user?.name?.charAt(0).toUpperCase() || 'U'}
+                      {alias?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase() || 'U'}
                     </Text>
                   )}
                   {isEditing && (
@@ -531,15 +554,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                       showToast(t('teams.noTeamAssigned'));
                       return;
                     }
-                    // Navigate to MyTeam
-                    if (Platform.OS === 'web') {
-                      // For web, we might need to handle it via routing or active tab if it's a "screen"
-                      // But MyTeam might not be a tab.
-                      // If MyTeam is a screen in a stack, navigation.navigate works on web too for react-navigation.
-                      navigation.navigate('MyTeam');
-                    } else {
-                      navigation.navigate('MyTeam');
-                    }
+                    navigation.navigate('MyTeam');
                   }}
                 >
                   <Text
@@ -568,7 +583,6 @@ export const ProfileScreen = ({ navigation }: any) => {
             )}
           </View>
 
-          {/* Stats Dashboard */}
           {!isEditing && (
             <View style={styles.statsRow}>
               <DashboardStat
@@ -609,16 +623,16 @@ export const ProfileScreen = ({ navigation }: any) => {
                   placeholder={t('signUp.namePlaceholder')}
                 />
                 <AuthInput
-                  label={t('signUp.nameLabel')}
-                  value={name}
-                  onChangeText={setName}
-                  placeholder={t('signUp.namePlaceholder')}
-                />
-                <AuthInput
                   label={t('employees.alias') || 'Alias'}
                   value={alias}
                   onChangeText={setAlias}
                   placeholder="e.g. JB"
+                />
+                <AuthInput
+                  label={t('employees.jobTitle') || 'Job Title'}
+                  value={jobTitle}
+                  onChangeText={setJobTitle}
+                  placeholder="e.g. Software Engineer"
                 />
                 <AuthInput
                   label={t('signUp.emailLabel')}
@@ -630,12 +644,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                 />
 
                 <View style={styles.responsiveRow}>
-                  <View
-                    style={[
-                      styles.fieldContainerFlex,
-                      { marginRight: theme.spacing.m },
-                    ]}
-                  >
+                  <View style={styles.fieldContainerFlex}>
                     <AuthInput
                       label={t('employees.firstName')}
                       value={firstName}
@@ -654,19 +663,17 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </View>
 
                 <View style={styles.responsiveRow}>
-                  <View style={styles.fieldContainer}>
+                  <View style={styles.fieldContainerFlex}>
                     <DateTimePickerField
-                      label={t('profile.birthDate') || 'Birth Date'}
-                      value={
-                        birthDate ? new Date(birthDate) : null
-                      }
+                      label={`${t('profile.birthDate') || 'Birth Date'} ${userAge ? `(${userAge} ${t('common.years')})` : ''}`}
+                      value={birthDate ? new Date(birthDate) : null}
                       onChange={(date: Date | null) =>
                         setBirthDate(date ? date.toISOString() : '')
                       }
                       mode="date"
                     />
                   </View>
-                  <View style={styles.fieldContainer}>
+                  <View style={styles.fieldContainerFlex}>
                     <Dropdown
                       label={t('profile.gender')}
                       data={[
@@ -710,7 +717,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </View>
 
                 <View style={styles.responsiveRow}>
-                  <View style={styles.fieldContainer}>
+                  <View style={styles.fieldContainerFlex}>
                     <Text style={styles.label}>{t('profile.contactPhone')}</Text>
                     <TextInput
                       style={styles.input}
@@ -721,7 +728,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                       keyboardType="phone-pad"
                     />
                   </View>
-                  <View style={styles.fieldContainer}>
+                  <View style={styles.fieldContainerFlex}>
                     <Text style={styles.label}>{t('profile.relationship')}</Text>
                     <TextInput
                       style={styles.input}
@@ -749,7 +756,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                 </View>
 
                 <View style={styles.responsiveRow}>
-                  <View style={styles.fieldContainer}>
+                  <View style={styles.fieldContainerFlex}>
                     <Text style={styles.label}>Skype</Text>
                     <TextInput
                       style={styles.input}
@@ -760,7 +767,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                       autoCapitalize="none"
                     />
                   </View>
-                  <View style={styles.fieldContainer}>
+                  <View style={styles.fieldContainerFlex}>
                     <Text style={styles.label}>{t('profile.website')}</Text>
                     <TextInput
                       style={styles.input}
@@ -810,6 +817,47 @@ export const ProfileScreen = ({ navigation }: any) => {
             </View>
           ) : (
             <>
+              {/* Personal Information View */}
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>
+                  👤 {t('profile.personalInfo') || t('profile.personal')}
+                </Text>
+                <View style={styles.responsiveRow}>
+                  <View style={styles.fieldContainerFlex}>
+                    <Text style={styles.fieldLabel}>{t('employees.alias') || 'Alias'}</Text>
+                    <Text style={styles.fieldValue}>{alias || t('common.noData')}</Text>
+                  </View>
+                  <View style={styles.fieldContainerFlex}>
+                    <Text style={styles.fieldLabel}>
+                      {t('profile.birthDate') || 'Date of Birth'}
+                    </Text>
+                    <Text style={styles.fieldValue}>
+                      {birthDate ? new Date(birthDate).toLocaleDateString() : t('common.noData')}
+                      {userAge ? ` (${userAge} ${t('common.years')})` : ''}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.responsiveRow}>
+                  <View style={styles.fieldContainerFlex}>
+                    <Text style={styles.fieldLabel}>
+                      {t('employees.jobTitle') || 'Job Title'}
+                    </Text>
+                    <Text style={styles.fieldValue}>{jobTitle || t('common.noData')}</Text>
+                  </View>
+                  <View style={styles.fieldContainerFlex}>
+                    <Text style={styles.fieldLabel}>{t('profile.gender')}</Text>
+                    <Text style={styles.fieldValue}>
+                      {t(`employees.gender${gender.charAt(0).toUpperCase() + gender.slice(1)}`)}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.divider} />
+                <Text style={styles.fieldLabel}>{t('profile.address')}</Text>
+                <Text style={styles.fieldValue}>{address || t('common.noData')}</Text>
+              </View>
+
               {/* Professional Profile View */}
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>
@@ -821,23 +869,13 @@ export const ProfileScreen = ({ navigation }: any) => {
                     <Text style={styles.fieldLabel}>
                       {t('employees.company')}
                     </Text>
-                    <Text
-                      style={[
-                        styles.userName,
-                        { fontSize: 16, marginBottom: theme.spacing.m },
-                      ]}
-                    >
+                    <Text style={styles.fieldValue}>
                       🏢 {userCompany?.name || t('companies.noCompanyAssigned')}
                     </Text>
                   </View>
                   <View style={styles.fieldContainerFlex}>
                     <Text style={styles.fieldLabel}>{t('teams.title')}</Text>
-                    <Text
-                      style={[
-                        styles.userName,
-                        { fontSize: 16, marginBottom: theme.spacing.m },
-                      ]}
-                    >
+                    <Text style={styles.fieldValue}>
                       👥 {userTeam?.name || t('teams.noTeamAssigned')}
                     </Text>
                   </View>
@@ -1014,6 +1052,7 @@ export const ProfileScreen = ({ navigation }: any) => {
 const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
+      flex: 1,
       backgroundColor: theme.colors.background,
     },
     content: {
@@ -1125,7 +1164,7 @@ const createStyles = (theme: Theme) =>
     userEmail: {
       fontSize: 14,
       color: theme.colors.subText,
-      marginBottom: 8,
+      marginBottom: 12,
     },
     teamContainer: {
       backgroundColor: theme.colors.background,
@@ -1211,10 +1250,12 @@ const createStyles = (theme: Theme) =>
       gap: 16,
     },
     fieldContainer: {
-      flex: 1,
+      width: '100%',
+      marginBottom: 16,
     },
     fieldContainerFlex: {
       flex: 1,
+      marginBottom: 16,
     },
     label: {
       fontSize: 14,
@@ -1248,12 +1289,6 @@ const createStyles = (theme: Theme) =>
       marginTop: 20,
       gap: 12,
     },
-    editActions: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      marginTop: theme.spacing.l,
-      gap: theme.spacing.m,
-    },
     cancelButton: {
       paddingVertical: 10,
       paddingHorizontal: 20,
@@ -1275,6 +1310,11 @@ const createStyles = (theme: Theme) =>
     saveButtonText: {
       color: '#fff',
       fontWeight: '600',
+    },
+    fieldValue: {
+      fontSize: 16,
+      color: theme.colors.text,
+      marginBottom: theme.spacing.m,
     },
     fieldLabel: {
       fontSize: 14,
@@ -1305,11 +1345,6 @@ const createStyles = (theme: Theme) =>
     socialIcon: { fontSize: 18, marginRight: theme.spacing.m },
     socialValue: { color: theme.colors.text, fontSize: 14, flex: 1 },
     emptyText: { color: theme.colors.subText, fontStyle: 'italic' },
-    actionButton: {
-      paddingHorizontal: theme.spacing.xl,
-      paddingVertical: theme.spacing.m,
-      borderRadius: theme.spacing.m,
-    },
     divider: {
       height: 1,
       backgroundColor: theme.colors.border,
@@ -1325,11 +1360,11 @@ const createStyles = (theme: Theme) =>
     },
     permissionInfo: { flex: 1 },
     permissionLabel: {
-      ...theme.textVariants.body,
+      fontSize: 16,
       color: theme.colors.text,
-      marginBottom: theme.spacing.xs,
+      marginBottom: 4,
     },
-    permissionStatus: { ...theme.textVariants.caption, fontSize: 12 },
+    permissionStatus: { fontSize: 12 },
     logoutButton: {
       backgroundColor: theme.colors.surface,
       margin: theme.spacing.m,
@@ -1340,16 +1375,15 @@ const createStyles = (theme: Theme) =>
       borderColor: theme.colors.error,
     },
     logoutText: {
-      ...theme.textVariants.button,
       color: theme.colors.error,
       fontSize: 16,
+      fontWeight: '600',
     },
     versionText: {
-      ...theme.textVariants.caption,
       color: theme.colors.subText,
       textAlign: 'center',
+      fontSize: 12,
     },
-
     subSectionTitle: {
       fontSize: 18,
       fontWeight: 'bold',

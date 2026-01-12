@@ -18,13 +18,16 @@ import { Permission, rbacService } from '../../services/rbacService';
 import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { selectAllAnnouncements } from '../../store/slices/announcementsSlice';
+import { selectAllCompanies } from '../../store/slices/companiesSlice';
+import { selectAllDepartments } from '../../store/slices/departmentsSlice';
+import { selectAllServices } from '../../store/slices/servicesSlice';
 import { Employee, Team, Announcement } from '../../database/schema';
 
 interface SearchResult {
   id: string;
   title: string;
   subtitle: string;
-  type: 'employee' | 'team' | 'announcement';
+  type: 'employee' | 'team' | 'announcement' | 'company' | 'department' | 'service';
   originalItem: any;
 }
 
@@ -45,6 +48,9 @@ export const SearchOverlay = ({
   const employees = useSelector(selectAllEmployees);
   const teams = useSelector(selectAllTeams);
   const announcements = useSelector(selectAllAnnouncements);
+  const companies = useSelector(selectAllCompanies);
+  const departments = useSelector(selectAllDepartments);
+  const services = useSelector(selectAllServices);
 
   const formatDate = (dateString: string) => {
     try {
@@ -67,6 +73,11 @@ export const SearchOverlay = ({
     // Search Employees
     if (canViewEmployees) {
       employees.forEach((e: Employee) => {
+        // Scope Filtering
+        if (rbacService.isRH(user) && e.companyId !== user?.companyId) return;
+        if (rbacService.isManager(user) && e.teamId !== user?.teamId) return;
+        if (rbacService.isEmployee(user) && e.companyId !== user?.companyId) return; // Employee sees own company
+
         const name = e.name || '';
         const email = e.email || '';
         if (
@@ -85,8 +96,15 @@ export const SearchOverlay = ({
     }
 
     // Search Teams
+    const canViewAllTeams = rbacService.isAdmin(user) || rbacService.isRH(user);
+    const canViewMyTeam = rbacService.isManager(user) || rbacService.isEmployee(user);
+
     if (canViewTeams) {
       teams.forEach((tm: Team) => {
+        // Scope Filtering
+        if (rbacService.isRH(user) && tm.companyId !== user?.companyId) return;
+        if (canViewMyTeam && tm.id !== user?.teamId) return;
+
         const teamName = tm.name || '';
         if (teamName.toLowerCase().includes(lowerQuery)) {
           searchResults.push({
@@ -117,6 +135,47 @@ export const SearchOverlay = ({
       }
     });
 
+    // Search Companies
+    if (rbacService.hasPermission(user, Permission.MANAGE_COMPANY)) {
+      companies.forEach((c: any) => {
+        if (c.name.toLowerCase().includes(lowerQuery)) {
+          searchResults.push({
+            id: String(c.id),
+            title: c.name,
+            subtitle: c.country || '',
+            type: 'company',
+            originalItem: c,
+          });
+        }
+      });
+    }
+
+    // Search Departments & Services
+    if (rbacService.hasPermission(user, Permission.MANAGE_SETTINGS)) {
+      departments.forEach((d: any) => {
+        if (d.name.toLowerCase().includes(lowerQuery)) {
+          searchResults.push({
+            id: String(d.id),
+            title: d.name,
+            subtitle: t('navigation.departments'),
+            type: 'department',
+            originalItem: d,
+          });
+        }
+      });
+      services.forEach((s: any) => {
+        if (s.name.toLowerCase().includes(lowerQuery)) {
+          searchResults.push({
+            id: String(s.id),
+            title: s.name,
+            subtitle: t('navigation.services'),
+            type: 'service',
+            originalItem: s,
+          });
+        }
+      });
+    }
+
     return searchResults;
   }, [query, employees, teams, announcements]);
 
@@ -128,6 +187,12 @@ export const SearchOverlay = ({
         return '🤝';
       case 'announcement':
         return '📢';
+      case 'company':
+        return '🏢';
+      case 'department':
+        return '🏛️';
+      case 'service':
+        return '⚙️';
       default:
         return '🔍';
     }

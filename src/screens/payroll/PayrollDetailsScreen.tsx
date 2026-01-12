@@ -90,9 +90,11 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
     const vouchers =
       cleanAmount(payroll.mealVouchers) + cleanAmount(payroll.giftVouchers);
 
-    const gross = baseSalary + bonus + vouchers;
+    const overtime = (payroll.overtimeHours || 0) * (payroll.overtimeRate || 0);
 
-    // Dummy deduction (e.g., 20% for social charges)
+    const gross = baseSalary + bonus + vouchers + overtime;
+
+    // Dummy deduction (e.g., 22% for social charges)
     const deductions = gross * 0.22;
     const net = gross - deductions;
 
@@ -100,6 +102,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
       base: baseSalary,
       bonus,
       vouchers,
+      overtime,
       earnings: gross,
       deductions,
       net,
@@ -175,11 +178,10 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
               <Text style={styles.infoValue}>
                 {payroll.month && payroll.year
                   ? `${new Date(
-                      0,
-                      (parseInt(payroll.month) || 1) - 1,
-                    ).toLocaleString(undefined, { month: 'long' })} ${
-                      payroll.year
-                    }`
+                    0,
+                    (parseInt(payroll.month) || 1) - 1,
+                  ).toLocaleString(undefined, { month: 'long' })} ${payroll.year
+                  }`
                   : '-'}
               </Text>
               <Text style={styles.infoLabel}>
@@ -215,6 +217,10 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
               {renderEarningRow(
                 t('payroll.giftVouchers'),
                 cleanAmount(payroll.giftVouchers),
+              )}
+              {renderEarningRow(
+                t('payroll.overtime'),
+                totals.overtime || 0,
               )}
 
               <View style={[styles.tableRow, styles.totalRow]}>

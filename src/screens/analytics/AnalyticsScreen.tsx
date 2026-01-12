@@ -50,11 +50,22 @@ export const AnalyticsScreen = () => {
 
   const loadAnalytics = async () => {
     try {
-      const [data, adherence, leaves] = await Promise.all([
-        analyticsService.getAnalytics(),
-        analyticsService.getPayrollAdherence(),
-        analyticsService.getUpcomingLeavesChart(),
-      ]);
+      let data, adherence, leaves;
+
+      if (user?.role === 'employee') {
+        [data, adherence] = await Promise.all([
+          analyticsService.getPersonalAnalytics(user.employeeId!),
+          analyticsService.getPayrollAdherence(), // We might want a personal adherence but history filter is complex
+          // For employees, we don't show the "Upcoming Leaves" bar chart of the whole company
+        ]);
+        leaves = { labels: [], data: [] };
+      } else {
+        [data, adherence, leaves] = await Promise.all([
+          analyticsService.getAnalytics(),
+          analyticsService.getPayrollAdherence(),
+          analyticsService.getUpcomingLeavesChart(),
+        ]);
+      }
 
       setAnalytics(data);
       setAdherenceChart(adherence);
@@ -157,8 +168,8 @@ export const AnalyticsScreen = () => {
           </View>
         )}
 
-        {/* Upcoming Leaves Chart */}
-        {leavesChart && leavesChart.data.some(val => val > 0) && (
+        {/* Upcoming Leaves Chart (Admin/RH/Manager Only) */}
+        {user?.role !== 'employee' && leavesChart && leavesChart.data.some(val => val > 0) && (
           <View style={styles.chartSection}>
             <Text style={styles.chartTitle}>
               {t('analytics.upcomingLeavesChart')}
@@ -183,9 +194,11 @@ export const AnalyticsScreen = () => {
           </View>
         )}
 
-        {/* HR Insights */}
+        {/* HR Insights (Personalized for employees) */}
         <View style={styles.insightsSection}>
-          <Text style={styles.sectionTitle}>{t('analytics.hrInsights')}</Text>
+          <Text style={styles.sectionTitle}>
+            {user?.role === 'employee' ? t('analytics.personalInsights') || 'Mes Insights' : t('analytics.hrInsights')}
+          </Text>
 
           {analytics.payrollAdherence >= 90 && (
             <View style={[styles.insightCard, styles.insightGood]}>
@@ -209,13 +222,24 @@ export const AnalyticsScreen = () => {
             </View>
           )}
 
-          {analytics.upcomingLeaves > 0 && (
+          {user?.role !== 'employee' && analytics.upcomingLeaves > 0 && (
             <View style={[styles.insightCard, styles.insightInfo]}>
               <Text style={styles.insightEmoji}>📅</Text>
               <Text style={styles.insightText}>
                 {t('analytics.upcomingLeavesInsight', {
                   count: analytics.upcomingLeaves,
                 })}
+              </Text>
+            </View>
+          )}
+
+          {user?.role === 'employee' && analytics.upcomingLeaves > 0 && (
+            <View style={[styles.insightCard, styles.insightInfo]}>
+              <Text style={styles.insightEmoji}>🏖️</Text>
+              <Text style={styles.insightText}>
+                {t('analytics.myUpcomingLeavesInsight', {
+                  count: analytics.upcomingLeaves,
+                }) || `Vous avez ${analytics.upcomingLeaves} congés à venir.`}
               </Text>
             </View>
           )}

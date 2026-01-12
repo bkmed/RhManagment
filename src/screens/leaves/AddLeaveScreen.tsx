@@ -11,7 +11,9 @@ import {
   TouchableOpacity,
   Switch,
   Platform,
+  Image, // Added Image import
 } from 'react-native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker'; // Added image picker imports
 import { useTranslation } from 'react-i18next';
 import { leavesDb } from '../../database/leavesDb';
 import { Leave } from '../../database/schema';
@@ -24,6 +26,7 @@ import { Theme } from '../../theme';
 import { DateTimePickerField } from '../../components/DateTimePickerField';
 import { CalendarButton } from '../../components/CalendarButton';
 import { Dropdown } from '../../components/Dropdown';
+import { useModal } from '../../context/ModalContext'; // Added useModal import
 import { useSelector } from 'react-redux';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
@@ -44,6 +47,7 @@ export const AddLeaveScreen = ({
   const { showToast } = useToast();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { showModal } = useModal(); // Added useModal hook
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const params = route.params as
@@ -65,9 +69,9 @@ export const AddLeaveScreen = ({
   const [type, setType] = useState<
     'leave' | 'sick_leave' | 'carer_leave' | 'permission' | 'authorization'
   >('leave');
-  const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>(
-    'pending',
-  );
+  const [status, setStatus] = useState<'pending' | 'approved' | 'declined'>('pending');
+  const [photoUri, setPhotoUri] = useState<string | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [department, setDepartment] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
@@ -138,6 +142,55 @@ export const AddLeaveScreen = ({
     if (isEdit) loadLeave();
   }, [leaveId]);
 
+  const handleTakePhoto = () => {
+    if (Platform.OS === 'web') {
+      const input = (window as any).document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e: any) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event: any) => setPhotoUri(event.target.result);
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+      return;
+    }
+
+    showModal({
+      title: t('illnesses.addPhoto'),
+      message: t('illnesses.chooseOption'),
+      buttons: [
+        {
+          text: t('illnesses.takePhoto'),
+          onPress: () => {
+            launchCamera({ mediaType: 'photo', quality: 0.8 }, response => {
+              if (response.assets && response.assets[0]?.uri) {
+                setPhotoUri(response.assets[0].uri);
+              }
+            });
+          },
+        },
+        {
+          text: t('illnesses.chooseFromLibrary'),
+          onPress: () => {
+            launchImageLibrary(
+              { mediaType: 'photo', quality: 0.8 },
+              response => {
+                if (response.assets && response.assets[0]?.uri) {
+                  setPhotoUri(response.assets[0].uri);
+                }
+              },
+            );
+          },
+        },
+        { text: t('common.cancel'), style: 'cancel' },
+      ],
+    });
+  };
+
   const loadLeave = async () => {
     if (!leaveId) return;
     try {
@@ -160,6 +213,7 @@ export const AddLeaveScreen = ({
         setType(leave.type || 'leave');
         setStatus(leave.status || 'pending');
         setDepartment(leave.department || '');
+        setPhotoUri(leave.photoUri || undefined); // Added photoUri load
       }
     } catch {
       notificationService.showAlert(t('common.error'), t('leaves.loadError'));
@@ -280,6 +334,7 @@ export const AddLeaveScreen = ({
         department: selectedEmp?.department || department,
         companyId: selectedEmp?.companyId || companyId,
         teamId: selectedEmp?.teamId || teamId,
+        photoUri: photoUri || undefined, // Added photoUri to leaveData
       };
 
       let id: number;
@@ -551,6 +606,26 @@ export const AddLeaveScreen = ({
               )}
             </View>
 
+            {type === 'sick_leave' && (
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>{t('illnesses.addPhoto')}</Text>
+                <TouchableOpacity
+                  style={styles.photoButton}
+                  onPress={handleTakePhoto}
+                >
+                  {photoUri ? (
+                    <Image source={{ uri: photoUri }} style={styles.photo} />
+                  ) : (
+                    <View style={styles.photoPlaceholder}>
+                      <Text style={styles.photoPlaceholderText}>
+                        {t('illnesses.photoButton')}
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
+
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>{t('leaves.cause') || 'Cause'}</Text>
               <TextInput
@@ -740,9 +815,30 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
     },
+    photoButton: { alignItems: 'center', marginBottom: theme.spacing.l },
+    photo: { width: 150, height: 100, borderRadius: theme.spacing.s },
+    photoPlaceholder: {
+      width: 150,
+      height: 100,
+      borderRadius: theme.spacing.s,
+      backgroundColor: theme.colors.surface,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: theme.colors.primary,
+      borderStyle: 'dashed',
+    },
+    photoPlaceholderText: {
+      ...theme.textVariants.body,
+      color: theme.colors.primary,
+      textAlign: 'center',
+      fontSize: 12,
+      padding: 4,
+    },
     captionText: {
       ...theme.textVariants.caption,
       color: theme.colors.subText,
+      marginTop: 2,
     },
     divider: {
       height: 1,

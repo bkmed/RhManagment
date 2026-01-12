@@ -74,7 +74,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
     if (activeTab === 'mine') {
       data = data.filter(ill => ill.employeeId === user?.employeeId);
     } else {
-      if (user?.role === 'chef_dequipe') {
+      if (user?.role === 'manager') {
         const teamMembers = employees
           .filter(e => e.teamId === user?.teamId)
           .map(e => e.id);
@@ -228,7 +228,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
 
         {(user?.role === 'admin' ||
           user?.role === 'rh' ||
-          user?.role === 'chef_dequipe') && (
+          user?.role === 'manager') && (
           <View style={styles.tabContainer}>
             <TouchableOpacity
               style={[styles.tab, activeTab === 'mine' && styles.activeTab]}
@@ -253,7 +253,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
                   activeTab === 'all' && styles.activeTabText,
                 ]}
               >
-                {user?.role === 'chef_dequipe'
+                {user?.role === 'manager'
                   ? t('illnesses.teamIllnesses')
                   : t('illnesses.allIllnesses')}
               </Text>

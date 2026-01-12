@@ -4,8 +4,8 @@ import { Employee } from '../database/schema';
 const AUTH_KEY = 'auth_session';
 const USERS_KEY = 'auth_users';
 
-export type UserRole = 'admin' | 'employee' | 'rh' | 'chef_dequipe';
-export const ROLES: UserRole[] = ['admin', 'employee', 'rh', 'chef_dequipe'];
+export type UserRole = 'admin' | 'employee' | 'rh' | 'manager';
+export const ROLES: UserRole[] = ['admin', 'employee', 'rh', 'manager'];
 
 export interface User {
   id: string;
@@ -95,7 +95,7 @@ export const authService = {
           id: 'demo-manager',
           name: 'Demo Manager',
           email: 'chef@demo.com',
-          role: 'chef_dequipe',
+          role: 'manager',
           department: 'IT',
           teamId: 1,
           vacationDaysPerYear: 25,
@@ -348,7 +348,7 @@ const seedDemoData = async () => {
     const mgrId = await employeesDb.add({
       name: `Manager Team ${i + 1}`,
       email: finalEmail,
-      role: 'chef_dequipe',
+      role: 'manager',
       teamId: teamId,
       companyId: i < 4 ? company1Id : company2Id,
       department: i < 4 ? 'IT' : 'Operations',

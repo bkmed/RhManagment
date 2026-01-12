@@ -16,6 +16,7 @@ import { Theme } from '../../theme';
 import { formatDateTime } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { rbacService, Permission } from '../../services/rbacService';
 
 export const ClaimDetailsScreen = ({ route }: any) => {
   const { user } = useAuth();
@@ -77,8 +78,7 @@ export const ClaimDetailsScreen = ({ route }: any) => {
             <View style={styles.typeTag}>
               <Text style={styles.typeText}>
                 {t(
-                  `claims.type${
-                    claim.type.charAt(0).toUpperCase() + claim.type.slice(1)
+                  `claims.type${claim.type.charAt(0).toUpperCase() + claim.type.slice(1)
                   }`,
                 )}
               </Text>
@@ -107,8 +107,7 @@ export const ClaimDetailsScreen = ({ route }: any) => {
               ]}
             >
               {t(
-                `claims.status${
-                  claim.status.charAt(0).toUpperCase() + claim.status.slice(1)
+                `claims.status${claim.status.charAt(0).toUpperCase() + claim.status.slice(1)
                 }`,
               )}
             </Text>
@@ -137,21 +136,29 @@ export const ClaimDetailsScreen = ({ route }: any) => {
           </View>
         )}
 
-        {(user?.role === 'admin' || user?.role === 'rh') &&
+        {rbacService.hasPermission(user, Permission.APPROVE_CLAIMS) &&
           claim.status === 'pending' && (
             <View style={styles.adminActions}>
-              <TouchableOpacity
-                style={[styles.button, styles.approveButton]}
-                onPress={() => handleUpdateStatus('processed')}
-              >
-                <Text style={styles.buttonText}>{t('claims.process')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.rejectButton]}
-                onPress={() => handleUpdateStatus('rejected')}
-              >
-                <Text style={styles.buttonText}>{t('claims.reject')}</Text>
-              </TouchableOpacity>
+              {claim.employeeId === user?.employeeId ? (
+                <Text style={styles.ownRequestText}>
+                  {t('claims.cannotApproveOwn') || 'Cannot approve own request'}
+                </Text>
+              ) : (
+                <>
+                  <TouchableOpacity
+                    style={[styles.button, styles.approveButton]}
+                    onPress={() => handleUpdateStatus('processed')}
+                  >
+                    <Text style={styles.buttonText}>{t('claims.process')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.button, styles.rejectButton]}
+                    onPress={() => handleUpdateStatus('rejected')}
+                  >
+                    <Text style={styles.buttonText}>{t('claims.reject')}</Text>
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
           )}
       </ScrollView>
@@ -284,6 +291,13 @@ const createStyles = (theme: Theme) =>
       width: '100%',
       height: 350,
       borderRadius: 16,
+      marginTop: theme.spacing.m,
+    },
+    ownRequestText: {
+      color: theme.colors.subText,
+      fontStyle: 'italic',
+      textAlign: 'center',
+      flex: 1,
       marginTop: theme.spacing.m,
     },
   });

@@ -5,6 +5,7 @@ export enum Role {
     RH = 'rh',
     MANAGER = 'manager',
     EMPLOYEE = 'employee',
+    UNDEFINED = 'undefined',
 }
 
 export enum Permission {
@@ -26,6 +27,7 @@ export enum Permission {
     MANAGE_SETTINGS = 'manage_settings',
     MANAGE_COMPANY = 'manage_company',
     MANAGE_TEAMS = 'manage_teams',
+    MANAGE_INVOICES = 'manage_invoices',
 }
 
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
@@ -39,6 +41,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
         Permission.APPROVE_LEAVES,
         Permission.MANAGE_SETTINGS,
         Permission.MANAGE_PAYROLL,
+        Permission.MANAGE_INVOICES,
     ],
     [Role.RH]: [
         Permission.VIEW_EMPLOYEES,
@@ -50,6 +53,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
         Permission.APPROVE_LEAVES,
         Permission.APPROVE_CLAIMS,
         Permission.MANAGE_TEAMS,
+        Permission.MANAGE_INVOICES,
     ],
     [Role.MANAGER]: [
         Permission.VIEW_EMPLOYEES, // Can restrict to own team in logic
@@ -59,6 +63,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     [Role.EMPLOYEE]: [
         // Basic employee permissions are mostly handled by "isMe" checks or public routes
     ],
+    [Role.UNDEFINED]: [],
 };
 
 class RbacService {
@@ -79,14 +84,14 @@ class RbacService {
      * Get valid Role enum from user object
      */
     getUserRole(user: User): Role {
-        if (!user || !user.role) return Role.EMPLOYEE;
+        if (!user || !user.role) return Role.UNDEFINED;
 
         const roleStr = user.role.toLowerCase();
         if (Object.values(Role).includes(roleStr as Role)) {
             return roleStr as Role;
         }
 
-        return Role.EMPLOYEE;
+        return Role.UNDEFINED;
     }
 
     /**

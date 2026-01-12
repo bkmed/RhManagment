@@ -771,7 +771,7 @@
   },
   "roles": {
     "admin": "管理员",
-    "chef_dequipe": "团队负责人",
+    "manager": "团队负责人",
     "employee": "员工",
     "rh": "人力资源",
     "undefined": "未定义角色"

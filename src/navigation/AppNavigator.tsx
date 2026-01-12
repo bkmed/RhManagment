@@ -10,7 +10,8 @@ import {
   ScrollView,
 } from 'react-native';
 import { enableScreens } from 'react-native-screens';
-import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions, useNavigationContainerRef, DefaultTheme } from '@react-navigation/native';
+import notifee, { EventType } from '@notifee/react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   createDrawerNavigator,
@@ -598,7 +599,10 @@ const useNavigationSections = () => {
     const sections = [
       {
         title: t('sections.general'),
-        items: [{ key: 'Home', label: t('navigation.home'), icon: '🏠' }],
+        items: [
+          { key: 'Home', label: t('navigation.home'), icon: '🏠' },
+          ...(rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) ? [{ key: 'Analytics', label: t('navigation.analytics'), icon: '📊' }] : []),
+        ],
       },
       {
         title: t('sections.management'),
@@ -606,11 +610,8 @@ const useNavigationSections = () => {
           { key: 'Payroll', label: t('navigation.payroll'), icon: '💰' },
           { key: 'Leaves', label: t('navigation.leaves'), icon: '🏖️' },
           { key: 'Claims', label: t('navigation.claims'), icon: '📝' },
-          // Invoices might be restricted to Admin/RH/Manager? For now keeping as is or adding check.
-          // Assuming Invoices is generic for now or strictly for expenses.
-          { key: 'Invoices', label: t('invoices.title'), icon: '🧾' },
+          ...(rbacService.hasPermission(user, Permission.MANAGE_INVOICES) ? [{ key: 'Invoices', label: t('invoices.title'), icon: '🧾' }] : []),
           { key: 'Remote', label: t('remote.title'), icon: '📅' },
-          { key: 'Illnesses', label: t('navigation.illnesses'), icon: '🏥' },
         ],
       },
     ];
@@ -656,15 +657,7 @@ const useNavigationSections = () => {
       });
     }
 
-    // Analytics: Managers, RH, Admin
-    if (rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)) {
-      sections.push({
-        title: t('sections.analytics'),
-        items: [
-          { key: 'Analytics', label: t('navigation.analytics'), icon: '📊' },
-        ],
-      });
-    }
+
 
     sections.push({
       title: t('sections.communication'),
@@ -722,12 +715,14 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     <View style={{ flex: 1, backgroundColor: theme.colors.surface }}>
       <View
         style={{
-          padding: 24,
-          paddingTop: 60,
+          padding: '8%',
+          paddingTop: Platform.OS === 'ios' ? 60 : 40,
           backgroundColor: theme.colors.primary,
           borderBottomLeftRadius: 24,
           borderBottomRightRadius: 24,
           marginBottom: 12,
+          minHeight: 180,
+          justifyContent: 'center',
           ...theme.shadows.medium,
           ...(themeMode === 'premium' && {
             borderBottomWidth: 1,
@@ -764,7 +759,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             fontSize: 14,
           }}
         >
-          {t(`roles.${user?.role}`)}
+          {t(`roles.${user?.role || 'undefined'}`)}
         </Text>
       </View>
 
@@ -861,7 +856,6 @@ const DrawerNavigator = () => {
         <Drawer.Screen name="Analytics" component={AnalyticsStack} />
       )}
 
-      <Drawer.Screen name="Illnesses" component={IllnessesStack} />
 
       {/* Employees: VIEW_EMPLOYEES */}
       {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && (
@@ -950,9 +944,17 @@ const WebNavigator = () => {
         id: Number(result.id),
       });
     } else if (result.type === 'team') {
-      contextValue.setActiveTab('Teams');
+      contextValue.setActiveTab('Teams', '', { teamId: Number(result.id) });
     } else if (result.type === 'announcement') {
-      setActiveTab('Announcements');
+      contextValue.setActiveTab('Announcements');
+    } else if (result.type === 'company') {
+      contextValue.setActiveTab('Companies', '', { companyId: Number(result.id) });
+    } else if (result.type === 'department' || result.type === 'service') {
+      contextValue.setActiveTab('CompanySettings', result.type === 'department' ? 'Departments' : 'Services');
+    } else if (result.type === 'invoice') {
+      contextValue.setActiveTab('Invoices', '', { invoiceId: Number(result.id) });
+    } else if (result.type === 'payroll') {
+      contextValue.setActiveTab('Payroll', 'PayrollDetails', { id: Number(result.id) });
     }
   };
   const getActiveComponent = () => {
@@ -1004,26 +1006,6 @@ const WebNavigator = () => {
         if (subScreen === 'PerformanceReview')
           return <PerformanceReviewScreen />;
         return <AnalyticsStack />;
-      case 'Illnesses':
-        if (subScreen === 'AddIllness')
-          return (
-            <AddIllnessScreen route={mockRoute} navigation={mockNavigation} />
-          );
-        if (subScreen === 'IllnessDetails')
-          return (
-            <IllnessDetailsScreen
-              route={mockRoute}
-              navigation={mockNavigation}
-            />
-          );
-        if (subScreen === 'IllnessHistory')
-          return (
-            <IllnessHistoryScreen
-              route={mockRoute}
-              navigation={mockNavigation}
-            />
-          );
-        return <IllnessesStack />;
       case 'Employees':
         if (!rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)) return <HomeStack />;
         if (subScreen === 'AddEmployee')
@@ -1479,51 +1461,91 @@ const WebNavigator = () => {
 
 // ======= Root Export =======
 export const AppNavigator = () => {
-  const linking: LinkingOptions<any> = {
-    prefixes: [
-      'http://localhost:8080',
-      'rhmanagement://',
-      'https://bkmed.github.io/RhManagement/',
-    ],
-    config: { screens: {} },
+  const { user, isLoading, signOut } = useAuth();
+  const navigationRef = useNavigationContainerRef();
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+
+  const navigationTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: theme.colors.background,
+      primary: theme.colors.primary,
+      card: theme.colors.surface,
+      text: theme.colors.text,
+      border: theme.colors.border,
+      notification: theme.colors.primary,
+    },
   };
 
-  return (
-    <AuthProvider>
-      <NavigationContainer
-        linking={linking}
-        onStateChange={() => {
-          sessionService.updateLastActivity();
-        }}
-      >
-        <AppContent />
-      </NavigationContainer>
-    </AuthProvider>
-  );
-};
+  React.useEffect(() => {
+    if (Platform.OS === 'web') return;
 
-const AppContent = () => {
-  const { t } = useTranslation();
-  const { user, isLoading } = useAuth();
+    // Handles foreground events
+    const unsubscribe = notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS && detail.notification?.data) {
+        const data = detail.notification.data;
+        if (data.type === 'leave' && data.leaveId) {
+          (navigationRef.current as any)?.navigate('Main', {
+            screen: 'LeavesTab',
+            params: { screen: 'LeaveDetails', params: { leaveId: parseInt(data.leaveId as string) } }
+          });
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>{t('common.loading')}</Text>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (user && user.status && user.status !== 'active') {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#FFF', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <Text style={{ fontSize: 24, marginBottom: 16 }}>🚫</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8, textAlign: 'center' }}>
+          {user.status === 'pending' ? 'Account Pending' : 'Account Rejected'}
+        </Text>
+        <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 24 }}>
+          {user.status === 'pending'
+            ? 'Your account is currently under review by the HR department. Please check back later.'
+            : 'Your account access has been restricted. Please contact your manager.'}
+        </Text>
+        <TouchableOpacity
+          style={{ backgroundColor: '#007AFF', padding: 12, borderRadius: 8 }}
+          onPress={() => signOut()}
+        >
+          <Text style={{ color: '#FFF', fontWeight: 'bold' }}>{t('common.logout')}</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <>
-      {!user ? (
-        <AuthStack />
-      ) : Platform.OS === 'web' ? (
-        <WebNavigator />
+    <NavigationContainer
+      ref={navigationRef}
+      theme={navigationTheme}
+      onStateChange={() => {
+        sessionService.updateLastActivity();
+      }}
+    >
+      {user ? (
+        Platform.OS === 'web' ? (
+          <WebNavigator />
+        ) : (
+          <DrawerNavigator />
+        )
       ) : (
-        <DrawerNavigator />
+        <AuthStack />
       )}
-    </>
+    </NavigationContainer>
   );
 };
 

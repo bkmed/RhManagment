@@ -132,6 +132,9 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
           <Text style={styles.amount}>
             {payroll.amount} {payroll.currency || '€'}
           </Text>
+          {payroll.employeeName && (
+            <Text style={styles.employeeNameText}>{payroll.employeeName}</Text>
+          )}
         </View>
       </View>
 
@@ -153,17 +156,15 @@ export const PayrollCard: React.FC<PayrollCardProps> = ({
             </Text>
           </View>
         )}
-        {payroll.bonusAmount && payroll.bonusType !== 'none' && (
+        {payroll.overtimeHours ? (
           <View style={styles.benefitItem}>
-            <Text style={styles.benefitIcon}>💰</Text>
+            <Text style={styles.benefitIcon}>🕒</Text>
             <Text style={styles.benefitText}>
-              {payroll.bonusType === '13th_month'
-                ? t('payroll.thirtheenthMonth')
-                : t('payroll.performanceBonus')}
-              : {payroll.bonusAmount} {payroll.currency || '€'}
+              {t('payroll.overtime')}: {payroll.overtimeHours}h
+              {payroll.overtimeRate ? ` @ ${payroll.overtimeRate}${payroll.currency || '€'}/h` : ''}
             </Text>
           </View>
-        )}
+        ) : null}
       </View>
     </TouchableOpacity>
   );
@@ -246,6 +247,12 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.primary,
       fontSize: 22,
       fontWeight: 'bold',
+    },
+    employeeNameText: {
+      ...theme.textVariants.caption,
+      color: theme.colors.subText,
+      fontSize: 12,
+      marginTop: 2,
     },
     benefitsRow: {
       flexDirection: 'row',

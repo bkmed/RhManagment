@@ -63,36 +63,72 @@ export const MenuCustomizationScreen = ({ navigation }: any) => {
         }
     };
 
-    const renderItem = ({ item }: { item: { key: string, category: string } }) => {
-        // Basic check: if item requires specific permission, we probably shouldn't even show it here 
-        // OR we show it but standard RBAC will hide it anyway.
-        // For simplicity, we just let users toggle what they want.
+    const moveItem = async (key: string, direction: 'up' | 'down') => {
+        const currentOrder = preferences.customOrder && preferences.customOrder.length > 0
+            ? preferences.customOrder
+            : AVAILABLE_MENU_ITEMS.map(i => i.key);
 
+        const index = currentOrder.indexOf(key);
+        if (index === -1) return;
+
+        const newOrder = [...currentOrder];
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+
+        if (newIndex < 0 || newIndex >= newOrder.length) return;
+
+        [newOrder[index], newOrder[newIndex]] = [newOrder[newIndex], newOrder[index]];
+
+        try {
+            await menuPreferencesService.reorderItems(newOrder);
+            setPreferences(prev => ({ ...prev, customOrder: newOrder }));
+        } catch (error) {
+            console.error(error);
+            notificationService.showToast(t('common.error'), 'error');
+        }
+    };
+
+    const renderItem = ({ item, index }: { item: { key: string, category: string }, index: number }) => {
         const isHidden = preferences.hiddenItems.includes(item.key);
         const label = t(`navigation.${item.key.toLowerCase()}`) || t(`${item.key.toLowerCase()}.title`) || item.key;
 
         return (
             <View style={styles.row}>
-                <View>
+                <View style={{ flex: 1 }}>
                     <Text style={styles.itemLabel}>{label}</Text>
                     <Text style={styles.itemCategory}>{t(`sections.${item.category}`)}</Text>
                 </View>
-                <Switch
-                    value={!isHidden}
-                    onValueChange={() => toggleItem(item.key)}
-                    trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-                />
+                <View style={styles.actions}>
+                    <TouchableOpacity
+                        onPress={() => moveItem(item.key, 'up')}
+                        disabled={index === 0}
+                        style={[styles.moveButton, index === 0 && styles.disabledButton]}
+                    >
+                        <Text style={styles.moveButtonText}>↑</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => moveItem(item.key, 'down')}
+                        disabled={index === groupedItems.length - 1}
+                        style={[styles.moveButton, index === groupedItems.length - 1 && styles.disabledButton]}
+                    >
+                        <Text style={styles.moveButtonText}>↓</Text>
+                    </TouchableOpacity>
+                    <Switch
+                        value={!isHidden}
+                        onValueChange={() => toggleItem(item.key)}
+                        trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+                    />
+                </View>
             </View>
         );
     };
 
-    const groupedItems = Object.values(
-        AVAILABLE_MENU_ITEMS.reduce((acc, item) => {
-            if (!acc[item.category]) acc[item.category] = [];
-            acc[item.category].push(item);
-            return acc;
-        }, {} as any)
-    ).flat() as { key: string, category: string }[];
+    const groupedItems = useMemo(() => {
+        const order = preferences.customOrder && preferences.customOrder.length > 0
+            ? preferences.customOrder
+            : AVAILABLE_MENU_ITEMS.map(i => i.key);
+
+        return order.map(key => AVAILABLE_MENU_ITEMS.find(i => i.key === key)).filter(Boolean) as { key: string, category: string }[];
+    }, [preferences.customOrder]);
 
     return (
         <View style={styles.container}>
@@ -147,5 +183,28 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     separator: {
         height: 1,
         backgroundColor: theme.colors.border
+    },
+    actions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: theme.spacing.s
+    },
+    moveButton: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: theme.colors.background,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    moveButtonText: {
+        fontSize: 16,
+        color: theme.colors.primary,
+        fontWeight: 'bold'
+    },
+    disabledButton: {
+        opacity: 0.3
     }
 });

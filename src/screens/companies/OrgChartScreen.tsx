@@ -28,7 +28,7 @@ export const OrgChartScreen = () => {
     if (!admin) return null;
 
     const managers = employees.filter(
-      (e: Employee) => e.role === 'chef_dequipe',
+      (e: Employee) => e.role === 'manager',
     );
 
     return {
@@ -79,7 +79,7 @@ export const OrgChartScreen = () => {
               <Text style={styles.position}>
                 {emp.position || t(`roles.${emp.role}`)}
               </Text>
-              {emp.role === 'chef_dequipe' && (
+              {emp.role === 'manager' && (
                 <Text style={styles.supervisionCount}>
                   👥 {getSupervisedCount(emp.id)} {t('teams.supervised')}
                 </Text>

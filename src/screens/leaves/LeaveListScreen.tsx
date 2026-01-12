@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { useFocusEffect, ParamListBase } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -12,29 +13,30 @@ import { leavesDb } from '../../database/leavesDb';
 import { employeesDb } from '../../database/employeesDb';
 import { companiesDb } from '../../database/companiesDb';
 import { teamsDb } from '../../database/teamsDb';
-import { Leave, Employee, Company, Team } from '../../database/schema';
+import { Leave, Employee, Company, Team, Illness } from '../../database/schema';
+import { illnessesDb } from '../../database/illnessesDb';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SearchInput } from '../../components/SearchInput';
+import { formatDate } from '../../utils/dateUtils';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 interface TeamGroup {
   id: number | string;
   name: string;
   managerName: string;
-  items: Leave[];
+  items: (Leave | Illness)[];
 }
 
 interface CompanyGroup {
   id: number | string;
   name: string;
   teams: TeamGroup[];
-  items: Leave[];
+  items: (Leave | Illness)[];
   type?: string;
 }
-import { SearchInput } from '../../components/SearchInput';
-import { formatDate } from '../../utils/dateUtils';
-import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
 
 export const LeaveListScreen = ({
   navigation,
@@ -47,7 +49,7 @@ export const LeaveListScreen = ({
   const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const [leaves, setLeaves] = useState<Leave[]>([]);
+  const [leaves, setLeaves] = useState<(Leave | Illness)[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -56,22 +58,51 @@ export const LeaveListScreen = ({
 
   const loadData = async () => {
     try {
-      const [leavesData, employeesData, companiesData, teamsData] =
+      const [leavesData, illnessesData, employeesData, companiesData, teamsData] =
         await Promise.all([
-          leavesDb.getUpcoming(),
+          leavesDb.getAll(),
+          illnessesDb.getAll(),
           employeesDb.getAll(),
           companiesDb.getAll(),
           teamsDb.getAll(),
         ]);
 
-      let filteredLeaves = leavesData;
+      // Normalize illnesses to look like leaves for the list display
+      const normalizedIllnesses = illnessesData.map(i => ({
+        ...i,
+        title: i.payrollName || t('leaveTypes.sick_leave'),
+        startDate: i.issueDate,
+        endDate: i.expiryDate,
+        type: 'sick_leave' as const,
+        dateTime: i.issueDate,
+        status: 'approved' // Illnesses are usually auto-approved or handled differently
+      }));
+
+      const allAbsences = [...leavesData, ...normalizedIllnesses];
+      let filteredAbsences = allAbsences;
+
+      // Apply Visibility Rules based on Role
       if (user?.role === 'employee' && user?.employeeId) {
-        filteredLeaves = leavesData.filter(
-          leave => leave.employeeId === user.employeeId,
+        filteredAbsences = allAbsences.filter(
+          a => (a as any).employeeId === user.employeeId,
+        );
+      } else if (user?.role === 'manager' && user?.teamId) {
+        // Manager sees own + team members
+        filteredAbsences = allAbsences.filter(
+          a => (a as any).employeeId === user.employeeId || (a as any).teamId === user.teamId
+        );
+      } else if (user?.role === 'rh' && user?.companyId) {
+        // HR sees own + company members
+        filteredAbsences = allAbsences.filter(
+          a => (a as any).employeeId === user.employeeId || (a as any).companyId === user.companyId
         );
       }
+      // Admin sees everything (filteredAbsences = allAbsences)
 
-      setLeaves(filteredLeaves);
+      // Sort by date desc
+      filteredAbsences.sort((a, b) => new Date((b as any).startDate || (b as any).dateTime).getTime() - new Date((a as any).startDate || (a as any).dateTime).getTime());
+
+      setLeaves(filteredAbsences);
       setEmployees(employeesData);
       setCompanies(companiesData);
       setTeams(teamsData);
@@ -93,20 +124,20 @@ export const LeaveListScreen = ({
     const lowerQuery = searchQuery.toLowerCase();
     const filtered = leaves.filter(
       leave =>
-        leave.title.toLowerCase().includes(lowerQuery) ||
-        (leave.employeeName &&
-          leave.employeeName.toLowerCase().includes(lowerQuery)),
+        (leave as any).title?.toLowerCase().includes(lowerQuery) ||
+        ((leave as any).employeeName &&
+          (leave as any).employeeName.toLowerCase().includes(lowerQuery)),
     );
 
     if (user?.role !== 'admin' && user?.role !== 'rh') {
-      return [{ type: 'direct', items: filtered }];
+      return [{ type: 'direct', id: 'direct', name: 'direct', teams: [], items: filtered }];
     }
 
-    // Grouping logic for Admin
+    // Grouping logic for Admin/HR
     const companiesMap = new Map<number | string, any>();
 
     filtered.forEach(leave => {
-      const employee = employees.find(e => e.id === leave.employeeId);
+      const employee = employees.find(e => e.id === (leave as any).employeeId);
       const companyId = employee?.companyId || 'other';
       const teamId = employee?.teamId || 'other';
 
@@ -115,15 +146,15 @@ export const LeaveListScreen = ({
         companiesMap.set(companyId, {
           id: companyId,
           name: company?.name || 'Autres Entreprises',
-          teams: new Map(),
+          teamsMap: new Map(),
         });
       }
 
       const companyGroup = companiesMap.get(companyId);
-      if (!companyGroup.teams.has(teamId)) {
+      if (!companyGroup.teamsMap.has(teamId)) {
         const team = teams.find(t => t.id === teamId);
         const manager = employees.find(e => e.id === team?.managerId);
-        companyGroup.teams.set(teamId, {
+        companyGroup.teamsMap.set(teamId, {
           id: teamId,
           name: team?.name || t('common.noTeam'),
           managerName: manager?.name || t('common.na'),
@@ -131,32 +162,37 @@ export const LeaveListScreen = ({
         });
       }
 
-      companyGroup.teams.get(teamId).items.push(leave);
+      companyGroup.teamsMap.get(teamId).items.push(leave);
     });
 
-    // Convert Map to Array
+    // Convert Map to Array structure expected by UI
     return Array.from(companiesMap.values()).map(c => ({
       ...c,
-      teams: Array.from(c.teams.values()),
+      teams: Array.from(c.teamsMap.values()),
+      items: [] // In hierarchical mode, items are in teams
     }));
   }, [leaves, searchQuery, user?.role, employees, companies, teams]);
 
-  const renderLeave = (item: Leave) => {
-    const startStr = formatDate(item.startDate || item.dateTime);
+  const renderLeaveItem = (item: any) => {
+    const startStr = formatDate((item.startDate || item.dateTime) as string);
     const endStr = item.endDate ? formatDate(item.endDate) : null;
+    const isIllness = 'payrollName' in item;
+    const itemTitle = item.title || item.payrollName || t('leaveTypes.sick_leave');
 
     return (
       <TouchableOpacity
-        key={item.id}
+        key={`${isIllness ? 'ill' : 'leave'}-${item.id}`}
         style={styles.card}
         onPress={() =>
-          navigation.navigate('LeaveDetails', { leaveId: item.id })
+          isIllness
+            ? navigation.navigate('IllnessDetails', { illnessId: item.id })
+            : navigation.navigate('LeaveDetails', { leaveId: item.id })
         }
       >
         <View style={styles.dateColumn}>
           <Text style={styles.dateText}>{startStr}</Text>
           {endStr && endStr !== startStr && (
-            <Text style={styles.rangeDivider}>{t('common.to')}</Text>
+            <Text style={styles.captionText}>{t('common.to')}</Text>
           )}
           {endStr && endStr !== startStr && (
             <Text style={styles.dateText}>{endStr}</Text>
@@ -164,23 +200,23 @@ export const LeaveListScreen = ({
         </View>
 
         <View style={styles.detailsColumn}>
-          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.title}>{itemTitle}</Text>
           {item.employeeName && (
             <Text style={styles.employee}>{item.employeeName}</Text>
           )}
           <View
             style={[
               styles.statusBadge,
-              { backgroundColor: getStatusColor(item.status, theme) + '20' },
+              { backgroundColor: getStatusColor(item.status || 'approved', theme) + '20' },
             ]}
           >
             <Text
               style={[
                 styles.statusText,
-                { color: getStatusColor(item.status, theme) },
+                { color: getStatusColor(item.status || 'approved', theme) },
               ]}
             >
-              {t(`leaveStatus.${item.status}`)}
+              {isIllness ? t('leaveTypes.sick_leave') : t(`leaveStatus.${item.status}`)}
             </Text>
           </View>
         </View>
@@ -216,32 +252,29 @@ export const LeaveListScreen = ({
           </View>
         )}
 
-        {groupedData.map((companyGroup: CompanyGroup) => (
-          <View key={companyGroup.id} style={styles.companySection}>
-            {companyGroup.name !== 'direct' && (
+        {groupedData.map((group: any) => (
+          <View key={group.id} style={styles.companySection}>
+            {group.id !== 'direct' && (
               <View style={styles.companyHeader}>
-                <Text style={styles.companyName}>{companyGroup.name}</Text>
+                <Text style={styles.companyName}>{group.name}</Text>
               </View>
             )}
 
-            {(companyGroup.teams || []).map((teamGroup: any) => (
-              <View key={teamGroup.id} style={styles.teamSection}>
-                {teamGroup.name && (
-                  <View style={styles.teamHeader}>
-                    <View style={styles.teamInfo}>
-                      <Text style={styles.teamName}>{teamGroup.name}</Text>
-                      <Text style={styles.teamManager}>
-                        {t('roles.chef_dequipe')}: {teamGroup.managerName}
-                      </Text>
-                    </View>
+            {group.teams.map((team: any) => (
+              <View key={team.id} style={styles.teamSection}>
+                <View style={styles.teamHeader}>
+                  <View style={styles.teamInfo}>
+                    <Text style={styles.teamName}>{team.name}</Text>
+                    <Text style={styles.teamManager}>
+                      {t('roles.manager')}: {team.managerName}
+                    </Text>
                   </View>
-                )}
-                {teamGroup.items.map((leave: Leave) => renderLeave(leave))}
+                </View>
+                {team.items.map((item: any) => renderLeaveItem(item))}
               </View>
             ))}
 
-            {companyGroup.type === 'direct' &&
-              companyGroup.items.map((leave: Leave) => renderLeave(leave))}
+            {group.items && group.items.length > 0 && group.items.map((item: any) => renderLeaveItem(item))}
           </View>
         ))}
       </ScrollView>
@@ -295,16 +328,10 @@ const createStyles = (theme: Theme) =>
       fontWeight: '600',
       color: theme.colors.text,
     },
-    timeText: {
-      ...theme.textVariants.body,
-      color: theme.colors.primary,
-      fontWeight: 'bold',
-      marginTop: 2,
-    },
-    rangeDivider: {
+    captionText: {
       ...theme.textVariants.caption,
       color: theme.colors.subText,
-      marginVertical: 2,
+      marginTop: 2,
       fontSize: 10,
     },
     detailsColumn: {
@@ -320,10 +347,6 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.subText,
       marginBottom: 4,
     },
-    location: {
-      ...theme.textVariants.caption,
-      color: theme.colors.subText,
-    },
     emptyContainer: {
       flex: 1,
       justifyContent: 'center',
@@ -334,10 +357,6 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.subheader,
       color: theme.colors.subText,
       marginBottom: theme.spacing.s,
-    },
-    emptySubText: {
-      ...theme.textVariants.body,
-      color: theme.colors.subText,
     },
     fab: {
       position: 'absolute',
@@ -354,7 +373,7 @@ const createStyles = (theme: Theme) =>
     },
     fabText: {
       fontSize: 32,
-      color: theme.colors.background,
+      color: theme.colors.surface,
       fontWeight: '300',
       marginTop: -2,
     },

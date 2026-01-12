@@ -300,9 +300,17 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
 
           {/* Members Selection */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>
-              {t('teams.members') || 'Team Members (Min 2, Max 10)'}
-            </Text>
+            <View style={styles.headerRow}>
+              <Text style={styles.label}>
+                {t('teams.members') || 'Team Members'}
+              </Text>
+              <Text style={[
+                styles.memberCount,
+                (selectedMemberIds.length === 0 || selectedMemberIds.length > 10) && styles.errorText
+              ]}>
+                {selectedMemberIds.length} / 10
+              </Text>
+            </View>
             <MultiSelectDropdown
               label={t('teams.selectMembers') || 'Select Members'}
               data={memberOptions}
@@ -388,7 +396,7 @@ const createStyles = (theme: Theme) =>
       alignItems: 'center',
       marginBottom: theme.spacing.s,
     },
-    countLabel: {
+    memberCount: {
       ...theme.textVariants.caption,
       fontWeight: 'bold',
       color: theme.colors.subText,

@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { notificationService } from './src/services/notificationService';
 import { ThemeProvider } from './src/context/ThemeContext';
+import { AuthProvider } from './src/context/AuthContext';
 import { ToastProvider } from './src/context/ToastContext';
 import { ModalProvider } from './src/context/ModalContext';
 import { OfflineIndicator } from './src/components/OfflineIndicator';
@@ -137,15 +138,17 @@ const App = () => {
     <Provider store={store}>
       <PersistGate loading={<LoadingScreen />} persistor={persistor}>
         <ThemeProvider>
-          <ToastProvider>
-            <ModalProvider>
-              <SafeAreaProvider style={{ flex: 1 }}>
-                <WebThemeHandler />
-                <OfflineIndicator />
-                <AppNavigator />
-              </SafeAreaProvider>
-            </ModalProvider>
-          </ToastProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <ModalProvider>
+                <SafeAreaProvider style={{ flex: 1 }}>
+                  <WebThemeHandler />
+                  <OfflineIndicator />
+                  <AppNavigator />
+                </SafeAreaProvider>
+              </ModalProvider>
+            </ToastProvider>
+          </AuthProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

@@ -256,10 +256,16 @@ export const AddClaimScreen = ({ navigation }: any) => {
                 <View style={styles.fieldContainer}>
                   <Dropdown
                     label={t('employees.name')}
-                    data={employees.map(e => ({
-                      label: e.name,
-                      value: String(e.id),
-                    }))}
+                    data={employees
+                      .filter(e => {
+                        if (companyId && e.companyId !== companyId) return false;
+                        if (teamId && e.teamId !== teamId) return false;
+                        return true;
+                      })
+                      .map(e => ({
+                        label: e.name,
+                        value: String(e.id),
+                      }))}
                     value={employeeId ? String(employeeId) : ''}
                     onSelect={val => setEmployeeId(Number(val))}
                   />

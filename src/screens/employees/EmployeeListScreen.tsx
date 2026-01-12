@@ -32,7 +32,7 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       let data = await employeesDb.getAll();
 
       // Role-based filtering
-      if (user?.role === 'chef_dequipe' && user?.department) {
+      if (user?.role === 'manager' && user?.department) {
         data = data.filter(emp => emp.department === user.department);
       } else if (user?.role === 'employee' && user?.employeeId) {
         data = data.filter(emp => emp.id === user.employeeId);

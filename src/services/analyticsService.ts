@@ -142,4 +142,78 @@ export const analyticsService = {
 
     return { labels: weeks, data: employeeSets.map(set => set.size) };
   },
+
+  // Get personal analytics for a specific employee
+  getPersonalAnalytics: async (employeeId: number): Promise<AnalyticsData> => {
+    try {
+      const now = new Date();
+      const nextWeek = new Date();
+      nextWeek.setDate(now.getDate() + 7);
+
+      const [allPayroll, allLeaves, allIllnesses] = await Promise.all([
+        payrollDb.getAll(),
+        leavesDb.getAll(),
+        illnessesDb.getAll(),
+      ]);
+
+      const myPayroll = allPayroll.filter(p => p.employeeId === employeeId);
+      const myLeaves = allLeaves.filter(
+        l => l.employeeId === employeeId && new Date(l.dateTime) >= now,
+      );
+      const myIllnesses = allIllnesses.filter(
+        i =>
+          i.employeeId === employeeId &&
+          i.expiryDate &&
+          new Date(i.expiryDate) >= now &&
+          new Date(i.expiryDate) <= nextWeek,
+      );
+
+      // Adherence for this employee
+      const history = await payrollDb.getAllHistory();
+      const myHistory = history.filter(h => {
+        const payroll = allPayroll.find(p => p.id === h.payrollId);
+        return payroll?.employeeId === employeeId;
+      });
+
+      const totalHistory = myHistory.length;
+      const paidCount = myHistory.filter(h => h.status === 'paid').length;
+      const payrollAdherence =
+        totalHistory > 0 ? Math.round((paidCount / totalHistory) * 100) : 0;
+
+      // Weekly payroll for this employee
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        return d.toLocaleDateString('en-US', { weekday: 'short' });
+      });
+
+      const weeklyPayroll = last7Days.map(day => ({
+        day,
+        count: myPayroll.filter(
+          p =>
+            p.createdAt &&
+            new Date(p.createdAt).toLocaleDateString('en-US', {
+              weekday: 'short',
+            }) === day,
+        ).length,
+      }));
+
+      return {
+        totalPayroll: myPayroll.length,
+        upcomingLeaves: myLeaves.length,
+        expiringIllness: myIllnesses.length,
+        payrollAdherence,
+        weeklyPayroll,
+      };
+    } catch (error) {
+      console.error('Error getting personal analytics:', error);
+      return {
+        totalPayroll: 0,
+        upcomingLeaves: 0,
+        expiringIllness: 0,
+        payrollAdherence: 0,
+        weeklyPayroll: [],
+      };
+    }
+  },
 };

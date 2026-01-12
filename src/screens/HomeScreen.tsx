@@ -309,6 +309,21 @@ const EmployeeDashboard = ({
 
   return (
     <View style={styles.dashboardContainer}>
+      <View
+        style={[
+          styles.welcomeSection,
+          { backgroundColor: theme.colors.secondary },
+        ]}
+      >
+        <View>
+          <Text style={styles.welcomeTitle}>
+            {t('home.greeting')}, {user?.name}! 👋
+          </Text>
+          <Text style={styles.welcomeSubtitle}>{t('home.manageCareer')}</Text>
+        </View>
+        <Text style={{ fontSize: 44 }}>🏠</Text>
+      </View>
+
       <View style={styles.statsContainer}>
         <StatCard
           title={t('home.activePayroll')}
@@ -406,18 +421,16 @@ const EmployeeDashboard = ({
                     const parts = [];
                     if (years > 0)
                       parts.push(
-                        `${years} ${
-                          years > 1
-                            ? t('common.yearsUnit')
-                            : t('common.yearUnit')
+                        `${years} ${years > 1
+                          ? t('common.yearsUnit')
+                          : t('common.yearUnit')
                         }`,
                       );
                     if (months > 0)
                       parts.push(
-                        `${months} ${
-                          months > 1
-                            ? t('common.monthsUnit')
-                            : t('common.monthUnit')
+                        `${months} ${months > 1
+                          ? t('common.monthsUnit')
+                          : t('common.monthUnit')
                         }`,
                       );
                     return parts.join(', ') || `0 ${t('common.monthUnit')}`;
@@ -545,9 +558,8 @@ export const HomeScreen = () => {
         const activity = [
           ...pendingLeaves.map(l => ({
             icon: '📅',
-            title: `${t('leaves.approvals')}: ${
-              l.employeeName || t('common.unknown')
-            }`,
+            title: `${t('leaves.approvals')}: ${l.employeeName || t('common.unknown')
+              }`,
             subtitle: l.title,
             date: l.createdAt,
           })),
@@ -631,14 +643,14 @@ export const HomeScreen = () => {
         tab === 'Payroll'
           ? 'PayrollTab'
           : tab === 'Leaves'
-          ? 'LeavesTab'
-          : tab === 'Analytics'
-          ? 'Analytics'
-          : tab === 'Employees'
-          ? 'Employees'
-          : tab === 'Claims'
-          ? 'Claims'
-          : undefined;
+            ? 'LeavesTab'
+            : tab === 'Analytics'
+              ? 'Analytics'
+              : tab === 'Employees'
+                ? 'Employees'
+                : tab === 'Claims'
+                  ? 'Claims'
+                  : undefined;
 
       if (stackScreen) {
         navigation.navigate('Main', {

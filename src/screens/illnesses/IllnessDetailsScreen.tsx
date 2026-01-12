@@ -147,7 +147,7 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
 
         {(user?.role === 'admin' ||
           user?.role === 'rh' ||
-          user?.role === 'chef_dequipe') && (
+          user?.role === 'manager') && (
           <>
             <TouchableOpacity
               style={[styles.button, styles.editButton]}
