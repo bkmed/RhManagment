@@ -18,6 +18,7 @@ interface GlassHeaderProps {
   onSearchPress?: () => void;
   showBack?: boolean;
   onBackPress?: () => void;
+  onProfilePress?: () => void;
 }
 
 const createStyles = (theme: Theme) =>
@@ -91,6 +92,7 @@ export const GlassHeader = ({
   onSearchPress,
   showBack,
   onBackPress,
+  onProfilePress,
 }: GlassHeaderProps) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -129,7 +131,11 @@ export const GlassHeader = ({
           </TouchableOpacity>
         )}
         <NotificationBell />
-        <TouchableOpacity style={[styles.iconButton, styles.profileButton]}>
+        <TouchableOpacity
+          style={[styles.iconButton, styles.profileButton]}
+          onPress={onProfilePress}
+          disabled={!onProfilePress}
+        >
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
               {user?.name ? getInitials(user.name) : '??'}

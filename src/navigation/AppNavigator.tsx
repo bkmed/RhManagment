@@ -607,12 +607,12 @@ const useNavigationSections = () => {
           { key: 'Home', label: t('navigation.home'), icon: '🏠' },
           ...(rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)
             ? [
-                {
-                  key: 'Analytics',
-                  label: t('navigation.analytics'),
-                  icon: '📊',
-                },
-              ]
+              {
+                key: 'Analytics',
+                label: t('navigation.analytics'),
+                icon: '📊',
+              },
+            ]
             : []),
         ],
       },
@@ -676,23 +676,23 @@ const useNavigationSections = () => {
       items: [
         ...(user?.companyId
           ? [
-              {
-                key: 'Announcements',
-                label: t('navigation.announcements'),
-                icon: '📢',
-              },
-            ]
+            {
+              key: 'Announcements',
+              label: t('navigation.announcements'),
+              icon: '📢',
+            },
+          ]
           : []),
         ...(rbacService.isAdmin(user) ||
-        rbacService.isRH(user) ||
-        rbacService.isManager(user)
+          rbacService.isRH(user) ||
+          rbacService.isManager(user)
           ? [
-              {
-                key: 'ManageNotifications',
-                label: t('notifications.broadcast') || 'Broadcast',
-                icon: '📡',
-              },
-            ]
+            {
+              key: 'ManageNotifications',
+              label: t('notifications.broadcast') || 'Broadcast',
+              icon: '📡',
+            },
+          ]
           : []),
         ...(user?.companyId
           ? [{ key: 'Chat', label: t('navigation.chat'), icon: '💬' }]
@@ -835,9 +835,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                         : 'transparent',
                       ...(isFocused &&
                         themeMode === 'premium' && {
-                          borderWidth: 1,
-                          borderColor: theme.colors.primary,
-                        }),
+                        borderWidth: 1,
+                        borderColor: theme.colors.primary,
+                      }),
                     }}
                     onPress={() => navigation.navigate(item.key)}
                   >
@@ -1184,7 +1184,7 @@ const WebNavigator = () => {
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
-      {}
+      { }
       <View
         style={
           [
@@ -1198,7 +1198,7 @@ const WebNavigator = () => {
           ] as any
         }
       >
-        {}
+        { }
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (
@@ -1248,7 +1248,10 @@ const WebNavigator = () => {
             </View>
 
             {/* Profile Section */}
-            <View style={webStyles.sidebarProfile}>
+            <TouchableOpacity
+              style={webStyles.sidebarProfile}
+              onPress={() => setActiveTab('Profile')}
+            >
               <View
                 style={[
                   webStyles.profileAvatar,
@@ -1274,7 +1277,7 @@ const WebNavigator = () => {
                   {t(`roles.${user?.role}`)}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
 
             {/* Nav Items with Sections */}
             <ScrollView style={webStyles.sidebarNav}>
@@ -1357,6 +1360,7 @@ const WebNavigator = () => {
             }
             onMenuPress={() => setIsMenuOpen(true)}
             onSearchPress={() => setIsSearchVisible(true)}
+            onProfilePress={() => setActiveTab('Profile')}
           />
         )}
 
@@ -1429,7 +1433,13 @@ const WebNavigator = () => {
                 </Text>
               </TouchableOpacity>
 
-              <View style={{ marginBottom: 20, alignItems: 'center' }}>
+              <TouchableOpacity
+                style={{ marginBottom: 20, alignItems: 'center' }}
+                onPress={() => {
+                  setActiveTab('Profile');
+                  setIsMenuOpen(false);
+                }}
+              >
                 <Image
                   source={require('../../public/logo.png')}
                   style={{ width: 50, height: 50, marginBottom: 10 }}
@@ -1438,7 +1448,7 @@ const WebNavigator = () => {
                 <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
                   {user?.name}
                 </Text>
-              </View>
+              </TouchableOpacity>
 
               <ScrollView style={{ flex: 1 }}>
                 {sections.map(section => (

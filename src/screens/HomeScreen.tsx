@@ -312,6 +312,7 @@ interface EmployeeDashboardProps {
   navigateToTab: (tab: string, screen?: string) => void;
   hasNotificationPermission: boolean;
   handleEnableNotifications: () => Promise<void>;
+  recentActivity: any[];
   styles: Record<string, any>;
   theme: Theme;
 }
@@ -322,6 +323,7 @@ const EmployeeDashboard = ({
   navigateToTab,
   hasNotificationPermission,
   handleEnableNotifications,
+  recentActivity,
   styles,
   theme,
 }: EmployeeDashboardProps) => {
@@ -554,6 +556,27 @@ const EmployeeDashboard = ({
           <Text style={styles.tipText}>{t('home.tip')}</Text>
         </TouchableOpacity>
       )}
+
+      <Text style={styles.sectionTitle}>{t('home.recentActivity')}</Text>
+      <View style={styles.activityCard}>
+        {recentActivity.length > 0 ? (
+          recentActivity.map((activity: any, index: number) => (
+            <ActivityItem
+              key={index}
+              icon={activity.icon}
+              title={activity.title}
+              subtitle={activity.subtitle}
+              time={formatDate(activity.date)}
+              theme={theme}
+              styles={styles}
+            />
+          ))
+        ) : (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>{t('home.noRecentActivity')}</Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 };
@@ -614,17 +637,16 @@ export const HomeScreen = () => {
         const activity = [
           ...pendingLeaves.map(l => ({
             icon: '📅',
-            title: `${t('leaves.approvals')}: ${
-              l.employeeName || t('common.unknown')
-            }`,
+            title: `${t('leaves.approvals')}: ${l.employeeName || t('common.unknown')
+              }`,
             subtitle: l.title,
-            date: l.createdAt,
+            date: l.createdAt || new Date().toISOString(),
           })),
           ...pendingClaims.map(c => ({
             icon: '📝',
             title: t('claims.newClaim'),
             subtitle: c.description,
-            date: c.createdAt,
+            date: c.createdAt || new Date().toISOString(),
           })),
           ...employees.slice(-5).map(e => ({
             icon: '👤',
@@ -699,6 +721,53 @@ export const HomeScreen = () => {
           upcomingLeaves: upcomingLeaves.length,
           expiringIllness: expiringIllnesses.length,
         }));
+
+        // Fetch activity for Employees/Managers
+        const [leaves, claims] = await Promise.all([
+          leavesDb.getAll(),
+          claimsDb.getAll(),
+        ]);
+
+        let filteredLeaves = leaves;
+        let filteredClaims = claims;
+        let filteredPayroll = allPayroll;
+
+        if (userRole === 'employee') {
+          filteredLeaves = leaves.filter(l => l.employeeId === user?.employeeId);
+          filteredClaims = claims.filter(c => c.employeeId === user?.employeeId);
+          // allPayroll already filtered for employee
+        } else if (userRole === 'manager') {
+          filteredLeaves = leaves.filter(l => l.teamId === user?.teamId);
+          filteredClaims = claims.filter(c => c.teamId === user?.teamId);
+          // allPayroll already filtered for manager
+        }
+
+        const activity = [
+          ...filteredLeaves.slice(-3).map(l => ({
+            icon: '📅',
+            title: t('navigation.leaves'),
+            subtitle: `${l.title} (${t(`common.${l.status}`)})`,
+            date: l.createdAt || l.startDate || new Date().toISOString(),
+          })),
+          ...filteredClaims.slice(-3).map(c => ({
+            icon: '📝',
+            title: t('navigation.claims'),
+            subtitle: `${c.description} (${t(`common.${c.status}`)})`,
+            date: c.createdAt || new Date().toISOString(),
+          })),
+          ...filteredPayroll.slice(-3).map(p => ({
+            icon: '💰',
+            title: t('navigation.payroll'),
+            subtitle: `${p.amount} ${p.currency || ''}`,
+            date: p.createdAt || new Date().toISOString(),
+          })),
+        ]
+          .sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          )
+          .slice(0, 5);
+
+        setRecentActivity(activity);
       }
 
       const status = await permissionsService.checkNotificationPermission();
@@ -729,14 +798,14 @@ export const HomeScreen = () => {
         tab === 'Payroll'
           ? 'PayrollTab'
           : tab === 'Leaves'
-          ? 'LeavesTab'
-          : tab === 'Analytics'
-          ? 'Analytics'
-          : tab === 'Employees'
-          ? 'Employees'
-          : tab === 'Claims'
-          ? 'Claims'
-          : undefined;
+            ? 'LeavesTab'
+            : tab === 'Analytics'
+              ? 'Analytics'
+              : tab === 'Employees'
+                ? 'Employees'
+                : tab === 'Claims'
+                  ? 'Claims'
+                  : undefined;
 
       if (stackScreen) {
         navigation.navigate('Main', {
@@ -782,6 +851,7 @@ export const HomeScreen = () => {
             navigateToTab={navigateToTab}
             hasNotificationPermission={hasNotificationPermission}
             handleEnableNotifications={handleEnableNotifications}
+            recentActivity={recentActivity}
             styles={styles}
             theme={theme}
           />
@@ -819,6 +889,13 @@ const createStyles = (theme: Theme, isWebMobile?: boolean) =>
       fontWeight: 'bold',
       color: '#FFFFFF',
       marginBottom: 4,
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: theme.colors.text,
+      marginBottom: 16,
+      marginTop: 8,
     },
     welcomeSubtitle: {
       fontSize: 14,
@@ -1017,5 +1094,47 @@ const createStyles = (theme: Theme, isWebMobile?: boolean) =>
       color: theme.colors.primary,
       fontWeight: '600',
       lineHeight: 20,
+    },
+    activityCard: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: 24,
+      padding: 16,
+      marginBottom: 24,
+      ...theme.shadows.small,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    activityItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+    },
+    activityIconWrapper: {
+      width: 44,
+      height: 44,
+      borderRadius: 14,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 16,
+    },
+    activityIcon: {
+      fontSize: 20,
+    },
+    activityContent: {
+      flex: 1,
+    },
+    activityTitle: {
+      fontSize: 15,
+      fontWeight: '600',
+      marginBottom: 2,
+    },
+    activitySubtitle: {
+      fontSize: 13,
+      marginBottom: 2,
+    },
+    activityTime: {
+      fontSize: 11,
+      fontWeight: '500',
     },
   });
