@@ -11,8 +11,10 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { employeesDb } from '../../database/employeesDb';
 import { leavesDb } from '../../database/leavesDb';
+import { companiesDb } from '../../database/companiesDb';
+import { teamsDb } from '../../database/teamsDb';
 import { notificationService } from '../../services/notificationService';
-import { Employee, Leave } from '../../database/schema';
+import { Employee, Leave, Company, Team } from '../../database/schema';
 import { formatDate, formatDateTime } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
@@ -46,6 +48,8 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [leaves, setLeaves] = useState<Leave[]>([]);
+  const [company, setCompany] = useState<Company | null>(null);
+  const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
 
   const { setActiveTab } = useContext(WebNavigationContext);
@@ -99,6 +103,15 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
 
       if (employeeData) {
         setEmployee(employeeData);
+
+        // Fetch company and team in parallel
+        const [companyData, teamData] = await Promise.all([
+          employeeData.companyId ? companiesDb.getById(employeeData.companyId) : Promise.resolve(null),
+          employeeData.teamId ? teamsDb.getById(employeeData.teamId) : Promise.resolve(null),
+        ]);
+
+        setCompany(companyData);
+        setTeam(teamData);
       } else {
         notificationService.showAlert(
           t('common.error'),
@@ -146,7 +159,11 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
             try {
               await employeesDb.delete(employeeId);
               showToast(t('employees.deletedSuccessfully'), 'success');
-              navigationBack();
+              if (Platform.OS === 'web') {
+                setActiveTab('Employees', 'EmployeeList');
+              } else {
+                navigation.navigate('EmployeeList');
+              }
             } catch (error) {
               showToast(t('common.error'), 'info');
               console.error(error);
@@ -222,34 +239,41 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                     })}
                   </Text>
                 )}
+                {employee.role && (
+                  <Text style={[styles.position, { color: theme.colors.subText, fontSize: 14 }]}>
+                    👤 {t(`roles.${employee.role}`, {
+                      defaultValue: employee.role,
+                    })}
+                  </Text>
+                )}
               </View>
             </View>
             {(rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) ||
               rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES)) && (
-              <View style={styles.actions}>
-                {rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) && (
-                  <TouchableOpacity
-                    onPress={handleEdit}
-                    style={styles.actionButton}
-                  >
-                    <Text style={styles.actionText}>{t('common.edit')}</Text>
-                  </TouchableOpacity>
-                )}
-                {rbacService.hasPermission(
-                  user,
-                  Permission.DELETE_EMPLOYEES,
-                ) && (
-                  <TouchableOpacity
-                    onPress={handleDelete}
-                    style={[styles.actionButton, styles.deleteButton]}
-                  >
-                    <Text style={[styles.actionText, styles.deleteText]}>
-                      {t('common.delete')}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
+                <View style={styles.actions}>
+                  {rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) && (
+                    <TouchableOpacity
+                      onPress={handleEdit}
+                      style={styles.actionButton}
+                    >
+                      <Text style={styles.actionText}>{t('common.edit')}</Text>
+                    </TouchableOpacity>
+                  )}
+                  {rbacService.hasPermission(
+                    user,
+                    Permission.DELETE_EMPLOYEES,
+                  ) && (
+                      <TouchableOpacity
+                        onPress={handleDelete}
+                        style={[styles.actionButton, styles.deleteButton]}
+                      >
+                        <Text style={[styles.actionText, styles.deleteText]}>
+                          {t('common.delete')}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                </View>
+              )}
           </View>
 
           <View style={styles.divider} />
@@ -276,11 +300,10 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.detailValue}>
                   {employee.gender
                     ? t(
-                        `employees.gender${
-                          employee.gender.charAt(0).toUpperCase() +
-                          employee.gender.slice(1)
-                        }`,
-                      )
+                      `employees.gender${employee.gender.charAt(0).toUpperCase() +
+                      employee.gender.slice(1)
+                      }`,
+                    )
                     : '-'}
                 </Text>
               </View>
@@ -365,6 +388,17 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
               </View>
             </View>
 
+            <View style={styles.responsiveRow}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.detailLabel}>{t('employees.company')}</Text>
+                <Text style={styles.detailValue}>{company?.name || '-'}</Text>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.detailLabel}>{t('common.team')}</Text>
+                <Text style={styles.detailValue}>{team?.name || '-'}</Text>
+              </View>
+            </View>
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>{t('employees.skills')}</Text>
               {employee.skills && employee.skills.length > 0 ? (
@@ -412,27 +446,27 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
           <Text style={styles.sectionTitle}>{t('leaves.title')}</Text>
           {(rbacService.hasPermission(user, Permission.MANAGE_PAYROLL) ||
             rbacService.hasPermission(user, Permission.APPROVE_LEAVES)) && (
-            <View style={styles.headerActions}>
-              <TouchableOpacity
-                onPress={() => navigateToAddIllness(employee)}
-                style={[styles.addButton, styles.secondaryButton]}
-              >
-                <Text
-                  style={[styles.addButtonText, styles.secondaryButtonText]}
+              <View style={styles.headerActions}>
+                <TouchableOpacity
+                  onPress={() => navigateToAddIllness(employee)}
+                  style={[styles.addButton, styles.secondaryButton]}
                 >
-                  + {t('employees.addIllness')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={navigateToAddLeave}
-                style={styles.addButton}
-              >
-                <Text style={styles.addButtonText}>
-                  + {t('employees.addLeave')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
+                  <Text
+                    style={[styles.addButtonText, styles.secondaryButtonText]}
+                  >
+                    + {t('employees.addIllness')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={navigateToAddLeave}
+                  style={styles.addButton}
+                >
+                  <Text style={styles.addButtonText}>
+                    + {t('employees.addLeave')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
         </View>
 
         {leaves.length > 0 ? (

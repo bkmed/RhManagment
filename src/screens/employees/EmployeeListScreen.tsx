@@ -9,7 +9,9 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { employeesDb } from '../../database/employeesDb';
-import { Employee } from '../../database/schema';
+import { companiesDb } from '../../database/companiesDb';
+import { teamsDb } from '../../database/teamsDb';
+import { Employee, Company, Team } from '../../database/schema';
 import { useTheme } from '../../context/ThemeContext';
 import { Theme } from '../../theme';
 import { SearchInput } from '../../components/SearchInput';
@@ -24,12 +26,20 @@ export const EmployeeListScreen = ({ navigation }: any) => {
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   const loadEmployees = async () => {
     try {
-      let data = await employeesDb.getAll();
+      const [empData, compData, teamData] = await Promise.all([
+        employeesDb.getAll(),
+        companiesDb.getAll(),
+        teamsDb.getAll(),
+      ]);
+
+      let data = empData;
 
       // Role-based filtering
       if (user?.role === 'manager' && user?.department) {
@@ -39,6 +49,8 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       }
 
       setEmployees(data);
+      setCompanies(compData);
+      setTeams(teamData);
     } catch (error) {
       console.error('Error loading employees:', error);
       notificationService.showAlert(
@@ -63,12 +75,18 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       const position = emp.position
         ? t(`departments.${emp.position}`, { defaultValue: emp.position })
         : '';
+      const companyName = companies.find(c => String(c.id) === String(emp.companyId))?.name || '';
+      const teamName = teams.find(t => String(t.id) === String(emp.teamId))?.name || '';
+
       return (
         emp.name.toLowerCase().includes(lowerQuery) ||
-        position.toLowerCase().includes(lowerQuery)
+        position.toLowerCase().includes(lowerQuery) ||
+        (emp.email && emp.email.toLowerCase().includes(lowerQuery)) ||
+        companyName.toLowerCase().includes(lowerQuery) ||
+        teamName.toLowerCase().includes(lowerQuery)
       );
     });
-  }, [employees, searchQuery, t]);
+  }, [employees, searchQuery, t, companies, teams]);
 
   const renderEmployee = ({ item }: { item: Employee }) => {
     return (
@@ -96,6 +114,19 @@ export const EmployeeListScreen = ({ navigation }: any) => {
         {item.email && <Text style={styles.detail}>✉️ {item.email}</Text>}
 
         {item.address && <Text style={styles.detail}>📍 {item.address}</Text>}
+
+        <View style={styles.affiliations}>
+          {item.companyId && (
+            <Text style={styles.affiliationText}>
+              🏢 {companies.find(c => String(c.id) === String(item.companyId))?.name || item.companyId}
+            </Text>
+          )}
+          {item.teamId && (
+            <Text style={styles.affiliationText}>
+              👥 {teams.find(t => String(t.id) === String(item.teamId))?.name || item.teamId}
+            </Text>
+          )}
+        </View>
       </TouchableOpacity>
     );
   };
@@ -183,6 +214,19 @@ const createStyles = (theme: Theme) =>
       ...theme.textVariants.body,
       color: theme.colors.subText,
       marginBottom: theme.spacing.xs,
+    },
+    affiliations: {
+      flexDirection: 'row',
+      gap: theme.spacing.m,
+      marginTop: theme.spacing.s,
+      paddingTop: theme.spacing.s,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
+    },
+    affiliationText: {
+      ...theme.textVariants.caption,
+      color: theme.colors.primary,
+      fontWeight: '600',
     },
     emptyContainer: {
       flex: 1,

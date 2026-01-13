@@ -40,8 +40,8 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
     useEffect(() => {
         const isAllowed =
             rbacService.isAdmin(user) ||
-            rbacService.isRH(user) ||
-            rbacService.isFullyAssignedManager(user);
+            rbacService.isFullyAssignedRH(user) ||
+            rbacService.isFullyAssignedTeamLeader(user);
 
         if (!isAllowed) {
             showModal({
@@ -52,19 +52,32 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
             return;
         }
         loadData();
-        if (rbacService.isFullyAssignedManager(user)) {
+        if (rbacService.isFullyAssignedTeamLeader(user)) {
             setTargetType('team');
             setTargetId(user?.teamId || '');
+        } else if (rbacService.isFullyAssignedRH(user)) {
+            setTargetType('company');
+            setTargetId(user?.companyId || '');
         }
     }, []);
 
     const loadData = async () => {
         const allTeams = await teamsDb.getAll();
-        setTeams(allTeams.map(t => ({ label: t.name, value: t.id.toString() })));
+        const filteredTeams = rbacService.isAdmin(user)
+            ? allTeams
+            : rbacService.isFullyAssignedTeamLeader(user)
+                ? allTeams.filter(t => t.id.toString() === user?.teamId)
+                : allTeams.filter(t => t.companyId === user?.companyId);
+
+        setTeams(filteredTeams.map(t => ({ label: t.name, value: t.id.toString() })));
 
         const allCompanies = await companiesDb.getAll();
+        const filteredCompanies = rbacService.isAdmin(user)
+            ? allCompanies
+            : allCompanies.filter(c => c.id.toString() === user?.companyId);
+
         setCompanies(
-            allCompanies.map(c => ({ label: c.name, value: c.id.toString() })),
+            filteredCompanies.map(c => ({ label: c.name, value: c.id.toString() })),
         );
     };
 
@@ -87,6 +100,16 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
             return;
         }
 
+        // Security check for RH
+        if (rbacService.isFullyAssignedRH(user) && targetType === 'all') {
+            return; // Should not happen based on UI
+        }
+
+        // Security check for Team Leader
+        if (rbacService.isFullyAssignedTeamLeader(user) && (targetType !== 'team' || targetId !== user?.teamId)) {
+            return;
+        }
+
         try {
             await notificationService.broadcastNotification({
                 title,
@@ -103,8 +126,16 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
             });
             setTitle('');
             setMessage('');
-            setTargetType('all');
-            setTargetId('');
+            if (rbacService.isAdmin(user)) {
+                setTargetType('all');
+                setTargetId('');
+            } else if (rbacService.isFullyAssignedRH(user)) {
+                setTargetType('company');
+                setTargetId(user?.companyId || '');
+            } else {
+                setTargetType('team');
+                setTargetId(user?.teamId || '');
+            }
         } catch (error) {
             console.error(error);
             showModal({
@@ -145,8 +176,8 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                 {t('notifications.target') || 'Target Audience'}
             </Text>
             <View style={styles.targetRow}>
-                {(rbacService.isAdmin(user) || rbacService.isRH(user)) &&
-                    ['all', 'company', 'team'].map(type => (
+                {(rbacService.isAdmin(user) || rbacService.isFullyAssignedRH(user)) &&
+                    (rbacService.isAdmin(user) ? ['all', 'company', 'team'] : ['company', 'team']).map(type => (
                         <TouchableOpacity
                             key={type}
                             style={[
@@ -165,7 +196,7 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                             </Text>
                         </TouchableOpacity>
                     ))}
-                {rbacService.isFullyAssignedManager(user) && (
+                {rbacService.isFullyAssignedTeamLeader(user) && (
                     <View
                         style={[styles.targetBtn, styles.targetBtnSelected, { flex: 1 }]}
                     >
@@ -185,7 +216,7 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                         data={teams}
                         value={targetId}
                         onSelect={setTargetId}
-                        disabled={rbacService.isFullyAssignedManager(user)}
+                        disabled={rbacService.isFullyAssignedTeamLeader(user)}
                     />
                 </View>
             )}
@@ -199,6 +230,7 @@ export const ManageNotificationsScreen = ({ navigation }: any) => {
                         data={companies}
                         value={targetId}
                         onSelect={setTargetId}
+                        disabled={rbacService.isFullyAssignedRH(user)}
                     />
                 </View>
             )}

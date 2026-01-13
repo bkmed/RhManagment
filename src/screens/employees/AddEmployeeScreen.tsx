@@ -282,24 +282,24 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-              name: emergencyName,
-              phone: emergencyPhone,
-              relationship: emergencyRelationship,
-            }
+            name: emergencyName,
+            phone: emergencyPhone,
+            relationship: emergencyRelationship,
+          }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-                linkedin,
-                skype,
-                website,
-              }
+              linkedin,
+              skype,
+              website,
+            }
             : undefined,
         skills: skills
           ? skills
-              .split(',')
-              .map(s => s.trim())
-              .filter(s => s)
+            .split(',')
+            .map(s => s.trim())
+            .filter(s => s)
           : undefined,
       };
 
@@ -692,7 +692,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                   style={styles.input}
                   value={linkedin}
                   onChangeText={setLinkedin}
-                  placeholder="https://linkedin.com/in/..."
+                  placeholder={t('employees.linkedinPlaceholder')}
                   placeholderTextColor={theme.colors.subText}
                 />
               </View>
@@ -704,7 +704,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 style={styles.input}
                 value={skills}
                 onChangeText={setSkills}
-                placeholder="React, Node.js, HR Management"
+                placeholder={t('employees.skillsPlaceholder')}
                 placeholderTextColor={theme.colors.subText}
               />
             </View>
@@ -774,8 +774,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
             {loading
               ? t('common.loading')
               : employeeId
-              ? t('common.save')
-              : t('common.add')}
+                ? t('common.save')
+                : t('common.add')}
           </Text>
         </TouchableOpacity>
 

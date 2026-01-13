@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -22,8 +22,9 @@ import { Dropdown } from '../../components/Dropdown';
 import { MultiSelectDropdown } from '../../components/MultiSelectDropdown';
 import { useSelector } from 'react-redux';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
-import { useContext } from 'react';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+import { useAuth } from '../../context/AuthContext';
+import { rbacService } from '../../services/rbacService';
 
 export const AddTeamScreen = ({ navigation, route }: any) => {
   const editId = route?.params?.id;
@@ -32,6 +33,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { showModal } = useModal();
+  const { user } = useAuth();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { setActiveTab } = useContext(WebNavigationContext) as any;
 
@@ -40,7 +42,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
   const [companyId, setCompanyId] = useState<string | undefined>(undefined);
   const [service, setService] = useState('');
 
-  const companies = useSelector(selectAllCompanies);
+  const allCompanies = useSelector(selectAllCompanies);
   const [managerId, setManagerId] = useState<string | undefined>(undefined);
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
 
@@ -48,6 +50,24 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [, setLoading] = useState(true);
+
+  // Filter companies based on role
+  const companies = useMemo(() => {
+    if (rbacService.isAdmin(user)) {
+      return allCompanies;
+    }
+    if (rbacService.isRH(user) && user?.companyId) {
+      return allCompanies.filter((c: any) => String(c.id) === String(user.companyId));
+    }
+    return [];
+  }, [allCompanies, user]);
+
+  // Set default company only once on mount or when companies finish loading
+  useEffect(() => {
+    if (!isEdit && rbacService.isRH(user) && user?.companyId && !companyId) {
+      setCompanyId(String(user.companyId));
+    }
+  }, [user, isEdit]);
 
   // Validation state
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -63,7 +83,14 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
         departmentsDb.getAll(),
         servicesDb.getAll(),
       ]);
-      setEmployees(emps);
+
+      // Filter employees for RH users
+      let filteredEmps = emps;
+      if (rbacService.isRH(user) && user?.companyId) {
+        filteredEmps = emps.filter(e => String(e.companyId) === String(user.companyId));
+      }
+
+      setEmployees(filteredEmps);
       setDepartments(depts);
       setServices(servs);
 
@@ -76,9 +103,6 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
           setCompanyId(team.companyId);
           setManagerId(team.managerId);
 
-          // Filter employees who belong to this team to select them initially
-          // Note: This assumes we want to pre-select current members.
-          // In teamsDb.add/update, we update employees.teamId.
           const teamMembers = emps.filter(e => e.teamId === editId);
           setSelectedMemberIds(teamMembers.map(m => m.id || ''));
         }
@@ -94,6 +118,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
     const newErrors: Record<string, string> = {};
     if (!name.trim()) newErrors.name = t('common.required');
     if (!department) newErrors.department = t('common.required');
+    if (!companyId) newErrors.company = t('common.required');
 
     if (selectedMemberIds.length < 2) {
       newErrors.members =
@@ -324,7 +349,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
                   styles.memberCount,
                   (selectedMemberIds.length === 0 ||
                     selectedMemberIds.length > 10) &&
-                    styles.errorText,
+                  styles.errorText,
                 ]}
               >
                 {selectedMemberIds.length} / 10

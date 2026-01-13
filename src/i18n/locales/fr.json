@@ -209,7 +209,9 @@
     "phonePlaceholder": "ex: +33 1 23 45 67 89",
     "select": "Sélectionner Entreprise",
     "selectCompany": "Sélectionner l'entreprise",
-    "title": "Entreprises"
+    "title": "Entreprises",
+    "saveSuccess": "Entreprise ajoutée avec succès",
+    "updateSuccess": "Entreprise mise à jour avec succès"
   },
   "departments": {
     "add": "Ajouter un département",
@@ -223,7 +225,9 @@
     "rd": "Recherche et Développement",
     "sales": "Ventes",
     "title": "Départements",
-    "namePlaceholder": "ex. Département IT"
+    "namePlaceholder": "ex. Département IT",
+    "saveSuccess": "Département ajouté avec succès",
+    "updateSuccess": "Département mis à jour avec succès"
   },
   "devices": {
     "title": "Gestion des appareils",
@@ -246,10 +250,14 @@
     "manageTypes": "Gérer les types d'appareils",
     "builtInTypeWarning": "Impossible de supprimer les types prédéfinis.",
     "typePlaceholder": "ex: Tablette",
-    "existingTypes": "Types existants (Appui long pour supprimer) :"
+    "existingTypes": "Types existants (Appui long pour supprimer) :",
+    "add": "Ajouter du matériel",
+    "saveSuccess": "Matériel ajouté avec succès",
+    "updateSuccess": "Matériel mis à jour avec succès"
   },
   "employees": {
     "add": "Ajouter un employé",
+    "added": "Employé ajouté avec succès",
     "alias": "Alias",
     "aliasPlaceholder": "ex: Jean D.",
     "assigned": "Assigné",
@@ -268,12 +276,15 @@
     "deleteButton": "Supprimer l'employé",
     "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cet employé ?",
     "deleteConfirmTitle": "Supprimer l'employé",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet employé ?",
+    "deletedSuccessfully": "Employé supprimé avec succès",
     "deleteError": "Échec de la suppression de l'employé",
     "description": "Description",
     "descriptionPlaceholder": "Describe your goal...",
     "details": "Détails de l'employé",
     "edit": "Modifier l'employé",
     "email": "Email",
+    "emailExists": "Cet email existe déjà",
     "emailPlaceholder": "ex: employé@entreprise.fr",
     "emergencyContact": "Contact d'urgence",
     "emergencyName": "Nom du contact",
@@ -294,6 +305,7 @@
     "jobTitlePlaceholder": "ex: Ingénieur logiciel",
     "lastName": "Nom de famille",
     "linkedin": "LinkedIn",
+    "linkedinPlaceholder": "https://linkedin.com/in/...",
     "loadError": "Échec du chargement des détails",
     "name": "Nom",
     "namePlaceholder": "ex: Jean Dupont",
@@ -309,15 +321,20 @@
     "role": "Poste",
     "saveButton": "Enregistrer l'employé",
     "saveError": "Échec de l'enregistrement de l'employé",
+    "tooYoung": "L'employé doit avoir au moins 18 ans",
+    "updated": "Employé mis à jour avec succès",
     "skills": "Compétences / Expertise",
+    "skillsPlaceholder": "React, Node.js, Gestion RH",
     "skype": "Skype",
+    "skypePlaceholder": "Identifiant Skype",
     "socialLinks": "Liens Sociaux",
     "specialty": "Poste / Département",
     "specialtyPlaceholder": "ex: Développeur RH",
     "title": "Employés",
     "titlePlaceholder": "e.g. Master React Native",
     "updateButton": "Mettre à jour l'employé",
-    "website": "Site Web"
+    "website": "Site Web",
+    "websitePlaceholder": "https://..."
   },
   "forgotPassword": {
     "backToLogin": "Retour à la connexion",
@@ -408,16 +425,17 @@
     "instructions": "Instructions / Factures",
     "issueDate": "Date d'émission",
     "issueDateLabel": "Date d'émission",
+    "startDateLabel": "Date de début",
     "issued": "Émis",
     "issuedBy": "Émis par",
     "loadError": "Échec du chargement du dossier",
     "noIllnesses": "Aucun dossier trouvé",
     "object": "Objet",
     "objectPlaceholder": "ex: Congé médical",
-    "notesLabel": "Notes / Facture",
+    "notesLabel": "Notes",
     "payroll": "Élément de paie",
-    "payrollNameLabel": "Nom de l'élément de paie",
-    "payrollPlaceholder": "ex: Indemnité maladie",
+    "payrollNameLabel": "Nom",
+    "payrollPlaceholder": "ex: Congé maladie",
     "photoButton": "📷 Ajouter un document",
     "refills": "Renouvellements",
     "saveButton": "Enregistrer le dossier",
@@ -831,7 +849,9 @@
     "empty": "Aucun service trouvé",
     "list": "Services",
     "title": "Services",
-    "namePlaceholder": "ex. Support IT"
+    "namePlaceholder": "ex. Support IT",
+    "saveSuccess": "Service ajouté avec succès",
+    "updateSuccess": "Service mis à jour avec succès"
   },
   "settings": {
     "personal": "Paramètres Personnels",

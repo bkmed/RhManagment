@@ -134,6 +134,21 @@ class RbacService {
             !!user.employeeId
         );
     }
+
+    /**
+     * Alias for isFullyAssignedManager for Team Leader terminology
+     */
+    isFullyAssignedTeamLeader(user: User | null): boolean {
+        return this.isFullyAssignedManager(user);
+    }
+
+    /**
+     * Check if user is RH with a company assigned
+     */
+    isFullyAssignedRH(user: User | null): boolean {
+        if (!user) return false;
+        return this.isRH(user) && !!user.companyId && !!user.employeeId;
+    }
 }
 
 export const rbacService = new RbacService();

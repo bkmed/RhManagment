@@ -730,7 +730,7 @@ export const HomeScreen = () => {
 
         let filteredLeaves = leaves;
         let filteredClaims = claims;
-        let filteredPayroll = allPayroll;
+        const filteredPayroll = allPayroll;
 
         if (userRole === 'employee') {
           filteredLeaves = leaves.filter(l => l.employeeId === user?.employeeId);

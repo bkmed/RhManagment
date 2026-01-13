@@ -212,7 +212,9 @@
     "phone": "Phone",
     "phonePlaceholder": "e.g. +1 234 567 890",
     "selectCompany": "Select Company",
-    "title": "Companies"
+    "title": "Companies",
+    "saveSuccess": "Company added successfully",
+    "updateSuccess": "Company updated successfully"
   },
   "departments": {
     "add": "Add Department",
@@ -226,7 +228,9 @@
     "rd": "Research & Development",
     "sales": "Sales",
     "title": "Departments",
-    "namePlaceholder": "e.g., IT Department"
+    "namePlaceholder": "e.g., IT Department",
+    "saveSuccess": "Department added successfully",
+    "updateSuccess": "Department updated successfully"
   },
   "devices": {
     "title": "Device Management",
@@ -249,10 +253,14 @@
     "manageTypes": "Manage Device Types",
     "builtInTypeWarning": "Cannot delete built-in types.",
     "typePlaceholder": "e.g. Tablet",
-    "existingTypes": "Existing Types (Long press to delete):"
+    "existingTypes": "Existing Types (Long press to delete):",
+    "add": "Add Material",
+    "saveSuccess": "Material added successfully",
+    "updateSuccess": "Material updated successfully"
   },
   "employees": {
     "add": "Add Employee",
+    "added": "Employee added successfully",
     "alias": "Alias",
     "aliasPlaceholder": "e.g., John D.",
     "assigned": "Assigned",
@@ -271,12 +279,15 @@
     "deleteButton": "Delete Employee",
     "deleteConfirmMessage": "Are you sure you want to delete this employee? This action cannot be undone.",
     "deleteConfirmTitle": "Delete Employee",
+    "deleteConfirm": "Are you sure you want to delete this employee?",
+    "deletedSuccessfully": "Employee deleted successfully",
     "deleteError": "Failed to delete employee",
     "description": "Description",
     "descriptionPlaceholder": "Describe your goal...",
     "details": "Employee Details",
     "edit": "Edit Employee",
     "email": "Email",
+    "emailExists": "Email already exists",
     "emailPlaceholder": "e.g., employee@company.com",
     "emergencyContact": "Emergency Contact",
     "emergencyName": "Contact Name",
@@ -297,6 +308,7 @@
     "jobTitlePlaceholder": "e.g., Software Engineer",
     "lastName": "Last Name",
     "linkedin": "LinkedIn",
+    "linkedinPlaceholder": "https://linkedin.com/in/...",
     "loadError": "Failed to load details",
     "name": "Name",
     "namePlaceholder": "e.g., John Smith",
@@ -312,15 +324,20 @@
     "role": "Role",
     "saveButton": "Save Employee",
     "saveError": "Failed to save employee",
+    "tooYoung": "Employee must be at least 18 years old",
+    "updated": "Employee updated successfully",
     "skills": "Skills / Expertise",
+    "skillsPlaceholder": "React, Node.js, HR Management",
     "skype": "Skype",
+    "skypePlaceholder": "Skype ID",
     "socialLinks": "Social Links",
     "specialty": "Position / Department",
     "specialtyPlaceholder": "e.g., HR Developer",
     "title": "Employees",
     "titlePlaceholder": "e.g. Master React Native",
     "updateButton": "Update Employee",
-    "website": "Website"
+    "website": "Website",
+    "websitePlaceholder": "https://..."
   },
   "forgotPassword": {
     "backToLogin": "Back to Login",
@@ -411,16 +428,17 @@
     "instructions": "Instructions / Invoices",
     "issueDate": "Issue Date",
     "issueDateLabel": "Issue Date",
+    "startDateLabel": "Start Date",
     "issued": "Issued",
     "issuedBy": "Issued By",
     "loadError": "Failed to load record",
     "noIllnesses": "No records found",
     "object": "Subject",
     "objectPlaceholder": "e.g., Medical Leave",
-    "notesLabel": "Notes / Invoices",
+    "notesLabel": "Notes",
     "payroll": "Payroll Item",
-    "payrollNameLabel": "Payroll Item Name",
-    "payrollPlaceholder": "e.g., Sick Leave Allowance",
+    "payrollNameLabel": "Name",
+    "payrollPlaceholder": "e.g., Sick Leave",
     "photoButton": "📷 Add Document",
     "refills": "Renewals",
     "saveButton": "Save Record",
@@ -823,7 +841,9 @@
     "empty": "No services found",
     "list": "Services",
     "title": "Services",
-    "namePlaceholder": "e.g., IT Support"
+    "namePlaceholder": "e.g., IT Support",
+    "saveSuccess": "Service added successfully",
+    "updateSuccess": "Service updated successfully"
   },
   "settings": {
     "personal": "Personal Settings",

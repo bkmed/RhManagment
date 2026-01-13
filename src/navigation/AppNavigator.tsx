@@ -79,6 +79,7 @@ import { MenuCustomizationScreen } from '../screens/settings/MenuCustomizationSc
 import { CustomThemeColorsScreen } from '../screens/settings/CustomThemeColorsScreen';
 import { ManageDevicesScreen } from '../screens/settings/ManageDevicesScreen';
 import { MyDevicesScreen } from '../screens/settings/MyDevicesScreen';
+import { AddDeviceScreen } from '../screens/settings/AddDeviceScreen';
 import { NotificationBell } from '../components/common/NotificationBell';
 import { SearchOverlay } from '../components/common/SearchOverlay';
 import { ChatBot } from '../components/common/ChatBot';
@@ -471,6 +472,11 @@ const SettingsStack = () => {
         name="ManageDevices"
         component={ManageDevicesScreen}
         options={{ title: t('navigation.manageDevices') || 'Manage Devices' }}
+      />
+      <Stack.Screen
+        name="AddDevice"
+        component={AddDeviceScreen}
+        options={{ title: t('devices.add') || 'Add Material' }}
       />
       <Stack.Screen
         name="Departments"
@@ -1805,3 +1811,4 @@ const webStyles = StyleSheet.create({
     fontSize: 17,
   },
 });
+

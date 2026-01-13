@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -24,6 +25,7 @@ export const MyDevicesScreen = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const dispatch = useDispatch();
+  const navigation = useNavigation<any>();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const devices = useSelector(selectAllDevices);
@@ -120,7 +122,9 @@ export const MyDevicesScreen = () => {
         keyExtractor={item => String(item.id)}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
-          <Text style={styles.headerTitle}>{t('devices.myMaterial')}</Text>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>{t('devices.myMaterial')}</Text>
+          </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -131,6 +135,13 @@ export const MyDevicesScreen = () => {
           </View>
         }
       />
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('AddDevice')}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -147,6 +158,11 @@ const createStyles = (theme: Theme) =>
     headerTitle: {
       ...theme.textVariants.header,
       color: theme.colors.text,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       marginBottom: theme.spacing.l,
     },
     card: {
@@ -208,5 +224,23 @@ const createStyles = (theme: Theme) =>
       fontSize: 14,
       marginTop: 8,
       textAlign: 'center',
+    },
+    fab: {
+      position: 'absolute',
+      right: theme.spacing.l,
+      bottom: theme.spacing.l,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: theme.colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...theme.shadows.large,
+      elevation: 5,
+    },
+    fabText: {
+      fontSize: 32,
+      color: theme.colors.surface,
+      fontWeight: '300',
     },
   });
