@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -13,11 +14,13 @@ import { RootState } from '../../store';
 import { Employee } from '../../database/schema';
 import { useNavigation } from '@react-navigation/native';
 import { Theme } from '../../theme';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const OrgChartScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const { setActiveTab } = React.useContext(WebNavigationContext);
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const employees = useSelector((state: RootState) => state.employees.items);
@@ -61,12 +64,20 @@ export const OrgChartScreen = () => {
             level === 0 && styles.adminCard,
             level === 1 && styles.managerCard,
           ]}
-          onPress={() =>
-            navigation.navigate('Employees', {
-              screen: 'EmployeeDetails',
-              params: { id: emp.id },
-            })
-          }
+          onPress={() => {
+            if (Platform.OS === 'web' && setActiveTab) {
+              setActiveTab('Employees', 'EmployeeDetails', {
+                employeeId: emp.id,
+              });
+            } else {
+              navigation.navigate('Employees', {
+                screen: 'EmployeeDetails',
+                params: {
+                  employeeId: emp.id,
+                },
+              });
+            }
+          }}
         >
           <View style={styles.cardHeader}>
             <View style={styles.avatarPlaceholder}>

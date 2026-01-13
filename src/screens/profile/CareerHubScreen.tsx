@@ -16,6 +16,7 @@ import { Goal } from '../../database/schema';
 import {
   addGoal,
   updateGoal,
+  setGoals,
   selectGoalsByEmployeeId,
 } from '../../store/slices/goalsSlice';
 import { Theme } from '../../theme';
@@ -46,30 +47,44 @@ export const CareerHubScreen = () => {
     new Date().toISOString().split('T')[0],
   );
 
-  const handleSaveGoal = () => {
+  // Load goals on mount
+  React.useEffect(() => {
+    const loadGoals = async () => {
+      const { goalsDb } = require('../../database/goalsDb');
+      const { setGoals } = require('../../store/slices/goalsSlice');
+      const allGoals = await goalsDb.getAll();
+      dispatch(setGoals(allGoals));
+    };
+    loadGoals();
+  }, [dispatch]);
+
+  const handleSaveGoal = async () => {
+    const { goalsDb } = require('../../database/goalsDb');
     if (!title.trim()) return;
 
     const goalData: Goal = editingGoal
       ? {
-          ...editingGoal,
-          title,
-          description,
-          deadline,
-        }
+        ...editingGoal,
+        title,
+        description,
+        deadline,
+      }
       : {
-          id: Date.now().toString(),
-          employeeId,
-          title,
-          description,
-          deadline,
-          progress: 0,
-          status: 'todo',
-          createdAt: new Date().toISOString(),
-        };
+        id: Date.now().toString(),
+        employeeId,
+        title,
+        description,
+        deadline,
+        progress: 0,
+        status: 'todo',
+        createdAt: new Date().toISOString(),
+      };
 
     if (editingGoal) {
+      await goalsDb.update(goalData);
       dispatch(updateGoal(goalData));
     } else {
+      await goalsDb.add(goalData);
       dispatch(addGoal(goalData));
     }
 
@@ -84,14 +99,17 @@ export const CareerHubScreen = () => {
     setDeadline(new Date().toISOString().split('T')[0]);
   };
 
-  const handleUpdateProgress = (goal: Goal, newProgress: number) => {
+  const handleUpdateProgress = async (goal: Goal, newProgress: number) => {
+    const { goalsDb } = require('../../database/goalsDb');
     const status =
       newProgress === 100
         ? 'completed'
         : newProgress > 0
-        ? 'in_progress'
-        : 'todo';
-    dispatch(updateGoal({ ...goal, progress: newProgress, status }));
+          ? 'in_progress'
+          : 'todo';
+    const updatedGoal = { ...goal, progress: newProgress, status };
+    await goalsDb.update(updatedGoal);
+    dispatch(updateGoal(updatedGoal));
   };
 
   const renderGoalCard = (goal: Goal) => (
