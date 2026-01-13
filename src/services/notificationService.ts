@@ -7,6 +7,8 @@ import notifee, {
 } from '@notifee/react-native';
 import { Payroll } from '../database/schema';
 import { modalService } from './modalService';
+import { store } from '../store';
+import { addNotification } from '../store/slices/notificationsSlice';
 
 export const notificationService = {
   // Initialize notifications
@@ -102,9 +104,8 @@ export const notificationService = {
           {
             id: `pay-${payroll.id}-${time}`,
             title: 'Payroll Reminder',
-            body: `Time to process payroll ${payroll.name} (${payroll.amount} ${
-              payroll.currency || '€'
-            })`,
+            body: `Time to process payroll ${payroll.name} (${payroll.amount} ${payroll.currency || '€'
+              })`,
             android: {
               channelId: 'payroll',
               pressAction: {
@@ -350,10 +351,27 @@ export const notificationService = {
       targetId,
       senderId,
     });
+
+    // Store the notification in Redux for all users (demo mode)
+    const notification = {
+      id: Date.now().toString(),
+      title,
+      message: body,
+      type: 'info' as const,
+      isRead: false,
+      createdAt: new Date().toISOString(),
+      link: undefined,
+      targetType,
+      targetId,
+      senderId: senderId?.toString(),
+    };
+
+    store.dispatch(addNotification(notification));
+
     if (Platform.OS !== 'web') {
       await notifee.displayNotification({
-        title: 'Broadcast Sent',
-        body: `Sent "${title}" to ${targetType}`,
+        title,
+        body,
         android: { channelId: 'payroll' },
       });
     }

@@ -56,6 +56,7 @@ import { ClaimsListScreen } from '../screens/claims/ClaimsListScreen';
 import { ClaimDetailsScreen } from '../screens/claims/ClaimDetailsScreen';
 import { InvoiceListScreen } from '../screens/claims/InvoiceListScreen';
 import { AddInvoiceScreen } from '../screens/claims/AddInvoiceScreen';
+import { InvoiceDetailsScreen } from '../screens/claims/InvoiceDetailsScreen';
 import { CompanyListScreen } from '../screens/companies/CompanyListScreen';
 import { AddCompanyScreen } from '../screens/companies/AddCompanyScreen';
 import { TeamListScreen } from '../screens/teams/TeamListScreen';
@@ -328,6 +329,11 @@ const InvoicesStack = () => {
         name="AddInvoice"
         component={AddInvoiceScreen}
         options={{ title: t('invoices.add') }}
+      />
+      <Stack.Screen
+        name="InvoiceDetails"
+        component={InvoiceDetailsScreen}
+        options={{ title: t('invoices.details') }}
       />
     </Stack.Navigator>
   );
@@ -993,6 +999,18 @@ const WebNavigator = () => {
       contextValue.setActiveTab('Payroll', 'PayrollDetails', {
         id: Number(result.id),
       });
+    } else if (result.type === 'leave') {
+      contextValue.setActiveTab('Leaves', 'LeaveDetails', {
+        leaveId: result.id,
+      });
+    } else if (result.type === 'claim') {
+      contextValue.setActiveTab('Claims', 'ClaimDetails', {
+        claimId: result.id,
+      });
+    } else if (result.type === 'illness') {
+      contextValue.setActiveTab('Illnesses', 'IllnessDetails', {
+        illnessId: result.id,
+      });
     }
   };
   const getActiveComponent = () => {
@@ -1099,6 +1117,10 @@ const WebNavigator = () => {
         if (subScreen === 'AddInvoice')
           return (
             <AddInvoiceScreen route={mockRoute} navigation={mockNavigation} />
+          );
+        if (subScreen === 'InvoiceDetails')
+          return (
+            <InvoiceDetailsScreen route={mockRoute} navigation={mockNavigation} />
           );
         return <InvoicesStack />;
       case 'Companies':

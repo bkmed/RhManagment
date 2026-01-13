@@ -289,44 +289,17 @@ const seedDemoData = async () => {
   const { employeesDb } = require('../database/employeesDb');
   const { leavesDb } = require('../database/leavesDb');
   const { payrollDb } = require('../database/payrollDb');
-  const { companiesDb } = require('../database/companiesDb');
-  const { teamsDb } = require('../database/teamsDb');
   const { reviewPeriodsDb } = require('../database/reviewPeriodsDb');
 
   console.log('SEEDING DEMO DATA...');
 
-  // 1. Create Companies (2)
-  const company1Id = await companiesDb.add({
-    name: 'Tech Solutions Inc.',
-    logo: 'https://via.placeholder.com/150',
-    address: '123 Tech Park',
-    country: 'France',
-  });
-  const company2Id = await companiesDb.add({
-    name: 'Global Services Ltd',
-    logo: 'https://via.placeholder.com/150',
-    address: '456 Business Blvd',
-    country: 'Tunisia',
-  });
+  // Use static IDs matching companiesDb.ts and teamsDb.ts mock data
+  const company1Id = '1'; // TechGlobe Solutions
+  const company2Id = '2'; // EcoFlow Dynamics
 
-  // 2. Create Teams (8) - 4 per company
-  const teamIds: string[] = [];
-  for (let i = 1; i <= 4; i++) {
-    const tId = await teamsDb.add({
-      name: `Tech Team ${i}`,
-      department: 'IT',
-      companyId: company1Id,
-    });
-    teamIds.push(tId);
-  }
-  for (let i = 1; i <= 4; i++) {
-    const tId = await teamsDb.add({
-      name: `Service Team ${i}`,
-      department: 'Operations',
-      companyId: company2Id,
-    });
-    teamIds.push(tId);
-  }
+  // Use static team IDs matching teamsDb.ts mock data
+  // Teams 1-3 belong to company 1, Teams 4-6 belong to company 2
+  const teamIds: string[] = ['1', '2', '3', '4', '5', '6'];
 
   // 3. Create Users (90)
   // Roles: 1 Admin, 3 RH, 8 Managers (1 per team), 78 Employees
@@ -408,12 +381,7 @@ const seedDemoData = async () => {
       remainingVacationDays: 20,
       statePaidLeaves: 5,
     });
-
-    // Update team with managerId
-    const team = await teamsDb.getById(teamId);
-    if (team) {
-      await teamsDb.update(teamId, { ...team, managerId: mgrId });
-    }
+    // Manager IDs are pre-defined in teamsDb.ts mock data, no need to update
   }
 
   // Employees (78)
