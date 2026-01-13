@@ -134,6 +134,7 @@
     "loadFailed": "Error al cargar los detalles",
     "loading": "Cargando...",
     "local": "Local",
+    "manager": "Gerente",
     "month": "Mes",
     "monthUnit": "mes",
     "monthsUnit": "meses",
@@ -211,7 +212,8 @@
     "selectCompany": "Seleccionar Empresa",
     "title": "Empresas",
     "saveSuccess": "Empresa añadida con éxito",
-    "updateSuccess": "Empresa actualizada con éxito"
+    "updateSuccess": "Empresa actualizada con éxito",
+    "other": "Otras Empresas"
   },
   "departments": {
     "add": "Añadir Departamento",
@@ -471,7 +473,11 @@
     "deleteSuccess": "Factura eliminada con éxito",
     "deleteConfirm": "¿Está seguro de que desea eliminar esta factura?",
     "deleteConfirmTitle": "Eliminar factura",
-    "deleteError": "Error al eliminar la factura"
+    "deleteError": "Error al eliminar la factura",
+    "employeeName": "Empleado",
+    "cannotApproveOwn": "No se puede aprobar la propia solicitud",
+    "processedBy": "Procesado por",
+    "status": "Estado"
   },
   "languages": {
     "ar": "Árabe",

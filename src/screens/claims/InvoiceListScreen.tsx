@@ -139,7 +139,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
         const company = companies.find(c => c.id === companyId);
         companiesMap.set(companyId, {
           id: companyId,
-          name: company?.name || 'Autres Entreprises',
+          name: company?.name || t('companies.other'),
           teams: new Map(),
         });
       }
@@ -150,7 +150,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
         const manager = employees.find(e => e.id === team?.managerId);
         companyGroup.teams.set(teamId, {
           id: teamId,
-          name: team?.name || 'Sans Équipe',
+          name: team?.name || t('common.noTeam'),
           managerName: manager?.name || 'N/A',
           items: [],
         });
@@ -307,7 +307,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
                               {teamGroup.name}
                             </Text>
                             <Text style={styles.teamManager}>
-                              Chef: {teamGroup.managerName}
+                              {t('common.manager')}: {teamGroup.managerName}
                             </Text>
                           </View>
                         </View>

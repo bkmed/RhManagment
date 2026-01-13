@@ -134,6 +134,7 @@
     "loadFailed": "Fehler beim Laden der Details",
     "loading": "Lädt...",
     "local": "Standort",
+    "manager": "Manager",
     "month": "Monat",
     "monthUnit": "Monat",
     "monthsUnit": "Monate",
@@ -211,7 +212,8 @@
     "selectCompany": "Unternehmen auswählen",
     "title": "Unternehmen",
     "saveSuccess": "Unternehmen erfolgreich hinzugefügt",
-    "updateSuccess": "Unternehmen erfolgreich aktualisiert"
+    "updateSuccess": "Unternehmen erfolgreich aktualisiert",
+    "other": "Andere Unternehmen"
   },
   "departments": {
     "add": "Abteilung hinzufügen",
@@ -471,7 +473,11 @@
     "deleteSuccess": "Rechnung erfolgreich gelöscht",
     "deleteConfirm": "Sind Sie sicher, dass Sie diese Rechnung löschen möchten?",
     "deleteConfirmTitle": "Rechnung löschen",
-    "deleteError": "Fehler beim Löschen der Rechnung"
+    "deleteError": "Fehler beim Löschen der Rechnung",
+    "employeeName": "Mitarbeiter",
+    "cannotApproveOwn": "Eigene Anfrage kann nicht genehmigt werden",
+    "processedBy": "Bearbeitet von",
+    "status": "Status"
   },
   "languages": {
     "ar": "العربية",

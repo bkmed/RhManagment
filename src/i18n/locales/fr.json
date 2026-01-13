@@ -134,6 +134,7 @@
     "loadFailed": "Échec du chargement des détails",
     "loading": "Chargement...",
     "local": "Lieu de travail",
+    "manager": "Chef",
     "month": "Mois",
     "monthUnit": "mois",
     "monthsUnit": "mois",
@@ -211,7 +212,8 @@
     "selectCompany": "Sélectionner l'entreprise",
     "title": "Entreprises",
     "saveSuccess": "Entreprise ajoutée avec succès",
-    "updateSuccess": "Entreprise mise à jour avec succès"
+    "updateSuccess": "Entreprise mise à jour avec succès",
+    "other": "Autres Entreprises"
   },
   "departments": {
     "add": "Ajouter un département",
@@ -472,7 +474,11 @@
     "deleteSuccess": "Facture supprimée avec succès",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette facture ?",
     "deleteConfirmTitle": "Supprimer la facture",
-    "deleteError": "Échec de la suppression de la facture"
+    "deleteError": "Échec de la suppression de la facture",
+    "employeeName": "Employé",
+    "cannotApproveOwn": "Vous ne pouvez pas approuver votre propre demande",
+    "processedBy": "Traité par",
+    "status": "Statut"
   },
   "languages": {
     "ar": "العربية",

@@ -172,7 +172,7 @@ export const InvoiceDetailsScreen = ({ route, navigation }: any) => {
 
                 {/* Requester Section */}
                 <View style={styles.section}>
-                    <Text style={styles.label}>{t('invoices.employeeName') || 'Employee'}</Text>
+                    <Text style={styles.label}>{t('invoices.employeeName')}</Text>
                     <Text style={styles.value}>
                         {invoice.employeeName || t('common.unknown')}
                     </Text>
@@ -202,7 +202,7 @@ export const InvoiceDetailsScreen = ({ route, navigation }: any) => {
                         <View style={styles.adminActions}>
                             {invoice.employeeId === user?.employeeId ? (
                                 <Text style={styles.ownRequestText}>
-                                    {t('claims.cannotApproveOwn') || 'Cannot approve own request'}
+                                    {t('invoices.cannotApproveOwn')}
                                 </Text>
                             ) : (
                                 <>

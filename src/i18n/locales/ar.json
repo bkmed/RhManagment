@@ -134,6 +134,7 @@
     "loadFailed": "فشل تحميل التفاصيل",
     "loading": "جاري التحميل...",
     "local": "المقر",
+    "manager": "المدير",
     "month": "شهر",
     "monthUnit": "شهر",
     "monthsUnit": "أشهر",
@@ -211,7 +212,8 @@
     "selectCompany": "اختر الشركة",
     "title": "الشركات",
     "saveSuccess": "تم إضافة الشركة بنجاح",
-    "updateSuccess": "تم تحديث الشركة بنجاح"
+    "updateSuccess": "تم تحديث الشركة بنجاح",
+    "other": "شركات أخرى"
   },
   "departments": {
     "add": "إضافة قسم",
@@ -471,7 +473,11 @@
     "deleteSuccess": "تم حذف الفاتورة بنجاح",
     "deleteConfirm": "هل أنت متأكد من رغبتك في حذف هذه الفاتورة؟",
     "deleteConfirmTitle": "حذف الفاتورة",
-    "deleteError": "فشل في حذف الفاتورة"
+    "deleteError": "فشل في حذف الفاتورة",
+    "employeeName": "الموظف",
+    "cannotApproveOwn": "لا يمكن الموافقة على طلبك الخاص",
+    "processedBy": "عولجت بواسطة",
+    "status": "الحالة"
   },
   "languages": {
     "ar": "العربية",

@@ -57,118 +57,9 @@ export const authService = {
     // Simulate API delay
     await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
 
-    // Demo accounts
-    const demoAccounts: { [key: string]: { password: string; user: User } } = {
-      'admin@demo.com': {
-        password: 'admin123',
-        user: {
-          id: 'demo-admin',
-          employeeId: '1001',
-          name: 'Demo Admin',
-          email: 'admin@demo.com',
-          role: 'admin',
-          vacationDaysPerYear: 30,
-          remainingVacationDays: 20,
-          statePaidLeaves: 25,
-          country: 'France',
-          hiringDate: '2018-01-15',
-          notificationPreferences: { push: true, email: true },
-        },
-      },
-      'rh@demo.com': {
-        password: 'rh123',
-        user: {
-          id: 'demo-rh',
-          employeeId: '1002',
-          name: 'Demo RH',
-          email: 'rh@demo.com',
-          role: 'rh',
-          companyId: '1',
-          vacationDaysPerYear: 28,
-          remainingVacationDays: 15,
-          statePaidLeaves: 30,
-          country: 'Tunisia',
-          hiringDate: '2019-03-10',
-          notificationPreferences: { push: true, email: false },
-        },
-      },
-      'chef@demo.com': {
-        password: 'chef123',
-        user: {
-          id: 'demo-manager',
-          employeeId: '1003',
-          name: 'Demo Manager',
-          email: 'chef@demo.com',
-          role: 'manager',
-          department: 'IT',
-          teamId: '1',
-          companyId: '1',
-          vacationDaysPerYear: 25,
-          remainingVacationDays: 10,
-          statePaidLeaves: 30,
-          country: 'Tunisia',
-          hiringDate: '2020-06-01',
-          notificationPreferences: { push: true, email: true },
-        },
-      },
-      'employee@demo.com': {
-        password: 'employee123',
-        user: {
-          id: 'demo-emp',
-          employeeId: '1004',
-          name: 'Demo Employee',
-          email: 'employee@demo.com',
-          role: 'employee',
-          department: 'IT',
-          teamId: '1',
-          companyId: '1',
-          vacationDaysPerYear: 25,
-          remainingVacationDays: 25,
-          statePaidLeaves: 30,
-          country: 'Tunisia',
-          hiringDate: '2021-09-20',
-          notificationPreferences: { push: true, email: false },
-        },
-      },
-    };
-
-    if (demoAccounts[email] && demoAccounts[email].password === password) {
-      let demoUser = demoAccounts[email].user;
-
-      // Seed demo data if it's the first time
-      if (!storageService.getBoolean('demo_data_seeded')) {
-        await seedDemoData();
-      }
-
-      // Attempt to link with seeded employeeId
-      try {
-        const { employeesDb } = require('../database/employeesDb');
-        const allEmployees = await employeesDb.getAll();
-        const matchedEmp = allEmployees.find(
-          (e: Employee) => e.email === email,
-        );
-        if (matchedEmp) {
-          demoUser = { ...demoUser, employeeId: matchedEmp.id };
-        }
-      } catch (err) {
-        console.warn('Failed to link demo user with employee ID', err);
-      }
-
-      storageService.setString(AUTH_KEY, JSON.stringify(demoUser));
-      return demoUser;
-    }
-
-    // Backward compatibility for old test user
-    if (email === 'test@test.com' && password === 'test') {
-      const testUser: User = {
-        id: 'test-user',
-        name: 'Test User',
-        email: 'test@test.com',
-        role: 'admin',
-        notificationPreferences: { push: true, email: true },
-      };
-      storageService.setString(AUTH_KEY, JSON.stringify(testUser));
-      return testUser;
+    // Seed demo data if it's the first time
+    if (!storageService.getBoolean('demo_data_seeded')) {
+      await seedDemoData();
     }
 
     const usersJson = storageService.getString(USERS_KEY);
@@ -486,6 +377,92 @@ const seedDemoData = async () => {
     endDate: '2024-03-31',
     status: 'active',
   });
+
+  // 5. Create Users in Persistent Storage
+  const users: (User & { password?: string })[] = [];
+
+  // Helper to add user
+  const addUser = (
+    id: string,
+    email: string,
+    password: string,
+    role: UserRole,
+    employeeId?: string,
+    additionalProps: Partial<User> = {},
+  ) => {
+    users.push({
+      id,
+      email,
+      password,
+      role,
+      name: additionalProps.name || '',
+      employeeId,
+      notificationPreferences: { push: true, email: true },
+      ...additionalProps,
+    });
+  };
+
+  // Admin User
+  const adminEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'admin@demo.com');
+  if (adminEmp) {
+    addUser('demo-admin', 'admin@demo.com', 'admin123', 'admin', adminEmp.id, {
+      name: 'Super Admin',
+      vacationDaysPerYear: 30,
+      remainingVacationDays: 20,
+      statePaidLeaves: 25,
+      country: 'France',
+      hiringDate: '2018-01-15',
+    });
+  }
+
+  // RH User
+  const rhEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'rh@demo.com');
+  if (rhEmp) {
+    addUser('demo-rh', 'rh@demo.com', 'rh123', 'rh', rhEmp.id, {
+      name: 'Demo RH',
+      companyId: company1Id, // Use static Company ID
+      vacationDaysPerYear: 28,
+      remainingVacationDays: 15,
+      statePaidLeaves: 30,
+      country: 'Tunisia',
+      hiringDate: '2019-03-10',
+    });
+  }
+
+  // Manager User
+  const managerEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'chef@demo.com');
+  if (managerEmp) {
+    addUser('demo-manager', 'chef@demo.com', 'chef123', 'manager', managerEmp.id, {
+      name: 'Demo Manager',
+      companyId: company1Id,
+      teamId: '1',
+      department: 'IT',
+      vacationDaysPerYear: 25,
+      remainingVacationDays: 10,
+      statePaidLeaves: 30,
+      country: 'Tunisia',
+      hiringDate: '2020-06-01',
+    });
+  }
+
+  // Employee User
+  const employeeEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'employee@demo.com');
+  if (employeeEmp) {
+    addUser('demo-emp', 'employee@demo.com', 'employee123', 'employee', employeeEmp.id, {
+      name: 'Demo Employee',
+      companyId: company1Id,
+      teamId: '1',
+      department: 'IT',
+      vacationDaysPerYear: 25,
+      remainingVacationDays: 25,
+      statePaidLeaves: 30,
+      country: 'Tunisia',
+      hiringDate: '2021-09-20',
+    });
+  }
+
+  // Save to storage
+  storageService.setString(USERS_KEY, JSON.stringify(users));
 
   console.log('DEMO DATA SEEDED SUCCESSFULLY');
   storageService.setBoolean('demo_data_seeded', true);
