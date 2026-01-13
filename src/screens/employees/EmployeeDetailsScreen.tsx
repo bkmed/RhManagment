@@ -293,7 +293,14 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
             <View style={styles.responsiveRow}>
               <View style={styles.fieldContainer}>
                 <Text style={styles.detailLabel}>{t('employees.age')}</Text>
-                <Text style={styles.detailValue}>{employee.age || '-'}</Text>
+                <Text style={styles.detailValue}>
+                  {employee.birthDate
+                    ? Math.floor(
+                      (Date.now() - new Date(employee.birthDate).getTime()) /
+                      (365.25 * 24 * 60 * 60 * 1000),
+                    )
+                    : employee.age || '-'}
+                </Text>
               </View>
               <View style={styles.fieldContainer}>
                 <Text style={styles.detailLabel}>{t('employees.gender')}</Text>

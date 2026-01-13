@@ -465,7 +465,13 @@
     "statusRejected": "Rechazada",
     "teamInvoices": "Facturas del equipo",
     "title": "Facturas",
-    "updateButton": "Actualizar factura"
+    "updateButton": "Actualizar factura",
+    "saveSuccess": "Factura guardada con éxito",
+    "updateSuccess": "Factura actualizada con éxito",
+    "deleteSuccess": "Factura eliminada con éxito",
+    "deleteConfirm": "¿Está seguro de que desea eliminar esta factura?",
+    "deleteConfirmTitle": "Eliminar factura",
+    "deleteError": "Error al eliminar la factura"
   },
   "languages": {
     "ar": "Árabe",

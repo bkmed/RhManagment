@@ -466,7 +466,13 @@
     "statusRejected": "Rejetée",
     "teamInvoices": "Factures de l'équipe",
     "title": "Factures",
-    "updateButton": "Mettre à jour la facture"
+    "updateButton": "Mettre à jour la facture",
+    "saveSuccess": "Facture enregistrée avec succès",
+    "updateSuccess": "Facture mise à jour avec succès",
+    "deleteSuccess": "Facture supprimée avec succès",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette facture ?",
+    "deleteConfirmTitle": "Supprimer la facture",
+    "deleteError": "Échec de la suppression de la facture"
   },
   "languages": {
     "ar": "العربية",

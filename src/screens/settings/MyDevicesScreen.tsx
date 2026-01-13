@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
   View,
@@ -6,10 +6,12 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { useModal } from '../../context/ModalContext';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 import { Theme } from '../../theme';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -24,6 +26,7 @@ export const MyDevicesScreen = () => {
   const { showModal } = useModal();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { setActiveTab } = useContext(WebNavigationContext);
   const dispatch = useDispatch();
   const navigation = useNavigation<any>();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -137,7 +140,13 @@ export const MyDevicesScreen = () => {
       />
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddDevice')}
+        onPress={() => {
+          if (Platform.OS === 'web') {
+            setActiveTab('Profile', 'AddDevice');
+          } else {
+            navigation.navigate('AddDevice');
+          }
+        }}
         activeOpacity={0.8}
       >
         <Text style={styles.fabText}>+</Text>

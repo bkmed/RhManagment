@@ -465,7 +465,13 @@
     "statusRejected": "مرفوض",
     "teamInvoices": "فواتير الفريق",
     "title": "الفواتير",
-    "updateButton": "تحديث الفاتورة"
+    "updateButton": "تحديث الفاتورة",
+    "saveSuccess": "تم حفظ الفاتورة بنجاح",
+    "updateSuccess": "تم تحديث الفاتورة بنجاح",
+    "deleteSuccess": "تم حذف الفاتورة بنجاح",
+    "deleteConfirm": "هل أنت متأكد من رغبتك في حذف هذه الفاتورة؟",
+    "deleteConfirmTitle": "حذف الفاتورة",
+    "deleteError": "فشل في حذف الفاتورة"
   },
   "languages": {
     "ar": "العربية",

@@ -465,7 +465,13 @@
     "statusRejected": "Abgelehnt",
     "teamInvoices": "Team-Rechnungen",
     "title": "Rechnungen",
-    "updateButton": "Rechnung aktualisieren"
+    "updateButton": "Rechnung aktualisieren",
+    "saveSuccess": "Rechnung erfolgreich gespeichert",
+    "updateSuccess": "Rechnung erfolgreich aktualisiert",
+    "deleteSuccess": "Rechnung erfolgreich gelöscht",
+    "deleteConfirm": "Sind Sie sicher, dass Sie diese Rechnung löschen möchten?",
+    "deleteConfirmTitle": "Rechnung löschen",
+    "deleteError": "Fehler beim Löschen der Rechnung"
   },
   "languages": {
     "ar": "العربية",

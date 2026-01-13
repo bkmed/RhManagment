@@ -1172,6 +1172,8 @@ const WebNavigator = () => {
         if (subScreen === 'Departments') return <DepartmentStack />;
         if (subScreen === 'Services') return <ServiceStack />;
         if (subScreen === 'ManageCurrencies') return <ManageCurrenciesScreen />;
+        if (subScreen === 'AddDevice')
+          return <AddDeviceScreen navigation={mockNavigation} route={mockRoute} />;
         return <CompanySettingsScreen />;
       case 'MyTeam':
         return <MyTeamScreen />;
@@ -1180,6 +1182,8 @@ const WebNavigator = () => {
         if (subScreen === 'ManageCurrencies') return <ManageCurrenciesScreen />;
         if (subScreen === 'MyTeam') return <MyTeamScreen />;
         if (subScreen === 'MyDevices') return <MyDevicesScreen />;
+        if (subScreen === 'AddDevice')
+          return <AddDeviceScreen navigation={mockNavigation} route={mockRoute} />;
         return <ProfileStack />;
       default:
         return <HomeStack />;

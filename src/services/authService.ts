@@ -75,14 +75,15 @@ export const authService = {
           notificationPreferences: { push: true, email: true },
         },
       },
-      'hr@demo.com': {
-        password: 'hr123',
+      'rh@demo.com': {
+        password: 'rh123',
         user: {
-          id: 'demo-hr',
+          id: 'demo-rh',
           employeeId: '1002',
-          name: 'Demo HR',
-          email: 'hr@demo.com',
+          name: 'Demo RH',
+          email: 'rh@demo.com',
           role: 'rh',
+          companyId: '1',
           vacationDaysPerYear: 28,
           remainingVacationDays: 15,
           statePaidLeaves: 30,
@@ -101,6 +102,7 @@ export const authService = {
           role: 'manager',
           department: 'IT',
           teamId: '1',
+          companyId: '1',
           vacationDaysPerYear: 25,
           remainingVacationDays: 10,
           statePaidLeaves: 30,
@@ -113,11 +115,13 @@ export const authService = {
         password: 'employee123',
         user: {
           id: 'demo-emp',
+          employeeId: '1004',
           name: 'Demo Employee',
           email: 'employee@demo.com',
           role: 'employee',
           department: 'IT',
           teamId: '1',
+          companyId: '1',
           vacationDaysPerYear: 25,
           remainingVacationDays: 25,
           statePaidLeaves: 30,
@@ -330,6 +334,8 @@ const seedDemoData = async () => {
   // Admin
   await employeesDb.add({
     name: 'Super Admin',
+    firstName: 'Super',
+    lastName: 'Admin',
     email: 'admin@demo.com',
     role: 'admin',
     companyId: company1Id,
@@ -339,22 +345,39 @@ const seedDemoData = async () => {
     vacationDaysPerYear: 30,
     remainingVacationDays: 30,
     statePaidLeaves: 0,
-    password: 'admin', // In real app, password is part of auth record, simpler here for mapping
+    country: 'France',
+    hiringDate: '2018-01-15',
+    address: '123 Avenue des Champs-Élysées, Paris',
+    age: 42,
+    gender: 'male',
+    skills: ['Leadership', 'Strategy', 'HR Tech', 'Management'],
+    password: 'admin',
   });
 
   // RH (3)
   const rhEmails = ['rh1@demo.com', 'rh2@demo.com', 'rh@demo.com'];
-  for (const email of rhEmails) {
+  for (let i = 0; i < rhEmails.length; i++) {
+    const email = rhEmails[i];
+    const isMainRH = email === 'rh@demo.com';
+
     await employeesDb.add({
-      name: `RH Officer ${email.split('@')[0]}`,
+      name: isMainRH ? 'Demo RH' : `RH Officer ${i + 1}`,
+      firstName: isMainRH ? 'Demo' : 'RH',
+      lastName: isMainRH ? 'RH' : `Officer ${i + 1}`,
       email: email,
       role: 'rh',
-      companyId: company1Id, // Attach to first company for simplicity
+      companyId: company1Id,
       department: 'Human Resources',
-      position: 'HR Specialist',
+      position: 'HR Manager',
       vacationDaysPerYear: 30,
       remainingVacationDays: 25,
       statePaidLeaves: 0,
+      country: 'Tunisia',
+      hiringDate: '2019-03-10',
+      address: 'Berges du Lac, Tunis',
+      age: 35,
+      gender: 'female',
+      skills: ['Recruitment', 'Conflict Resolution', 'Labor Law', 'Payroll'],
     });
   }
 
@@ -362,18 +385,25 @@ const seedDemoData = async () => {
   for (let i = 0; i < teamIds.length; i++) {
     const teamId = teamIds[i];
     const email = `manager${i + 1}@demo.com`;
-
-    // Use specific email for the login demo manager if needed, else random
-    const finalEmail = i === 0 ? 'chef@demo.com' : email;
+    const isDemoManager = i === 0;
+    const finalEmail = isDemoManager ? 'chef@demo.com' : email;
 
     const mgrId = await employeesDb.add({
-      name: `Manager Team ${i + 1}`,
+      name: isDemoManager ? 'Demo Manager' : `Manager Team ${i + 1}`,
+      firstName: isDemoManager ? 'Demo' : 'Manager',
+      lastName: isDemoManager ? 'Manager' : `Team ${i + 1}`,
       email: finalEmail,
       role: 'manager',
       teamId: teamId,
       companyId: i < 4 ? company1Id : company2Id,
       department: i < 4 ? 'IT' : 'Operations',
       position: 'Team Lead',
+      country: 'Tunisia',
+      hiringDate: '2020-06-01',
+      address: 'Ennasr, Tunis',
+      age: 38,
+      gender: 'male',
+      skills: ['Agile', 'Team Leadership', 'Project Management'],
       vacationDaysPerYear: 28,
       remainingVacationDays: 20,
       statePaidLeaves: 5,
@@ -417,8 +447,8 @@ const seedDemoData = async () => {
   ];
 
   for (let i = 0; i < 78; i++) {
-    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const firstName = i === 0 ? 'Demo' : firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = i === 0 ? 'Employee' : lastNames[Math.floor(Math.random() * lastNames.length)];
     const email = `emp${i + 1}@demo.com`;
 
     // Use specific email for demo employee
@@ -435,11 +465,16 @@ const seedDemoData = async () => {
       teamId: assignedTeamId,
       companyId: assignedCompanyId,
       department: assignedCompanyId === company1Id ? 'IT' : 'Operations',
-      position: 'Developer',
+      position: 'Senior Developer',
+      country: 'Tunisia',
+      address: 'Sidi Bou Said, Tunis',
+      age: 29,
+      gender: 'male',
+      skills: ['React Native', 'TypeScript', 'Redux', 'Git'],
       vacationDaysPerYear: 25,
-      remainingVacationDays: Math.floor(Math.random() * 25),
-      statePaidLeaves: Math.floor(Math.random() * 10),
-      hiringDate: new Date(
+      remainingVacationDays: i === 0 ? 25 : Math.floor(Math.random() * 25),
+      statePaidLeaves: i === 0 ? 30 : Math.floor(Math.random() * 10),
+      hiringDate: i === 0 ? '2021-09-20' : new Date(
         2020 + Math.floor(Math.random() * 4),
         Math.floor(Math.random() * 12),
         1,

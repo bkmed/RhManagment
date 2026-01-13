@@ -464,7 +464,13 @@
     "statusRejected": "अस्वीकृत",
     "teamInvoices": "टीम के इनवॉइस",
     "title": "इनवॉइस",
-    "updateButton": "इनवॉइस अपडेट करें"
+    "updateButton": "इनवॉइस अपडेट करें",
+    "saveSuccess": "इनवॉइस सफलतापूर्वक सहेजा गया",
+    "updateSuccess": "इनवॉइस सफलतापूर्वक अपडेट किया गया",
+    "deleteSuccess": "इनवॉइस सफलतापूर्वक हटा दिया गया",
+    "deleteConfirm": "क्या आप वाकई इस इनवॉइस को हटाना चाहते हैं?",
+    "deleteConfirmTitle": "इनवॉइस हटाएं",
+    "deleteError": "इनवॉइस हटाने में विफल"
   },
   "languages": {
     "ar": "العربية",

@@ -464,7 +464,13 @@
     "statusRejected": "已拒绝",
     "teamInvoices": "团队发票",
     "title": "发票",
-    "updateButton": "更新发票"
+    "updateButton": "更新发票",
+    "saveSuccess": "发票保存成功",
+    "updateSuccess": "发票更新成功",
+    "deleteSuccess": "发票删除成功",
+    "deleteConfirm": "您确定要删除此发票吗？",
+    "deleteConfirmTitle": "删除发票",
+    "deleteError": "删除发票失败"
   },
   "languages": {
     "ar": "العربية",
