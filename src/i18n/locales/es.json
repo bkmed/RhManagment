@@ -662,14 +662,14 @@
     "inactive": "Inactivo",
     "isUrgent": "Urgente",
     "items": {
-      "baseSalary": "Base Salary",
-      "bonus": "Company Bonus",
-      "indemnity": "Severance/Indemnity",
-      "mealTicket": "Meal Vouchers",
-      "overtime": "Overtime Pay",
-      "performanceBonus": "Performance Bonus",
-      "thirteenthMonth": "13th Month Salary",
-      "transportAllowance": "Transport Allowance"
+      "baseSalary": "Salario Base",
+      "bonus": "Bono de Empresa",
+      "indemnity": "Indemnización",
+      "mealTicket": "Vales de Comida",
+      "overtime": "Pago de Horas Extras",
+      "performanceBonus": "Bono de Desempeño",
+      "thirteenthMonth": "13er Mes de Salario",
+      "transportAllowance": "Subsidio de Transporte"
     },
     "loadError": "Error al cargar la nómina",
     "manageServices": "Gestionar Departamentos/Servicios",
@@ -695,7 +695,9 @@
     "update": "Actualizar",
     "urgent": "URGENTE",
     "issuedBy": "Emitido por",
-    "year": "Año"
+    "year": "Año",
+    "saveSuccess": "Elemento de nómina guardado con éxito",
+    "updateSuccess": "Elemento de nómina actualizado con éxito"
   },
   "payrollDetails": {
     "deleteButton": "Eliminar",

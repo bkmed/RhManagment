@@ -687,7 +687,9 @@
     "update": "更新",
     "urgent": "紧急",
     "issuedBy": "颁发者",
-    "year": "年"
+    "year": "年",
+    "saveSuccess": "薪酬项目保存成功",
+    "updateSuccess": "薪酬项目更新成功"
   },
   "payrollDetails": {
     "deleteButton": "删除",

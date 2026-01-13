@@ -693,7 +693,9 @@
     "update": "تحديث",
     "urgent": "عاجل",
     "issuedBy": "صدر بواسطة",
-    "year": "السنة"
+    "year": "السنة",
+    "saveSuccess": "تم حفظ بند الراتب بنجاح",
+    "updateSuccess": "تم تحديث بند الراتب بنجاح"
   },
   "payrollDetails": {
     "deleteButton": "حذف",

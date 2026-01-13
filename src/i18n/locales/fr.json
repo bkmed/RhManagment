@@ -699,7 +699,9 @@
     "update": "Mettre à jour",
     "urgent": "URGENT",
     "issuedBy": "Délivré par",
-    "year": "Année"
+    "year": "Année",
+    "saveSuccess": "Élément de paie enregistré avec succès",
+    "updateSuccess": "Élément de paie mis à jour avec succès"
   },
   "payrollDetails": {
     "deleteButton": "Supprimer",

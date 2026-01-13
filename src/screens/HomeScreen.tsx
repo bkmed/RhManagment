@@ -161,7 +161,7 @@ const AdminDashboard = ({
 }: AdminDashboardProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
-
+  console.log('medbk recentActivity', recentActivity)
   return (
     <View style={styles.dashboardContainer}>
       <View
@@ -295,19 +295,16 @@ const AdminDashboard = ({
       <View style={styles.activityCard}>
         {recentActivity.length > 0 ? (
           recentActivity.map((activity: any, index: number) => (
-            <TouchableOpacity
+            <ActivityItem
               key={index}
+              icon={activity.icon}
+              title={activity.title}
+              subtitle={activity.subtitle}
+              time={formatDate(activity.date)}
+              theme={theme}
+              styles={styles}
               onPress={() => handleActivityPress(activity)}
-            >
-              <ActivityItem
-                icon={activity.icon}
-                title={activity.title}
-                subtitle={activity.subtitle}
-                time={formatDate(activity.date)}
-                theme={theme}
-                styles={styles}
-              />
-            </TouchableOpacity>
+            />
           ))
         ) : (
           <View style={styles.emptyState}>
@@ -576,19 +573,16 @@ const EmployeeDashboard = ({
       <View style={styles.activityCard}>
         {recentActivity.length > 0 ? (
           recentActivity.map((activity: any, index: number) => (
-            <TouchableOpacity
+            <ActivityItem
               key={index}
+              icon={activity.icon}
+              title={activity.title}
+              subtitle={activity.subtitle}
+              time={formatDate(activity.date)}
+              theme={theme}
+              styles={styles}
               onPress={() => handleActivityPress(activity)}
-            >
-              <ActivityItem
-                icon={activity.icon}
-                title={activity.title}
-                subtitle={activity.subtitle}
-                time={formatDate(activity.date)}
-                theme={theme}
-                styles={styles}
-              />
-            </TouchableOpacity>
+            />
           ))
         ) : (
           <View style={styles.emptyState}>
@@ -878,7 +872,7 @@ export const HomeScreen = () => {
     // Actually, looking at the previous failed step 2785, I tried to add type/id handling.
     // Let's add the function with safe checking.
 
-    const { type, id } = item;
+    const { type, id } = item; console.log('medbk item', item)
     if (!type || !id) return;
 
     if (isWebMobile || Platform.OS === 'web') {
@@ -920,7 +914,6 @@ export const HomeScreen = () => {
             height: Platform.OS === 'web' ? (width < 768 ? 80 : 20) : 0,
           }}
         />
-
         {user?.role === 'admin' || user?.role === 'rh' ? (
           <AdminDashboard
             summary={summary}

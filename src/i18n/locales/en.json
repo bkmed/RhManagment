@@ -690,7 +690,9 @@
     "update": "Update",
     "urgent": "URGENT",
     "issuedBy": "Issued By",
-    "year": "Year"
+    "year": "Year",
+    "saveSuccess": "Payroll item saved successfully",
+    "updateSuccess": "Payroll item updated successfully"
   },
   "payrollDetails": {
     "deleteButton": "Delete",

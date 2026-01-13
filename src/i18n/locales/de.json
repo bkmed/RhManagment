@@ -651,14 +651,14 @@
     "inactive": "Inaktiv",
     "isUrgent": "Dringend",
     "items": {
-      "baseSalary": "Base Salary",
-      "bonus": "Company Bonus",
-      "indemnity": "Severance/Indemnity",
-      "mealTicket": "Meal Vouchers",
-      "overtime": "Overtime Pay",
-      "performanceBonus": "Performance Bonus",
-      "thirteenthMonth": "13th Month Salary",
-      "transportAllowance": "Transport Allowance"
+      "baseSalary": "Grundgehalt",
+      "bonus": "Unternehmensbonus",
+      "indemnity": "Abfindung",
+      "mealTicket": "Essensgutschein",
+      "overtime": "Überstundenvergütung",
+      "performanceBonus": "Leistungsbonus",
+      "thirteenthMonth": "13. Monatsgehalt",
+      "transportAllowance": "Transportzulage"
     },
     "loadError": "Fehler beim Laden der Gehaltsabrechnung",
     "manageServices": "Abteilungen/Dienste verwalten",
@@ -684,7 +684,9 @@
     "update": "Aktualisieren",
     "urgent": "DRINGEND",
     "issuedBy": "Ausgestellt von",
-    "year": "Jahr"
+    "year": "Jahr",
+    "saveSuccess": "Gehaltsposten erfolgreich gespeichert",
+    "updateSuccess": "Gehaltsposten erfolgreich aktualisiert"
   },
   "payrollDetails": {
     "deleteButton": "Löschen",

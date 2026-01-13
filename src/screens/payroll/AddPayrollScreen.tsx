@@ -620,8 +620,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             {loading
               ? t('common.loading')
               : isEdit
-              ? t('payroll.update')
-              : t('common.save')}{' '}
+                ? t('payroll.update')
+                : t('common.save')}{' '}
             {t('payroll.payroll')}
           </Text>
         </TouchableOpacity>
@@ -636,9 +636,14 @@ const createStyles = (theme: Theme) =>
     content: { padding: theme.spacing.m, paddingBottom: theme.spacing.xl },
     formContainer: {
       flex: 1,
-      maxWidth: Platform.OS === 'web' ? 800 : undefined,
+      maxWidth: Platform.OS === 'web' ? 900 : undefined,
       width: '100%',
       alignSelf: 'center',
+      ...(Platform.OS === 'web' && {
+        backgroundColor: theme.colors.background, // or subtle overlay if needed, but transparent is cleaner if already in background
+        paddingHorizontal: theme.spacing.xl,
+        paddingTop: theme.spacing.m,
+      }),
     },
     section: {
       backgroundColor: theme.colors.surface,

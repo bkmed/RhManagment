@@ -685,7 +685,9 @@
     "update": "अपडेट करें",
     "urgent": "अति आवश्यक",
     "issuedBy": "द्वारा जारी किया गया",
-    "year": "वर्ष"
+    "year": "वर्ष",
+    "saveSuccess": "पेरोल आइटम सफलतापूर्वक सहेजा गया",
+    "updateSuccess": "पेरोल आइटम सफलतापूर्वक अपडेट किया गया"
   },
   "payrollDetails": {
     "deleteButton": "हटाएं",
