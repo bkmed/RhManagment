@@ -58,7 +58,11 @@ export const authService = {
     await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
 
     // Seed demo data if it's the first time
-    if (!storageService.getBoolean('demo_data_seeded')) {
+    // Seed demo data if it's the first time OR if admin user is missing (recovery)
+    const storedUsers = storageService.getString(USERS_KEY);
+    const hasAdmin = storedUsers && JSON.parse(storedUsers).some((u: any) => u.email === 'admin@demo.com');
+
+    if (!storageService.getBoolean('demo_data_seeded') || !hasAdmin) {
       await seedDemoData();
     }
 
@@ -196,27 +200,30 @@ const seedDemoData = async () => {
   // Roles: 1 Admin, 3 RH, 8 Managers (1 per team), 78 Employees
 
   // Admin
-  await employeesDb.add({
-    name: 'Super Admin',
-    firstName: 'Super',
-    lastName: 'Admin',
-    email: 'admin@demo.com',
-    role: 'admin',
-    companyId: company1Id,
-    teamId: undefined,
-    position: 'CTO',
-    department: 'Management',
-    vacationDaysPerYear: 30,
-    remainingVacationDays: 30,
-    statePaidLeaves: 0,
-    country: 'France',
-    hiringDate: '2018-01-15',
-    address: '123 Avenue des Champs-Élysées, Paris',
-    age: 42,
-    gender: 'male',
-    skills: ['Leadership', 'Strategy', 'HR Tech', 'Management'],
-    password: 'admin',
-  });
+  const existingAdmin = (await employeesDb.getAll()).find((e: Employee) => e.email === 'admin@demo.com');
+  if (!existingAdmin) {
+    await employeesDb.add({
+      name: 'Super Admin',
+      firstName: 'Super',
+      lastName: 'Admin',
+      email: 'admin@demo.com',
+      role: 'admin',
+      companyId: company1Id,
+      teamId: undefined,
+      position: 'CTO',
+      department: 'Management',
+      vacationDaysPerYear: 30,
+      remainingVacationDays: 30,
+      statePaidLeaves: 0,
+      country: 'France',
+      hiringDate: '2018-01-15',
+      address: '123 Avenue des Champs-Élysées, Paris',
+      age: 42,
+      gender: 'male',
+      skills: ['Leadership', 'Strategy', 'HR Tech', 'Management'],
+      password: 'admin',
+    });
+  }
 
   // RH (3)
   const rhEmails = ['rh1@demo.com', 'rh2@demo.com', 'rh@demo.com'];
@@ -224,25 +231,28 @@ const seedDemoData = async () => {
     const email = rhEmails[i];
     const isMainRH = email === 'rh@demo.com';
 
-    await employeesDb.add({
-      name: isMainRH ? 'Demo RH' : `RH Officer ${i + 1}`,
-      firstName: isMainRH ? 'Demo' : 'RH',
-      lastName: isMainRH ? 'RH' : `Officer ${i + 1}`,
-      email: email,
-      role: 'rh',
-      companyId: company1Id,
-      department: 'Human Resources',
-      position: 'HR Manager',
-      vacationDaysPerYear: 30,
-      remainingVacationDays: 25,
-      statePaidLeaves: 0,
-      country: 'Tunisia',
-      hiringDate: '2019-03-10',
-      address: 'Berges du Lac, Tunis',
-      age: 35,
-      gender: 'female',
-      skills: ['Recruitment', 'Conflict Resolution', 'Labor Law', 'Payroll'],
-    });
+    const existingRh = (await employeesDb.getAll()).find((e: Employee) => e.email === email);
+    if (!existingRh) {
+      await employeesDb.add({
+        name: isMainRH ? 'Demo RH' : `RH Officer ${i + 1}`,
+        firstName: isMainRH ? 'Demo' : 'RH',
+        lastName: isMainRH ? 'RH' : `Officer ${i + 1}`,
+        email: email,
+        role: 'rh',
+        companyId: company1Id,
+        department: 'Human Resources',
+        position: 'HR Manager',
+        vacationDaysPerYear: 30,
+        remainingVacationDays: 25,
+        statePaidLeaves: 0,
+        country: 'Tunisia',
+        hiringDate: '2019-03-10',
+        address: 'Berges du Lac, Tunis',
+        age: 35,
+        gender: 'female',
+        skills: ['Recruitment', 'Conflict Resolution', 'Labor Law', 'Payroll'],
+      });
+    }
   }
 
   // Employees (78)
@@ -285,58 +295,63 @@ const seedDemoData = async () => {
     const assignedTeamId = teamIds[i % teamIds.length];
     const assignedCompanyId = i % teamIds.length < 4 ? company1Id : company2Id;
 
-    const empId = await employeesDb.add({
-      name: `${firstName} ${lastName}`,
-      firstName,
-      lastName,
-      email: finalEmail,
-      role: 'employee',
-      teamId: assignedTeamId,
-      companyId: assignedCompanyId,
-      department: assignedCompanyId === company1Id ? 'IT' : 'Operations',
-      position: 'Senior Developer',
-      country: 'Tunisia',
-      address: 'Sidi Bou Said, Tunis',
-      age: 29,
-      gender: 'male',
-      skills: ['React Native', 'TypeScript', 'Redux', 'Git'],
-      vacationDaysPerYear: 25,
-      remainingVacationDays: i === 0 ? 25 : Math.floor(Math.random() * 25),
-      statePaidLeaves: i === 0 ? 30 : Math.floor(Math.random() * 10),
-      hiringDate: i === 0 ? '2021-09-20' : new Date(
-        2020 + Math.floor(Math.random() * 4),
-        Math.floor(Math.random() * 12),
-        1,
-      )
-        .toISOString()
-        .split('T')[0],
-    });
+    const existingEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === finalEmail);
+    let empId = existingEmp ? existingEmp.id : '';
 
-    // Generate some leaves and payroll for the first few employees
-    if (i < 10) {
-      await leavesDb.add({
-        title: 'Vacation',
-        employeeName: `${firstName} ${lastName}`,
-        employeeId: empId,
-        dateTime: new Date().toISOString(),
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 86400000 * 3).toISOString(),
-        status: 'approved',
-        type: 'leave',
-        reminderEnabled: false,
-      });
-
-      await payrollDb.add({
-        name: 'Monthly Salary',
-        amount: 2500 + Math.floor(Math.random() * 1000),
-        currency: assignedCompanyId === company1Id ? 'EUR' : 'TND',
-        frequency: 'Monthly',
-        times: JSON.stringify(['09:00']),
-        startDate: new Date().toISOString(),
-        reminderEnabled: true,
-        employeeId: empId,
+    if (!existingEmp) {
+      empId = await employeesDb.add({
+        name: `${firstName} ${lastName}`,
+        firstName,
+        lastName,
+        email: finalEmail,
+        role: 'employee',
+        teamId: assignedTeamId,
         companyId: assignedCompanyId,
+        department: assignedCompanyId === company1Id ? 'IT' : 'Operations',
+        position: 'Senior Developer',
+        country: 'Tunisia',
+        address: 'Sidi Bou Said, Tunis',
+        age: 29,
+        gender: 'male',
+        skills: ['React Native', 'TypeScript', 'Redux', 'Git'],
+        vacationDaysPerYear: 25,
+        remainingVacationDays: i === 0 ? 25 : Math.floor(Math.random() * 25),
+        statePaidLeaves: i === 0 ? 30 : Math.floor(Math.random() * 10),
+        hiringDate: i === 0 ? '2021-09-20' : new Date(
+          2020 + Math.floor(Math.random() * 4),
+          Math.floor(Math.random() * 12),
+          1,
+        )
+          .toISOString()
+          .split('T')[0],
       });
+
+      // Generate some leaves and payroll for the first few employees
+      if (i < 10) {
+        await leavesDb.add({
+          title: 'Vacation',
+          employeeName: `${firstName} ${lastName}`,
+          employeeId: empId,
+          dateTime: new Date().toISOString(),
+          startDate: new Date().toISOString(),
+          endDate: new Date(Date.now() + 86400000 * 3).toISOString(),
+          status: 'approved',
+          type: 'leave',
+          reminderEnabled: false,
+        });
+
+        await payrollDb.add({
+          name: 'Monthly Salary',
+          amount: 2500 + Math.floor(Math.random() * 1000),
+          currency: assignedCompanyId === company1Id ? 'EUR' : 'TND',
+          frequency: 'Monthly',
+          times: JSON.stringify(['09:00']),
+          startDate: new Date().toISOString(),
+          reminderEnabled: true,
+          employeeId: empId,
+          companyId: assignedCompanyId,
+        });
+      }
     }
   }
 
@@ -374,62 +389,83 @@ const seedDemoData = async () => {
 
   // Admin User
   const adminEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'admin@demo.com');
-  if (adminEmp) {
-    addUser('demo-admin', 'admin@demo.com', 'admin123', 'admin', adminEmp.id, {
-      name: 'Super Admin',
-      vacationDaysPerYear: 30,
-      remainingVacationDays: 20,
-      statePaidLeaves: 25,
-      country: 'France',
-      hiringDate: '2018-01-15',
-    });
-  }
+  addUser('demo-admin', 'admin@demo.com', 'admin123', 'admin', adminEmp?.id, {
+    name: 'Super Admin',
+    vacationDaysPerYear: 30,
+    remainingVacationDays: 20,
+    statePaidLeaves: 25,
+    country: 'France',
+    hiringDate: '2018-01-15',
+    ...adminEmp
+  });
 
   // RH User
   const rhEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'rh@demo.com');
-  if (rhEmp) {
-    addUser('demo-rh', 'rh@demo.com', 'rh123', 'rh', rhEmp.id, {
-      name: 'Demo RH',
-      companyId: company1Id, // Use static Company ID
-      vacationDaysPerYear: 28,
-      remainingVacationDays: 15,
-      statePaidLeaves: 30,
-      country: 'Tunisia',
-      hiringDate: '2019-03-10',
-    });
-  }
+  addUser('demo-rh', 'rh@demo.com', 'rh123', 'rh', rhEmp?.id, {
+    name: 'Demo RH',
+    companyId: company1Id,
+    vacationDaysPerYear: 28,
+    remainingVacationDays: 15,
+    statePaidLeaves: 30,
+    country: 'Tunisia',
+    hiringDate: '2019-03-10',
+    ...rhEmp
+  });
 
-  // Manager User
-  const managerEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'chef@demo.com');
-  if (managerEmp) {
-    addUser('demo-manager', 'chef@demo.com', 'chef123', 'manager', managerEmp.id, {
+  // Manager User - Explicitly create if not found
+  let managerEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'chef@demo.com');
+  if (!managerEmp) {
+    // Create the missing manager employee
+    const newManagerId = await employeesDb.add({
       name: 'Demo Manager',
+      firstName: 'Demo',
+      lastName: 'Manager',
+      email: 'chef@demo.com',
+      role: 'manager',
       companyId: company1Id,
       teamId: '1',
       department: 'IT',
+      position: 'Team Lead',
       vacationDaysPerYear: 25,
       remainingVacationDays: 10,
       statePaidLeaves: 30,
       country: 'Tunisia',
       hiringDate: '2020-06-01',
+      address: 'Tunis',
+      age: 32,
+      gender: 'male',
+      skills: ['Management', 'Agile'],
     });
+    managerEmp = (await employeesDb.getAll()).find((e: Employee) => e.id === newManagerId);
   }
+
+  addUser('demo-manager', 'chef@demo.com', 'chef123', 'manager', managerEmp?.id, {
+    name: 'Demo Manager',
+    companyId: company1Id,
+    teamId: '1',
+    department: 'IT',
+    vacationDaysPerYear: 25,
+    remainingVacationDays: 10,
+    statePaidLeaves: 30,
+    country: 'Tunisia',
+    hiringDate: '2020-06-01',
+    ...managerEmp
+  });
 
   // Employee User
   const employeeEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'employee@demo.com');
-  if (employeeEmp) {
-    addUser('demo-emp', 'employee@demo.com', 'employee123', 'employee', employeeEmp.id, {
-      name: 'Demo Employee',
-      companyId: company1Id,
-      teamId: '1',
-      department: 'IT',
-      vacationDaysPerYear: 25,
-      remainingVacationDays: 25,
-      statePaidLeaves: 30,
-      country: 'Tunisia',
-      hiringDate: '2021-09-20',
-    });
-  }
+  addUser('demo-emp', 'employee@demo.com', 'employee123', 'employee', employeeEmp?.id, {
+    name: 'Demo Employee',
+    companyId: company1Id,
+    teamId: '1',
+    department: 'IT',
+    vacationDaysPerYear: 25,
+    remainingVacationDays: 25,
+    statePaidLeaves: 30,
+    country: 'Tunisia',
+    hiringDate: '2021-09-20',
+    ...employeeEmp
+  });
 
   // Save to storage
   storageService.setString(USERS_KEY, JSON.stringify(users));

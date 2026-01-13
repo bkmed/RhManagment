@@ -123,26 +123,54 @@ export const LoginScreen = ({ navigation }: any) => {
               {t('login.passwordLabel')}
             </Text>
           </View>
-          <View style={styles.demoRow}>
+
+          <TouchableOpacity
+            style={styles.demoRow}
+            onPress={() => {
+              setEmail('admin@demo.com');
+              setPassword('admin123');
+            }}
+          >
             <Text style={styles.demoCell}>{t('login.admin')}</Text>
             <Text style={styles.demoCell}>admin@demo.com</Text>
             <Text style={styles.demoCell}>admin123</Text>
-          </View>
-          <View style={styles.demoRow}>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.demoRow}
+            onPress={() => {
+              setEmail('hr@demo.com');
+              setPassword('hr123');
+            }}
+          >
             <Text style={styles.demoCell}>{t('login.hr')}</Text>
             <Text style={styles.demoCell}>hr@demo.com</Text>
             <Text style={styles.demoCell}>hr123</Text>
-          </View>
-          <View style={styles.demoRow}>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.demoRow}
+            onPress={() => {
+              setEmail('chef@demo.com');
+              setPassword('chef123');
+            }}
+          >
             <Text style={styles.demoCell}>{t('login.team')}</Text>
             <Text style={styles.demoCell}>chef@demo.com</Text>
             <Text style={styles.demoCell}>chef123</Text>
-          </View>
-          <View style={styles.demoRow}>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.demoRow}
+            onPress={() => {
+              setEmail('employee@demo.com');
+              setPassword('employee123');
+            }}
+          >
             <Text style={styles.demoCell}>{t('login.user')}</Text>
             <Text style={styles.demoCell}>employee@demo.com</Text>
             <Text style={styles.demoCell}>employee123</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
 

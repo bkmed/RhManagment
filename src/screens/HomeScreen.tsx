@@ -97,7 +97,6 @@ interface ActivityItemProps {
   onPress?: () => void;
 }
 
-
 const ActivityItem = ({
   icon,
   title,
@@ -110,7 +109,10 @@ const ActivityItem = ({
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <View
-        style={[styles.activityItem, { borderBottomColor: theme.colors.border }]}
+        style={[
+          styles.activityItem,
+          { borderBottomColor: theme.colors.border },
+        ]}
       >
         <View
           style={[
@@ -161,7 +163,6 @@ const AdminDashboard = ({
 }: AdminDashboardProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  console.log('medbk recentActivity', recentActivity)
   return (
     <View style={styles.dashboardContainer}>
       <View
@@ -650,8 +651,9 @@ export const HomeScreen = () => {
         const activity = [
           ...pendingLeaves.map(l => ({
             icon: '📅',
-            title: `${t('leaves.approvals')}: ${l.employeeName || t('common.unknown')
-              }`,
+            title: `${t('leaves.approvals')}: ${
+              l.employeeName || t('common.unknown')
+            }`,
             subtitle: l.title,
             date: l.createdAt || new Date().toISOString(),
             type: 'leave',
@@ -754,8 +756,12 @@ export const HomeScreen = () => {
         const filteredPayroll = allPayroll;
 
         if (userRole === 'employee') {
-          filteredLeaves = leaves.filter(l => l.employeeId === user?.employeeId);
-          filteredClaims = claims.filter(c => c.employeeId === user?.employeeId);
+          filteredLeaves = leaves.filter(
+            l => l.employeeId === user?.employeeId,
+          );
+          filteredClaims = claims.filter(
+            c => c.employeeId === user?.employeeId,
+          );
           // allPayroll already filtered for employee
         } else if (userRole === 'manager') {
           filteredLeaves = leaves.filter(l => l.teamId === user?.teamId);
@@ -825,14 +831,14 @@ export const HomeScreen = () => {
         tab === 'Payroll'
           ? 'PayrollTab'
           : tab === 'Leaves'
-            ? 'LeavesTab'
-            : tab === 'Analytics'
-              ? 'Analytics'
-              : tab === 'Employees'
-                ? 'Employees'
-                : tab === 'Claims'
-                  ? 'Claims'
-                  : undefined;
+          ? 'LeavesTab'
+          : tab === 'Analytics'
+          ? 'Analytics'
+          : tab === 'Employees'
+          ? 'Employees'
+          : tab === 'Claims'
+          ? 'Claims'
+          : undefined;
 
       if (stackScreen) {
         navigation.navigate('Main', {
@@ -853,7 +859,7 @@ export const HomeScreen = () => {
     // Let's assume we can add type to the activity object in loadData first, but for now let's try to infer or just add it to loadData
 
     // Logic to handle navigation:
-    // This relies on the item having specific data. 
+    // This relies on the item having specific data.
     // In loadData we construct these items. Let's make sure they have the data we need.
     // For now, let's just log it or do a basic check if we updated loadData (which we haven't in this step).
 
@@ -865,35 +871,62 @@ export const HomeScreen = () => {
       const type = item.type;
       const id = item.id;
     */
-    // Since we haven't updated loadData to include type/id yet in this session (or maybe we did in a previous failed step?), 
-    // let's just put the function skeleton here to satisfy the linter, 
+    // Since we haven't updated loadData to include type/id yet in this session (or maybe we did in a previous failed step?),
+    // let's just put the function skeleton here to satisfy the linter,
     // and then I will update loadData in the next step to ensure data is there.
 
     // Actually, looking at the previous failed step 2785, I tried to add type/id handling.
     // Let's add the function with safe checking.
 
-    const { type, id } = item; console.log('medbk item', item)
+    const { type, id } = item;
     if (!type || !id) return;
 
     if (isWebMobile || Platform.OS === 'web') {
       switch (type) {
-        case 'leave': setActiveTab('Leaves', 'LeaveDetails', { leaveId: id }); break;
-        case 'claim': setActiveTab('Claims', 'ClaimDetails', { claimId: id }); break;
-        case 'invoice': setActiveTab('Invoices', 'InvoiceDetails', { invoiceId: id }); break;
-        case 'illness': setActiveTab('Analytics', 'IllnessDetails', { illnessId: id }); break; // specific mapping needed?
-        case 'payroll': setActiveTab('Payroll', 'PayrollDetails', { payrollId: id }); break;
+        case 'employee':
+          setActiveTab('Employees', 'EmployeeDetails', {
+            employeeId: id,
+          });
+          break;
+        case 'leave':
+          setActiveTab('Leaves', 'LeaveDetails', { leaveId: id });
+          break;
+        case 'claim':
+          setActiveTab('Claims', 'ClaimDetails', { claimId: id });
+          break;
+        case 'invoice':
+          setActiveTab('Invoices', 'InvoiceDetails', { invoiceId: id });
+          break;
+        case 'illness':
+          setActiveTab('Analytics', 'IllnessDetails', { illnessId: id });
+          break; // specific mapping needed?
+        case 'payroll':
+          setActiveTab('Payroll', 'PayrollDetails', { payrollId: id });
+          break;
       }
     } else {
       switch (type) {
-        case 'leave': navigation.navigate('LeaveDetails', { leaveId: id }); break;
-        case 'claim': navigation.navigate('ClaimDetails', { claimId: id }); break;
-        case 'invoice': navigation.navigate('InvoiceDetails', { invoiceId: id }); break;
-        case 'illness': navigation.navigate('IllnessDetails', { illnessId: id }); break;
-        case 'payroll': navigation.navigate('PayrollDetails', { payrollId: id }); break;
+        case 'employee':
+          navigation.navigate('EmployeeDetails', { employeeId: id });
+          break;
+        case 'leave':
+          navigation.navigate('LeaveDetails', { leaveId: id });
+          break;
+        case 'claim':
+          navigation.navigate('ClaimDetails', { claimId: id });
+          break;
+        case 'invoice':
+          navigation.navigate('InvoiceDetails', { invoiceId: id });
+          break;
+        case 'illness':
+          navigation.navigate('IllnessDetails', { illnessId: id });
+          break;
+        case 'payroll':
+          navigation.navigate('PayrollDetails', { payrollId: id });
+          break;
       }
     }
   };
-
 
   if (loading) {
     return (
