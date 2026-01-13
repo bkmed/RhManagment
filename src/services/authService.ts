@@ -245,36 +245,6 @@ const seedDemoData = async () => {
     });
   }
 
-  // Managers (8) - One per team
-  for (let i = 0; i < teamIds.length; i++) {
-    const teamId = teamIds[i];
-    const email = `manager${i + 1}@demo.com`;
-    const isDemoManager = i === 0;
-    const finalEmail = isDemoManager ? 'chef@demo.com' : email;
-
-    const mgrId = await employeesDb.add({
-      name: isDemoManager ? 'Demo Manager' : `Manager Team ${i + 1}`,
-      firstName: isDemoManager ? 'Demo' : 'Manager',
-      lastName: isDemoManager ? 'Manager' : `Team ${i + 1}`,
-      email: finalEmail,
-      role: 'manager',
-      teamId: teamId,
-      companyId: i < 4 ? company1Id : company2Id,
-      department: i < 4 ? 'IT' : 'Operations',
-      position: 'Team Lead',
-      country: 'Tunisia',
-      hiringDate: '2020-06-01',
-      address: 'Ennasr, Tunis',
-      age: 38,
-      gender: 'male',
-      skills: ['Agile', 'Team Leadership', 'Project Management'],
-      vacationDaysPerYear: 28,
-      remainingVacationDays: 20,
-      statePaidLeaves: 5,
-    });
-    // Manager IDs are pre-defined in teamsDb.ts mock data, no need to update
-  }
-
   // Employees (78)
   const firstNames = [
     'Sarah',

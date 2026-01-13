@@ -660,6 +660,15 @@ const useNavigationSections = () => {
       });
     }
 
+
+    if (rbacService.hasPermission(user, Permission.MANAGE_COMPANY)) {
+      organizationItems.push({
+        key: 'OrgChart',
+        label: t('navigation.orgChart') || 'Org Chart',
+        icon: '🌳',
+      });
+    }
+
     if (rbacService.hasPermission(user, Permission.MANAGE_TEAMS)) {
       organizationItems.push({
         key: 'Teams',
@@ -1132,6 +1141,8 @@ const WebNavigator = () => {
           );
         if (subScreen === 'OrgChart') return <OrgChartScreen />;
         return <CompanyStack />;
+      case 'OrgChart':
+        return <OrgChartScreen />;
       case 'Teams':
         if (!rbacService.hasPermission(user, Permission.MANAGE_TEAMS))
           return <HomeStack />;

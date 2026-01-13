@@ -20,7 +20,11 @@ import { useContext } from 'react';
 import { useModal } from '../../context/ModalContext';
 import { useToast } from '../../context/ToastContext';
 
+import { rbacService } from '../../services/rbacService';
+import { useAuth } from '../../context/AuthContext';
+
 export const TeamListScreen = ({ navigation }: any) => {
+  const { user } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { showModal } = useModal();
@@ -38,7 +42,25 @@ export const TeamListScreen = ({ navigation }: any) => {
         teamsDb.getAll(),
         employeesDb.getAll(),
       ]);
-      setTeams(teamsData);
+
+      let filteredTeams = teamsData;
+      if (rbacService.isRH(user) && user?.companyId) {
+        filteredTeams = teamsData.filter(t => t.companyId === user.companyId);
+      } else if (rbacService.isManager(user) && user?.teamId) {
+        filteredTeams = teamsData.filter(t => t.id === user.teamId);
+      } else if (rbacService.isAdmin(user)) {
+        // Admin sees all
+      } else {
+        // Regular employee - maybe see their own team or nothing?
+        // For now, let's show their own team if assigned
+        if (user?.teamId) {
+          filteredTeams = teamsData.filter(t => t.id === user.teamId);
+        } else {
+          filteredTeams = [];
+        }
+      }
+
+      setTeams(filteredTeams);
       setEmployees(employeesData);
     } catch (error) {
       console.error('Error loading team data:', error);
@@ -141,18 +163,20 @@ export const TeamListScreen = ({ navigation }: any) => {
         />
       )}
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => {
-          if (Platform.OS === 'web') {
-            setActiveTab('Teams', 'AddTeam');
-          } else {
-            navigation.navigate('AddTeam');
-          }
-        }}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+      {(rbacService.isAdmin(user) || rbacService.isRH(user)) && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => {
+            if (Platform.OS === 'web') {
+              setActiveTab('Teams', 'AddTeam');
+            } else {
+              navigation.navigate('AddTeam');
+            }
+          }}
+        >
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

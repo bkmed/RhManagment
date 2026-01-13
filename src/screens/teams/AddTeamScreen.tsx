@@ -212,23 +212,46 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
     return employees.filter(e => {
       // 1. Check Company Constraint
       if (companyId) {
-        // If team has company, employee must belong to it (or be unassigned and willing to join? usually strict).
-        // Let's assume strict: Employee must be in the company or unassigned (which we might assign automatically? No, better strict).
-        // If employee has companyId, it must match.
-        // If employee has NO companyId, allow them (and we'll assign them to company on save).
-        const inCompany = !e.companyId || e.companyId === companyId;
-        if (!inCompany) return false;
+        // If team denotes a specific company, employee MUST match that company
+        // OR be unassigned (optional, but usually we want them in the DB to match)
+        // safely compare as strings
+        const empCompanyId = e.companyId ? String(e.companyId) : undefined;
+        const targetCompanyId = String(companyId);
+
+        if (empCompanyId && empCompanyId !== targetCompanyId) {
+          return false;
+        }
+        // If employee has no company, they are technically eligible to be added 
+        // (and will be assigned to this company on save)
+      } else if (rbacService.isRH(user) && user.companyId) {
+        // If no specific company selected for team (unlikely for RH), 
+        // RH can still ONLY see their own employees
+        const empCompanyId = e.companyId ? String(e.companyId) : undefined;
+        const userCompanyId = String(user.companyId);
+        if (empCompanyId && empCompanyId !== userCompanyId) {
+          return false;
+        }
       }
 
       // 2. Check Team Constraint
       // Must not be in another team.
       // If isEdit, allow if e.teamId === editId.
-      const inOtherTeam = e.teamId && e.teamId !== (isEdit ? editId : -1);
-      if (inOtherTeam) return false;
+      const currentTeamId = e.teamId ? String(e.teamId) : undefined;
+      const targetTeamId = isEdit ? String(editId) : undefined;
+
+      if (currentTeamId) {
+        if (isEdit) {
+          // If editing, exclude if in ANOTHER team
+          if (currentTeamId !== targetTeamId) return false;
+        } else {
+          // If creating, exclude if in ANY team
+          return false;
+        }
+      }
 
       return true;
     });
-  }, [employees, companyId, isEdit, editId]);
+  }, [employees, companyId, isEdit, editId, user]);
 
   const employeeOptions = useMemo(() => {
     return eligibleEmployees.map(e => ({

@@ -94,7 +94,9 @@ interface ActivityItemProps {
   time: string;
   theme: Theme;
   styles: Record<string, any>;
+  onPress?: () => void;
 }
+
 
 const ActivityItem = ({
   icon,
@@ -103,33 +105,38 @@ const ActivityItem = ({
   time,
   theme,
   styles,
+  onPress,
 }: ActivityItemProps) => {
   return (
-    <View
-      style={[styles.activityItem, { borderBottomColor: theme.colors.border }]}
-    >
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <View
-        style={[
-          styles.activityIconWrapper,
-          { backgroundColor: theme.colors.primary + '15' },
-        ]}
+        style={[styles.activityItem, { borderBottomColor: theme.colors.border }]}
       >
-        <Text style={styles.activityIcon}>{icon}</Text>
-      </View>
-      <View style={styles.activityContent}>
-        <Text style={[styles.activityTitle, { color: theme.colors.text }]}>
-          {title}
-        </Text>
-        <Text
-          style={[styles.activitySubtitle, { color: theme.colors.subText }]}
+        <View
+          style={[
+            styles.activityIconWrapper,
+            { backgroundColor: theme.colors.primary + '15' },
+          ]}
         >
-          {subtitle}
-        </Text>
-        <Text style={[styles.activityTime, { color: theme.colors.subText }]}>
-          {time}
-        </Text>
+          <Text style={styles.activityIcon}>{icon}</Text>
+        </View>
+        <View style={styles.activityContent}>
+          <Text style={[styles.activityTitle, { color: theme.colors.text }]}>
+            {title}
+          </Text>
+          <Text
+            style={[styles.activitySubtitle, { color: theme.colors.subText }]}
+          >
+            {subtitle}
+          </Text>
+        </View>
+        <View style={styles.activityTimeWrapper}>
+          <Text style={[styles.activityTime, { color: theme.colors.subText }]}>
+            {time}
+          </Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -139,6 +146,7 @@ interface AdminDashboardProps {
   summary: HomeSummary;
   recentActivity: ActivityItemProps[];
   navigateToTab: (tab: string, screen?: string) => void;
+  handleActivityPress: (item: any) => void;
   styles: Record<string, any>;
   theme: Theme;
 }
@@ -147,6 +155,7 @@ const AdminDashboard = ({
   summary,
   recentActivity,
   navigateToTab,
+  handleActivityPress,
   styles,
   theme,
 }: AdminDashboardProps) => {
@@ -286,15 +295,19 @@ const AdminDashboard = ({
       <View style={styles.activityCard}>
         {recentActivity.length > 0 ? (
           recentActivity.map((activity: any, index: number) => (
-            <ActivityItem
+            <TouchableOpacity
               key={index}
-              icon={activity.icon}
-              title={activity.title}
-              subtitle={activity.subtitle}
-              time={formatDate(activity.date)}
-              theme={theme}
-              styles={styles}
-            />
+              onPress={() => handleActivityPress(activity)}
+            >
+              <ActivityItem
+                icon={activity.icon}
+                title={activity.title}
+                subtitle={activity.subtitle}
+                time={formatDate(activity.date)}
+                theme={theme}
+                styles={styles}
+              />
+            </TouchableOpacity>
           ))
         ) : (
           <View style={styles.emptyState}>
@@ -313,6 +326,7 @@ interface EmployeeDashboardProps {
   hasNotificationPermission: boolean;
   handleEnableNotifications: () => Promise<void>;
   recentActivity: any[];
+  handleActivityPress: (item: any) => void;
   styles: Record<string, any>;
   theme: Theme;
 }
@@ -324,6 +338,7 @@ const EmployeeDashboard = ({
   hasNotificationPermission,
   handleEnableNotifications,
   recentActivity,
+  handleActivityPress,
   styles,
   theme,
 }: EmployeeDashboardProps) => {
@@ -561,15 +576,19 @@ const EmployeeDashboard = ({
       <View style={styles.activityCard}>
         {recentActivity.length > 0 ? (
           recentActivity.map((activity: any, index: number) => (
-            <ActivityItem
+            <TouchableOpacity
               key={index}
-              icon={activity.icon}
-              title={activity.title}
-              subtitle={activity.subtitle}
-              time={formatDate(activity.date)}
-              theme={theme}
-              styles={styles}
-            />
+              onPress={() => handleActivityPress(activity)}
+            >
+              <ActivityItem
+                icon={activity.icon}
+                title={activity.title}
+                subtitle={activity.subtitle}
+                time={formatDate(activity.date)}
+                theme={theme}
+                styles={styles}
+              />
+            </TouchableOpacity>
           ))
         ) : (
           <View style={styles.emptyState}>
@@ -641,24 +660,32 @@ export const HomeScreen = () => {
               }`,
             subtitle: l.title,
             date: l.createdAt || new Date().toISOString(),
+            type: 'leave',
+            id: l.id,
           })),
           ...pendingClaims.map(c => ({
             icon: '📝',
             title: t('claims.newClaim'),
             subtitle: c.description,
             date: c.createdAt || new Date().toISOString(),
+            type: 'claim',
+            id: c.id,
           })),
           ...employees.slice(-5).map(e => ({
             icon: '👤',
             title: t('employees.add'),
             subtitle: e.name,
             date: e.createdAt || new Date().toISOString(),
+            type: 'employee',
+            id: e.id,
           })),
           ...allPayroll.slice(-3).map(p => ({
             icon: '💰',
             title: t('navigation.payroll'),
             subtitle: `${p.employeeId}: ${p.amount} ${p.currency || ''}`,
             date: p.createdAt || new Date().toISOString(),
+            type: 'payroll',
+            id: p.id,
           })),
         ]
           .sort(
@@ -748,18 +775,24 @@ export const HomeScreen = () => {
             title: t('navigation.leaves'),
             subtitle: `${l.title} (${t(`common.${l.status}`)})`,
             date: l.createdAt || l.startDate || new Date().toISOString(),
+            type: 'leave',
+            id: l.id,
           })),
           ...filteredClaims.slice(-3).map(c => ({
             icon: '📝',
             title: t('navigation.claims'),
             subtitle: `${c.description} (${t(`common.${c.status}`)})`,
             date: c.createdAt || new Date().toISOString(),
+            type: 'claim',
+            id: c.id,
           })),
           ...filteredPayroll.slice(-3).map(p => ({
             icon: '💰',
             title: t('navigation.payroll'),
             subtitle: `${p.amount} ${p.currency || ''}`,
             date: p.createdAt || new Date().toISOString(),
+            type: 'payroll',
+            id: p.id,
           })),
         ]
           .sort(
@@ -816,6 +849,58 @@ export const HomeScreen = () => {
     }
   };
 
+  const handleActivityPress = (item: any) => {
+    // Determine navigation based on item type/context
+    // We check the activity item properties or infer type
+    if (!item) return;
+
+    // Check title or subtitle to guess type if raw type isn't available
+    // Ideally we should have added 'type' and 'id' to the activity object in loadData
+    // Let's assume we can add type to the activity object in loadData first, but for now let's try to infer or just add it to loadData
+
+    // Logic to handle navigation:
+    // This relies on the item having specific data. 
+    // In loadData we construct these items. Let's make sure they have the data we need.
+    // For now, let's just log it or do a basic check if we updated loadData (which we haven't in this step).
+
+    // IMPORTANT: The previous attempt to add this failed.
+    // We need to match the logic we *intended* to add.
+
+    // Re-implementing the switch case based on what was planned:
+    /*
+      const type = item.type;
+      const id = item.id;
+    */
+    // Since we haven't updated loadData to include type/id yet in this session (or maybe we did in a previous failed step?), 
+    // let's just put the function skeleton here to satisfy the linter, 
+    // and then I will update loadData in the next step to ensure data is there.
+
+    // Actually, looking at the previous failed step 2785, I tried to add type/id handling.
+    // Let's add the function with safe checking.
+
+    const { type, id } = item;
+    if (!type || !id) return;
+
+    if (isWebMobile || Platform.OS === 'web') {
+      switch (type) {
+        case 'leave': setActiveTab('Leaves', 'LeaveDetails', { leaveId: id }); break;
+        case 'claim': setActiveTab('Claims', 'ClaimDetails', { claimId: id }); break;
+        case 'invoice': setActiveTab('Invoices', 'InvoiceDetails', { invoiceId: id }); break;
+        case 'illness': setActiveTab('Analytics', 'IllnessDetails', { illnessId: id }); break; // specific mapping needed?
+        case 'payroll': setActiveTab('Payroll', 'PayrollDetails', { payrollId: id }); break;
+      }
+    } else {
+      switch (type) {
+        case 'leave': navigation.navigate('LeaveDetails', { leaveId: id }); break;
+        case 'claim': navigation.navigate('ClaimDetails', { claimId: id }); break;
+        case 'invoice': navigation.navigate('InvoiceDetails', { invoiceId: id }); break;
+        case 'illness': navigation.navigate('IllnessDetails', { illnessId: id }); break;
+        case 'payroll': navigation.navigate('PayrollDetails', { payrollId: id }); break;
+      }
+    }
+  };
+
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -841,6 +926,7 @@ export const HomeScreen = () => {
             summary={summary}
             recentActivity={recentActivity}
             navigateToTab={navigateToTab}
+            handleActivityPress={handleActivityPress}
             styles={styles}
             theme={theme}
           />
@@ -852,6 +938,7 @@ export const HomeScreen = () => {
             hasNotificationPermission={hasNotificationPermission}
             handleEnableNotifications={handleEnableNotifications}
             recentActivity={recentActivity}
+            handleActivityPress={handleActivityPress}
             styles={styles}
             theme={theme}
           />
