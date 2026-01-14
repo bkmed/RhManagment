@@ -763,7 +763,15 @@
     "periodPlaceholder": "مثال: الربع الرابع 2025",
     "managerSubtitle": "إدارة تقييمات فريقك",
     "employeeSubtitle": "عرض تقييماتك",
-    "employeeIdLabel": "#موظف"
+    "employeeIdLabel": "#موظف",
+    "deleteConfirm": "هل أنت متأكد أنك تريد حذف هذا التقييم؟",
+    "deleteSuccess": "تم حذف التقييم بنجاح",
+    "addSuccess": "تم إضافة التقييم بنجاح",
+    "updateSuccess": "تم تحديث التقييم بنجاح",
+    "errorEmployeeRequired": "يرجى اختيار موظف",
+    "errorPeriodRequired": "الفترة مطلوبة",
+    "errorCommentsRequired": "التعليقات مطلوبة",
+    "detailTitle": "تفاصيل التقييم"
   },
   "permissions": {
     "calendar": "إذن التقويم",

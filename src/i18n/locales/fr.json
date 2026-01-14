@@ -200,7 +200,11 @@
     "message": "Message",
     "all": "Tous",
     "company": "Entreprise",
-    "team": "Équipe"
+    "team": "Équipe",
+    "other": "Autre",
+    "count": "Nombre",
+    "unitPrice": "Prix unitaire",
+    "description": "Description"
   },
   "companies": {
     "add": "Ajouter une entreprise",
@@ -693,7 +697,6 @@
     "overtimeHours": "Heures supplémentaires",
     "overtimeRate": "Taux horaire sup.",
     "overtime": "Heures Supp.",
-    "method": "Type de paiement",
     "month": "Mois de paie",
     "name": "Nom de l'élément",
     "namePlaceholder": "Sélectionner le type",
@@ -741,6 +744,7 @@
     "companyAddress": "123 Rue de l'Entreprise, Paris, France",
     "companyHeader": "Détails de l'Entreprise",
     "companyName": "RH Management Pro",
+    "method": "Moyen de paiement",
     "deductions": "Déductions / Cotisations",
     "description": "Désignation",
     "earnings": "Gains / Rémunérations",
@@ -769,7 +773,15 @@
     "periodPlaceholder": "ex: T4 2025",
     "managerSubtitle": "Gérez les évaluations de votre équipe",
     "employeeSubtitle": "Consultez vos évaluations",
-    "employeeIdLabel": "Employé #"
+    "employeeIdLabel": "Employé #",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette évaluation ?",
+    "deleteSuccess": "Évaluation supprimée avec succès",
+    "addSuccess": "Évaluation ajoutée avec succès",
+    "updateSuccess": "Évaluation mise à jour avec succès",
+    "errorEmployeeRequired": "Veuillez sélectionner un employé",
+    "errorPeriodRequired": "La période est requise",
+    "errorCommentsRequired": "Les commentaires sont requis",
+    "detailTitle": "Détails de l'Évaluation"
   },
   "permissions": {
     "calendar": "Autorisation du calendrier",

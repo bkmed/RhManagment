@@ -68,6 +68,7 @@ import { AddServiceScreen } from '../screens/services/AddServiceScreen';
 import { TeamVacationsScreen } from '../screens/teams/TeamVacationsScreen';
 import { CareerHubScreen } from '../screens/profile/CareerHubScreen';
 import { PerformanceReviewScreen } from '../screens/analytics/PerformanceReviewScreen';
+import { AddPerformanceScreen } from '../screens/analytics/AddPerformanceScreen';
 import { ReviewPeriodScreen } from '../screens/performance/ReviewPeriodScreen';
 import { ManageNotificationsScreen } from '../screens/notifications/ManageNotificationsScreen';
 import { OrgChartScreen } from '../screens/companies/OrgChartScreen';
@@ -274,6 +275,11 @@ const AnalyticsStack = () => {
         name="ReviewPeriod"
         component={ReviewPeriodScreen}
         options={{ title: t('performance.periods') || 'Review Periods' }}
+      />
+      <Stack.Screen
+        name="AddPerformance"
+        component={AddPerformanceScreen}
+        options={{ title: t('performance.newReview') }}
       />
     </Stack.Navigator>
   );
@@ -1103,6 +1109,8 @@ const WebNavigator = () => {
           return <HomeStack />;
         if (subScreen === 'PerformanceReview')
           return <PerformanceReviewScreen />;
+        if (subScreen === 'AddPerformance')
+          return <AddPerformanceScreen route={mockRoute} navigation={mockNavigation} />;
         return <AnalyticsStack />;
       case 'PerformanceReviews':
         return <PerformanceReviewScreen />;

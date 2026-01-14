@@ -754,7 +754,15 @@
     "periodPlaceholder": "z.B. Q4 2025",
     "managerSubtitle": "Leistungsbeurteilungen Ihres Teams verwalten",
     "employeeSubtitle": "Ihre Beurteilungen ansehen",
-    "employeeIdLabel": "Mitarbeiter Nr."
+    "employeeIdLabel": "Mitarbeiter Nr.",
+    "deleteConfirm": "Sind Sie sicher, dass Sie diese Bewertung löschen möchten?",
+    "deleteSuccess": "Bewertung erfolgreich gelöscht",
+    "addSuccess": "Bewertung erfolgreich hinzugefügt",
+    "updateSuccess": "Bewertung erfolgreich aktualisiert",
+    "errorEmployeeRequired": "Bitte wählen Sie einen Mitarbeiter aus",
+    "errorPeriodRequired": "Zeitraum ist erforderlich",
+    "errorCommentsRequired": "Kommentare sind erforderlich",
+    "detailTitle": "Beurteilungsdetails"
   },
   "permissions": {
     "calendar": "Kalender-Berechtigung",

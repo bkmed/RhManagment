@@ -755,7 +755,15 @@
     "periodPlaceholder": "उदाहरण: Q4 2025",
     "managerSubtitle": "अपनी टीम की समीक्षाओं का प्रबंधन करें",
     "employeeSubtitle": "अपनी समीक्षाएं देखें",
-    "employeeIdLabel": "कर्मचारी #"
+    "employeeIdLabel": "कर्मचारी #",
+    "deleteConfirm": "क्या आप वाकई इस समीक्षा को हटाना चाहते हैं?",
+    "deleteSuccess": "समीक्षा सफलतापूर्वक हटा दी गई",
+    "addSuccess": "समीक्षा सफलतापूर्वक जोड़ी गई",
+    "updateSuccess": "समीक्षा सफलतापूर्वक अपडेट की गई",
+    "errorEmployeeRequired": "कृपया एक कर्मचारी चुनें",
+    "errorPeriodRequired": "अवधि आवश्यक है",
+    "errorCommentsRequired": "टिप्पणियाँ आवश्यक हैं",
+    "detailTitle": "समीक्षा विवरण"
   },
   "permissions": {
     "calendar": "कैलेंडर अनुमति",

@@ -21,7 +21,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "verify:translations": "node scripts/verify_translations.js",
+    "verify-translations": "node scripts/verify_translations.js",
     "postinstall": "patch-package",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
