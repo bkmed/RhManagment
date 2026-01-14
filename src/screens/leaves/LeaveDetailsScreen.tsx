@@ -37,7 +37,7 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Leaves');
+      setActiveTab('Leaves', 'LeaveList');
     } else {
       navigation.goBack();
     }

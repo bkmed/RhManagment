@@ -38,7 +38,7 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Payroll');
+      setActiveTab('Payroll', 'PayrollList');
     } else {
       navigation.goBack();
     }

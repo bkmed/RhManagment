@@ -32,7 +32,7 @@ export const IllnessDetailsScreen = ({ navigation, route }: any) => {
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Illnesses');
+      setActiveTab('Illnesses', 'IllnessList');
     } else {
       navigation.goBack();
     }

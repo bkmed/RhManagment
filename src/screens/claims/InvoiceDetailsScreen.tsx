@@ -73,7 +73,7 @@ export const InvoiceDetailsScreen = ({ route, navigation }: any) => {
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Invoices');
+      setActiveTab('Invoices', 'InvoiceList');
     } else {
       navigation.goBack();
     }

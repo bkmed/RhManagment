@@ -85,7 +85,7 @@ export const ClaimDetailsScreen = ({ route, navigation }: any) => {
 
   const navigateBack = () => {
     if (Platform.OS === 'web') {
-      setActiveTab('Claims');
+      setActiveTab('Claims', 'ClaimsList');
     } else {
       navigation.goBack();
     }
