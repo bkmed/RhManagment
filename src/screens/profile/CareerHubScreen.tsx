@@ -51,7 +51,6 @@ export const CareerHubScreen = () => {
   React.useEffect(() => {
     const loadGoals = async () => {
       const { goalsDb } = require('../../database/goalsDb');
-      const { setGoals } = require('../../store/slices/goalsSlice');
       const allGoals = await goalsDb.getAll();
       dispatch(setGoals(allGoals));
     };
@@ -101,7 +100,7 @@ export const CareerHubScreen = () => {
 
   const handleUpdateProgress = async (goal: Goal, newProgress: number) => {
     const { goalsDb } = require('../../database/goalsDb');
-    const status =
+    const status: Goal['status'] =
       newProgress === 100
         ? 'completed'
         : newProgress > 0

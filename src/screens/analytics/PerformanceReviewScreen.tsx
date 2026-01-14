@@ -20,7 +20,7 @@ import {
   Company,
   Team,
 } from '../../database/schema';
-import { addReview, setReviews } from '../../store/slices/performanceSlice';
+import { addReview } from '../../store/slices/performanceSlice';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { Theme } from '../../theme';
