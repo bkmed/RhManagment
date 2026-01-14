@@ -181,6 +181,7 @@
     "sendEmail": "Send Email",
     "service": "Service",
     "success": "Success",
+    "deleteSuccess": "Item deleted successfully",
     "title": "Title",
     "message": "Message",
     "timePlaceholder": "HH:MM",

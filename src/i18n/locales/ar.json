@@ -185,6 +185,7 @@
     "sendEmail": "إرسال بريد إلكتروني",
     "service": "المصلحة",
     "success": "نجاح",
+    "deleteSuccess": "تم حذف العنصر بنجاح",
     "timePlaceholder": "HH:MM",
     "to": "to",
     "todo": "للقيام به",

@@ -181,6 +181,7 @@
     "sendEmail": "Envoyer un email",
     "service": "Service",
     "success": "Succès",
+    "deleteSuccess": "Élément supprimé avec succès",
     "title": "Titre",
     "message": "Message",
     "timePlaceholder": "HH:MM",
