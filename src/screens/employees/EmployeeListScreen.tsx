@@ -111,7 +111,7 @@ export const EmployeeListScreen = ({ navigation }: any) => {
         style={styles.card}
         onPress={() => {
           if (Platform.OS === 'web') {
-            setActiveTab('EmployeeList', 'EmployeeDetails', {
+            setActiveTab('Employees', 'EmployeeDetails', {
               employeeId: item.id,
             });
           } else {
