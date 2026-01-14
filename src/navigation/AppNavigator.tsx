@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Platform,
   View,
@@ -619,12 +619,12 @@ const useNavigationSections = () => {
           { key: 'Home', label: t('navigation.home'), icon: '🏠' },
           ...(rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)
             ? [
-                {
-                  key: 'Analytics',
-                  label: t('navigation.analytics'),
-                  icon: '📊',
-                },
-              ]
+              {
+                key: 'Analytics',
+                label: t('navigation.analytics'),
+                icon: '📊',
+              },
+            ]
             : []),
         ],
       },
@@ -701,23 +701,23 @@ const useNavigationSections = () => {
       items: [
         ...(user?.companyId
           ? [
-              {
-                key: 'Announcements',
-                label: t('navigation.announcements'),
-                icon: '📢',
-              },
-            ]
+            {
+              key: 'Announcements',
+              label: t('navigation.announcements'),
+              icon: '📢',
+            },
+          ]
           : []),
         ...(rbacService.isAdmin(user) ||
-        rbacService.isRH(user) ||
-        rbacService.isManager(user)
+          rbacService.isRH(user) ||
+          rbacService.isManager(user)
           ? [
-              {
-                key: 'ManageNotifications',
-                label: t('notifications.broadcast') || 'Broadcast',
-                icon: '📡',
-              },
-            ]
+            {
+              key: 'ManageNotifications',
+              label: t('notifications.broadcast') || 'Broadcast',
+              icon: '📡',
+            },
+          ]
           : []),
         ...(user?.companyId
           ? [{ key: 'Chat', label: t('navigation.chat'), icon: '💬' }]
@@ -860,9 +860,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                         : 'transparent',
                       ...(isFocused &&
                         themeMode === 'premium' && {
-                          borderWidth: 1,
-                          borderColor: theme.colors.primary,
-                        }),
+                        borderWidth: 1,
+                        borderColor: theme.colors.primary,
+                      }),
                     }}
                     onPress={() => navigation.navigate(item.key)}
                   >
@@ -957,32 +957,39 @@ const WebNavigator = () => {
   const { width, height } = useWindowDimensions();
   const isMobile = width < 1045;
 
-  const [activeTab, setActiveTab] = useState('Home');
-  const [subScreen, setSubScreen] = useState('');
-  const [screenParams, setScreenParams] = useState<Record<string, unknown>>({});
+  const [navState, setNavState] = useState({
+    activeTab: 'Home',
+    subScreen: '',
+    screenParams: {} as Record<string, unknown>,
+  });
+  const { activeTab, subScreen, screenParams } = navState;
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState<{
     [key: string]: boolean;
   }>({});
 
+  const handleNavigate = useCallback(
+    (tab: string, screen?: string, params?: Record<string, unknown>) => {
+      setNavState({
+        activeTab: tab,
+        subScreen: screen || '',
+        screenParams: params || {},
+      });
+      setIsMenuOpen(false);
+    },
+    [],
+  );
+
   const contextValue = useMemo(
     () => ({
       activeTab,
       subScreen,
       screenParams,
-      setActiveTab: (
-        tab: string,
-        screen?: string,
-        params?: Record<string, unknown>,
-      ) => {
-        setActiveTab(tab);
-        setSubScreen(screen || '');
-        setScreenParams(params || {});
-        setIsMenuOpen(false); // Close menu on navigation
-      },
+      setActiveTab: handleNavigate,
     }),
-    [activeTab, subScreen, screenParams],
+    [activeTab, subScreen, screenParams, handleNavigate],
   );
 
   const handleSearchSelect = (result: { type: string; id?: string }) => {
@@ -1010,7 +1017,7 @@ const WebNavigator = () => {
       });
     } else if (result.type === 'payroll') {
       contextValue.setActiveTab('Payroll', 'PayrollDetails', {
-        id: Number(result.id),
+        payrollId: Number(result.id),
       });
     } else if (result.type === 'leave') {
       contextValue.setActiveTab('Leaves', 'LeaveDetails', {
@@ -1035,8 +1042,8 @@ const WebNavigator = () => {
       name: 'mock-name',
     } as any;
     const mockNavigation = {
-      navigate: setActiveTab,
-      goBack: () => setSubScreen(''),
+      navigate: handleNavigate,
+      goBack: () => setNavState(prev => ({ ...prev, subScreen: '' })),
     } as any;
 
     switch (activeTab) {
@@ -1240,7 +1247,7 @@ const WebNavigator = () => {
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
-      {}
+      { }
       <View
         style={
           [
@@ -1254,7 +1261,7 @@ const WebNavigator = () => {
           ] as any
         }
       >
-        {}
+        { }
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (
@@ -1271,7 +1278,7 @@ const WebNavigator = () => {
             {/* Brand */}
             <TouchableOpacity
               style={webStyles.sidebarBrand}
-              onPress={() => setActiveTab('Home')}
+              onPress={() => handleNavigate('Home')}
             >
               <Image
                 source={require('../../public/logo.png')}
@@ -1306,7 +1313,7 @@ const WebNavigator = () => {
             {/* Profile Section */}
             <TouchableOpacity
               style={webStyles.sidebarProfile}
-              onPress={() => setActiveTab('Profile')}
+              onPress={() => handleNavigate('Profile')}
             >
               <View
                 style={[
@@ -1374,7 +1381,7 @@ const WebNavigator = () => {
                     section.items.map(item => (
                       <TouchableOpacity
                         key={item.key}
-                        onPress={() => setActiveTab(item.key)}
+                        onPress={() => handleNavigate(item.key)}
                         style={[
                           webStyles.sidebarNavItem,
                           activeTab === item.key && {
@@ -1416,7 +1423,7 @@ const WebNavigator = () => {
             }
             onMenuPress={() => setIsMenuOpen(true)}
             onSearchPress={() => setIsSearchVisible(true)}
-            onProfilePress={() => setActiveTab('Profile')}
+            onProfilePress={() => handleNavigate('Profile')}
           />
         )}
 
@@ -1436,7 +1443,7 @@ const WebNavigator = () => {
             >
               <TouchableOpacity
                 style={webStyles.backButton}
-                onPress={() => setSubScreen('')}
+                onPress={() => setNavState(prev => ({ ...prev, subScreen: '' }))}
               >
                 <Text
                   style={[
@@ -1492,7 +1499,7 @@ const WebNavigator = () => {
               <TouchableOpacity
                 style={{ marginBottom: 20, alignItems: 'center' }}
                 onPress={() => {
-                  setActiveTab('Profile');
+                  handleNavigate('Profile');
                   setIsMenuOpen(false);
                 }}
               >
@@ -1551,7 +1558,7 @@ const WebNavigator = () => {
                         <TouchableOpacity
                           key={item.key}
                           onPress={() => {
-                            setActiveTab(item.key);
+                            handleNavigate(item.key);
                             setIsMenuOpen(false);
                           }}
                           style={[

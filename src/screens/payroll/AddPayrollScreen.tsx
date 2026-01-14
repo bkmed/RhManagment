@@ -567,8 +567,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             {loading
               ? t('common.loading')
               : isEdit
-                ? t('payroll.update')
-                : t('common.save')}{' '}
+              ? t('payroll.update')
+              : t('common.save')}{' '}
             {t('payroll.payroll')}
           </Text>
         </TouchableOpacity>

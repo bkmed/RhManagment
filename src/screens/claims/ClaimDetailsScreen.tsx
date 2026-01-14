@@ -159,7 +159,8 @@ export const ClaimDetailsScreen = ({ route, navigation }: any) => {
             <View style={styles.typeTag}>
               <Text style={styles.typeText}>
                 {t(
-                  `claims.type${claim.type.charAt(0).toUpperCase() + claim.type.slice(1)
+                  `claims.type${
+                    claim.type.charAt(0).toUpperCase() + claim.type.slice(1)
                   }`,
                 )}
               </Text>
@@ -188,7 +189,8 @@ export const ClaimDetailsScreen = ({ route, navigation }: any) => {
               ]}
             >
               {t(
-                `claims.status${claim.status.charAt(0).toUpperCase() + claim.status.slice(1)
+                `claims.status${
+                  claim.status.charAt(0).toUpperCase() + claim.status.slice(1)
                 }`,
               )}
             </Text>

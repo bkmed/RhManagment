@@ -335,12 +335,12 @@ const seedDemoData = async () => {
           i === 0
             ? '2021-09-20'
             : new Date(
-              2020 + Math.floor(Math.random() * 4),
-              Math.floor(Math.random() * 12),
-              1,
-            )
-              .toISOString()
-              .split('T')[0],
+                2020 + Math.floor(Math.random() * 4),
+                Math.floor(Math.random() * 12),
+                1,
+              )
+                .toISOString()
+                .split('T')[0],
       });
 
       // Generate some leaves and payroll for the first few employees

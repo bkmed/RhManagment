@@ -80,7 +80,7 @@ export const PayrollListScreen = ({ navigation }: any) => {
   // Web Refresh Logic
   const { activeTab, subScreen } = useContext(WebNavigationContext);
   useEffect(() => {
-    if (activeTab === 'Payroll' && subScreen === 'PayrollList') {
+    if (activeTab === 'Payroll' && subScreen === '') {
       loadPayrollItems();
     }
   }, [activeTab, subScreen]);

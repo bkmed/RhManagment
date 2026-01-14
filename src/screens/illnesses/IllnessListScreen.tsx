@@ -76,12 +76,13 @@ export const IllnessListScreen = ({ navigation }: any) => {
   );
 
   // Web Refresh Logic
-  const { activeTab: webActiveTab } = useContext(WebNavigationContext);
+  const { activeTab: webActiveTab, subScreen } =
+    useContext(WebNavigationContext);
   useEffect(() => {
-    if (webActiveTab === 'Illness') {
+    if (webActiveTab === 'Illnesses' && subScreen === '') {
       loadData();
     }
-  }, [webActiveTab]);
+  }, [webActiveTab, subScreen]);
 
   const filteredIllnesses = useMemo(() => {
     let data = illnesses;

@@ -130,12 +130,12 @@ export const LeaveListScreen = ({
   );
 
   // Web Refresh Logic
-  const { activeTab } = useContext(WebNavigationContext);
+  const { activeTab, subScreen } = useContext(WebNavigationContext);
   useEffect(() => {
-    if (activeTab === 'Leaves') {
+    if (activeTab === 'Leaves' && subScreen === '') {
       loadData();
     }
-  }, [activeTab]);
+  }, [activeTab, subScreen]);
 
   const groupedData = useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();

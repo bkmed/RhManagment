@@ -32,7 +32,7 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { activeTab } = useContext(WebNavigationContext);
+  const { activeTab, subScreen } = useContext(WebNavigationContext);
 
   const [claims, setClaims] = useState<Claim[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -163,10 +163,10 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   );
 
   useEffect(() => {
-    if (activeTab === 'Claims') {
+    if (activeTab === 'Claims' && subScreen === '') {
       loadData();
     }
-  }, [activeTab]);
+  }, [activeTab, subScreen]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

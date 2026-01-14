@@ -14,6 +14,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useTheme } from '../../context/ThemeContext';
 import { RootState } from '../../store';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import {
   PerformanceReview,
   Employee,
@@ -31,6 +33,8 @@ export const PerformanceReviewScreen = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const dispatch = useDispatch();
+  const { showModal } = useModal();
+  const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const isManagerOrAdmin =
@@ -84,6 +88,11 @@ export const PerformanceReviewScreen = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
     null,
   );
+  const [selectedReview, setSelectedReview] = useState<PerformanceReview | null>(
+    null,
+  );
+  const [isDetailVisible, setDetailVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [score, setScore] = useState('5');
   const [comments, setComments] = useState('');
@@ -119,54 +128,123 @@ export const PerformanceReviewScreen = () => {
 
   const filteredEmployees = useMemo(() => {
     return employees.filter(emp => {
-      // 1. Company Filter
-      if (user?.role === 'rh' || user?.role === 'manager') {
+      // 1. Company Filter (RH and Manager MUST be in the same company)
+      if (user?.role === 'rh') {
+        if (emp.companyId !== user?.companyId) return false;
+      } else if (user?.role === 'manager') {
         if (emp.companyId !== user?.companyId) return false;
       } else if (tempCompanyId && tempCompanyId !== 'none') {
         if (emp.companyId !== tempCompanyId) return false;
       }
 
-      // 2. Team Filter
+      // 2. Team Filter (Manager MUST be in the same team)
       if (user?.role === 'manager') {
         if (emp.teamId !== user?.teamId) return false;
       } else if (tempTeamId && tempTeamId !== 'none') {
         if (emp.teamId !== tempTeamId) return false;
       }
 
+      // If RH, we might not have a team selected, which is fine (shows all in company)
+      // If Admin, they can see anyone and filter by company/team optionally
+
+      // Exclude the reviewer themselves if they are an employee? 
+      // Usually managers don't review themselves here.
+      if (emp.id === user?.employeeId) return false;
+
       return true;
     });
   }, [employees, tempCompanyId, tempTeamId, user]);
 
-  // Load reviews on mount
+  // Load data on mount
   React.useEffect(() => {
-    const loadReviews = async () => {
+    const loadData = async () => {
       const { performanceDb } = require('../../database/performanceDb');
+      const { employeesDb } = require('../../database/employeesDb');
+      const { teamsDb } = require('../../database/teamsDb');
       const { setReviews } = require('../../store/slices/performanceSlice');
-      const allReviews = await performanceDb.getAll();
-      dispatch(setReviews(allReviews));
+      const { setEmployees } = require('../../store/slices/employeesSlice');
+      const { setTeams } = require('../../store/slices/teamsSlice');
+
+      try {
+        const [allReviews, allEmployees, allTeamsList] = await Promise.all([
+          performanceDb.getAll(),
+          employeesDb.getAll(),
+          teamsDb.getAll(),
+        ]);
+
+        dispatch(setReviews(allReviews));
+        dispatch(setEmployees(allEmployees));
+        dispatch(setTeams(allTeamsList));
+      } catch (error) {
+        console.error('Error loading performance data:', error);
+      }
     };
-    loadReviews();
+    loadData();
   }, [dispatch]);
 
   const handleSaveReview = async () => {
     const { performanceDb } = require('../../database/performanceDb');
+    const { updateReview } = require('../../store/slices/performanceSlice');
+
     if (!selectedEmployeeId || !comments.trim()) return;
 
     const reviewData: PerformanceReview = {
-      id: Date.now().toString(),
+      id: isEditing && selectedReview ? selectedReview.id : Date.now().toString(),
       employeeId: selectedEmployeeId,
       reviewerId: user?.id || '',
       period,
       score: Number(score),
       comments,
-      date: new Date().toISOString().split('T')[0],
-      createdAt: new Date().toISOString(),
+      date: isEditing && selectedReview ? selectedReview.date : new Date().toISOString().split('T')[0],
+      createdAt: isEditing && selectedReview ? selectedReview.createdAt : new Date().toISOString(),
     };
 
-    await performanceDb.add(reviewData);
-    dispatch(addReview(reviewData));
+    if (isEditing) {
+      await performanceDb.update(reviewData);
+      dispatch(updateReview(reviewData));
+    } else {
+      await performanceDb.add(reviewData);
+      dispatch(addReview(reviewData));
+    }
+
     setModalVisible(false);
+    setIsEditing(false);
+    setSelectedReview(null);
     resetForm();
+  };
+
+  const handleDeleteReview = async (id: string) => {
+    const { performanceDb } = require('../../database/performanceDb');
+    const { deleteReview } = require('../../store/slices/performanceSlice');
+
+    try {
+      await performanceDb.delete(id);
+      dispatch(deleteReview(id));
+      setDetailVisible(false);
+      setSelectedReview(null);
+      showToast(t('common.deleteSuccess') || t('common.success'), 'success');
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      showToast(t('common.error'), 'error');
+    }
+  };
+
+  const handleEditClick = () => {
+    if (!selectedReview) return;
+    setIsEditing(true);
+    setSelectedEmployeeId(selectedReview.employeeId);
+    setScore(selectedReview.score.toString());
+    setComments(selectedReview.comments);
+    setPeriod(selectedReview.period);
+
+    const emp = employees.find(e => e.id === selectedReview.employeeId);
+    if (emp) {
+      setTempCompanyId(emp.companyId || 'none');
+      setTempTeamId(emp.teamId || 'none');
+    }
+
+    setDetailVisible(false);
+    setModalVisible(true);
   };
 
   const resetForm = () => {
@@ -176,12 +254,19 @@ export const PerformanceReviewScreen = () => {
     setScore('5');
     setComments('');
     setPeriod(t('performance.periodPlaceholder'));
+    setIsEditing(false);
   };
 
   const renderReviewCard = ({ item }: { item: PerformanceReview }) => {
     const employee = employees.find((e: Employee) => e.id === item.employeeId);
     return (
-      <View style={styles.reviewCard}>
+      <TouchableOpacity
+        style={styles.reviewCard}
+        onPress={() => {
+          setSelectedReview(item);
+          setDetailVisible(true);
+        }}
+      >
         <View style={styles.reviewHeader}>
           <View>
             <Text style={styles.periodText}>{item.period}</Text>
@@ -199,9 +284,9 @@ export const PerformanceReviewScreen = () => {
             <Text style={styles.scoreText}>{item.score}/5</Text>
           </View>
         </View>
-        <Text style={styles.commentsText}>{item.comments}</Text>
+        <Text style={styles.commentsText} numberOfLines={3}>{item.comments}</Text>
         <Text style={styles.dateText}>{formatDate(item.date)}</Text>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -454,6 +539,85 @@ export const PerformanceReviewScreen = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Detail Modal */}
+      <Modal visible={isDetailVisible} animationType="fade" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {selectedReview && (
+              <>
+                <View style={styles.detailHeader}>
+                  <Text style={styles.modalTitle}>{t('performance.detailTitle')}</Text>
+                  <TouchableOpacity onPress={() => setDetailVisible(false)}>
+                    <Text style={styles.closeBtn}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.modalScroll}>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>{t('performance.employee')}:</Text>
+                    <Text style={styles.detailValue}>
+                      {employees.find(e => e.id === selectedReview.employeeId)?.name || selectedReview.employeeId}
+                    </Text>
+                  </View>
+
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>{t('performance.period')}:</Text>
+                    <Text style={styles.detailValue}>{selectedReview.period}</Text>
+                  </View>
+
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>{t('performance.date')}:</Text>
+                    <Text style={styles.detailValue}>{formatDate(selectedReview.date)}</Text>
+                  </View>
+
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailLabel}>{t('performance.score')}:</Text>
+                    <View style={[styles.scoreBadge, { backgroundColor: theme.colors.primary, borderBottomWidth: 0 }]}>
+                      <Text style={styles.scoreText}>{selectedReview.score}/5</Text>
+                    </View>
+                  </View>
+
+                  <Text style={styles.detailLabel}>{t('performance.comments')}:</Text>
+                  <View style={styles.commentsContainer}>
+                    <Text style={styles.commentsTextDetail}>{selectedReview.comments}</Text>
+                  </View>
+                </ScrollView>
+
+                {isManagerOrAdmin && (
+                  <View style={styles.modalActions}>
+                    <TouchableOpacity
+                      style={[styles.button, styles.deleteButtonDetail]}
+                      onPress={() => {
+                        showModal({
+                          title: t('common.delete'),
+                          message: t('performance.deleteConfirm'),
+                          buttons: [
+                            { text: t('common.cancel'), style: 'cancel' },
+                            {
+                              text: t('common.delete'),
+                              style: 'destructive',
+                              onPress: () => handleDeleteReview(selectedReview.id!),
+                            },
+                          ],
+                        });
+                      }}
+                    >
+                      <Text style={styles.buttonText}>{t('common.delete')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.button, styles.editButtonDetail]}
+                      onPress={handleEditClick}
+                    >
+                      <Text style={styles.buttonText}>{t('common.edit')}</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -661,6 +825,65 @@ const createStyles = (theme: Theme) =>
       borderRadius: theme.spacing.s,
     },
     saveBtnText: {
+      color: '#FFF',
+      fontWeight: 'bold',
+    },
+    detailHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing.l,
+    },
+    closeBtn: {
+      fontSize: 20,
+      color: theme.colors.subText,
+      padding: 4,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing.m,
+      paddingBottom: theme.spacing.s,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    detailLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.colors.subText,
+    },
+    detailValue: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+    },
+    commentsContainer: {
+      backgroundColor: theme.colors.background,
+      padding: theme.spacing.m,
+      borderRadius: theme.spacing.s,
+      marginTop: theme.spacing.s,
+    },
+    commentsTextDetail: {
+      ...theme.textVariants.body,
+      color: theme.colors.text,
+      fontSize: 14,
+      lineHeight: 22,
+    },
+    button: {
+      paddingHorizontal: theme.spacing.l,
+      paddingVertical: theme.spacing.m,
+      borderRadius: theme.spacing.s,
+      minWidth: 100,
+      alignItems: 'center',
+    },
+    deleteButtonDetail: {
+      backgroundColor: theme.colors.error,
+    },
+    editButtonDetail: {
+      backgroundColor: theme.colors.secondary,
+    },
+    buttonText: {
       color: '#FFF',
       fontWeight: 'bold',
     },
