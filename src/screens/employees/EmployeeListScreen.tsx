@@ -21,6 +21,11 @@ import { notificationService } from '../../services/notificationService';
 import { useAuth } from '../../context/AuthContext';
 import { Permission, rbacService } from '../../services/rbacService';
 import { WebNavigationContext } from '../../navigation/WebNavigationContext';
+import { leavesDb } from '../../database/leavesDb';
+import { illnessesDb } from '../../database/illnessesDb';
+import { Illness, Leave } from '../../database/schema';
+import { AbsenceStatusBadge } from '../../components/AbsenceStatusBadge';
+import { getUserAbsenceStatus } from '../../utils/absenceStatus';
 
 export const EmployeeListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -31,16 +36,21 @@ export const EmployeeListScreen = ({ navigation }: any) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [illnesses, setIllnesses] = useState<Illness[]>([]);
+  const [leaves, setLeaves] = useState<Leave[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   const loadEmployees = async () => {
     try {
-      const [empData, compData, teamData] = await Promise.all([
-        employeesDb.getAll(),
-        companiesDb.getAll(),
-        teamsDb.getAll(),
-      ]);
+      const [empData, compData, teamData, illData, leaveData] =
+        await Promise.all([
+          employeesDb.getAll(),
+          companiesDb.getAll(),
+          teamsDb.getAll(),
+          illnessesDb.getAll(),
+          leavesDb.getAll(),
+        ]);
 
       let data = empData;
 
@@ -54,6 +64,8 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       setEmployees(data);
       setCompanies(compData);
       setTeams(teamData);
+      setIllnesses(illData);
+      setLeaves(leaveData);
     } catch (error) {
       console.error('Error loading employees:', error);
       notificationService.showAlert(
@@ -109,38 +121,44 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       >
         <View style={styles.headerRow}>
           <Text style={styles.name}>{item.name}</Text>
-          {item.position && (
-            <View style={styles.positionBadge}>
-              <Text style={styles.positionText}>
-                {t(`departments.${item.position}`, {
-                  defaultValue: item.position,
-                })}
+          <View style={styles.badges}>
+            <AbsenceStatusBadge
+              status={getUserAbsenceStatus(item.id || '', illnesses, leaves)}
+              compact
+            />
+            {item.position && (
+              <View style={styles.positionBadge}>
+                <Text style={styles.positionText}>
+                  {t(`departments.${item.position}`, {
+                    defaultValue: item.position,
+                  })}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {item.phone && <Text style={styles.detail}>📞 {item.phone}</Text>}
+
+          {item.email && <Text style={styles.detail}>✉️ {item.email}</Text>}
+
+          {item.address && <Text style={styles.detail}>📍 {item.address}</Text>}
+
+          <View style={styles.affiliations}>
+            {item.companyId && (
+              <Text style={styles.affiliationText}>
+                🏢{' '}
+                {companies.find(c => String(c.id) === String(item.companyId))
+                  ?.name || item.companyId}
               </Text>
-            </View>
-          )}
-        </View>
-
-        {item.phone && <Text style={styles.detail}>📞 {item.phone}</Text>}
-
-        {item.email && <Text style={styles.detail}>✉️ {item.email}</Text>}
-
-        {item.address && <Text style={styles.detail}>📍 {item.address}</Text>}
-
-        <View style={styles.affiliations}>
-          {item.companyId && (
-            <Text style={styles.affiliationText}>
-              🏢{' '}
-              {companies.find(c => String(c.id) === String(item.companyId))
-                ?.name || item.companyId}
-            </Text>
-          )}
-          {item.teamId && (
-            <Text style={styles.affiliationText}>
-              👥{' '}
-              {teams.find(t => String(t.id) === String(item.teamId))?.name ||
-                item.teamId}
-            </Text>
-          )}
+            )}
+            {item.teamId && (
+              <Text style={styles.affiliationText}>
+                👥{' '}
+                {teams.find(t => String(t.id) === String(item.teamId))?.name ||
+                  item.teamId}
+              </Text>
+            )}
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -173,7 +191,13 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       {rbacService.hasPermission(user, Permission.ADD_EMPLOYEES) && (
         <TouchableOpacity
           style={styles.fab}
-          onPress={() => navigation.navigate('AddEmployee')}
+          onPress={() => {
+            if (Platform.OS === 'web') {
+              setActiveTab('Employees', 'AddEmployee');
+            } else {
+              navigation.navigate('AddEmployee');
+            }
+          }}
         >
           <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
@@ -208,6 +232,11 @@ const createStyles = (theme: Theme) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: theme.spacing.s,
+    },
+    badges: {
+      flexDirection: 'row',
+      gap: theme.spacing.s,
+      alignItems: 'center',
     },
     name: {
       ...theme.textVariants.subheader,

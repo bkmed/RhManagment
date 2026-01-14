@@ -344,7 +344,13 @@ export const InvoiceListScreen = ({ navigation }: any) => {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddInvoice')}
+        onPress={() => {
+          if (Platform.OS === 'web') {
+            setActiveTab('Invoices', 'AddInvoice');
+          } else {
+            navigation.navigate('AddInvoice');
+          }
+        }}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>

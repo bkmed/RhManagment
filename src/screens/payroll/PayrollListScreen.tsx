@@ -142,7 +142,13 @@ export const PayrollListScreen = ({ navigation }: any) => {
       {rbacService.hasPermission(user, Permission.MANAGE_PAYROLL) && (
         <TouchableOpacity
           style={styles.fab}
-          onPress={() => navigation.navigate('AddPayroll')}
+          onPress={() => {
+            if (Platform.OS === 'web') {
+              setActiveTab('Payroll', 'AddPayroll');
+            } else {
+              navigation.navigate('AddPayroll');
+            }
+          }}
         >
           <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>

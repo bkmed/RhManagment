@@ -426,7 +426,13 @@ export const IllnessListScreen = ({ navigation }: any) => {
               {viewTab === 'mine' && (
                 <TouchableOpacity
                   style={styles.emptyAddButton}
-                  onPress={() => navigation.navigate('AddIllness')}
+                  onPress={() => {
+                    if (Platform.OS === 'web') {
+                      setActiveTab('Illnesses', 'AddIllness');
+                    } else {
+                      navigation.navigate('AddIllness');
+                    }
+                  }}
                 >
                   <Text style={styles.emptyAddButtonText}>
                     + {t('illnesses.add')}

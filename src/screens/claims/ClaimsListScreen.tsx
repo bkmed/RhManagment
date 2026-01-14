@@ -318,7 +318,13 @@ export const ClaimsListScreen = ({ navigation }: any) => {
       {/* Add Claim FAB */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddClaim')}
+        onPress={() => {
+          if (Platform.OS === 'web') {
+            setActiveTab('Claims', 'AddClaim');
+          } else {
+            navigation.navigate('AddClaim');
+          }
+        }}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>

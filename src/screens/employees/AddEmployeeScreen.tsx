@@ -615,7 +615,7 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                     style={styles.addButton}
                     onPress={() => {
                       if (Platform.OS === 'web') {
-                        setActiveTab('Teams');
+                        setActiveTab('Teams', 'AddTeam');
                       } else {
                         navigation.navigate('AddTeam');
                       }

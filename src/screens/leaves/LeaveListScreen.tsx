@@ -326,7 +326,13 @@ export const LeaveListScreen = ({
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddLeave')}
+        onPress={() => {
+          if (Platform.OS === 'web') {
+            setActiveTab('Leaves', 'AddLeave');
+          } else {
+            navigation.navigate('AddLeave');
+          }
+        }}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
