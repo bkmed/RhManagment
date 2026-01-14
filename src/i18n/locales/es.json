@@ -64,7 +64,8 @@
   "careerHub": {
     "titlePlaceholder": "p. ej. Dominar React Native",
     "editGoal": "Editar objetivo",
-    "descriptionPlaceholder": "Describe tu objetivo, el objetivo principal y cómo planeas lograrlo..."
+    "descriptionPlaceholder": "Describe tu objetivo, el objetivo principal y cómo planeas lograrlo...",
+    "draftingFor": "Redactando para"
   },
   "claims": {
     "description": "Descripción",
@@ -97,6 +98,9 @@
     "allCompanies": "Todas las empresas",
     "addToCalendar": "Añadir al calendario",
     "addedToCalendar": "Evento añadido al calendario",
+    "approved": "Aprobado",
+    "rejected": "Rechazado",
+    "pending": "Pendiente",
     "askAnything": "Pregúntame lo que sea...",
     "assistant": "Asistente de RRHH",
     "back": "Atrás",
@@ -750,7 +754,8 @@
     "feedbackPlaceholder": "Feedback cualitativo...",
     "periodPlaceholder": "p. ej. Q4 2025",
     "managerSubtitle": "Gestionar las revisiones de su equipo",
-    "employeeSubtitle": "Ver sus revisiones"
+    "employeeSubtitle": "Ver sus revisiones",
+    "employeeIdLabel": "Empleado #"
   },
   "permissions": {
     "calendar": "Permiso de calendario",

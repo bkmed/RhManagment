@@ -638,6 +638,7 @@ const useNavigationSections = () => {
             ? [{ key: 'Invoices', label: t('invoices.title'), icon: '🧾' }]
             : []),
           { key: 'Remote', label: t('remote.title'), icon: '📅' },
+          { key: 'PerformanceReviews', label: t('performance.title') || 'Evaluations', icon: '📈' },
         ],
       },
     ];
@@ -1093,6 +1094,8 @@ const WebNavigator = () => {
         if (subScreen === 'PerformanceReview')
           return <PerformanceReviewScreen />;
         return <AnalyticsStack />;
+      case 'PerformanceReviews':
+        return <PerformanceReviewScreen />;
       case 'Employees':
         if (!rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES))
           return <HomeStack />;

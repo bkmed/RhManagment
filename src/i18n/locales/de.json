@@ -64,7 +64,8 @@
   "careerHub": {
     "titlePlaceholder": "z.B. React Native meistern",
     "editGoal": "Ziel bearbeiten",
-    "descriptionPlaceholder": "Beschreiben Sie Ihr Ziel, das Hauptziel und wie Sie es erreichen wollen..."
+    "descriptionPlaceholder": "Beschreiben Sie Ihr Ziel, das Hauptziel und wie Sie es erreichen wollen...",
+    "draftingFor": "Entwurf für"
   },
   "claims": {
     "description": "Beschreibung",
@@ -97,6 +98,9 @@
     "allCompanies": "Alle Unternehmen",
     "addToCalendar": "Zum Kalender hinzufügen",
     "addedToCalendar": "Termin zum Kalender hinzugefügt",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt",
+    "pending": "Ausstehend",
     "askAnything": "Frag mich was...",
     "assistant": "HR-Assistent",
     "back": "Zurück",
@@ -739,7 +743,8 @@
     "feedbackPlaceholder": "Qualitatives Feedback...",
     "periodPlaceholder": "z.B. Q4 2025",
     "managerSubtitle": "Leistungsbeurteilungen Ihres Teams verwalten",
-    "employeeSubtitle": "Ihre Beurteilungen ansehen"
+    "employeeSubtitle": "Ihre Beurteilungen ansehen",
+    "employeeIdLabel": "Mitarbeiter Nr."
   },
   "permissions": {
     "calendar": "Kalender-Berechtigung",

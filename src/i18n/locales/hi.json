@@ -64,7 +64,8 @@
   "careerHub": {
     "titlePlaceholder": "जैसे: React Native में महारत हासिल करें",
     "editGoal": "लक्ष्य संपादित करें",
-    "descriptionPlaceholder": "अपने लक्ष्य, मुख्य उद्देश्य और आप इसे कैसे प्राप्त करने की योजना बना रहे हैं, इसका वर्णन करें..."
+    "descriptionPlaceholder": "अपने लक्ष्य, मुख्य उद्देश्य और आप इसे कैसे प्राप्त करने की योजना बना रहे हैं, इसका वर्णन करें...",
+    "draftingFor": "के लिए प्रारूपण"
   },
   "claims": {
     "description": "विवरण",
@@ -97,6 +98,9 @@
     "allCompanies": "सभी कंपनियां",
     "addToCalendar": "कैलेंडर में जोड़ें",
     "addedToCalendar": "इवेंट कैलेंडर में जोड़ा गया",
+    "approved": "स्वीकृत",
+    "rejected": "अस्वीकृत",
+    "pending": "लंबित",
     "askAnything": "मुझसे कुछ भी पूछें...",
     "assistant": "मानव संसाधन सहायक",
     "back": "वापस",
@@ -740,7 +744,8 @@
     "feedbackPlaceholder": "गुणात्मक प्रतिक्रिया...",
     "periodPlaceholder": "उदाहरण: Q4 2025",
     "managerSubtitle": "अपनी टीम की समीक्षाओं का प्रबंधन करें",
-    "employeeSubtitle": "अपनी समीक्षाएं देखें"
+    "employeeSubtitle": "अपनी समीक्षाएं देखें",
+    "employeeIdLabel": "कर्मचारी #"
   },
   "permissions": {
     "calendar": "कैलेंडर अनुमति",

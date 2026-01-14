@@ -64,7 +64,8 @@
   "careerHub": {
     "titlePlaceholder": "ex. Maîtriser React Native",
     "editGoal": "Modifier objectif",
-    "descriptionPlaceholder": "Décrivez votre objectif, l'objectif principal et comment vous prévoyez de l'atteindre..."
+    "descriptionPlaceholder": "Décrivez votre objectif, l'objectif principal et comment vous prévoyez de l'atteindre...",
+    "draftingFor": "Rédaction pour"
   },
   "claims": {
     "description": "Description",
@@ -97,6 +98,9 @@
     "allCompanies": "Toutes les entreprises",
     "addToCalendar": "Ajouter au calendrier",
     "addedToCalendar": "Événement ajouté au calendrier",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "pending": "En attente",
     "askAnything": "Demandez-moi n'importe quoi...",
     "assistant": "Assistant RH",
     "back": "Retour",
@@ -754,7 +758,8 @@
     "feedbackPlaceholder": "Feedback qualitatif...",
     "periodPlaceholder": "ex: T4 2025",
     "managerSubtitle": "Gérez les évaluations de votre équipe",
-    "employeeSubtitle": "Consultez vos évaluations"
+    "employeeSubtitle": "Consultez vos évaluations",
+    "employeeIdLabel": "Employé #"
   },
   "permissions": {
     "calendar": "Autorisation du calendrier",

@@ -290,6 +290,24 @@ const AdminDashboard = ({
           </View>
           <Text style={styles.premiumActionText}>{t('navigation.leaves')}</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.premiumActionCard,
+            { backgroundColor: theme.colors.primary + '10' },
+          ]}
+          onPress={() => navigateToTab('Profile', 'CareerHub')}
+        >
+          <View
+            style={[
+              styles.premiumActionIcon,
+              { backgroundColor: theme.colors.primary + '20' },
+            ]}
+          >
+            <Text style={styles.actionIcon}>🎯</Text>
+          </View>
+          <Text style={styles.premiumActionText}>{t('navigation.careerHub')}</Text>
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.sectionTitle}>{t('home.recentActivity')}</Text>
@@ -627,33 +645,96 @@ export const HomeScreen = () => {
 
   const loadData = async () => {
     try {
-      if (user?.role === 'admin' || user?.role === 'rh') {
-        const [employees, allLeaves, allClaims, allPayroll] = await Promise.all(
-          [
-            employeesDb.getAll(),
-            leavesDb.getAll(),
-            claimsDb.getAll(),
-            payrollDb.getAll(),
-          ],
-        );
+      const [allEmployees, allLeaves, allClaims, allPayroll, allIllnesses] = await Promise.all([
+        employeesDb.getAll(),
+        leavesDb.getAll(),
+        claimsDb.getAll(),
+        payrollDb.getAll(),
+        illnessesDb.getExpiringSoon(),
+      ]);
 
-        const pendingLeaves = allLeaves.filter(l => l.status === 'pending');
-        const pendingClaims = allClaims.filter(c => c.status === 'pending');
+      const userRole = user?.role;
+      const isAdmin = userRole === 'admin';
+      const isRH = userRole === 'rh';
+      const isManager = userRole === 'manager';
+      // const isEmployee = userRole === 'employee';
 
-        setSummary(prev => ({
-          ...prev,
-          totalEmployees: employees.length,
-          pendingLeaves: pendingLeaves.length,
-          pendingClaims: pendingClaims.length,
-          totalPayroll: allPayroll.length,
-        }));
+      let scopeEmployees = allEmployees;
+      let scopeLeaves = allLeaves;
+      let scopeClaims = allClaims;
+      let scopePayroll = allPayroll;
+      let scopeIllnesses = allIllnesses;
 
-        const activity = [
+      // --- Filter Data based on Role ---
+      if (isAdmin) {
+        // Admin sees everything
+      } else if (isRH) {
+        // RH sees company data
+        scopeEmployees = allEmployees.filter(e => e.companyId === user.companyId);
+        const empIds = scopeEmployees.map(e => e.id);
+        scopeLeaves = allLeaves.filter(l => empIds.includes(l.employeeId));
+        scopeClaims = allClaims.filter(c => empIds.includes(c.employeeId));
+        scopePayroll = allPayroll.filter(p => empIds.includes(p.employeeId));
+        scopeIllnesses = allIllnesses.filter(i => empIds.includes(i.employeeId));
+      } else if (isManager) {
+        // Manager sees team data
+        scopeEmployees = allEmployees.filter(e => e.teamId === user.teamId);
+        const empIds = scopeEmployees.map(e => e.id);
+
+        // Team Activity
+        scopeLeaves = allLeaves.filter(l => empIds.includes(l.employeeId));
+        scopeClaims = allClaims.filter(c => empIds.includes(c.employeeId));
+        scopeIllnesses = allIllnesses.filter(i => empIds.includes(i.employeeId));
+
+        // Payroll: Own only (Managers shouldn't see team salaries usually, unless specified)
+        // Reverting to safe default: Own payroll only.
+        scopePayroll = allPayroll.filter(p => p.employeeId === (user.employeeId || user.id));
+      } else {
+        // Employee
+        scopeEmployees = []; // No access to list
+
+        // Own Data
+        const myId = user.employeeId || user.id;
+        scopePayroll = allPayroll.filter(p => p.employeeId === myId);
+        scopeClaims = allClaims.filter(c => c.employeeId === myId);
+        scopeIllnesses = allIllnesses.filter(i => i.employeeId === myId);
+
+        // Leaves: Own + Team (if in a team)
+        if (user.teamId) {
+          const teamMembers = allEmployees.filter(e => e.teamId === user.teamId);
+          const teamIds = teamMembers.map(e => e.id);
+          scopeLeaves = allLeaves.filter(l => teamIds.includes(l.employeeId));
+        } else {
+          scopeLeaves = allLeaves.filter(l => l.employeeId === myId);
+        }
+      }
+
+      // --- Update Summary ---
+      const pendingLeaves = scopeLeaves.filter(l => l.status === 'pending');
+      const pendingClaims = scopeClaims.filter(c => c.status === 'pending');
+      const upcomingLeaves = scopeLeaves.filter(l => new Date(l.startDate) > new Date());
+
+      setSummary(prev => ({
+        ...prev,
+        totalEmployees: scopeEmployees.length,
+        pendingLeaves: pendingLeaves.length,
+        pendingClaims: pendingClaims.length,
+        totalPayroll: scopePayroll.length,
+        // Employee/Manager Dashboard stats
+        payroll: scopePayroll.length,
+        upcomingLeaves: upcomingLeaves.length,
+        expiringIllness: scopeIllnesses.length,
+      }));
+
+      // --- Build Recent Activity ---
+      let activityItems: any[] = [];
+
+      if (isAdmin || isRH) {
+        // Power Users: Focus on Approvals & Management
+        activityItems = [
           ...pendingLeaves.map(l => ({
             icon: '📅',
-            title: `${t('leaves.approvals')}: ${
-              l.employeeName || t('common.unknown')
-            }`,
+            title: `${t('leaves.approvals')}: ${l.employeeName || allEmployees.find(e => e.id === l.employeeId)?.name || t('common.unknown')}`,
             subtitle: l.title,
             date: l.createdAt || new Date().toISOString(),
             type: 'leave',
@@ -667,7 +748,7 @@ export const HomeScreen = () => {
             type: 'claim',
             id: c.id,
           })),
-          ...employees.slice(-5).map(e => ({
+          ...scopeEmployees.slice(-5).map(e => ({
             icon: '👤',
             title: t('employees.add'),
             subtitle: e.name,
@@ -675,7 +756,7 @@ export const HomeScreen = () => {
             type: 'employee',
             id: e.id,
           })),
-          ...allPayroll.slice(-3).map(p => ({
+          ...scopePayroll.slice(-3).map(p => ({
             icon: '💰',
             title: t('navigation.payroll'),
             subtitle: `${p.employeeId}: ${p.amount} ${p.currency || ''}`,
@@ -683,110 +764,35 @@ export const HomeScreen = () => {
             type: 'payroll',
             id: p.id,
           })),
-        ]
-          .sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-          )
-          .slice(0, 10);
-
-        setRecentActivity(activity);
+        ];
       } else {
-        let [allPayroll, upcomingLeaves, expiringIllnesses] = await Promise.all(
-          [
-            payrollDb.getAll(),
-            leavesDb.getUpcoming(),
-            illnessesDb.getExpiringSoon(),
-          ],
-        );
-
-        const userRole = user?.role;
-        if (userRole === 'employee') {
-          if (user?.employeeId) {
-            allPayroll = allPayroll.filter(
-              p => p.employeeId === user.employeeId,
-            );
-            upcomingLeaves = upcomingLeaves.filter(
-              l => l.employeeId === user.employeeId,
-            );
-            expiringIllnesses = expiringIllnesses.filter(
-              i => i.employeeId === user.employeeId,
-            );
-          } else {
-            allPayroll = [];
-            upcomingLeaves = [];
-            expiringIllnesses = [];
-          }
-        } else if (userRole === 'manager') {
-          if (user?.teamId) {
-            allPayroll = allPayroll.filter(p => p.teamId === user.teamId);
-            upcomingLeaves = upcomingLeaves.filter(
-              l => l.teamId === user.teamId,
-            );
-            expiringIllnesses = expiringIllnesses.filter(
-              i => i.teamId === user.teamId,
-            );
-          }
-        } else if (userRole === 'rh') {
-          if (user?.companyId) {
-            allPayroll = allPayroll.filter(p => p.companyId === user.companyId);
-            upcomingLeaves = upcomingLeaves.filter(
-              l => l.companyId === user.companyId,
-            );
-            expiringIllnesses = expiringIllnesses.filter(
-              i => i.companyId === user.companyId,
-            );
-          }
-        }
-
-        setSummary(prev => ({
-          ...prev,
-          payroll: allPayroll.length,
-          upcomingLeaves: upcomingLeaves.length,
-          expiringIllness: expiringIllnesses.length,
-        }));
-
-        // Fetch activity for Employees/Managers
-        const [leaves, claims] = await Promise.all([
-          leavesDb.getAll(),
-          claimsDb.getAll(),
-        ]);
-
-        let filteredLeaves = leaves;
-        let filteredClaims = claims;
-        const filteredPayroll = allPayroll;
-
-        if (userRole === 'employee') {
-          filteredLeaves = leaves.filter(
-            l => l.employeeId === user?.employeeId,
-          );
-          filteredClaims = claims.filter(
-            c => c.employeeId === user?.employeeId,
-          );
-          // allPayroll already filtered for employee
-        } else if (userRole === 'manager') {
-          filteredLeaves = leaves.filter(l => l.teamId === user?.teamId);
-          filteredClaims = claims.filter(c => c.teamId === user?.teamId);
-          // allPayroll already filtered for manager
-        }
-
-        const activity = [
-          ...filteredLeaves.slice(-3).map(l => ({
-            icon: '📅',
-            title: t('navigation.leaves'),
-            subtitle: `${l.title} (${t(`common.${l.status}`)})`,
-            date: l.createdAt || l.startDate || new Date().toISOString(),
-            type: 'leave',
-            id: l.id,
-          })),
-          ...filteredClaims.slice(-3).map(c => ({
-            icon: '📝',
-            title: t('navigation.claims'),
-            subtitle: `${c.description} (${t(`common.${c.status}`)})`,
-            date: c.createdAt || new Date().toISOString(),
-            type: 'claim',
-            id: c.id,
-          })),
-          ...filteredPayroll.slice(-3).map(p => ({
+        // Standard Users: Focus on Timeline
+        activityItems = [
+          ...scopeLeaves.map(l => {
+            const empName = allEmployees.find(e => e.id === l.employeeId)?.name;
+            const isMe = l.employeeId === (user.employeeId || user.id);
+            return {
+              icon: '📅',
+              title: t('navigation.leaves'),
+              subtitle: `${l.title} (${t(`common.${l.status}`)})` + (!isMe && empName ? ` - ${empName}` : ''),
+              date: l.createdAt || l.startDate || new Date().toISOString(),
+              type: 'leave',
+              id: l.id,
+            };
+          }),
+          ...scopeClaims.map(c => {
+            const empName = allEmployees.find(e => e.id === c.employeeId)?.name;
+            const isMe = c.employeeId === (user.employeeId || user.id);
+            return {
+              icon: '📝',
+              title: t('navigation.claims'),
+              subtitle: `${c.description} (${t(`common.${c.status}`)})` + (!isMe && empName ? ` - ${empName}` : ''),
+              date: c.createdAt || new Date().toISOString(),
+              type: 'claim',
+              id: c.id,
+            };
+          }),
+          ...scopePayroll.map(p => ({
             icon: '💰',
             title: t('navigation.payroll'),
             subtitle: `${p.amount} ${p.currency || ''}`,
@@ -794,17 +800,14 @@ export const HomeScreen = () => {
             type: 'payroll',
             id: p.id,
           })),
-        ]
-          .sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-          )
-          .slice(0, 5);
-
-        setRecentActivity(activity);
+        ];
       }
 
-      const status = await permissionsService.checkNotificationPermission();
-      setHasNotificationPermission(status === 'granted');
+      setRecentActivity(activityItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10));
+
+      const pStatus = await permissionsService.checkNotificationPermission();
+      setHasNotificationPermission(pStatus === 'granted');
+
     } catch (error) {
       console.error('Error loading home data:', error);
     } finally {
@@ -831,14 +834,14 @@ export const HomeScreen = () => {
         tab === 'Payroll'
           ? 'PayrollTab'
           : tab === 'Leaves'
-          ? 'LeavesTab'
-          : tab === 'Analytics'
-          ? 'Analytics'
-          : tab === 'Employees'
-          ? 'Employees'
-          : tab === 'Claims'
-          ? 'Claims'
-          : undefined;
+            ? 'LeavesTab'
+            : tab === 'Analytics'
+              ? 'Analytics'
+              : tab === 'Employees'
+                ? 'Employees'
+                : tab === 'Claims'
+                  ? 'Claims'
+                  : undefined;
 
       if (stackScreen) {
         navigation.navigate('Main', {

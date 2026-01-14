@@ -87,7 +87,7 @@ export const PerformanceReviewScreen = () => {
 
   const [score, setScore] = useState('5');
   const [comments, setComments] = useState('');
-  const [period, setPeriod] = useState('Q4 2025');
+  const [period, setPeriod] = useState(t('performance.periodPlaceholder'));
 
   // Initialize filters based on Role when modal opens
   React.useEffect(() => {
@@ -175,7 +175,7 @@ export const PerformanceReviewScreen = () => {
     setSelectedEmployeeId(null);
     setScore('5');
     setComments('');
-    setPeriod('Q4 2025');
+    setPeriod(t('performance.periodPlaceholder'));
   };
 
   const renderReviewCard = ({ item }: { item: PerformanceReview }) => {
@@ -186,7 +186,7 @@ export const PerformanceReviewScreen = () => {
           <View>
             <Text style={styles.periodText}>{item.period}</Text>
             <Text style={styles.employeeName}>
-              {employee?.name || `Employee #${item.employeeId}`}
+              {employee?.name || `${t('performance.employeeIdLabel')} ${item.employeeId}`}
             </Text>
           </View>
           <View
@@ -209,7 +209,7 @@ export const PerformanceReviewScreen = () => {
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>
-            {t('performance.title') || 'Évaluations Performance'}
+            {t('performance.title')}
           </Text>
           <Text style={styles.subtitle}>
             {isManagerOrAdmin
@@ -251,7 +251,7 @@ export const PerformanceReviewScreen = () => {
               {user?.role === 'admin' && (
                 <>
                   <Text style={styles.inputLabel}>
-                    {t('common.company') || 'Entreprise'}
+                    {t('common.company')}
                   </Text>
                   <ScrollView
                     horizontal
@@ -275,7 +275,7 @@ export const PerformanceReviewScreen = () => {
                           tempCompanyId === 'none' && styles.activeChipText,
                         ]}
                       >
-                        {t('common.none') || 'Aucune'}
+                        {t('common.none')}
                       </Text>
                     </TouchableOpacity>
                     {companies.map((c: Company) => (
@@ -310,7 +310,7 @@ export const PerformanceReviewScreen = () => {
                 (tempCompanyId && tempCompanyId !== 'none' || user?.role === 'rh') && (
                   <>
                     <Text style={styles.inputLabel}>
-                      {t('common.team') || 'Équipe'}
+                      {t('common.team')}
                     </Text>
                     <ScrollView
                       horizontal
@@ -333,7 +333,7 @@ export const PerformanceReviewScreen = () => {
                             tempTeamId === 'none' && styles.activeChipText,
                           ]}
                         >
-                          {t('common.none') || 'Aucune'}
+                          {t('common.none')}
                         </Text>
                       </TouchableOpacity>
                       {filteredTeams.map((t: Team) => (
@@ -400,7 +400,7 @@ export const PerformanceReviewScreen = () => {
                 value={period}
                 onChangeText={setPeriod}
                 placeholder={
-                  t('performance.periodPlaceholder') || 'e.g. Q4 2025'
+                  t('performance.periodPlaceholder')
                 }
                 placeholderTextColor={theme.colors.subText}
               />

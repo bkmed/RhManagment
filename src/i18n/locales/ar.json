@@ -64,7 +64,8 @@
   "careerHub": {
     "titlePlaceholder": "مثال: إتقان React Native",
     "editGoal": "تعديل الهدف",
-    "descriptionPlaceholder": "صف هدفك والغاية الرئيسية وكيف تخطط لتحقيق ذلك..."
+    "descriptionPlaceholder": "صف هدفك والغاية الرئيسية وكيف تخطط لتحقيق ذلك...",
+    "draftingFor": "مسودة لـ"
   },
   "claims": {
     "description": "الوصف",
@@ -97,6 +98,9 @@
     "allCompanies": "جميع الشركات",
     "addToCalendar": "إضافة إلى التقويم",
     "addedToCalendar": "تمت إضافة الحدث إلى التقويم",
+    "approved": "مقبول",
+    "rejected": "مرفوض",
+    "pending": "قيد الانتظار",
     "askAnything": "اسألني أي شيء...",
     "assistant": "مساعد الموارد البشرية",
     "back": "رجوع",
@@ -748,7 +752,8 @@
     "feedbackPlaceholder": "ملاحظات نوعية...",
     "periodPlaceholder": "مثال: الربع الرابع 2025",
     "managerSubtitle": "إدارة تقييمات فريقك",
-    "employeeSubtitle": "عرض تقييماتك"
+    "employeeSubtitle": "عرض تقييماتك",
+    "employeeIdLabel": "#موظف"
   },
   "permissions": {
     "calendar": "إذن التقويم",

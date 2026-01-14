@@ -64,7 +64,8 @@
   "careerHub": {
     "titlePlaceholder": "e.g. Master React Native",
     "editGoal": "Edit Goal",
-    "descriptionPlaceholder": "Describe your goal, the main objective and how you plan to achieve it..."
+    "descriptionPlaceholder": "Describe your goal, the main objective and how you plan to achieve it...",
+    "draftingFor": "Drafting for"
   },
   "claims": {
     "description": "Description",
@@ -96,6 +97,9 @@
     "allCompanies": "All Companies",
     "addToCalendar": "Add to Calendar",
     "addedToCalendar": "Event added to calendar",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "pending": "Pending",
     "askAnything": "Ask me anything...",
     "assistant": "HR Assistant",
     "back": "Back",
@@ -746,7 +750,8 @@
     "feedbackPlaceholder": "Qualitative feedback...",
     "periodPlaceholder": "e.g. Q4 2025",
     "managerSubtitle": "Manage your team's reviews",
-    "employeeSubtitle": "View your reviews"
+    "employeeSubtitle": "View your reviews",
+    "employeeIdLabel": "Employee #"
   },
   "permissions": {
     "calendar": "Calendar Permission",

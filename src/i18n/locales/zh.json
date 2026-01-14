@@ -64,7 +64,8 @@
   "careerHub": {
     "titlePlaceholder": "例如：精通 React Native",
     "editGoal": "编辑目标",
-    "descriptionPlaceholder": "描述您的目标、主要目标以及您计划如何实现它..."
+    "descriptionPlaceholder": "描述您的目标、主要目标以及您计划如何实现它...",
+    "draftingFor": "起草"
   },
   "claims": {
     "description": "描述",
@@ -97,6 +98,9 @@
     "allCompanies": "所有公司",
     "addToCalendar": "添加到日历",
     "addedToCalendar": "事件已添加到日历",
+    "approved": "已批准",
+    "rejected": "已拒绝",
+    "pending": "待处理",
     "askAnything": "尽管问我...",
     "assistant": "人力资源助理",
     "back": "返回",
@@ -742,7 +746,8 @@
     "feedbackPlaceholder": "定性反馈...",
     "periodPlaceholder": "例如：2025年第四季度",
     "managerSubtitle": "管理您团队的考评",
-    "employeeSubtitle": "查看您的考评"
+    "employeeSubtitle": "查看您的考评",
+    "employeeIdLabel": "员工 #"
   },
   "permissions": {
     "calendar": "日历权限",

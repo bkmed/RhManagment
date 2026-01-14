@@ -12,15 +12,18 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import { Goal } from '../../database/schema';
+import { Goal, Employee } from '../../database/schema';
 import {
   addGoal,
   updateGoal,
   setGoals,
   selectGoalsByEmployeeId,
 } from '../../store/slices/goalsSlice';
+import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { Theme } from '../../theme';
 import { formatDate } from '../../utils/dateUtils';
+import { SearchOverlay } from '../../components/common/SearchOverlay';
+import { rbacService, Permission } from '../../services/rbacService';
 
 export const CareerHubScreen = () => {
   const { theme } = useTheme();
@@ -29,15 +32,32 @@ export const CareerHubScreen = () => {
   const dispatch = useDispatch();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  const [isSearchVisible, setSearchVisible] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+
   /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
-  const employeeId = user?.employeeId || user?.id || '';
+  const targetEmployeeId = selectedEmployeeId || user?.employeeId || user?.id || '';
 
   const goalsSelector = useMemo(
-    () => selectGoalsByEmployeeId(employeeId),
-    [employeeId],
+    () => selectGoalsByEmployeeId(targetEmployeeId),
+    [targetEmployeeId],
   );
 
   const goals = useSelector(goalsSelector);
+  const allEmployees = useSelector(selectAllEmployees);
+
+  const selectedEmployee = useMemo(() => {
+    if (!selectedEmployeeId) return null;
+    return allEmployees.find((e: Employee) => e.id === selectedEmployeeId);
+  }, [selectedEmployeeId, allEmployees]);
+
+  const canManageOthers = useMemo(() => {
+    return (
+      rbacService.isAdmin(user) ||
+      rbacService.isRH(user) ||
+      rbacService.isManager(user)
+    );
+  }, [user]);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -70,7 +90,7 @@ export const CareerHubScreen = () => {
       }
       : {
         id: Date.now().toString(),
-        employeeId,
+        employeeId: targetEmployeeId,
         title,
         description,
         deadline,
@@ -194,16 +214,31 @@ export const CareerHubScreen = () => {
           <View>
             <Text style={styles.title}>{t('navigation.careerHub')}</Text>
             <Text style={styles.subtitle}>{t('home.careerGoalsSubtitle')}</Text>
+            {selectedEmployee && (
+              <Text style={[styles.subtitle, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+                {t('careerHub.draftingFor')}: {selectedEmployee.name}
+              </Text>
+            )}
           </View>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => {
-              resetForm();
-              setModalVisible(true);
-            }}
-          >
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {canManageOthers && (
+              <TouchableOpacity
+                style={[styles.addButton, { backgroundColor: theme.colors.secondary }]}
+                onPress={() => setSearchVisible(true)}
+              >
+                <Text style={{ fontSize: 20 }}>🔍</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => {
+                resetForm();
+                setModalVisible(true);
+              }}
+            >
+              <Text style={styles.addButtonText}>+</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Stats Section */}
@@ -261,7 +296,7 @@ export const CareerHubScreen = () => {
               value={title}
               onChangeText={setTitle}
               placeholder={
-                t('careerHub.titlePlaceholder') || 'e.g. Master React Native'
+                t('careerHub.titlePlaceholder')
               }
             />
 
@@ -271,7 +306,7 @@ export const CareerHubScreen = () => {
               value={description}
               onChangeText={setDescription}
               placeholder={
-                t('careerHub.descriptionPlaceholder') || 'Describe your goal...'
+                t('careerHub.descriptionPlaceholder')
               }
               multiline
               numberOfLines={4}
@@ -282,7 +317,7 @@ export const CareerHubScreen = () => {
               style={styles.input}
               value={deadline}
               onChangeText={setDeadline}
-              placeholder={t('common.datePlaceholder') || 'YYYY-MM-DD'}
+              placeholder={t('common.datePlaceholder')}
             />
 
             <View style={styles.modalActions}>
@@ -304,6 +339,18 @@ export const CareerHubScreen = () => {
           </View>
         </View>
       </Modal>
+
+      <SearchOverlay
+        visible={isSearchVisible}
+        onClose={() => setSearchVisible(false)}
+        onSelect={(item) => {
+          if (item.type === 'employee') {
+            setSelectedEmployeeId(item.id);
+            setSearchVisible(false);
+          }
+        }}
+        teamId={user?.teamId}
+      />
     </View>
   );
 };
@@ -327,6 +374,7 @@ const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       backgroundColor: theme.colors.background,
+      flex: 1,
     },
     scrollContent: {
       padding: theme.spacing.m,
