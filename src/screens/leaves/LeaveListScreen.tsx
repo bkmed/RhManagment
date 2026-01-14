@@ -11,6 +11,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { useFocusEffect, ParamListBase } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +40,7 @@ export const LeaveListScreen = ({
   const { theme } = useTheme();
   const { showToast } = useToast();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   const [leaves, setLeaves] = useState<(Leave | Illness)[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -209,11 +211,21 @@ export const LeaveListScreen = ({
       <TouchableOpacity
         key={`${isIllness ? 'ill' : 'leave'}-${item.id}`}
         style={styles.card}
-        onPress={() =>
-          isIllness
-            ? navigation.navigate('IllnessDetails', { illnessId: item.id })
-            : navigation.navigate('LeaveDetails', { leaveId: item.id })
-        }
+        onPress={() => {
+          if (Platform.OS === 'web') {
+            if (isIllness) {
+              setActiveTab('Leaves', 'IllnessDetails', { illnessId: item.id });
+            } else {
+              setActiveTab('Leaves', 'LeaveDetails', { leaveId: item.id });
+            }
+          } else {
+            if (isIllness) {
+              navigation.navigate('IllnessDetails', { illnessId: item.id });
+            } else {
+              navigation.navigate('LeaveDetails', { leaveId: item.id });
+            }
+          }
+        }}
       >
         <View style={styles.dateColumn}>
           <Text style={styles.dateText}>{startStr}</Text>

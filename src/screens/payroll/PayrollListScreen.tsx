@@ -11,6 +11,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +32,7 @@ export const PayrollListScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { setActiveTab } = useContext(WebNavigationContext);
   const [payrollItems, setPayrollItems] = useState<Payroll[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -101,7 +103,11 @@ export const PayrollListScreen = ({ navigation }: any) => {
   }, [payrollItems, searchQuery]);
 
   const handlePayrollPress = (payroll: Payroll) => {
-    navigation.navigate('PayrollDetails', { payrollId: payroll.id });
+    if (Platform.OS === 'web') {
+      setActiveTab('Payroll', 'PayrollDetails', { payrollId: payroll.id });
+    } else {
+      navigation.navigate('PayrollDetails', { payrollId: payroll.id });
+    }
   };
 
   const renderEmpty = () => (

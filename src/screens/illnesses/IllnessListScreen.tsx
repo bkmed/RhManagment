@@ -42,7 +42,8 @@ export const IllnessListScreen = ({ navigation }: any) => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'mine' | 'all'>('mine');
+  const [viewTab, setViewTab] = useState<'mine' | 'all'>('mine');
+  const { setActiveTab } = useContext(WebNavigationContext);
   const [filterCompanyId, setFilterCompanyId] = useState<string | null>(null);
   const [filterTeamId, setFilterTeamId] = useState<string | null>(null);
 
@@ -87,7 +88,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
   const filteredIllnesses = useMemo(() => {
     let data = illnesses;
 
-    if (activeTab === 'mine') {
+    if (viewTab === 'mine') {
       data = data.filter(ill => ill.employeeId === user?.employeeId);
     } else {
       if (user?.role === 'manager') {
@@ -129,7 +130,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
   }, [
     illnesses,
     searchQuery,
-    activeTab,
+    viewTab,
     user,
     employees,
     filterCompanyId,
@@ -137,7 +138,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
   ]);
 
   const groupedData = useMemo(() => {
-    if (activeTab === 'mine') {
+    if (viewTab === 'mine') {
       return [
         {
           id: 'mine',
@@ -179,7 +180,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
       ...c,
       teams: Array.from(c.teams.values()),
     }));
-  }, [filteredIllnesses, activeTab, user, employees, companies, teams, t]);
+  }, [filteredIllnesses, viewTab, user, employees, companies, teams, t]);
 
   const isExpiringSoon = (expiryDate: string) => {
     const expiry = new Date(expiryDate);
@@ -197,11 +198,15 @@ export const IllnessListScreen = ({ navigation }: any) => {
       <TouchableOpacity
         key={item.id}
         style={[styles.card, expiryWarning && styles.cardWarning]}
-        onPress={() =>
-          navigation.navigate('IllnessDetails', {
-            illnessId: item.id,
-          })
-        }
+        onPress={() => {
+          if (Platform.OS === 'web') {
+            setActiveTab('Illnesses', 'IllnessDetails', { illnessId: item.id });
+          } else {
+            navigation.navigate('IllnessDetails', {
+              illnessId: item.id,
+            });
+          }
+        }}
       >
         {item.photoUri && (
           <Image
@@ -247,26 +252,26 @@ export const IllnessListScreen = ({ navigation }: any) => {
           user?.role === 'manager') && (
           <View style={styles.tabContainer}>
             <TouchableOpacity
-              style={[styles.tab, activeTab === 'mine' && styles.activeTab]}
-              onPress={() => setActiveTab('mine')}
+              style={[styles.tab, viewTab === 'mine' && styles.activeTab]}
+              onPress={() => setViewTab('mine')}
             >
               <Text
                 style={[
                   styles.tabText,
-                  activeTab === 'mine' && styles.activeTabText,
+                  viewTab === 'mine' && styles.activeTabText,
                 ]}
               >
                 {t('illnesses.myIllnesses')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.tab, activeTab === 'all' && styles.activeTab]}
-              onPress={() => setActiveTab('all')}
+              style={[styles.tab, viewTab === 'all' && styles.activeTab]}
+              onPress={() => setViewTab('all')}
             >
               <Text
                 style={[
                   styles.tabText,
-                  activeTab === 'all' && styles.activeTabText,
+                  viewTab === 'all' && styles.activeTabText,
                 ]}
               >
                 {user?.role === 'manager'
@@ -277,7 +282,7 @@ export const IllnessListScreen = ({ navigation }: any) => {
           </View>
         )}
 
-        {activeTab === 'all' &&
+        {viewTab === 'all' &&
           (user?.role === 'admin' || user?.role === 'rh') && (
             <View style={styles.filterWrapper}>
               <ScrollView
@@ -414,11 +419,11 @@ export const IllnessListScreen = ({ navigation }: any) => {
               <Text style={styles.emptyIcon}>🏥</Text>
               <Text style={styles.emptyText}>{t('illnesses.empty')}</Text>
               <Text style={styles.emptySubText}>
-                {activeTab === 'mine'
+                {viewTab === 'mine'
                   ? t('illnesses.addFirst')
                   : t('common.noData')}
               </Text>
-              {activeTab === 'mine' && (
+              {viewTab === 'mine' && (
                 <TouchableOpacity
                   style={styles.emptyAddButton}
                   onPress={() => navigation.navigate('AddIllness')}

@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useContext } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -19,12 +20,14 @@ import { notificationService } from '../../services/notificationService';
 
 import { useAuth } from '../../context/AuthContext';
 import { Permission, rbacService } from '../../services/rbacService';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 export const EmployeeListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { setActiveTab } = useContext(WebNavigationContext);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -94,9 +97,15 @@ export const EmployeeListScreen = ({ navigation }: any) => {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() =>
-          navigation.navigate('EmployeeDetails', { employeeId: item.id })
-        }
+        onPress={() => {
+          if (Platform.OS === 'web') {
+            setActiveTab('EmployeeList', 'EmployeeDetails', {
+              employeeId: item.id,
+            });
+          } else {
+            navigation.navigate('EmployeeDetails', { employeeId: item.id });
+          }
+        }}
       >
         <View style={styles.headerRow}>
           <Text style={styles.name}>{item.name}</Text>

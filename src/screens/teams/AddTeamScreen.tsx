@@ -222,11 +222,23 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
     return employees.filter(e => {
       // 1. Check Company Constraint
       if (rbacService.isAdmin(user)) {
-        if (companyId && String(e.companyId) !== String(companyId))
-          return false;
+        // Admin: if company filter is selected, employee must match OR have no company
+        if (companyId) {
+          const empCompanyId = e.companyId ? String(e.companyId) : undefined;
+          if (empCompanyId && empCompanyId !== String(companyId)) return false;
+          // Allow employees without company to be visible (they'll be assigned on save)
+        }
+        // If no company filter, show all employees
       } else {
-        // RH or Manager/TL: Must belong to their company
-        if (String(e.companyId) !== String(user?.companyId)) return false;
+        // RH or Manager/TL: Must belong to their company OR have no company
+        const empCompanyId = e.companyId ? String(e.companyId) : undefined;
+        const userCompanyId = user?.companyId
+          ? String(user.companyId)
+          : undefined;
+        if (empCompanyId && userCompanyId && empCompanyId !== userCompanyId) {
+          return false;
+        }
+        // Allow employees without company to be visible
       }
 
       // 2. Filter by Team (Optional Filter)

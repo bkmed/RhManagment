@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +33,8 @@ export const ClaimsListScreen = ({ navigation }: any) => {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { activeTab, subScreen } = useContext(WebNavigationContext);
+  const { activeTab, subScreen, setActiveTab } =
+    useContext(WebNavigationContext);
 
   const [claims, setClaims] = useState<Claim[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -183,7 +185,13 @@ export const ClaimsListScreen = ({ navigation }: any) => {
     <TouchableOpacity
       key={item.id}
       style={styles.card}
-      onPress={() => navigation.navigate('ClaimDetails', { claimId: item.id })}
+      onPress={() => {
+        if (Platform.OS === 'web') {
+          setActiveTab('Claims', 'ClaimDetails', { claimId: item.id });
+        } else {
+          navigation.navigate('ClaimDetails', { claimId: item.id });
+        }
+      }}
     >
       <View style={styles.cardHeader}>
         <View style={styles.typeTag}>
