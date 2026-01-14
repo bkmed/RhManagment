@@ -1,4 +1,4 @@
-export type ClaimType = 'material' | 'account' | 'other';
+export type ClaimType = 'material' | 'account' | 'assignment' | 'other';
 
 export interface Claim {
   id?: string;

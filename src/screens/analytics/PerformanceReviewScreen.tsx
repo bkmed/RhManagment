@@ -186,7 +186,8 @@ export const PerformanceReviewScreen = () => {
           <View>
             <Text style={styles.periodText}>{item.period}</Text>
             <Text style={styles.employeeName}>
-              {employee?.name || `${t('performance.employeeIdLabel')} ${item.employeeId}`}
+              {employee?.name ||
+                `${t('performance.employeeIdLabel')} ${item.employeeId}`}
             </Text>
           </View>
           <View
@@ -208,9 +209,7 @@ export const PerformanceReviewScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>
-            {t('performance.title')}
-          </Text>
+          <Text style={styles.title}>{t('performance.title')}</Text>
           <Text style={styles.subtitle}>
             {isManagerOrAdmin
               ? t('performance.managerSubtitle')
@@ -250,9 +249,7 @@ export const PerformanceReviewScreen = () => {
             >
               {user?.role === 'admin' && (
                 <>
-                  <Text style={styles.inputLabel}>
-                    {t('common.company')}
-                  </Text>
+                  <Text style={styles.inputLabel}>{t('common.company')}</Text>
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -307,11 +304,10 @@ export const PerformanceReviewScreen = () => {
 
               {/* Team Selector - Visible if Admin/RH OR if company is selected/implicit */}
               {user?.role !== 'manager' &&
-                (tempCompanyId && tempCompanyId !== 'none' || user?.role === 'rh') && (
+                ((tempCompanyId && tempCompanyId !== 'none') ||
+                  user?.role === 'rh') && (
                   <>
-                    <Text style={styles.inputLabel}>
-                      {t('common.team')}
-                    </Text>
+                    <Text style={styles.inputLabel}>{t('common.team')}</Text>
                     <ScrollView
                       horizontal
                       showsHorizontalScrollIndicator={false}
@@ -399,9 +395,7 @@ export const PerformanceReviewScreen = () => {
                 style={styles.input}
                 value={period}
                 onChangeText={setPeriod}
-                placeholder={
-                  t('performance.periodPlaceholder')
-                }
+                placeholder={t('performance.periodPlaceholder')}
                 placeholderTextColor={theme.colors.subText}
               />
 

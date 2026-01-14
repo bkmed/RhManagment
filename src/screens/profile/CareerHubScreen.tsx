@@ -23,7 +23,7 @@ import { selectAllEmployees } from '../../store/slices/employeesSlice';
 import { Theme } from '../../theme';
 import { formatDate } from '../../utils/dateUtils';
 import { SearchOverlay } from '../../components/common/SearchOverlay';
-import { rbacService, Permission } from '../../services/rbacService';
+import { rbacService } from '../../services/rbacService';
 
 export const CareerHubScreen = () => {
   const { theme } = useTheme();
@@ -33,10 +33,13 @@ export const CareerHubScreen = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [isSearchVisible, setSearchVisible] = useState(false);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
+    null,
+  );
 
   /* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */
-  const targetEmployeeId = selectedEmployeeId || user?.employeeId || user?.id || '';
+  const targetEmployeeId =
+    selectedEmployeeId || user?.employeeId || user?.id || '';
 
   const goalsSelector = useMemo(
     () => selectGoalsByEmployeeId(targetEmployeeId),
@@ -83,21 +86,21 @@ export const CareerHubScreen = () => {
 
     const goalData: Goal = editingGoal
       ? {
-        ...editingGoal,
-        title,
-        description,
-        deadline,
-      }
+          ...editingGoal,
+          title,
+          description,
+          deadline,
+        }
       : {
-        id: Date.now().toString(),
-        employeeId: targetEmployeeId,
-        title,
-        description,
-        deadline,
-        progress: 0,
-        status: 'todo',
-        createdAt: new Date().toISOString(),
-      };
+          id: Date.now().toString(),
+          employeeId: targetEmployeeId,
+          title,
+          description,
+          deadline,
+          progress: 0,
+          status: 'todo',
+          createdAt: new Date().toISOString(),
+        };
 
     if (editingGoal) {
       await goalsDb.update(goalData);
@@ -124,8 +127,8 @@ export const CareerHubScreen = () => {
       newProgress === 100
         ? 'completed'
         : newProgress > 0
-          ? 'in_progress'
-          : 'todo';
+        ? 'in_progress'
+        : 'todo';
     const updatedGoal = { ...goal, progress: newProgress, status };
     await goalsDb.update(updatedGoal);
     dispatch(updateGoal(updatedGoal));
@@ -215,7 +218,12 @@ export const CareerHubScreen = () => {
             <Text style={styles.title}>{t('navigation.careerHub')}</Text>
             <Text style={styles.subtitle}>{t('home.careerGoalsSubtitle')}</Text>
             {selectedEmployee && (
-              <Text style={[styles.subtitle, { color: theme.colors.primary, fontWeight: 'bold' }]}>
+              <Text
+                style={[
+                  styles.subtitle,
+                  { color: theme.colors.primary, fontWeight: 'bold' },
+                ]}
+              >
                 {t('careerHub.draftingFor')}: {selectedEmployee.name}
               </Text>
             )}
@@ -223,7 +231,10 @@ export const CareerHubScreen = () => {
           <View style={{ flexDirection: 'row', gap: 10 }}>
             {canManageOthers && (
               <TouchableOpacity
-                style={[styles.addButton, { backgroundColor: theme.colors.secondary }]}
+                style={[
+                  styles.addButton,
+                  { backgroundColor: theme.colors.secondary },
+                ]}
                 onPress={() => setSearchVisible(true)}
               >
                 <Text style={{ fontSize: 20 }}>🔍</Text>
@@ -295,9 +306,7 @@ export const CareerHubScreen = () => {
               style={styles.input}
               value={title}
               onChangeText={setTitle}
-              placeholder={
-                t('careerHub.titlePlaceholder')
-              }
+              placeholder={t('careerHub.titlePlaceholder')}
             />
 
             <Text style={styles.inputLabel}>{t('common.description')}</Text>
@@ -305,9 +314,7 @@ export const CareerHubScreen = () => {
               style={[styles.input, styles.textArea]}
               value={description}
               onChangeText={setDescription}
-              placeholder={
-                t('careerHub.descriptionPlaceholder')
-              }
+              placeholder={t('careerHub.descriptionPlaceholder')}
               multiline
               numberOfLines={4}
             />
@@ -343,7 +350,7 @@ export const CareerHubScreen = () => {
       <SearchOverlay
         visible={isSearchVisible}
         onClose={() => setSearchVisible(false)}
-        onSelect={(item) => {
+        onSelect={item => {
           if (item.type === 'employee') {
             setSelectedEmployeeId(item.id);
             setSearchVisible(false);

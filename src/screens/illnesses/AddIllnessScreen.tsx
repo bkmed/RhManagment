@@ -77,9 +77,10 @@ export const AddIllnessScreen = ({
   const [companyId, setCompanyId] = useState<string | undefined>(undefined);
   const [teamId, setTeamId] = useState<string | undefined>(undefined);
   const [employeeId, setEmployeeId] = useState<string | undefined>(
-    initialEmployeeId || (!rbacService.hasPermission(user, Permission.MANAGE_TEAMS) && user?.id
-      ? user.id
-      : undefined),
+    initialEmployeeId ||
+      (!rbacService.hasPermission(user, Permission.MANAGE_TEAMS) && user?.id
+        ? user.id
+        : undefined),
   );
 
   // Auto-fill logic for employees
@@ -240,13 +241,18 @@ export const AddIllnessScreen = ({
     setLoading(true);
     try {
       const selectedEmployee = employees.find(e => String(e.id) === employeeId);
-      const finalEmployeeName = (selectedEmployee?.name || initialEmployeeName || user?.name || '').trim();
+      const finalEmployeeName = (
+        selectedEmployee?.name ||
+        initialEmployeeName ||
+        user?.name ||
+        ''
+      ).trim();
       const illnessData = {
         payrollName: finalEmployeeName,
         employeeName: finalEmployeeName,
         employeeId: rbacService.isEmployee(user)
           ? user?.employeeId
-          : (employeeId || initialEmployeeId),
+          : employeeId || initialEmployeeId,
         issueDate: issueDate!.toISOString().split('T')[0],
         expiryDate: expiryDate
           ? expiryDate.toISOString().split('T')[0]
@@ -328,9 +334,14 @@ export const AddIllnessScreen = ({
                   data={employees
                     .filter(e => {
                       if (rbacService.isAdmin(user)) return true;
-                      if (rbacService.isRH(user)) return e.companyId === user?.companyId;
-                      if (rbacService.isManager(user)) return e.teamId === user?.teamId;
-                      if (rbacService.isEmployee(user)) return e.id === user?.employeeId || e.email === user?.email;
+                      if (rbacService.isRH(user))
+                        return e.companyId === user?.companyId;
+                      if (rbacService.isManager(user))
+                        return e.teamId === user?.teamId;
+                      if (rbacService.isEmployee(user))
+                        return (
+                          e.id === user?.employeeId || e.email === user?.email
+                        );
                       return false;
                     })
                     .map(e => ({
@@ -340,7 +351,8 @@ export const AddIllnessScreen = ({
                   value={employeeId ? String(employeeId) : ''}
                   onSelect={val => {
                     setEmployeeId(val);
-                    if (errors.employeeId) setErrors({ ...errors, employeeId: '' });
+                    if (errors.employeeId)
+                      setErrors({ ...errors, employeeId: '' });
                   }}
                   disabled={rbacService.isEmployee(user)}
                   error={errors.employeeId}
@@ -349,32 +361,34 @@ export const AddIllnessScreen = ({
             </View>
 
             {/* Company / Team Selection (Admin/RH only) */}
-            {!initialEmployeeId && !rbacService.isEmployee(user) && (rbacService.isAdmin(user) || rbacService.isRH(user)) && (
-              <View style={styles.responsiveRow}>
-                <View style={styles.fieldContainer}>
-                  <Dropdown
-                    label={t('companies.selectCompany')}
-                    data={companies.map((c: Company) => ({
-                      label: c.name,
-                      value: String(c.id),
-                    }))}
-                    value={companyId ? String(companyId) : ''}
-                    onSelect={val => setCompanyId(val)}
-                  />
+            {!initialEmployeeId &&
+              !rbacService.isEmployee(user) &&
+              (rbacService.isAdmin(user) || rbacService.isRH(user)) && (
+                <View style={styles.responsiveRow}>
+                  <View style={styles.fieldContainer}>
+                    <Dropdown
+                      label={t('companies.selectCompany')}
+                      data={companies.map((c: Company) => ({
+                        label: c.name,
+                        value: String(c.id),
+                      }))}
+                      value={companyId ? String(companyId) : ''}
+                      onSelect={val => setCompanyId(val)}
+                    />
+                  </View>
+                  <View style={styles.fieldContainer}>
+                    <Dropdown
+                      label={t('teams.selectTeam')}
+                      data={teams.map((t: Team) => ({
+                        label: t.name,
+                        value: String(t.id),
+                      }))}
+                      value={teamId ? String(teamId) : ''}
+                      onSelect={val => setTeamId(val)}
+                    />
+                  </View>
                 </View>
-                <View style={styles.fieldContainer}>
-                  <Dropdown
-                    label={t('teams.selectTeam')}
-                    data={teams.map((t: Team) => ({
-                      label: t.name,
-                      value: String(t.id),
-                    }))}
-                    value={teamId ? String(teamId) : ''}
-                    onSelect={val => setTeamId(val)}
-                  />
-                </View>
-              </View>
-            )}
+              )}
           </View>
 
           {/* Section: Period */}
@@ -412,7 +426,7 @@ export const AddIllnessScreen = ({
                 {t('leaves.duration')}:{' '}
                 {Math.ceil(
                   (expiryDate.getTime() - issueDate.getTime()) /
-                  (1000 * 60 * 60 * 24),
+                    (1000 * 60 * 60 * 24),
                 ) + 1}{' '}
                 {t('leaves.days')}
               </Text>
@@ -460,8 +474,8 @@ export const AddIllnessScreen = ({
             {loading
               ? t('common.loading')
               : isEdit
-                ? t('illnesses.updateButton')
-                : t('illnesses.saveButton')}
+              ? t('illnesses.updateButton')
+              : t('illnesses.saveButton')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

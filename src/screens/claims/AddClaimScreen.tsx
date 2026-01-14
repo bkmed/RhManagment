@@ -273,7 +273,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
             ? selectedDevice === 'other'
               ? 'Other Material'
               : availableDevices.find(d => String(d.id) === selectedDevice)
-                  ?.name
+                ?.name
             : t(`claims.type_${type}`),
         description: description.trim(),
         isUrgent,
@@ -321,6 +321,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
   const claimTypes = [
     { label: t('claims.typeMaterial'), value: 'material' },
     { label: t('claims.typeAccount'), value: 'account' },
+    { label: t('claims.typeAssignment'), value: 'assignment' },
     { label: t('claims.typeOther'), value: 'other' },
   ];
 
