@@ -75,8 +75,10 @@ export const EmployeeListScreen = ({ navigation }: any) => {
       const position = emp.position
         ? t(`departments.${emp.position}`, { defaultValue: emp.position })
         : '';
-      const companyName = companies.find(c => String(c.id) === String(emp.companyId))?.name || '';
-      const teamName = teams.find(t => String(t.id) === String(emp.teamId))?.name || '';
+      const companyName =
+        companies.find(c => String(c.id) === String(emp.companyId))?.name || '';
+      const teamName =
+        teams.find(t => String(t.id) === String(emp.teamId))?.name || '';
 
       return (
         emp.name.toLowerCase().includes(lowerQuery) ||
@@ -118,12 +120,16 @@ export const EmployeeListScreen = ({ navigation }: any) => {
         <View style={styles.affiliations}>
           {item.companyId && (
             <Text style={styles.affiliationText}>
-              🏢 {companies.find(c => String(c.id) === String(item.companyId))?.name || item.companyId}
+              🏢{' '}
+              {companies.find(c => String(c.id) === String(item.companyId))
+                ?.name || item.companyId}
             </Text>
           )}
           {item.teamId && (
             <Text style={styles.affiliationText}>
-              👥 {teams.find(t => String(t.id) === String(item.teamId))?.name || item.teamId}
+              👥{' '}
+              {teams.find(t => String(t.id) === String(item.teamId))?.name ||
+                item.teamId}
             </Text>
           )}
         </View>

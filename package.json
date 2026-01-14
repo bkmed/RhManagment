@@ -26,7 +26,8 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "detox:build": "detox build",
-    "detox:test": "detox test"
+    "detox:test": "detox test",
+    "format": "bash scripts/format.sh"
   },
   "dependencies": {
     "@notifee/react-native": "9.1.8",

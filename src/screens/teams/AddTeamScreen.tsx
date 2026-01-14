@@ -57,7 +57,9 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
       return allCompanies;
     }
     if (rbacService.isRH(user) && user?.companyId) {
-      return allCompanies.filter((c: any) => String(c.id) === String(user.companyId));
+      return allCompanies.filter(
+        (c: any) => String(c.id) === String(user.companyId),
+      );
     }
     return [];
   }, [allCompanies, user]);
@@ -87,7 +89,9 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
       // Filter employees for RH users
       let filteredEmps = emps;
       if (rbacService.isRH(user) && user?.companyId) {
-        filteredEmps = emps.filter(e => String(e.companyId) === String(user.companyId));
+        filteredEmps = emps.filter(
+          e => String(e.companyId) === String(user.companyId),
+        );
       }
 
       setEmployees(filteredEmps);
@@ -221,10 +225,10 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
         if (empCompanyId && empCompanyId !== targetCompanyId) {
           return false;
         }
-        // If employee has no company, they are technically eligible to be added 
+        // If employee has no company, they are technically eligible to be added
         // (and will be assigned to this company on save)
       } else if (rbacService.isRH(user) && user.companyId) {
-        // If no specific company selected for team (unlikely for RH), 
+        // If no specific company selected for team (unlikely for RH),
         // RH can still ONLY see their own employees
         const empCompanyId = e.companyId ? String(e.companyId) : undefined;
         const userCompanyId = String(user.companyId);
@@ -372,7 +376,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
                   styles.memberCount,
                   (selectedMemberIds.length === 0 ||
                     selectedMemberIds.length > 10) &&
-                  styles.errorText,
+                    styles.errorText,
                 ]}
               >
                 {selectedMemberIds.length} / 10

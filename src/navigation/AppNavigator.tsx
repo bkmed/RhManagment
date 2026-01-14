@@ -619,12 +619,12 @@ const useNavigationSections = () => {
           { key: 'Home', label: t('navigation.home'), icon: '🏠' },
           ...(rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)
             ? [
-              {
-                key: 'Analytics',
-                label: t('navigation.analytics'),
-                icon: '📊',
-              },
-            ]
+                {
+                  key: 'Analytics',
+                  label: t('navigation.analytics'),
+                  icon: '📊',
+                },
+              ]
             : []),
         ],
       },
@@ -638,7 +638,11 @@ const useNavigationSections = () => {
             ? [{ key: 'Invoices', label: t('invoices.title'), icon: '🧾' }]
             : []),
           { key: 'Remote', label: t('remote.title'), icon: '📅' },
-          { key: 'PerformanceReviews', label: t('performance.title') || 'Evaluations', icon: '📈' },
+          {
+            key: 'PerformanceReviews',
+            label: t('performance.title') || 'Evaluations',
+            icon: '📈',
+          },
         ],
       },
     ];
@@ -660,7 +664,6 @@ const useNavigationSections = () => {
         icon: '🏢',
       });
     }
-
 
     if (rbacService.hasPermission(user, Permission.MANAGE_COMPANY)) {
       organizationItems.push({
@@ -698,23 +701,23 @@ const useNavigationSections = () => {
       items: [
         ...(user?.companyId
           ? [
-            {
-              key: 'Announcements',
-              label: t('navigation.announcements'),
-              icon: '📢',
-            },
-          ]
+              {
+                key: 'Announcements',
+                label: t('navigation.announcements'),
+                icon: '📢',
+              },
+            ]
           : []),
         ...(rbacService.isAdmin(user) ||
-          rbacService.isRH(user) ||
-          rbacService.isManager(user)
+        rbacService.isRH(user) ||
+        rbacService.isManager(user)
           ? [
-            {
-              key: 'ManageNotifications',
-              label: t('notifications.broadcast') || 'Broadcast',
-              icon: '📡',
-            },
-          ]
+              {
+                key: 'ManageNotifications',
+                label: t('notifications.broadcast') || 'Broadcast',
+                icon: '📡',
+              },
+            ]
           : []),
         ...(user?.companyId
           ? [{ key: 'Chat', label: t('navigation.chat'), icon: '💬' }]
@@ -857,9 +860,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                         : 'transparent',
                       ...(isFocused &&
                         themeMode === 'premium' && {
-                        borderWidth: 1,
-                        borderColor: theme.colors.primary,
-                      }),
+                          borderWidth: 1,
+                          borderColor: theme.colors.primary,
+                        }),
                     }}
                     onPress={() => navigation.navigate(item.key)}
                   >
@@ -1132,7 +1135,10 @@ const WebNavigator = () => {
           );
         if (subScreen === 'InvoiceDetails')
           return (
-            <InvoiceDetailsScreen route={mockRoute} navigation={mockNavigation} />
+            <InvoiceDetailsScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
           );
         return <InvoicesStack />;
       case 'Companies':
@@ -1209,7 +1215,9 @@ const WebNavigator = () => {
         if (subScreen === 'Services') return <ServiceStack />;
         if (subScreen === 'ManageCurrencies') return <ManageCurrenciesScreen />;
         if (subScreen === 'AddDevice')
-          return <AddDeviceScreen navigation={mockNavigation} route={mockRoute} />;
+          return (
+            <AddDeviceScreen navigation={mockNavigation} route={mockRoute} />
+          );
         return <CompanySettingsScreen />;
       case 'MyTeam':
         return <MyTeamScreen />;
@@ -1219,7 +1227,9 @@ const WebNavigator = () => {
         if (subScreen === 'MyTeam') return <MyTeamScreen />;
         if (subScreen === 'MyDevices') return <MyDevicesScreen />;
         if (subScreen === 'AddDevice')
-          return <AddDeviceScreen navigation={mockNavigation} route={mockRoute} />;
+          return (
+            <AddDeviceScreen navigation={mockNavigation} route={mockRoute} />
+          );
         return <ProfileStack />;
       default:
         return <HomeStack />;
@@ -1230,7 +1240,7 @@ const WebNavigator = () => {
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
-      { }
+      {}
       <View
         style={
           [
@@ -1244,7 +1254,7 @@ const WebNavigator = () => {
           ] as any
         }
       >
-        { }
+        {}
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (
@@ -1851,4 +1861,3 @@ const webStyles = StyleSheet.create({
     fontSize: 17,
   },
 });
-

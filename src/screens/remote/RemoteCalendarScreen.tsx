@@ -104,8 +104,7 @@ export const RemoteCalendarScreen = () => {
         const isAuthorized =
           rbacService.isAdmin(user) ||
           rbacService.isRH(user) ||
-          (rbacService.isFullyAssignedManager(user) &&
-            selectedEmployee?.id); // SearchOverlay already filters by team for managers
+          (rbacService.isFullyAssignedManager(user) && selectedEmployee?.id); // SearchOverlay already filters by team for managers
 
         if (!isAuthorized) {
           notificationService.showAlert(
@@ -307,8 +306,8 @@ export const RemoteCalendarScreen = () => {
                     i18n.language.startsWith('ar')
                       ? 'fr'
                       : i18n.language.startsWith('fr')
-                        ? 'fr'
-                        : 'en'
+                      ? 'fr'
+                      : 'en'
                   ] || holiday.name.fr}
                 </Text>
               </View>
@@ -329,55 +328,55 @@ export const RemoteCalendarScreen = () => {
         {(rbacService.isAdmin(user) ||
           rbacService.isRH(user) ||
           isManagerLimited) && (
-            <View style={styles.toggleContainer}>
-              <TouchableOpacity
+          <View style={styles.toggleContainer}>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                viewMode === 'mine' && styles.toggleButtonActive,
+              ]}
+              onPress={() => setViewMode('mine')}
+            >
+              <Text
                 style={[
-                  styles.toggleButton,
-                  viewMode === 'mine' && styles.toggleButtonActive,
+                  styles.toggleText,
+                  viewMode === 'mine' && styles.toggleTextActive,
                 ]}
-                onPress={() => setViewMode('mine')}
               >
-                <Text
-                  style={[
-                    styles.toggleText,
-                    viewMode === 'mine' && styles.toggleTextActive,
-                  ]}
-                >
-                  {t('remote.myPlanning') || 'My Planning'}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+                {t('remote.myPlanning') || 'My Planning'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                viewMode === 'other' && styles.toggleButtonActive,
+              ]}
+              onPress={() => {
+                // Double check permissions before switching
+                if (
+                  rbacService.isAdmin(user) ||
+                  rbacService.isRH(user) ||
+                  isManagerLimited
+                ) {
+                  setViewMode('other');
+                } else {
+                  notificationService.showAlert(
+                    t('common.error'),
+                    t('common.accessDenied'),
+                  );
+                }
+              }}
+            >
+              <Text
                 style={[
-                  styles.toggleButton,
-                  viewMode === 'other' && styles.toggleButtonActive,
+                  styles.toggleText,
+                  viewMode === 'other' && styles.toggleTextActive,
                 ]}
-                onPress={() => {
-                  // Double check permissions before switching
-                  if (
-                    rbacService.isAdmin(user) ||
-                    rbacService.isRH(user) ||
-                    isManagerLimited
-                  ) {
-                    setViewMode('other');
-                  } else {
-                    notificationService.showAlert(
-                      t('common.error'),
-                      t('common.accessDenied'),
-                    );
-                  }
-                }}
               >
-                <Text
-                  style={[
-                    styles.toggleText,
-                    viewMode === 'other' && styles.toggleTextActive,
-                  ]}
-                >
-                  {t('remote.employeePlanning') || 'Employee Planning'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
+                {t('remote.employeePlanning') || 'Employee Planning'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Employee Search Selection */}
         {viewMode === 'other' && (

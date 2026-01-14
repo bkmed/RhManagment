@@ -38,15 +38,15 @@ interface SearchResult {
   title: string;
   subtitle: string;
   type:
-  | 'employee'
-  | 'team'
-  | 'announcement'
-  | 'company'
-  | 'department'
-  | 'service'
-  | 'leave'
-  | 'claim'
-  | 'illness';
+    | 'employee'
+    | 'team'
+    | 'announcement'
+    | 'company'
+    | 'department'
+    | 'service'
+    | 'leave'
+    | 'claim'
+    | 'illness';
   originalItem: any;
 }
 
@@ -359,19 +359,20 @@ export const SearchOverlay = ({
       </View>
       <Text style={[styles.typeLabel, { color: theme.colors.subText }]}>
         {t(
-          `navigation.${item.type === 'employee'
-            ? 'employees'
-            : item.type === 'team'
+          `navigation.${
+            item.type === 'employee'
+              ? 'employees'
+              : item.type === 'team'
               ? 'teams'
               : item.type === 'announcement'
-                ? 'announcements'
-                : item.type === 'leave'
-                  ? 'leaves'
-                  : item.type === 'claim'
-                    ? 'claims'
-                    : item.type === 'illness'
-                      ? 'illness'
-                      : item.title
+              ? 'announcements'
+              : item.type === 'leave'
+              ? 'leaves'
+              : item.type === 'claim'
+              ? 'claims'
+              : item.type === 'illness'
+              ? 'illness'
+              : item.title
           }`,
         )}
       </Text>

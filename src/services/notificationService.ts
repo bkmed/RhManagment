@@ -104,8 +104,9 @@ export const notificationService = {
           {
             id: `pay-${payroll.id}-${time}`,
             title: 'Payroll Reminder',
-            body: `Time to process payroll ${payroll.name} (${payroll.amount} ${payroll.currency || '€'
-              })`,
+            body: `Time to process payroll ${payroll.name} (${payroll.amount} ${
+              payroll.currency || '€'
+            })`,
             android: {
               channelId: 'payroll',
               pressAction: {

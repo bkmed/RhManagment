@@ -60,7 +60,9 @@ export const authService = {
     // Seed demo data if it's the first time
     // Seed demo data if it's the first time OR if admin user is missing (recovery)
     const storedUsers = storageService.getString(USERS_KEY);
-    const hasAdmin = storedUsers && JSON.parse(storedUsers).some((u: any) => u.email === 'admin@demo.com');
+    const hasAdmin =
+      storedUsers &&
+      JSON.parse(storedUsers).some((u: any) => u.email === 'admin@demo.com');
 
     if (!storageService.getBoolean('demo_data_seeded') || !hasAdmin) {
       await seedDemoData();
@@ -200,7 +202,9 @@ const seedDemoData = async () => {
   // Roles: 1 Admin, 3 RH, 8 Managers (1 per team), 78 Employees
 
   // Admin
-  const existingAdmin = (await employeesDb.getAll()).find((e: Employee) => e.email === 'admin@demo.com');
+  const existingAdmin = (await employeesDb.getAll()).find(
+    (e: Employee) => e.email === 'admin@demo.com',
+  );
   if (!existingAdmin) {
     await employeesDb.add({
       name: 'Super Admin',
@@ -231,7 +235,9 @@ const seedDemoData = async () => {
     const email = rhEmails[i];
     const isMainRH = email === 'rh@demo.com';
 
-    const existingRh = (await employeesDb.getAll()).find((e: Employee) => e.email === email);
+    const existingRh = (await employeesDb.getAll()).find(
+      (e: Employee) => e.email === email,
+    );
     if (!existingRh) {
       await employeesDb.add({
         name: isMainRH ? 'Demo RH' : `RH Officer ${i + 1}`,
@@ -286,8 +292,14 @@ const seedDemoData = async () => {
   ];
 
   for (let i = 0; i < 78; i++) {
-    const firstName = i === 0 ? 'Demo' : firstNames[Math.floor(Math.random() * firstNames.length)];
-    const lastName = i === 0 ? 'Employee' : lastNames[Math.floor(Math.random() * lastNames.length)];
+    const firstName =
+      i === 0
+        ? 'Demo'
+        : firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName =
+      i === 0
+        ? 'Employee'
+        : lastNames[Math.floor(Math.random() * lastNames.length)];
     const email = `emp${i + 1}@demo.com`;
 
     // Use specific email for demo employee
@@ -295,7 +307,9 @@ const seedDemoData = async () => {
     const assignedTeamId = teamIds[i % teamIds.length];
     const assignedCompanyId = i % teamIds.length < 4 ? company1Id : company2Id;
 
-    const existingEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === finalEmail);
+    const existingEmp = (await employeesDb.getAll()).find(
+      (e: Employee) => e.email === finalEmail,
+    );
     let empId = existingEmp ? existingEmp.id : '';
 
     if (!existingEmp) {
@@ -317,13 +331,16 @@ const seedDemoData = async () => {
         vacationDaysPerYear: 25,
         remainingVacationDays: i === 0 ? 25 : Math.floor(Math.random() * 25),
         statePaidLeaves: i === 0 ? 30 : Math.floor(Math.random() * 10),
-        hiringDate: i === 0 ? '2021-09-20' : new Date(
-          2020 + Math.floor(Math.random() * 4),
-          Math.floor(Math.random() * 12),
-          1,
-        )
-          .toISOString()
-          .split('T')[0],
+        hiringDate:
+          i === 0
+            ? '2021-09-20'
+            : new Date(
+                2020 + Math.floor(Math.random() * 4),
+                Math.floor(Math.random() * 12),
+                1,
+              )
+                .toISOString()
+                .split('T')[0],
       });
 
       // Generate some leaves and payroll for the first few employees
@@ -388,7 +405,9 @@ const seedDemoData = async () => {
   };
 
   // Admin User
-  const adminEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'admin@demo.com');
+  const adminEmp = (await employeesDb.getAll()).find(
+    (e: Employee) => e.email === 'admin@demo.com',
+  );
   addUser('demo-admin', 'admin@demo.com', 'admin123', 'admin', adminEmp?.id, {
     name: 'Super Admin',
     vacationDaysPerYear: 30,
@@ -396,11 +415,13 @@ const seedDemoData = async () => {
     statePaidLeaves: 25,
     country: 'France',
     hiringDate: '2018-01-15',
-    ...adminEmp
+    ...adminEmp,
   });
 
   // RH User
-  const rhEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'rh@demo.com');
+  const rhEmp = (await employeesDb.getAll()).find(
+    (e: Employee) => e.email === 'rh@demo.com',
+  );
   addUser('demo-rh', 'rh@demo.com', 'rh123', 'rh', rhEmp?.id, {
     name: 'Demo RH',
     companyId: company1Id,
@@ -409,11 +430,13 @@ const seedDemoData = async () => {
     statePaidLeaves: 30,
     country: 'Tunisia',
     hiringDate: '2019-03-10',
-    ...rhEmp
+    ...rhEmp,
   });
 
   // Manager User - Explicitly create if not found
-  let managerEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'chef@demo.com');
+  let managerEmp = (await employeesDb.getAll()).find(
+    (e: Employee) => e.email === 'chef@demo.com',
+  );
   if (!managerEmp) {
     // Create the missing manager employee
     const newManagerId = await employeesDb.add({
@@ -436,36 +459,54 @@ const seedDemoData = async () => {
       gender: 'male',
       skills: ['Management', 'Agile'],
     });
-    managerEmp = (await employeesDb.getAll()).find((e: Employee) => e.id === newManagerId);
+    managerEmp = (await employeesDb.getAll()).find(
+      (e: Employee) => e.id === newManagerId,
+    );
   }
 
-  addUser('demo-manager', 'chef@demo.com', 'chef123', 'manager', managerEmp?.id, {
-    name: 'Demo Manager',
-    companyId: company1Id,
-    teamId: '1',
-    department: 'IT',
-    vacationDaysPerYear: 25,
-    remainingVacationDays: 10,
-    statePaidLeaves: 30,
-    country: 'Tunisia',
-    hiringDate: '2020-06-01',
-    ...managerEmp
-  });
+  addUser(
+    'demo-manager',
+    'chef@demo.com',
+    'chef123',
+    'manager',
+    managerEmp?.id,
+    {
+      name: 'Demo Manager',
+      companyId: company1Id,
+      teamId: '1',
+      department: 'IT',
+      vacationDaysPerYear: 25,
+      remainingVacationDays: 10,
+      statePaidLeaves: 30,
+      country: 'Tunisia',
+      hiringDate: '2020-06-01',
+      ...managerEmp,
+    },
+  );
 
   // Employee User
-  const employeeEmp = (await employeesDb.getAll()).find((e: Employee) => e.email === 'employee@demo.com');
-  addUser('demo-emp', 'employee@demo.com', 'employee123', 'employee', employeeEmp?.id, {
-    name: 'Demo Employee',
-    companyId: company1Id,
-    teamId: '1',
-    department: 'IT',
-    vacationDaysPerYear: 25,
-    remainingVacationDays: 25,
-    statePaidLeaves: 30,
-    country: 'Tunisia',
-    hiringDate: '2021-09-20',
-    ...employeeEmp
-  });
+  const employeeEmp = (await employeesDb.getAll()).find(
+    (e: Employee) => e.email === 'employee@demo.com',
+  );
+  addUser(
+    'demo-emp',
+    'employee@demo.com',
+    'employee123',
+    'employee',
+    employeeEmp?.id,
+    {
+      name: 'Demo Employee',
+      companyId: company1Id,
+      teamId: '1',
+      department: 'IT',
+      vacationDaysPerYear: 25,
+      remainingVacationDays: 25,
+      statePaidLeaves: 30,
+      country: 'Tunisia',
+      hiringDate: '2021-09-20',
+      ...employeeEmp,
+    },
+  );
 
   // Save to storage
   storageService.setString(USERS_KEY, JSON.stringify(users));

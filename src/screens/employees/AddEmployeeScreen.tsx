@@ -282,24 +282,24 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-            name: emergencyName,
-            phone: emergencyPhone,
-            relationship: emergencyRelationship,
-          }
+              name: emergencyName,
+              phone: emergencyPhone,
+              relationship: emergencyRelationship,
+            }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-              linkedin,
-              skype,
-              website,
-            }
+                linkedin,
+                skype,
+                website,
+              }
             : undefined,
         skills: skills
           ? skills
-            .split(',')
-            .map(s => s.trim())
-            .filter(s => s)
+              .split(',')
+              .map(s => s.trim())
+              .filter(s => s)
           : undefined,
       };
 
@@ -774,8 +774,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
             {loading
               ? t('common.loading')
               : employeeId
-                ? t('common.save')
-                : t('common.add')}
+              ? t('common.save')
+              : t('common.add')}
           </Text>
         </TouchableOpacity>
 
