@@ -200,7 +200,10 @@
     "yearsUnit": "Jahre",
     "yes": "Ja",
     "submit": "Einreichen",
-    "invalidAmount": "Ungültiger Betrag"
+    "invalidAmount": "Ungültiger Betrag",
+    "count": "Anzahl",
+    "unitPrice": "Stückpreis",
+    "description": "Beschreibung"
   },
   "companies": {
     "add": "Unternehmen hinzufügen",
@@ -535,7 +538,6 @@
   "leaves": {
     "noCompanyError": "Sie müssen einem Unternehmen angehören, um Urlaub zu beantragen",
     "add": "Urlaubsantrag hinzufügen",
-    "addFirst": "Tippen Sie auf +, um eine Abwesenheit zu planen",
     "approvals": "Genehmigungen",
     "approvalsSubtitle": "Anfragen verwalten",
     "cause": "Grund",
@@ -555,6 +557,9 @@
     "saveError": "Fehler beim Speichern der Anfrage",
     "subject": "Betreff",
     "subjectPlaceholder": "Betreff der Anfrage",
+    "past": "Vergangen",
+    "reason": "Grund",
+    "status": "Status",
     "statusUpdated_approved": "Urlaubsantrag genehmigt",
     "statusUpdated_declined": "Urlaubsantrag abgelehnt",
     "successMessage": "Urlaubsantrag erfolgreich eingereicht",
@@ -563,10 +568,7 @@
     "titlePlaceholder": "z.B. Sommerurlaub",
     "upcoming": "Anstehend",
     "update": "Aktualisieren",
-    "updateSuccess": "Urlaubsantrag erfolgreich aktualisiert",
-    "object": "Betreff",
-    "objectPlaceholder": "z.B. Jahresurlaub",
-    "status": "Status"
+    "updateSuccess": "Urlaubsantrag erfolgreich aktualisiert"
   },
   "login": {
     "admin": "Admin",
@@ -629,7 +631,11 @@
     "sendToCompany": "An Unternehmen senden",
     "sendToTeam": "An Team senden",
     "welcomeTitle": "Willkommen bei RH Management!",
-    "welcomeMessage": "Ihre umfassende HR-Management-Lösung. Verwalten Sie Mitarbeiter, Urlaube, Gehaltsabrechnungen und mehr - alles an einem Ort."
+    "welcomeMessage": "Ihre umfassende HR-Management-Lösung. Verwalten Sie Mitarbeiter, Urlaube, Gehaltsabrechnungen und mehr - alles an einem Ort.",
+    "broadcastTitle": "Broadcast-Benachrichtigung",
+    "target": "Zielgruppe",
+    "sent": "Benachrichtigung erfolgreich gesendet",
+    "broadcast": "Broadcast"
   },
   "offline": {
     "limitedFunctionality": "Einige Funktionen sind möglicherweise nicht verfügbar",
@@ -737,7 +743,8 @@
     "period": "Abrechnungszeitraum",
     "title": "Gehaltsabrechnung",
     "totalDeductions": "Gesamtabzüge",
-    "totalEarnings": "Gesamtbezüge"
+    "totalEarnings": "Gesamtbezüge",
+    "method": "Zahlungsart"
   },
   "performance": {
     "goals": "Berufliche Ziele",
