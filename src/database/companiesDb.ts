@@ -1,6 +1,5 @@
 import { store } from '../store';
 import {
-  setCompanies,
   addCompany as addCompanyAction,
   updateCompany as updateCompanyAction,
   deleteCompany as deleteCompanyAction,
@@ -8,25 +7,6 @@ import {
   selectCompanyById,
 } from '../store/slices/companiesSlice';
 import { Company } from './schema';
-
-const MOCK_COMPANIES: Company[] = [
-  {
-    id: '1',
-    name: 'TechGlobe Solutions',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    name: 'EcoFlow Dynamics',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-if (selectAllCompanies(store.getState()).length === 0) {
-  store.dispatch(setCompanies(MOCK_COMPANIES));
-}
 
 export const companiesDb = {
   // Get all companies

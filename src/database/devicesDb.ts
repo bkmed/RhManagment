@@ -1,6 +1,5 @@
 import { store } from '../store';
 import {
-  setDevices,
   addDevice as addDeviceAction,
   updateDevice as updateDeviceAction,
   deleteDevice as deleteDeviceAction,
@@ -9,50 +8,9 @@ import {
 } from '../store/slices/devicesSlice';
 import { Device } from './schema';
 
-const MOCK_DEVICES: Device[] = [
-  {
-    id: '1',
-    name: 'MacBook Pro 16"',
-    type: 'Laptop',
-    serialNumber: 'APPLE-MBP-2024-001',
-    status: 'assigned',
-    condition: 'working',
-    assignedToId: '1', // Demo Admin
-    assignedTo: 'Demo Admin',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    name: 'Dell UltraSharp 27"',
-    type: 'Screen',
-    serialNumber: 'DELL-U27-002',
-    status: 'assigned',
-    condition: 'working',
-    assignedToId: '2', // Demo Employee
-    assignedTo: 'Demo Employee',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    name: 'Logitech MX Master 3S',
-    type: 'Mouse',
-    serialNumber: 'LOGI-MX-003',
-    status: 'available',
-    condition: 'working',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
 export const devicesDb = {
   // Initialize if empty
-  init: async () => {
-    if (selectAllDevices(store.getState()).length === 0) {
-      store.dispatch(setDevices(MOCK_DEVICES));
-    }
-  },
+  init: async () => {},
 
   getAll: async (): Promise<Device[]> => {
     return selectAllDevices(store.getState());

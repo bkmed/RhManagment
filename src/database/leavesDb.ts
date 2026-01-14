@@ -1,6 +1,5 @@
 import { store } from '../store';
 import {
-  setLeaves,
   addLeave as addLeaveAction,
   updateLeave as updateLeaveAction,
   deleteLeave as deleteLeaveAction,
@@ -9,61 +8,6 @@ import {
   selectPendingLeaves,
 } from '../store/slices/leavesSlice';
 import { Leave } from './schema';
-
-const MOCK_LEAVES: Leave[] = [
-  {
-    id: '1',
-    title: 'Congés Annuel',
-    employeeId: '10',
-    employeeName: 'Ines B.',
-    dateTime: new Date(Date.now() + 86400000 * 5).toISOString(),
-    reminderEnabled: true,
-    status: 'pending',
-    type: 'leave',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    title: 'Formation React',
-    employeeId: '12',
-    employeeName: 'Yassine C.',
-    dateTime: new Date(Date.now() + 86400000 * 10).toISOString(),
-    reminderEnabled: true,
-    status: 'approved',
-    type: 'leave',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    title: 'Déménagement',
-    employeeId: '25',
-    employeeName: 'Rania D.',
-    dateTime: new Date(Date.now() + 86400000 * 2).toISOString(),
-    reminderEnabled: true,
-    status: 'pending',
-    type: 'leave',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '4',
-    title: 'Rendez-vous Dentiste',
-    employeeId: '40',
-    employeeName: 'Hassen E.',
-    dateTime: new Date(Date.now() + 3600000 * 3).toISOString(),
-    reminderEnabled: true,
-    status: 'pending',
-    type: 'permission',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-if (selectAllLeaves(store.getState()).length === 0) {
-  store.dispatch(setLeaves(MOCK_LEAVES));
-}
 
 export const leavesDb = {
   // Get all leaves
