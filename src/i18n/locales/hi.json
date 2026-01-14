@@ -769,7 +769,9 @@
     "errorEmployeeRequired": "कृपया एक कर्मचारी चुनें",
     "errorPeriodRequired": "अवधि आवश्यक है",
     "errorCommentsRequired": "टिप्पणियाँ आवश्यक हैं",
-    "detailTitle": "समीक्षा विवरण"
+    "detailTitle": "समीक्षा विवरण",
+    "date": "समीक्षा तिथि",
+    "add": "प्रदर्शन समीक्षा जोड़ें"
   },
   "permissions": {
     "calendar": "कैलेंडर अनुमति",

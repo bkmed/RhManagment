@@ -769,7 +769,9 @@
     "errorEmployeeRequired": "Please select an employee",
     "errorPeriodRequired": "Period is required",
     "errorCommentsRequired": "Comments are required",
-    "detailTitle": "Review Details"
+    "detailTitle": "Review Details",
+    "date": "Review Date",
+    "add": "Add Performance Review"
   },
   "permissions": {
     "calendar": "Calendar Permission",

@@ -769,7 +769,9 @@
     "errorEmployeeRequired": "请选择员工",
     "errorPeriodRequired": "时期是必填项",
     "errorCommentsRequired": "评论是必填项",
-    "detailTitle": "评估详情"
+    "detailTitle": "评估详情",
+    "date": "反馈日期",
+    "add": "添加绩效评估"
   },
   "permissions": {
     "calendar": "日历权限",

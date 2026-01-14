@@ -769,7 +769,9 @@
     "errorEmployeeRequired": "Veuillez sélectionner un employé",
     "errorPeriodRequired": "La période est requise",
     "errorCommentsRequired": "Les commentaires sont requis",
-    "detailTitle": "Détails de l'Évaluation"
+    "detailTitle": "Détails de l'Évaluation",
+    "date": "Date de l'évaluation",
+    "add": "Ajouter une évaluation de performance"
   },
   "permissions": {
     "calendar": "Autorisation du calendrier",

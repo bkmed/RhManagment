@@ -769,7 +769,9 @@
     "errorEmployeeRequired": "Bitte wählen Sie einen Mitarbeiter aus",
     "errorPeriodRequired": "Zeitraum ist erforderlich",
     "errorCommentsRequired": "Kommentare sind erforderlich",
-    "detailTitle": "Beurteilungsdetails"
+    "detailTitle": "Beurteilungsdetails",
+    "date": "Bewertungsdatum",
+    "add": "Leistungsbeurteilung hinzufügen"
   },
   "permissions": {
     "calendar": "Kalender-Berechtigung",

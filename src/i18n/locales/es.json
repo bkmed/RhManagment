@@ -769,7 +769,9 @@
     "errorEmployeeRequired": "Por favor seleccione un empleado",
     "errorPeriodRequired": "El período es obligatorio",
     "errorCommentsRequired": "Los comentarios son obligatorios",
-    "detailTitle": "Detalles de la Evaluación"
+    "detailTitle": "Detalles de la Evaluación",
+    "date": "Fecha de revisión",
+    "add": "Añadir revisión de desempeño"
   },
   "permissions": {
     "calendar": "Permiso de calendario",

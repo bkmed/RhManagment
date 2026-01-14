@@ -769,7 +769,9 @@
     "errorEmployeeRequired": "يرجى اختيار موظف",
     "errorPeriodRequired": "الفترة مطلوبة",
     "errorCommentsRequired": "التعليقات مطلوبة",
-    "detailTitle": "تفاصيل التقييم"
+    "detailTitle": "تفاصيل التقييم",
+    "date": "تاريخ التقييم",
+    "add": "إضافة تقييم الأداء"
   },
   "permissions": {
     "calendar": "إذن التقويم",
