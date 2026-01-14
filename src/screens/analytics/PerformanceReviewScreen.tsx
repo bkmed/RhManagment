@@ -20,7 +20,7 @@ import {
   Company,
   Team,
 } from '../../database/schema';
-import { addReview } from '../../store/slices/performanceSlice';
+import { addReview, setReviews } from '../../store/slices/performanceSlice';
 import { selectAllCompanies } from '../../store/slices/companiesSlice';
 import { selectAllTeams } from '../../store/slices/teamsSlice';
 import { Theme } from '../../theme';
@@ -37,14 +37,36 @@ export const PerformanceReviewScreen = () => {
     user?.role === 'admin' || user?.role === 'rh' || user?.role === 'manager';
 
   const reviews = useSelector((state: RootState) => {
-    if (user?.role === 'admin' || user?.role === 'rh')
-      return state.performance.reviews;
-    if (user?.role === 'manager')
-      return state.performance.reviews.filter(
-        (r: PerformanceReview) => r.reviewerId === (user?.id || ''),
+    const allReviews = state.performance.reviews;
+    const allEmployees = state.employees.items;
+
+    if (user?.role === 'admin') return allReviews;
+
+    if (user?.role === 'rh') {
+      // Filter by company
+      const companyEmployees = allEmployees.filter(
+        (e: Employee) => e.companyId === user.companyId,
       );
-    return state.performance.reviews.filter(
-      (r: PerformanceReview) => r.employeeId === (user?.id || ''),
+      const companyEmpIds = companyEmployees.map((e: Employee) => e.id);
+      return allReviews.filter((r: PerformanceReview) =>
+        companyEmpIds.includes(r.employeeId),
+      );
+    }
+
+    if (user?.role === 'manager') {
+      // Filter by team
+      const teamEmployees = allEmployees.filter(
+        (e: Employee) => e.teamId === user.teamId,
+      );
+      const teamEmpIds = teamEmployees.map((e: Employee) => e.id);
+      return allReviews.filter((r: PerformanceReview) =>
+        teamEmpIds.includes(r.employeeId),
+      );
+    }
+
+    // Employee: Only own reviews
+    return allReviews.filter(
+      (r: PerformanceReview) => r.employeeId === (user?.id || user?.employeeId),
     );
   });
 
@@ -67,27 +89,67 @@ export const PerformanceReviewScreen = () => {
   const [comments, setComments] = useState('');
   const [period, setPeriod] = useState('Q4 2025');
 
+  // Initialize filters based on Role when modal opens
+  React.useEffect(() => {
+    if (isModalVisible) {
+      if (user?.role === 'rh' && user.companyId) {
+        setTempCompanyId(user.companyId);
+      }
+      if (user?.role === 'manager') {
+        if (user.companyId) setTempCompanyId(user.companyId);
+        if (user.teamId) setTempTeamId(user.teamId);
+      }
+    }
+  }, [isModalVisible, user]);
+
   // Filtered lists for the modal
   const filteredTeams = useMemo(() => {
-    if (!tempCompanyId || tempCompanyId === 'none') return [];
-    return allTeams.filter(t => t.companyId === tempCompanyId);
-  }, [allTeams, tempCompanyId]);
+    // If Manager, locked to own team (handled by effect, but safety check?)
+    // Actually, for dropdown display:
+    let teams = allTeams;
+    if (tempCompanyId && tempCompanyId !== 'none') {
+      teams = teams.filter(t => t.companyId === tempCompanyId);
+    }
+    // If manager, further restrict?
+    if (user?.role === 'manager' && user.teamId) {
+      teams = teams.filter(t => t.id === user.teamId);
+    }
+    return teams;
+  }, [allTeams, tempCompanyId, user]);
 
   const filteredEmployees = useMemo(() => {
     return employees.filter(emp => {
-      const matchesCompany =
-        tempCompanyId === 'none'
-          ? !emp.companyId
-          : !tempCompanyId || emp.companyId === tempCompanyId;
-      const matchesTeam =
-        tempTeamId === 'none'
-          ? !emp.teamId
-          : !tempTeamId || emp.teamId === tempTeamId;
-      return matchesCompany && matchesTeam;
-    });
-  }, [employees, tempCompanyId, tempTeamId]);
+      // 1. Company Filter
+      if (user?.role === 'rh' || user?.role === 'manager') {
+        if (emp.companyId !== user?.companyId) return false;
+      } else if (tempCompanyId && tempCompanyId !== 'none') {
+        if (emp.companyId !== tempCompanyId) return false;
+      }
 
-  const handleSaveReview = () => {
+      // 2. Team Filter
+      if (user?.role === 'manager') {
+        if (emp.teamId !== user?.teamId) return false;
+      } else if (tempTeamId && tempTeamId !== 'none') {
+        if (emp.teamId !== tempTeamId) return false;
+      }
+
+      return true;
+    });
+  }, [employees, tempCompanyId, tempTeamId, user]);
+
+  // Load reviews on mount
+  React.useEffect(() => {
+    const loadReviews = async () => {
+      const { performanceDb } = require('../../database/performanceDb');
+      const { setReviews } = require('../../store/slices/performanceSlice');
+      const allReviews = await performanceDb.getAll();
+      dispatch(setReviews(allReviews));
+    };
+    loadReviews();
+  }, [dispatch]);
+
+  const handleSaveReview = async () => {
+    const { performanceDb } = require('../../database/performanceDb');
     if (!selectedEmployeeId || !comments.trim()) return;
 
     const reviewData: PerformanceReview = {
@@ -101,6 +163,7 @@ export const PerformanceReviewScreen = () => {
       createdAt: new Date().toISOString(),
     };
 
+    await performanceDb.add(reviewData);
     dispatch(addReview(reviewData));
     setModalVisible(false);
     resetForm();
@@ -185,63 +248,10 @@ export const PerformanceReviewScreen = () => {
               style={styles.modalScroll}
               showsVerticalScrollIndicator={false}
             >
-              <Text style={styles.inputLabel}>
-                {t('common.company') || 'Entreprise'}
-              </Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.selectorScroll}
-              >
-                <TouchableOpacity
-                  onPress={() => {
-                    setTempCompanyId('none');
-                    setTempTeamId(null);
-                    setSelectedEmployeeId(null);
-                  }}
-                  style={[
-                    styles.chip,
-                    tempCompanyId === 'none' && styles.activeChip,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      tempCompanyId === 'none' && styles.activeChipText,
-                    ]}
-                  >
-                    {t('common.none') || 'Aucune'}
-                  </Text>
-                </TouchableOpacity>
-                {companies.map((c: Company) => (
-                  <TouchableOpacity
-                    key={c.id}
-                    onPress={() => {
-                      setTempCompanyId(c.id!);
-                      setTempTeamId(null);
-                      setSelectedEmployeeId(null);
-                    }}
-                    style={[
-                      styles.chip,
-                      tempCompanyId === c.id && styles.activeChip,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        tempCompanyId === c.id && styles.activeChipText,
-                      ]}
-                    >
-                      {c.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-
-              {tempCompanyId && tempCompanyId !== 'none' && (
+              {user?.role === 'admin' && (
                 <>
                   <Text style={styles.inputLabel}>
-                    {t('common.team') || 'Équipe'}
+                    {t('common.company') || 'Entreprise'}
                   </Text>
                   <ScrollView
                     horizontal
@@ -250,48 +260,107 @@ export const PerformanceReviewScreen = () => {
                   >
                     <TouchableOpacity
                       onPress={() => {
-                        setTempTeamId('none');
+                        setTempCompanyId('none');
+                        setTempTeamId(null);
                         setSelectedEmployeeId(null);
                       }}
                       style={[
                         styles.chip,
-                        tempTeamId === 'none' && styles.activeChip,
+                        tempCompanyId === 'none' && styles.activeChip,
                       ]}
                     >
                       <Text
                         style={[
                           styles.chipText,
-                          tempTeamId === 'none' && styles.activeChipText,
+                          tempCompanyId === 'none' && styles.activeChipText,
                         ]}
                       >
                         {t('common.none') || 'Aucune'}
                       </Text>
                     </TouchableOpacity>
-                    {filteredTeams.map((t: Team) => (
+                    {companies.map((c: Company) => (
                       <TouchableOpacity
-                        key={t.id}
+                        key={c.id}
                         onPress={() => {
-                          setTempTeamId(t.id!);
+                          setTempCompanyId(c.id!);
+                          setTempTeamId(null);
                           setSelectedEmployeeId(null);
                         }}
                         style={[
                           styles.chip,
-                          tempTeamId === t.id && styles.activeChip,
+                          tempCompanyId === c.id && styles.activeChip,
                         ]}
                       >
                         <Text
                           style={[
                             styles.chipText,
-                            tempTeamId === t.id && styles.activeChipText,
+                            tempCompanyId === c.id && styles.activeChipText,
                           ]}
                         >
-                          {t.name}
+                          {c.name}
                         </Text>
                       </TouchableOpacity>
                     ))}
                   </ScrollView>
                 </>
               )}
+
+              {/* Team Selector - Visible if Admin/RH OR if company is selected/implicit */}
+              {user?.role !== 'manager' &&
+                (tempCompanyId && tempCompanyId !== 'none' || user?.role === 'rh') && (
+                  <>
+                    <Text style={styles.inputLabel}>
+                      {t('common.team') || 'Équipe'}
+                    </Text>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={styles.selectorScroll}
+                    >
+                      <TouchableOpacity
+                        onPress={() => {
+                          setTempTeamId('none');
+                          setSelectedEmployeeId(null);
+                        }}
+                        style={[
+                          styles.chip,
+                          tempTeamId === 'none' && styles.activeChip,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.chipText,
+                            tempTeamId === 'none' && styles.activeChipText,
+                          ]}
+                        >
+                          {t('common.none') || 'Aucune'}
+                        </Text>
+                      </TouchableOpacity>
+                      {filteredTeams.map((t: Team) => (
+                        <TouchableOpacity
+                          key={t.id}
+                          onPress={() => {
+                            setTempTeamId(t.id!);
+                            setSelectedEmployeeId(null);
+                          }}
+                          style={[
+                            styles.chip,
+                            tempTeamId === t.id && styles.activeChip,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.chipText,
+                              tempTeamId === t.id && styles.activeChipText,
+                            ]}
+                          >
+                            {t.name}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </>
+                )}
 
               <Text style={styles.inputLabel}>{t('performance.employee')}</Text>
               <ScrollView

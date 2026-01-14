@@ -83,12 +83,15 @@ export const RemoteCalendarScreen = () => {
     }
   };
 
-  const updateStatus = async (status: 'remote' | 'office' | 'none') => {
-    // Only allow updating own status
-    if (viewMode === 'other') return;
+  const getTargetEmployeeId = () => {
+    return viewMode === 'mine' ? user?.employeeId : selectedEmployee?.id;
+  };
 
+  const updateStatus = async (status: 'remote' | 'office' | 'none') => {
     try {
-      if (!user?.employeeId) {
+      const targetId = getTargetEmployeeId();
+
+      if (!targetId) {
         notificationService.showAlert(
           t('common.error'),
           t('employees.notFound'),
@@ -96,10 +99,27 @@ export const RemoteCalendarScreen = () => {
         return;
       }
 
+      // Check permissions for 'other' mode
+      if (viewMode === 'other') {
+        const isAuthorized =
+          rbacService.isAdmin(user) ||
+          rbacService.isRH(user) ||
+          (rbacService.isFullyAssignedManager(user) &&
+            selectedEmployee?.id); // SearchOverlay already filters by team for managers
+
+        if (!isAuthorized) {
+          notificationService.showAlert(
+            t('common.error'),
+            t('common.accessDenied'),
+          );
+          return;
+        }
+      }
+
       if (!selectedDay) return;
 
       if (status === 'none') {
-        const remoteData = await remoteDb.getByEmployeeId(user.employeeId);
+        const remoteData = await remoteDb.getByEmployeeId(targetId);
         const entry = remoteData.find(r => r.date === selectedDay);
         if (entry?.id) {
           await remoteDb.delete(entry.id);
@@ -109,7 +129,7 @@ export const RemoteCalendarScreen = () => {
         setRemoteDays(newRemoteDays);
       } else {
         await remoteDb.addOrUpdate({
-          employeeId: user.employeeId,
+          employeeId: targetId,
           date: selectedDay,
           status,
         });
@@ -145,8 +165,14 @@ export const RemoteCalendarScreen = () => {
   };
 
   const onDayPress = (dateStr: string) => {
-    // Read-only logic for 'other' mode
-    if (viewMode === 'other') {
+    const isAuthorized =
+      viewMode === 'mine' ||
+      rbacService.isAdmin(user) ||
+      rbacService.isRH(user) ||
+      (rbacService.isFullyAssignedManager(user) && selectedEmployee?.id);
+
+    // Read-only logic if NOT authorized
+    if (viewMode === 'other' && !isAuthorized) {
       if (isDayOnLeave(dateStr)) {
         notificationService.showAlert(
           t('remote.onLeave'),
@@ -156,11 +182,14 @@ export const RemoteCalendarScreen = () => {
       return;
     }
 
+    // Interactive logic allows overwriting leaves or setting status?
+    // Usually leaves block remote status.
     if (isDayOnLeave(dateStr)) {
       notificationService.showAlert(
         t('remote.onLeave'),
         getLeaveTitle(dateStr),
       );
+      // Determine if authorized users can override leave? Let's assume NO for now, leave is stronger.
       return;
     }
     const holiday = holidaysService.getHolidayOnDate(
@@ -234,7 +263,7 @@ export const RemoteCalendarScreen = () => {
           key={d}
           style={[styles.dayCell, isToday && styles.todayCell]}
           onPress={() => onDayPress(dateStr)}
-          disabled={viewMode === 'other' && !status && !onLeave} // Disable taps on empty days in 'other' mode
+          disabled={false} // Interaction handled in onDayPress
         >
           <Text
             style={[

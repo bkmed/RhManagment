@@ -17,6 +17,7 @@ export { claimsDb } from './claimsDb';
 export { invoicesDb } from './invoicesDb';
 export { devicesDb } from './devicesDb';
 export { goalsDb } from './goalsDb';
+export { performanceDb } from './performanceDb';
 
 // Export schemas
 export * from './schema';
