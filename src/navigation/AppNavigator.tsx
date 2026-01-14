@@ -69,6 +69,7 @@ import { TeamVacationsScreen } from '../screens/teams/TeamVacationsScreen';
 import { CareerHubScreen } from '../screens/profile/CareerHubScreen';
 import { PerformanceReviewScreen } from '../screens/analytics/PerformanceReviewScreen';
 import { AddPerformanceScreen } from '../screens/analytics/AddPerformanceScreen';
+import { PerformanceDetailsScreen } from '../screens/analytics/PerformanceDetailsScreen';
 import { ReviewPeriodScreen } from '../screens/performance/ReviewPeriodScreen';
 import { ManageNotificationsScreen } from '../screens/notifications/ManageNotificationsScreen';
 import { OrgChartScreen } from '../screens/companies/OrgChartScreen';
@@ -279,7 +280,12 @@ const AnalyticsStack = () => {
       <Stack.Screen
         name="AddPerformance"
         component={AddPerformanceScreen}
-        options={{ title: t('performance.newReview') }}
+        options={{ title: t('performance.add') || 'Add Performance' }}
+      />
+      <Stack.Screen
+        name="PerformanceDetails"
+        component={PerformanceDetailsScreen}
+        options={{ title: t('performance.detailTitle') || 'Details' }}
       />
     </Stack.Navigator>
   );
@@ -625,12 +631,12 @@ const useNavigationSections = () => {
           { key: 'Home', label: t('navigation.home'), icon: '🏠' },
           ...(rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)
             ? [
-              {
-                key: 'Analytics',
-                label: t('navigation.analytics'),
-                icon: '📊',
-              },
-            ]
+                {
+                  key: 'Analytics',
+                  label: t('navigation.analytics'),
+                  icon: '📊',
+                },
+              ]
             : []),
         ],
       },
@@ -707,23 +713,23 @@ const useNavigationSections = () => {
       items: [
         ...(user?.companyId
           ? [
-            {
-              key: 'Announcements',
-              label: t('navigation.announcements'),
-              icon: '📢',
-            },
-          ]
+              {
+                key: 'Announcements',
+                label: t('navigation.announcements'),
+                icon: '📢',
+              },
+            ]
           : []),
         ...(rbacService.isAdmin(user) ||
-          rbacService.isRH(user) ||
-          rbacService.isManager(user)
+        rbacService.isRH(user) ||
+        rbacService.isManager(user)
           ? [
-            {
-              key: 'ManageNotifications',
-              label: t('notifications.broadcast') || 'Broadcast',
-              icon: '📡',
-            },
-          ]
+              {
+                key: 'ManageNotifications',
+                label: t('notifications.broadcast') || 'Broadcast',
+                icon: '📡',
+              },
+            ]
           : []),
         ...(user?.companyId
           ? [{ key: 'Chat', label: t('navigation.chat'), icon: '💬' }]
@@ -866,9 +872,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                         : 'transparent',
                       ...(isFocused &&
                         themeMode === 'premium' && {
-                        borderWidth: 1,
-                        borderColor: theme.colors.primary,
-                      }),
+                          borderWidth: 1,
+                          borderColor: theme.colors.primary,
+                        }),
                     }}
                     onPress={() => navigation.navigate(item.key)}
                   >
@@ -1110,7 +1116,19 @@ const WebNavigator = () => {
         if (subScreen === 'PerformanceReview')
           return <PerformanceReviewScreen />;
         if (subScreen === 'AddPerformance')
-          return <AddPerformanceScreen route={mockRoute} navigation={mockNavigation} />;
+          return (
+            <AddPerformanceScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
+          );
+        if (subScreen === 'PerformanceDetails')
+          return (
+            <PerformanceDetailsScreen
+              route={mockRoute}
+              navigation={mockNavigation}
+            />
+          );
         return <AnalyticsStack />;
       case 'PerformanceReviews':
         return <PerformanceReviewScreen />;
@@ -1255,7 +1273,7 @@ const WebNavigator = () => {
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
-      { }
+      {}
       <View
         style={
           [
@@ -1269,7 +1287,7 @@ const WebNavigator = () => {
           ] as any
         }
       >
-        { }
+        {}
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (
@@ -1451,7 +1469,9 @@ const WebNavigator = () => {
             >
               <TouchableOpacity
                 style={webStyles.backButton}
-                onPress={() => setNavState(prev => ({ ...prev, subScreen: '' }))}
+                onPress={() =>
+                  setNavState(prev => ({ ...prev, subScreen: '' }))
+                }
               >
                 <Text
                   style={[
