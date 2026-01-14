@@ -92,7 +92,11 @@
     "updateError": "Erreur lors de la mise à jour",
     "urgentNote": "Signaler comme urgent",
     "requester": "Demandeur",
-    "handler": "Traitant"
+    "handler": "Traitant",
+    "deleteConfirmTitle": "Supprimer la demande",
+    "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cette demande ?",
+    "deleteSuccess": "Demande supprimée avec succès",
+    "deleteError": "Échec de la suppression de la demande"
   },
   "common": {
     "add": "Ajouter",
@@ -506,7 +510,8 @@
     "notesLabel": "Notes",
     "reminderDisabled": "Désactivé",
     "reminderLabel": "Rappel",
-    "reminderTimeText": "1 heure avant"
+    "reminderTimeText": "1 heure avant",
+    "deleteSuccess": "Congé supprimé avec succès"
   },
   "leavePolicy": {
     "country": "Pays",
@@ -726,7 +731,10 @@
     "reminderTimesLabel": "Heures de rappel",
     "remindersLabel": "Rappels",
     "startDateLabel": "Date de début",
-    "viewHistoryButton": "Voir l'historique"
+    "viewHistoryButton": "Voir l'historique",
+    "deleteSuccess": "Fiche de paie supprimée avec succès",
+    "deleteError": "Échec de la suppression de la fiche de paie",
+    "notFound": "Fiche de paie introuvable"
   },
   "payslip": {
     "amount": "Montant",

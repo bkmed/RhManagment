@@ -36,17 +36,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
-  const [frequency, setFrequency] = useState('Daily');
-  const [times, setTimes] = useState<Date[]>([
-    new Date(new Date().setHours(8, 0, 0, 0)),
-    new Date(new Date().setHours(20, 0, 0, 0)),
-  ]);
-  const [, setMealVouchers] = useState('');
-  const [, setGiftVouchers] = useState('');
   const [bonusAmount, setBonusAmount] = useState('');
   const [bonusType, setBonusType] = useState('none');
-  const [department, setDepartment] = useState('');
-  const [location, setLocation] = useState('');
   const [currency, setCurrency] = useState('€'); // Default currency
   const [availableCurrencies, setAvailableCurrencies] = useState<Currency[]>(
     [],
@@ -128,39 +119,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
         if (item) {
           setName(item.name || '');
           setAmount(item.amount ? item.amount.toString() : '');
-          setFrequency(item.frequency || 'Daily');
-
-          let parsedTimes: Date[] = [];
-          try {
-            const timeStrings = item.times
-              ? JSON.parse(item.times)
-              : ['08:00', '20:00'];
-            parsedTimes = timeStrings.map((ts: string) => {
-              const [h, m] = ts.split(':').map(Number);
-              const d = new Date();
-              d.setHours(h);
-              d.setMinutes(m);
-              return d;
-            });
-          } catch (error) {
-            parsedTimes = [
-              new Date(new Date().setHours(8, 0)),
-              new Date(new Date().setHours(20, 0)),
-            ];
-            console.error(error);
-          }
-          setTimes(parsedTimes);
-
-          setMealVouchers(
-            item.mealVouchers ? item.mealVouchers.toString() : '',
-          );
-          setGiftVouchers(
-            item.giftVouchers ? item.giftVouchers.toString() : '',
-          );
+          setName(item.name || '');
+          setAmount(item.amount ? item.amount.toString() : '');
           setBonusAmount(item.bonusAmount ? item.bonusAmount.toString() : '');
           setBonusType(item.bonusType || 'none');
-          setDepartment(item.department || '');
-          setLocation(item.location || '');
           setMonth(item.month || new Date().getMonth() + 1 + '');
           setYear(item.year || new Date().getFullYear() + '');
           setHoursWorked(item.hoursWorked ? item.hoursWorked.toString() : '');
@@ -200,23 +162,10 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
 
     setLoading(true);
     try {
-      const timeStrings = times.map(t =>
-        t.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false,
-        }),
-      );
-
       const payrollData: Omit<Payroll, 'id' | 'createdAt' | 'updatedAt'> = {
         name: name.trim(),
         amount: parseFloat(amount) || 0,
         currency,
-        frequency,
-        times: JSON.stringify(timeStrings),
-        startDate: new Date().toISOString().split('T')[0], // Default to today
-        reminderEnabled: false,
-        isUrgent: false,
         mealVouchers:
           mealVoucherCount && mealVoucherValue
             ? parseFloat(mealVoucherCount) * parseFloat(mealVoucherValue)
@@ -227,8 +176,6 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             : undefined,
         bonusAmount: bonusAmount ? parseFloat(bonusAmount) : undefined,
         bonusType,
-        department,
-        location,
         month,
         year,
         hoursWorked: hoursWorked ? parseFloat(hoursWorked) : undefined,
@@ -620,8 +567,8 @@ export const AddPayrollScreen = ({ navigation, route }: any) => {
             {loading
               ? t('common.loading')
               : isEdit
-              ? t('payroll.update')
-              : t('common.save')}{' '}
+                ? t('payroll.update')
+                : t('common.save')}{' '}
             {t('payroll.payroll')}
           </Text>
         </TouchableOpacity>
@@ -706,52 +653,6 @@ const createStyles = (theme: Theme) =>
     },
     frequencyText: { ...theme.textVariants.body, color: theme.colors.subText },
     frequencyTextActive: { color: theme.colors.surface, fontWeight: '600' },
-    timesGrid: {
-      marginBottom: theme.spacing.m,
-    },
-    timeRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.s,
-      marginBottom: theme.spacing.s,
-    },
-    removeButton: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: theme.colors.error,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 20,
-    },
-    removeButtonText: {
-      color: theme.colors.surface,
-      fontSize: 18,
-      fontWeight: 'bold',
-    },
-    addTimeButton: {
-      padding: theme.spacing.m,
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: theme.colors.primary,
-      borderRadius: theme.spacing.s,
-      borderStyle: 'dashed',
-    },
-    addTimeButtonText: {
-      color: theme.colors.primary,
-      fontSize: 14,
-      fontWeight: '600',
-    },
-    switchRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginTop: theme.spacing.m,
-    },
-    captionText: {
-      ...theme.textVariants.caption,
-      color: theme.colors.subText,
-    },
     divider: {
       height: 1,
       backgroundColor: theme.colors.border,

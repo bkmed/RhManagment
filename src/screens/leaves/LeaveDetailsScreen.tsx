@@ -111,9 +111,14 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
     try {
       await leavesDb.delete(leaveId);
       await notificationService.cancelLeaveReminder(leaveId);
+      showToast(
+        t('leaveDetails.deleteSuccess') || t('common.success'),
+        'success',
+      );
       navigateBack();
-    } catch {
-      showToast(t('leaveDetails.errorDeleteFailed'), 'info');
+    } catch (error) {
+      showToast(t('leaveDetails.errorDeleteFailed') || t('common.error'), 'error');
+      console.error(error);
     }
   };
 
@@ -250,28 +255,28 @@ export const LeaveDetailsScreen = ({ navigation, route }: any) => {
           user?.role === 'rh' ||
           (user?.role === 'employee' &&
             leave.employeeId === user.employeeId)) && (
-          <View style={{ paddingBottom: 20 }}>
-            <TouchableOpacity
-              style={[styles.button, styles.editButton]}
-              onPress={handleEdit}
-            >
-              <Text style={styles.buttonText}>
-                {t('leaveDetails.editButton')}
-              </Text>
-            </TouchableOpacity>
-
-            {(user?.role === 'admin' || user?.role === 'rh') && (
+            <View style={{ paddingBottom: 20 }}>
               <TouchableOpacity
-                style={[styles.button, styles.deleteButton]}
-                onPress={handleDelete}
+                style={[styles.button, styles.editButton]}
+                onPress={handleEdit}
               >
                 <Text style={styles.buttonText}>
-                  {t('leaveDetails.deleteButton')}
+                  {t('leaveDetails.editButton')}
                 </Text>
               </TouchableOpacity>
-            )}
-          </View>
-        )}
+
+              {(user?.role === 'admin' || user?.role === 'rh') && (
+                <TouchableOpacity
+                  style={[styles.button, styles.deleteButton]}
+                  onPress={handleDelete}
+                >
+                  <Text style={styles.buttonText}>
+                    {t('leaveDetails.deleteButton')}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
       </ScrollView>
     </View>
   );

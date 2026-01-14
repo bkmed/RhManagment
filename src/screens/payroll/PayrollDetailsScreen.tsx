@@ -201,11 +201,10 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
               <Text style={styles.infoValue}>
                 {payroll.month && payroll.year
                   ? `${new Date(
-                      0,
-                      (parseInt(payroll.month) || 1) - 1,
-                    ).toLocaleString(undefined, { month: 'long' })} ${
-                      payroll.year
-                    }`
+                    0,
+                    (parseInt(payroll.month) || 1) - 1,
+                  ).toLocaleString(undefined, { month: 'long' })} ${payroll.year
+                  }`
                   : '-'}
               </Text>
               <Text style={styles.infoLabel}>
@@ -319,8 +318,22 @@ export const PayrollDetailsScreen = ({ navigation, route }: any) => {
                         text: t('common.delete'),
                         style: 'destructive',
                         onPress: async () => {
-                          await payrollDb.delete(payrollId);
-                          navigateBack();
+                          try {
+                            await payrollDb.delete(payrollId);
+                            showToast(
+                              t('payrollDetails.deleteSuccess') ||
+                              t('common.success'),
+                              'success',
+                            );
+                            navigateBack();
+                          } catch (error) {
+                            showToast(
+                              t('payrollDetails.deleteError') ||
+                              t('common.error'),
+                              'error',
+                            );
+                            console.error(error);
+                          }
                         },
                       },
                     ],

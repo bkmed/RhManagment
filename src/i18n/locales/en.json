@@ -92,7 +92,11 @@
     "updateError": "Error updating claim",
     "urgentNote": "Mark as urgent",
     "requester": "Requester",
-    "handler": "Handler"
+    "handler": "Handler",
+    "deleteConfirmTitle": "Delete Claim",
+    "deleteConfirmMessage": "Are you sure you want to delete this claim?",
+    "deleteSuccess": "Claim deleted successfully",
+    "deleteError": "Failed to delete claim"
   },
   "common": {
     "add": "Add",
@@ -508,7 +512,8 @@
     "notesLabel": "Notes",
     "reminderDisabled": "Disabled",
     "reminderLabel": "Reminder",
-    "reminderTimeText": "1 hour before"
+    "reminderTimeText": "1 hour before",
+    "deleteSuccess": "Leave deleted successfully"
   },
   "leavePolicy": {
     "country": "Country",
@@ -550,7 +555,7 @@
     "notesPlaceholder": "Additional notes...",
     "save": "Save Request",
     "saveError": "Failed to save request",
-    "subject": "Objet",
+    "subject": "Subject",
     "subjectPlaceholder": "Subject of the request",
     "past": "Past",
     "reason": "Reason",
@@ -717,7 +722,10 @@
     "reminderTimesLabel": "Reminder Times",
     "remindersLabel": "Reminders",
     "startDateLabel": "Start Date",
-    "viewHistoryButton": "View History"
+    "viewHistoryButton": "View History",
+    "deleteSuccess": "Payroll entry deleted successfully",
+    "deleteError": "Failed to delete payroll entry",
+    "notFound": "Payroll entry not found"
   },
   "payslip": {
     "amount": "Amount",

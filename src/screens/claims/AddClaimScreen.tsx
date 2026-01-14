@@ -181,7 +181,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
     }
 
     // Check if employee has a team (if applicable logic)
-    if (user?.role === 'employee' && !user?.teamId) {
+    if (user?.role === 'employee' && !user?.teamId && type !== 'assignment') {
       // Allow if we found the teamId via auto-resolve
       if (!teamId) {
         notificationService.showAlert(
@@ -273,7 +273,7 @@ export const AddClaimScreen = ({ navigation }: any) => {
             ? selectedDevice === 'other'
               ? 'Other Material'
               : availableDevices.find(d => String(d.id) === selectedDevice)
-                  ?.name
+                ?.name
             : t(`claims.type_${type}`),
         description: description.trim(),
         isUrgent,
@@ -318,12 +318,14 @@ export const AddClaimScreen = ({ navigation }: any) => {
     }
   };
 
+  const isUnassigned = user?.role === 'employee' && !user?.companyId && !user?.teamId;
+
   const claimTypes = [
     { label: t('claims.typeMaterial'), value: 'material' },
     { label: t('claims.typeAccount'), value: 'account' },
     { label: t('claims.typeAssignment'), value: 'assignment' },
     { label: t('claims.typeOther'), value: 'other' },
-  ];
+  ].filter(t => (isUnassigned ? t.value === 'assignment' : true));
 
   return (
     <View style={styles.container}>

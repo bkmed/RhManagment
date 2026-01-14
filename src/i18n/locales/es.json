@@ -92,7 +92,11 @@
     "updateError": "Error al actualizar la reclamación",
     "urgentNote": "Marcar como urgente",
     "requester": "Solicitante",
-    "handler": "Tramitador"
+    "handler": "Tramitador",
+    "deleteConfirmTitle": "Eliminar reclamación",
+    "deleteConfirmMessage": "¿Está seguro de que desea eliminar esta reclamación?",
+    "deleteSuccess": "Reclamación eliminada con éxito",
+    "deleteError": "Error al eliminar la reclamación"
   },
   "common": {
     "add": "Añadir",
@@ -505,7 +509,8 @@
     "notesLabel": "Notas",
     "reminderDisabled": "Desactivado",
     "reminderLabel": "Recordatorio",
-    "reminderTimeText": "1 hora antes"
+    "reminderTimeText": "1 hora antes",
+    "deleteSuccess": "Vacaciones eliminadas con éxito"
   },
   "leavePolicy": {
     "country": "País",
@@ -722,7 +727,10 @@
     "reminderTimesLabel": "Horas de recordatorio",
     "remindersLabel": "Recordatorios",
     "startDateLabel": "Fecha de inicio",
-    "viewHistoryButton": "Ver historial"
+    "viewHistoryButton": "Ver historial",
+    "deleteSuccess": "Elemento de nómina eliminado con éxito",
+    "deleteError": "Error al eliminar el elemento de nómina",
+    "notFound": "Elemento de nómina no encontrado"
   },
   "payslip": {
     "amount": "Monto",

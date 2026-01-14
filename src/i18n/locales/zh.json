@@ -92,7 +92,11 @@
     "updateError": "更新申请出错",
     "urgentNote": "标记为紧急",
     "requester": "请求者",
-    "handler": "处理者"
+    "handler": "处理者",
+    "deleteConfirmTitle": "删除申请",
+    "deleteConfirmMessage": "您确定要删除此申请吗？",
+    "deleteSuccess": "申请已成功删除",
+    "deleteError": "删除申请失败"
   },
   "common": {
     "add": "添加",
@@ -498,7 +502,8 @@
     "notesLabel": "备注",
     "reminderDisabled": "已禁用",
     "reminderLabel": "提醒",
-    "reminderTimeText": "1 小时前"
+    "reminderTimeText": "1 小时前",
+    "deleteSuccess": "休假申请已成功删除"
   },
   "leavePolicy": {
     "country": "国家",
@@ -714,7 +719,10 @@
     "reminderTimesLabel": "提醒时间",
     "remindersLabel": "提醒",
     "startDateLabel": "开始日期",
-    "viewHistoryButton": "查看历史"
+    "viewHistoryButton": "查看历史",
+    "deleteSuccess": "工资单条目已成功删除",
+    "deleteError": "删除工资单条目失败",
+    "notFound": "未找到工资单条目"
   },
   "payslip": {
     "amount": "金额",

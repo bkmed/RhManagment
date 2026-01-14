@@ -37,13 +37,7 @@ export interface Payroll {
   employeeName?: string;
   amount: number;
   currency: string;
-  frequency: string; // e.g., "Daily", "Twice a day", "Weekly"
-  times: string; // JSON string of times, e.g., ["08:00", "20:00"]
-  startDate: string; // ISO date string
-  endDate?: string; // ISO date string, optional for ongoing payroll items
   notes?: string;
-  reminderEnabled: boolean;
-  isUrgent?: boolean;
   employeeId?: string;
   mealVouchers?: number;
   giftVouchers?: number;
@@ -52,7 +46,6 @@ export interface Payroll {
   createdAt: string;
   updatedAt: string;
   department?: string; // Service
-  location?: string; // Local
   month?: string; // e.g., "1" for January
   year?: string; // e.g., "2024"
   hoursWorked?: number;

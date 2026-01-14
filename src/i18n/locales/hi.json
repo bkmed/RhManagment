@@ -92,7 +92,11 @@
     "updateError": "दावा अपडेट करने में त्रुटि",
     "urgentNote": "अति आवश्यक के रूप में चिह्नित करें",
     "requester": "अनुरोधकर्ता",
-    "handler": "संभालने वाला"
+    "handler": "संभालने वाला",
+    "deleteConfirmTitle": "दावा हटाएं",
+    "deleteConfirmMessage": "क्या आप वाकई इस दावे को हटाना चाहते हैं?",
+    "deleteSuccess": "दावा सफलतापूर्वक हटा दिया गया",
+    "deleteError": "दावा हटाने में विफल"
   },
   "common": {
     "add": "जोड़ें",
@@ -498,7 +502,8 @@
     "notesLabel": "नोट्स",
     "reminderDisabled": "अक्षम",
     "reminderLabel": "अनुस्मारक",
-    "reminderTimeText": "1 घंटा पहले"
+    "reminderTimeText": "1 घंटा पहले",
+    "deleteSuccess": "छुट्टी सफलतापूर्वक हटा दी गई"
   },
   "leavePolicy": {
     "country": "देश",
@@ -712,7 +717,10 @@
     "reminderTimesLabel": "अनुस्मारक समय",
     "remindersLabel": "अनुस्मारक",
     "startDateLabel": "प्रारंभ तिथि",
-    "viewHistoryButton": "इतिहास देखें"
+    "viewHistoryButton": "इतिहास देखें",
+    "deleteSuccess": "पेरोल प्रविष्टि सफलतापूर्वक हटा दी गई",
+    "deleteError": "पेरोल प्रविष्टि हटाने में विफल",
+    "notFound": "पेरोल प्रविष्टि नहीं मिली"
   },
   "payslip": {
     "amount": "राशि",

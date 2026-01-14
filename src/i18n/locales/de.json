@@ -92,7 +92,11 @@
     "updateError": "Fehler beim Aktualisieren der Reklamation",
     "urgentNote": "Als dringend markieren",
     "requester": "Antragsteller",
-    "handler": "Bearbeiter"
+    "handler": "Bearbeiter",
+    "deleteConfirmTitle": "Anspruch löschen",
+    "deleteConfirmMessage": "Sind Sie sicher, dass Sie diesen Anspruch löschen möchten?",
+    "deleteSuccess": "Anspruch erfolgreich gelöscht",
+    "deleteError": "Löschen des Anspruchs fehlgeschlagen"
   },
   "common": {
     "add": "Hinzufügen",
@@ -505,7 +509,8 @@
     "notesLabel": "Notizen",
     "reminderDisabled": "Deaktiviert",
     "reminderLabel": "Erinnerung",
-    "reminderTimeText": "1 Stunde vorher"
+    "reminderTimeText": "1 Stunde vorher",
+    "deleteSuccess": "Urlaub erfolgreich gelöscht"
   },
   "leavePolicy": {
     "country": "Land",
@@ -711,7 +716,10 @@
     "reminderTimesLabel": "Erinnerungszeiten",
     "remindersLabel": "Erinnerungen",
     "startDateLabel": "Startdatum",
-    "viewHistoryButton": "Verlauf anzeigen"
+    "viewHistoryButton": "Verlauf anzeigen",
+    "deleteSuccess": "Gehaltsabrechnung erfolgreich gelöscht",
+    "deleteError": "Löschen der Gehaltsabrechnung fehlgeschlagen",
+    "notFound": "Gehaltsabrechnung nicht gefunden"
   },
   "payslip": {
     "amount": "Betrag",

@@ -74,6 +74,13 @@ export const InvoiceListScreen = ({ navigation }: any) => {
     }, [user]),
   );
 
+  // Web Refresh Logic
+  useEffect(() => {
+    if (activeTab === 'Invoices') {
+      loadData();
+    }
+  }, [activeTab]);
+
   const filteredInvoices = useMemo(() => {
     if (activeView === 'mine') {
       return invoices.filter(i => i.employeeId === user?.employeeId);
@@ -196,8 +203,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
             style={[styles.statusText, { color: getStatusColor(item.status) }]}
           >
             {t(
-              `invoices.status${
-                item.status.charAt(0).toUpperCase() + item.status.slice(1)
+              `invoices.status${item.status.charAt(0).toUpperCase() + item.status.slice(1)
               }`,
             )}
           </Text>
@@ -222,37 +228,37 @@ export const InvoiceListScreen = ({ navigation }: any) => {
       {(user?.role === 'admin' ||
         user?.role === 'rh' ||
         user?.role === 'manager') && (
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[styles.tab, activeView === 'mine' && styles.activeTab]}
-            onPress={() => setActiveView('mine')}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeView === 'mine' && styles.activeTabText,
-              ]}
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[styles.tab, activeView === 'mine' && styles.activeTab]}
+              onPress={() => setActiveView('mine')}
             >
-              {t('invoices.myInvoices')}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, activeView === 'all' && styles.activeTab]}
-            onPress={() => setActiveView('all')}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeView === 'all' && styles.activeTabText,
-              ]}
+              <Text
+                style={[
+                  styles.tabText,
+                  activeView === 'mine' && styles.activeTabText,
+                ]}
+              >
+                {t('invoices.myInvoices')}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, activeView === 'all' && styles.activeTab]}
+              onPress={() => setActiveView('all')}
             >
-              {user?.role === 'manager'
-                ? t('invoices.teamInvoices')
-                : t('invoices.allInvoices')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+              <Text
+                style={[
+                  styles.tabText,
+                  activeView === 'all' && styles.activeTabText,
+                ]}
+              >
+                {user?.role === 'manager'
+                  ? t('invoices.teamInvoices')
+                  : t('invoices.allInvoices')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
       {activeView === 'all' && user?.role === 'admin' && (
         <View
@@ -282,7 +288,7 @@ export const InvoiceListScreen = ({ navigation }: any) => {
       ) : (
         <ScrollView contentContainerStyle={styles.listContent}>
           {groupedData.length === 0 ||
-          (groupedData[0].items && groupedData[0].items.length === 0) ? (
+            (groupedData[0].items && groupedData[0].items.length === 0) ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>{t('invoices.empty')}</Text>
             </View>

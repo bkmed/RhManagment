@@ -78,12 +78,12 @@ export const PayrollListScreen = ({ navigation }: any) => {
   );
 
   // Web Refresh Logic
-  const { activeTab } = useContext(WebNavigationContext);
+  const { activeTab, subScreen } = useContext(WebNavigationContext);
   useEffect(() => {
-    if (activeTab === 'Payroll') {
+    if (activeTab === 'Payroll' && subScreen === 'PayrollList') {
       loadPayrollItems();
     }
-  }, [activeTab]);
+  }, [activeTab, subScreen]);
 
   const filteredPayrollItems = useMemo(() => {
     if (!searchQuery) return payrollItems;

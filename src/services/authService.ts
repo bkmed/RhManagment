@@ -335,12 +335,12 @@ const seedDemoData = async () => {
           i === 0
             ? '2021-09-20'
             : new Date(
-                2020 + Math.floor(Math.random() * 4),
-                Math.floor(Math.random() * 12),
-                1,
-              )
-                .toISOString()
-                .split('T')[0],
+              2020 + Math.floor(Math.random() * 4),
+              Math.floor(Math.random() * 12),
+              1,
+            )
+              .toISOString()
+              .split('T')[0],
       });
 
       // Generate some leaves and payroll for the first few employees
@@ -361,10 +361,9 @@ const seedDemoData = async () => {
           name: 'Monthly Salary',
           amount: 2500 + Math.floor(Math.random() * 1000),
           currency: assignedCompanyId === company1Id ? 'EUR' : 'TND',
-          frequency: 'Monthly',
-          times: JSON.stringify(['09:00']),
-          startDate: new Date().toISOString(),
-          reminderEnabled: true,
+          month: (new Date().getMonth() + 1).toString(),
+          year: new Date().getFullYear().toString(),
+          hoursWorked: 160 + Math.floor(Math.random() * 20),
           employeeId: empId,
           companyId: assignedCompanyId,
         });

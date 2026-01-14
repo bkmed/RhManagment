@@ -92,7 +92,11 @@
     "updateError": "خطأ في تحديث المطالبة",
     "urgentNote": "وضع علامة عاجل",
     "requester": "صاحب الطلب",
-    "handler": "المعالج"
+    "handler": "المعالج",
+    "deleteConfirmTitle": "حذف المطالبة",
+    "deleteConfirmMessage": "هل أنت متأكد من حذف هذه المطالبة؟",
+    "deleteSuccess": "تم حذف المطالبة بنجاح",
+    "deleteError": "فشل حذف المطالبة"
   },
   "common": {
     "add": "إضافة",
@@ -505,7 +509,8 @@
     "notesLabel": "ملاحظات",
     "reminderDisabled": "معطل",
     "reminderLabel": "التذكير",
-    "reminderTimeText": "قبل ساعة"
+    "reminderTimeText": "قبل ساعة",
+    "deleteSuccess": "تم حذف الإجازة بنجاح"
   },
   "leavePolicy": {
     "country": "البلد",
@@ -720,7 +725,10 @@
     "reminderTimesLabel": "أوقات التذكير",
     "remindersLabel": "التذكيرات",
     "startDateLabel": "تاريخ البدء",
-    "viewHistoryButton": "عرض السجل"
+    "viewHistoryButton": "عرض السجل",
+    "deleteSuccess": "تم حذف عنصر الراتب بنجاح",
+    "deleteError": "فشل حذف عنصر الراتب",
+    "notFound": "عنصر الراتب غير موجود"
   },
   "payslip": {
     "amount": "المبلغ",

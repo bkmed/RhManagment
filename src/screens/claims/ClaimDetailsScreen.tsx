@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Platform,
 } from 'react-native';
 import { claimsDb } from '../../database/claimsDb';
+import { companiesDb } from '../../database/companiesDb';
+import { teamsDb } from '../../database/teamsDb';
 import { notificationService } from '../../services/notificationService';
 import { Claim } from '../../database/schema';
 import { useTranslation } from 'react-i18next';
@@ -16,17 +19,23 @@ import { Theme } from '../../theme';
 import { formatDateTime } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { useModal } from '../../context/ModalContext';
 import { rbacService, Permission } from '../../services/rbacService';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
-export const ClaimDetailsScreen = ({ route }: any) => {
+export const ClaimDetailsScreen = ({ route, navigation }: any) => {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { showModal } = useModal();
   const { claimId } = route.params;
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const [claim, setClaim] = useState<Claim | null>(null);
+  const [companyName, setCompanyName] = useState<string>('');
+  const [teamName, setTeamName] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const { setActiveTab } = useContext(WebNavigationContext);
 
   useEffect(() => {
     loadClaim();
@@ -55,9 +64,56 @@ export const ClaimDetailsScreen = ({ route }: any) => {
           return;
         }
         setClaim(data);
+
+        // Fetch additional names
+        if (data.companyId) {
+          const comp = await companiesDb.getById(data.companyId);
+          if (comp) setCompanyName(comp.name);
+        }
+        if (data.teamId) {
+          const team = await teamsDb.getById(data.teamId);
+          if (team) setTeamName(team.name);
+        }
       }
     } catch (error) {
       showToast(t('claims.loadError'), 'error');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const navigateBack = () => {
+    if (Platform.OS === 'web') {
+      setActiveTab('Claims');
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  const handleDelete = () => {
+    showModal({
+      title: t('claims.deleteConfirmTitle') || t('common.delete'),
+      message: t('claims.deleteConfirmMessage') || t('common.confirmDelete'),
+      buttons: [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: () => handleConfirmDelete(),
+        },
+      ],
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      setLoading(true);
+      await claimsDb.delete(claimId);
+      showToast(t('claims.deleteSuccess') || t('common.success'), 'success');
+      navigateBack();
+    } catch (error) {
+      showToast(t('claims.deleteError') || t('common.error'), 'error');
       console.error(error);
     } finally {
       setLoading(false);
@@ -103,8 +159,7 @@ export const ClaimDetailsScreen = ({ route }: any) => {
             <View style={styles.typeTag}>
               <Text style={styles.typeText}>
                 {t(
-                  `claims.type${
-                    claim.type.charAt(0).toUpperCase() + claim.type.slice(1)
+                  `claims.type${claim.type.charAt(0).toUpperCase() + claim.type.slice(1)
                   }`,
                 )}
               </Text>
@@ -133,8 +188,7 @@ export const ClaimDetailsScreen = ({ route }: any) => {
               ]}
             >
               {t(
-                `claims.status${
-                  claim.status.charAt(0).toUpperCase() + claim.status.slice(1)
+                `claims.status${claim.status.charAt(0).toUpperCase() + claim.status.slice(1)
                 }`,
               )}
             </Text>
@@ -149,6 +203,20 @@ export const ClaimDetailsScreen = ({ route }: any) => {
             {claim.employeeName || t('common.unknown')}
           </Text>
         </View>
+
+        {companyName ? (
+          <View style={styles.section}>
+            <Text style={styles.label}>{t('common.company')}</Text>
+            <Text style={styles.value}>{companyName}</Text>
+          </View>
+        ) : null}
+
+        {teamName ? (
+          <View style={styles.section}>
+            <Text style={styles.label}>{t('common.team')}</Text>
+            <Text style={styles.value}>{teamName}</Text>
+          </View>
+        ) : null}
 
         <View style={styles.section}>
           <Text style={styles.label}>{t('claims.description')}</Text>
@@ -208,6 +276,17 @@ export const ClaimDetailsScreen = ({ route }: any) => {
               )}
             </View>
           )}
+
+        {(user?.role === 'admin' || user?.role === 'rh') && (
+          <View style={{ padding: theme.spacing.m, paddingTop: 0 }}>
+            <TouchableOpacity
+              style={[styles.button, styles.deleteButton]}
+              onPress={handleDelete}
+            >
+              <Text style={styles.buttonText}>{t('common.delete')}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -346,5 +425,8 @@ const createStyles = (theme: Theme) =>
       textAlign: 'center',
       flex: 1,
       marginTop: theme.spacing.m,
+    },
+    deleteButton: {
+      backgroundColor: theme.colors.error,
     },
   });
