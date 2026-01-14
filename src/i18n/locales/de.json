@@ -946,6 +946,7 @@
     "manager": "Manager",
     "teamLeader": "Teamleiter",
     "title": "Teams",
+    "filterByTeam": "Nach Team filtern",
     "validation": {
       "maxMembers": "Maximal 10 Mitglieder erlaubt",
       "minMembers": "Wählen Sie mindestens 2 Mitglieder",

@@ -946,6 +946,7 @@
     "manager": "经理",
     "teamLeader": "团队负责人",
     "title": "团队",
+    "filterByTeam": "按团队筛选",
     "validation": {
       "maxMembers": "最多允许 10 名成员",
       "minMembers": "至少选择 2 名成员",

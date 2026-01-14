@@ -45,6 +45,10 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
   const allCompanies = useSelector(selectAllCompanies);
   const [managerId, setManagerId] = useState<string | undefined>(undefined);
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+  const [filterTeamId, setFilterTeamId] = useState<string | undefined>(
+    undefined,
+  );
+  const [allTeams, setAllTeams] = useState<any[]>([]);
 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -80,10 +84,11 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
 
   const loadData = async () => {
     try {
-      const [emps, depts, servs] = await Promise.all([
+      const [emps, depts, servs, teams] = await Promise.all([
         employeesDb.getAll(),
         departmentsDb.getAll(),
         servicesDb.getAll(),
+        teamsDb.getAll(),
       ]);
 
       // Filter employees for RH users
@@ -97,6 +102,7 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
       setEmployees(filteredEmps);
       setDepartments(depts);
       setServices(servs);
+      setAllTeams(teams);
 
       if (isEdit) {
         const team = await teamsDb.getById(editId);
@@ -215,47 +221,58 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
   const eligibleEmployees = useMemo(() => {
     return employees.filter(e => {
       // 1. Check Company Constraint
-      if (companyId) {
-        // If team denotes a specific company, employee MUST match that company
-        // OR be unassigned (optional, but usually we want them in the DB to match)
-        // safely compare as strings
-        const empCompanyId = e.companyId ? String(e.companyId) : undefined;
-        const targetCompanyId = String(companyId);
-
-        if (empCompanyId && empCompanyId !== targetCompanyId) {
+      if (rbacService.isAdmin(user)) {
+        if (companyId && String(e.companyId) !== String(companyId))
           return false;
-        }
-        // If employee has no company, they are technically eligible to be added
-        // (and will be assigned to this company on save)
-      } else if (rbacService.isRH(user) && user.companyId) {
-        // If no specific company selected for team (unlikely for RH),
-        // RH can still ONLY see their own employees
-        const empCompanyId = e.companyId ? String(e.companyId) : undefined;
-        const userCompanyId = String(user.companyId);
-        if (empCompanyId && empCompanyId !== userCompanyId) {
-          return false;
-        }
+      } else {
+        // RH or Manager/TL: Must belong to their company
+        if (String(e.companyId) !== String(user?.companyId)) return false;
       }
 
-      // 2. Check Team Constraint
-      // Must not be in another team.
-      // If isEdit, allow if e.teamId === editId.
-      const currentTeamId = e.teamId ? String(e.teamId) : undefined;
-      const targetTeamId = isEdit ? String(editId) : undefined;
+      // 2. Filter by Team (Optional Filter)
+      if (filterTeamId && filterTeamId !== 'none') {
+        if (String(e.teamId) !== String(filterTeamId)) return false;
+      }
 
-      if (currentTeamId) {
-        if (isEdit) {
-          // If editing, exclude if in ANOTHER team
-          if (currentTeamId !== targetTeamId) return false;
-        } else {
-          // If creating, exclude if in ANY team
-          return false;
+      // 3. Exclude if in ANOTHER team when not filtering by team
+      // (If we ARE filtering by team, we want to see them to select/unselect them)
+      if (!filterTeamId || filterTeamId === 'none') {
+        const currentTeamId = e.teamId ? String(e.teamId) : undefined;
+        const targetTeamId = isEdit ? String(editId) : undefined;
+
+        if (currentTeamId) {
+          if (isEdit) {
+            if (currentTeamId !== targetTeamId) return false;
+          } else {
+            return false;
+          }
         }
       }
 
       return true;
     });
-  }, [employees, companyId, isEdit, editId, user]);
+  }, [employees, companyId, isEdit, editId, user, filterTeamId]);
+
+  const teamOptions = useMemo(() => {
+    let filtered = allTeams;
+    if (rbacService.isAdmin(user)) {
+      if (companyId) {
+        filtered = allTeams.filter(t_item => t_item.companyId === companyId);
+      }
+    } else {
+      filtered = allTeams.filter(
+        t_item => String(t_item.companyId) === String(user?.companyId),
+      );
+    }
+
+    return [
+      { label: t('common.all') || 'All', value: 'none' },
+      ...filtered.map(t_item => ({
+        label: t_item.name,
+        value: String(t_item.id),
+      })),
+    ];
+  }, [allTeams, companyId, user]);
 
   const employeeOptions = useMemo(() => {
     return eligibleEmployees.map(e => ({
@@ -297,19 +314,21 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
               : t('teams.details') || 'Team Details'}
           </Text>
 
-          {/* Company (Dropdown) */}
-          <View style={styles.fieldContainer}>
-            <Dropdown
-              label={t('companies.title')}
-              data={companies.map(c => ({
-                label: c.name,
-                value: String(c.id),
-              }))}
-              value={companyId ? String(companyId) : ''}
-              onSelect={val => setCompanyId(val || undefined)}
-              placeholder={t('companies.selectCompany')}
-            />
-          </View>
+          {/* Company (Dropdown) - Admin only */}
+          {rbacService.isAdmin(user) && (
+            <View style={styles.fieldContainer}>
+              <Dropdown
+                label={t('companies.title')}
+                data={companies.map(c => ({
+                  label: c.name,
+                  value: String(c.id),
+                }))}
+                value={companyId ? String(companyId) : ''}
+                onSelect={val => setCompanyId(val || undefined)}
+                placeholder={t('companies.selectCompany')}
+              />
+            </View>
+          )}
 
           {/* Name */}
           <View style={styles.fieldContainer}>
@@ -351,6 +370,19 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
             />
           </View>
 
+          {/* Team Filter */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>
+              {t('teams.filterByTeam') || 'Filter by Team'}
+            </Text>
+            <Dropdown
+              label={t('teams.selectTeam') || 'Select Team'}
+              data={teamOptions}
+              value={filterTeamId || 'none'}
+              onSelect={(val: string) => setFilterTeamId(val || undefined)}
+            />
+          </View>
+
           {/* Team Leader Selection */}
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>
@@ -375,11 +407,11 @@ export const AddTeamScreen = ({ navigation, route }: any) => {
                 style={[
                   styles.memberCount,
                   (selectedMemberIds.length === 0 ||
-                    selectedMemberIds.length > 10) &&
+                    selectedMemberIds.length > 20) &&
                     styles.errorText,
                 ]}
               >
-                {selectedMemberIds.length} / 10
+                {selectedMemberIds.length} / 20
               </Text>
             </View>
             <MultiSelectDropdown

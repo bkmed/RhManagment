@@ -946,6 +946,7 @@
     "manager": "प्रबंधक",
     "teamLeader": "टीम लीडर",
     "title": "टीमें",
+    "filterByTeam": "टीम के अनुसार छानें",
     "validation": {
       "maxMembers": "अधिकतम 10 सदस्यों की अनुमति है",
       "minMembers": "कम से कम 2 सदस्य चुनें",

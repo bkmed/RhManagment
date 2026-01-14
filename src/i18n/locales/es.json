@@ -944,8 +944,9 @@
     "myTeam": "Mi Equipo",
     "noTeamAssigned": "Ningún equipo asignado",
     "manager": "Gerente",
-    "teamLeader": "Jefe de Equipo",
+    "teamLeader": "Líder de equipo",
     "title": "Equipos",
+    "filterByTeam": "Filtrar por equipo",
     "validation": {
       "maxMembers": "Máximo 10 miembros permitidos",
       "minMembers": "Seleccione al menos 2 miembros",

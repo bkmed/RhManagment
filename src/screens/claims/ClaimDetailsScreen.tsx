@@ -100,7 +100,7 @@ export const ClaimDetailsScreen = ({ route, navigation }: any) => {
         {
           text: t('common.delete'),
           style: 'destructive',
-          onPress: () => handleConfirmDelete(),
+          onPress: async () => await handleConfirmDelete(),
         },
       ],
     });

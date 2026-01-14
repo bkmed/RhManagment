@@ -946,6 +946,7 @@
     "manager": "المدير",
     "teamLeader": "قائد الفريق",
     "title": "الفرق",
+    "filterByTeam": "تصفية حسب الفريق",
     "validation": {
       "maxMembers": "الحد الأقصى 10 أعضاء",
       "minMembers": "اختر عضوين على الأقل",
