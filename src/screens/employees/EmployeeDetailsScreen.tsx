@@ -178,6 +178,45 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
     });
   };
 
+  const handleDeactivate = () => {
+    showModal({
+      title: t('common.deactivate'),
+      message: t('employees.deactivateConfirmMessage'),
+      buttons: [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.deactivate'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await employeesDb.deactivate(employeeId, user?.id || '');
+              showToast(t('employees.deactivatedSuccessfully'), 'success');
+              if (Platform.OS === 'web') {
+                setActiveTab('Employees', 'EmployeeList');
+              } else {
+                navigation.navigate('EmployeeList');
+              }
+            } catch (error) {
+              showToast(t('employees.deactivateError'), 'error');
+              console.error(error);
+            }
+          },
+        },
+      ],
+    });
+  };
+
+  const handleReactivate = async () => {
+    try {
+      await employeesDb.reactivate(employeeId);
+      showToast(t('employees.reactivatedSuccessfully'), 'success');
+      await loadData(); // Reload to update UI
+    } catch (error) {
+      showToast(t('employees.reactivateError'), 'error');
+      console.error(error);
+    }
+  };
+
   const renderLeave = ({ item }: { item: Leave }) => (
     <View style={styles.leaveCard}>
       <View style={styles.leaveHeader}>
@@ -256,34 +295,59 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                     })}
                   </Text>
                 )}
+                {employee.isActive === false && (
+                  <View style={styles.inactiveBadge}>
+                    <Text style={styles.inactiveBadgeText}>
+                      {t('common.inactive')}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
-            {(rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) ||
-              rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES)) && (
-              <View style={styles.actions}>
-                {rbacService.hasPermission(user, Permission.EDIT_EMPLOYEES) && (
-                  <TouchableOpacity
-                    onPress={handleEdit}
-                    style={styles.actionButton}
-                  >
-                    <Text style={styles.actionText}>{t('common.edit')}</Text>
-                  </TouchableOpacity>
-                )}
-                {rbacService.hasPermission(
-                  user,
-                  Permission.DELETE_EMPLOYEES,
-                ) && (
-                  <TouchableOpacity
-                    onPress={handleDelete}
-                    style={[styles.actionButton, styles.deleteButton]}
-                  >
-                    <Text style={[styles.actionText, styles.deleteText]}>
-                      {t('common.delete')}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
+            {(rbacService.canEditEmployee(user, employee?.companyId) ||
+              rbacService.canDeleteEmployee(user, employee?.companyId)) && (
+                <View style={styles.actions}>
+                  {rbacService.canEditEmployee(user, employee?.companyId) && (
+                    <TouchableOpacity
+                      onPress={handleEdit}
+                      style={styles.actionButton}
+                    >
+                      <Text style={styles.actionText}>{t('common.edit')}</Text>
+                    </TouchableOpacity>
+                  )}
+                  {rbacService.canDeleteEmployee(user, employee?.companyId) && (
+                    <>
+                      {employee.isActive !== false ? (
+                        <TouchableOpacity
+                          onPress={handleDeactivate}
+                          style={[styles.actionButton, styles.deactivateButton]}
+                        >
+                          <Text style={[styles.actionText, styles.deactivateText]}>
+                            {t('common.deactivate')}
+                          </Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={handleReactivate}
+                          style={[styles.actionButton, styles.reactivateButton]}
+                        >
+                          <Text style={[styles.actionText, styles.reactivateText]}>
+                            {t('common.reactivate')}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                      <TouchableOpacity
+                        onPress={handleDelete}
+                        style={[styles.actionButton, styles.deleteButton]}
+                      >
+                        <Text style={[styles.actionText, styles.deleteText]}>
+                          {t('common.delete')}
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </View>
+              )}
           </View>
 
           <View style={styles.divider} />
@@ -306,9 +370,9 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.detailValue}>
                   {employee.birthDate
                     ? Math.floor(
-                        (Date.now() - new Date(employee.birthDate).getTime()) /
-                          (365.25 * 24 * 60 * 60 * 1000),
-                      )
+                      (Date.now() - new Date(employee.birthDate).getTime()) /
+                      (365.25 * 24 * 60 * 60 * 1000),
+                    )
                     : employee.age || '-'}
                 </Text>
               </View>
@@ -317,11 +381,10 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.detailValue}>
                   {employee.gender
                     ? t(
-                        `employees.gender${
-                          employee.gender.charAt(0).toUpperCase() +
-                          employee.gender.slice(1)
-                        }`,
-                      )
+                      `employees.gender${employee.gender.charAt(0).toUpperCase() +
+                      employee.gender.slice(1)
+                      }`,
+                    )
                     : '-'}
                 </Text>
               </View>
@@ -464,27 +527,27 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
           <Text style={styles.sectionTitle}>{t('leaves.title')}</Text>
           {(rbacService.hasPermission(user, Permission.MANAGE_PAYROLL) ||
             rbacService.hasPermission(user, Permission.APPROVE_LEAVES)) && (
-            <View style={styles.headerActions}>
-              <TouchableOpacity
-                onPress={() => navigateToAddIllness(employee)}
-                style={[styles.addButton, styles.secondaryButton]}
-              >
-                <Text
-                  style={[styles.addButtonText, styles.secondaryButtonText]}
+              <View style={styles.headerActions}>
+                <TouchableOpacity
+                  onPress={() => navigateToAddIllness(employee)}
+                  style={[styles.addButton, styles.secondaryButton]}
                 >
-                  + {t('employees.addIllness')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={navigateToAddLeave}
-                style={styles.addButton}
-              >
-                <Text style={styles.addButtonText}>
-                  + {t('employees.addLeave')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
+                  <Text
+                    style={[styles.addButtonText, styles.secondaryButtonText]}
+                  >
+                    + {t('employees.addIllness')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={navigateToAddLeave}
+                  style={styles.addButton}
+                >
+                  <Text style={styles.addButtonText}>
+                    + {t('employees.addLeave')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
         </View>
 
         {leaves.length > 0 ? (
@@ -578,6 +641,14 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.surface,
       borderColor: theme.colors.error,
     },
+    deactivateButton: {
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.warning || '#FF9800',
+    },
+    reactivateButton: {
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.success || '#4CAF50',
+    },
     actionText: {
       ...theme.textVariants.body,
       fontSize: 14,
@@ -585,6 +656,25 @@ const createStyles = (theme: Theme) =>
     },
     deleteText: {
       color: theme.colors.error,
+    },
+    deactivateText: {
+      color: theme.colors.warning || '#FF9800',
+    },
+    reactivateText: {
+      color: theme.colors.success || '#4CAF50',
+    },
+    inactiveBadge: {
+      backgroundColor: theme.colors.error + '20',
+      paddingHorizontal: theme.spacing.s,
+      paddingVertical: 4,
+      borderRadius: theme.spacing.s,
+      marginTop: theme.spacing.xs,
+    },
+    inactiveBadgeText: {
+      color: theme.colors.error,
+      fontSize: 12,
+      fontWeight: '600',
+      textTransform: 'uppercase',
     },
     divider: {
       height: 1,

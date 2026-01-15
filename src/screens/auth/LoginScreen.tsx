@@ -139,13 +139,13 @@ export const LoginScreen = ({ navigation }: any) => {
           <TouchableOpacity
             style={styles.demoRow}
             onPress={() => {
-              setEmail('hr@demo.com');
-              setPassword('hr123');
+              setEmail('rh@demo.com');
+              setPassword('rh123');
             }}
           >
             <Text style={styles.demoCell}>{t('login.hr')}</Text>
-            <Text style={styles.demoCell}>hr@demo.com</Text>
-            <Text style={styles.demoCell}>hr123</Text>
+            <Text style={styles.demoCell}>rh@demo.com</Text>
+            <Text style={styles.demoCell}>rh123</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

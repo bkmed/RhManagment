@@ -360,7 +360,12 @@
     "titlePlaceholder": "e.g. Master React Native",
     "updateButton": "Mettre à jour l'employé",
     "website": "Site Web",
-    "websitePlaceholder": "https://..."
+    "websitePlaceholder": "https://...",
+    "deactivateConfirmMessage": "Êtes-vous sûr de vouloir désactiver cet employé? L'employé n'apparaîtra plus dans les listes mais les données seront conservées.",
+    "deactivatedSuccessfully": "Employé(s) désactivé(s) avec succès",
+    "deactivateError": "Échec de la désactivation de(s) employé(s)",
+    "reactivatedSuccessfully": "Employé réactivé avec succès",
+    "reactivateError": "Échec de la réactivation de l'employé"
   },
   "forgotPassword": {
     "backToLogin": "Retour à la connexion",
@@ -959,6 +964,8 @@
     "teamLeader": "Chef d'équipe",
     "title": "Équipes",
     "filterByTeam": "Filtrer par équipe",
+    "saveSuccess": "Équipe créée avec succès",
+    "updateSuccess": "Équipe mise à jour avec succès",
     "validation": {
       "maxMembers": "Max 10 membres autorisés",
       "minMembers": "Sélectionnez au moins 2 membres",

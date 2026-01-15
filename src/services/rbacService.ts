@@ -149,6 +149,58 @@ class RbacService {
     if (!user) return false;
     return this.isRH(user) && !!user.companyId && !!user.employeeId;
   }
+
+  /**
+   * Check if user can edit a specific employee
+   * Admin can edit anyone, RH can only edit employees in their own company
+   */
+  canEditEmployee(user: User | null, employeeCompanyId?: string): boolean {
+    if (!user) return false;
+
+    // Admin can edit anyone
+    if (this.isAdmin(user)) {
+      return true;
+    }
+
+    // RH can only edit employees in their own company
+    if (this.isRH(user)) {
+      // RH must have a company assigned
+      if (!user.companyId) {
+        return false;
+      }
+      // Employee must be in same company
+      return user.companyId === employeeCompanyId;
+    }
+
+    // Others cannot edit employees
+    return false;
+  }
+
+  /**
+   * Check if user can delete a specific employee
+   * Admin can delete anyone, RH can only delete employees in their own company
+   */
+  canDeleteEmployee(user: User | null, employeeCompanyId?: string): boolean {
+    if (!user) return false;
+
+    // Admin can delete anyone
+    if (this.isAdmin(user)) {
+      return true;
+    }
+
+    // RH can only delete employees in their own company
+    if (this.isRH(user)) {
+      // RH must have a company assigned
+      if (!user.companyId) {
+        return false;
+      }
+      // Employee must be in same company
+      return user.companyId === employeeCompanyId;
+    }
+
+    // Others cannot delete employees
+    return false;
+  }
 }
 
 export const rbacService = new RbacService();

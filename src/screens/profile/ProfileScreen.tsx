@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useModal } from '../../context/ModalContext';
-import { useToast } from '../../context/ToastContext';
 import { Dropdown } from '../../components/Dropdown';
 import { AuthInput } from '../../components/auth/AuthInput';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
@@ -40,7 +39,6 @@ export const ProfileScreen = ({ navigation }: any) => {
   const { showModal } = useModal();
   const { t } = useTranslation();
   const { user, signOut, updateProfile } = useAuth();
-  const { showToast } = useToast();
   const { setActiveTab } = React.useContext(WebNavigationContext) as any;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -317,24 +315,24 @@ export const ProfileScreen = ({ navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-              name: emergencyName,
-              phone: emergencyPhone,
-              relationship: emergencyRelationship,
-            }
+            name: emergencyName,
+            phone: emergencyPhone,
+            relationship: emergencyRelationship,
+          }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-                linkedin,
-                skype,
-                website,
-              }
+              linkedin,
+              skype,
+              website,
+            }
             : undefined,
         skills: skills
           ? skills
-              .split(',')
-              .map(s => s.trim())
-              .filter(s => s)
+            .split(',')
+            .map(s => s.trim())
+            .filter(s => s)
           : undefined,
       });
       setIsEditing(false);
@@ -531,7 +529,7 @@ export const ProfileScreen = ({ navigation }: any) => {
               <View style={styles.headerMainInfo}>
                 <Text style={styles.userName}>{user?.name}</Text>
                 <Text style={styles.userEmail}>{user?.email}</Text>
-                <View style={styles.teamContainer}>
+                <View style={styles.teamContainer} pointerEvents="none">
                   <Text style={styles.teamText}>
                     🏢 {userCompany?.name || t('companies.noCompanyAssigned')}
                   </Text>
@@ -547,19 +545,11 @@ export const ProfileScreen = ({ navigation }: any) => {
                           : theme.colors.border) + '10',
                     },
                   ]}
+                  disabled={!userCompany || !userTeam}
                   onPress={() => {
-                    if (!userCompany) {
-                      notificationService.showAlert(
-                        t('common.error'),
-                        t('companies.noCompanyAssigned'),
-                      );
-                      return;
+                    if (userTeam && userCompany) {
+                      navigation.navigate('MyTeam');
                     }
-                    if (!userTeam) {
-                      showToast(t('teams.noTeamAssigned'));
-                      return;
-                    }
-                    navigation.navigate('MyTeam');
                   }}
                 >
                   <Text
@@ -670,9 +660,8 @@ export const ProfileScreen = ({ navigation }: any) => {
                 <View style={styles.responsiveRow}>
                   <View style={styles.fieldContainerFlex}>
                     <DateTimePickerField
-                      label={`${t('profile.birthDate') || 'Birth Date'} ${
-                        userAge ? `(${userAge} ${t('common.years')})` : ''
-                      }`}
+                      label={`${t('profile.birthDate') || 'Birth Date'} ${userAge ? `(${userAge} ${t('common.years')})` : ''
+                        }`}
                       value={birthDate ? new Date(birthDate) : null}
                       onChange={(date: Date | null) =>
                         setBirthDate(date ? date.toISOString() : '')
@@ -870,8 +859,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                     <Text style={styles.fieldLabel}>{t('profile.gender')}</Text>
                     <Text style={styles.fieldValue}>
                       {t(
-                        `employees.gender${
-                          gender.charAt(0).toUpperCase() + gender.slice(1)
+                        `employees.gender${gender.charAt(0).toUpperCase() + gender.slice(1)
                         }`,
                       )}
                     </Text>
@@ -917,8 +905,8 @@ export const ProfileScreen = ({ navigation }: any) => {
                       <Text style={styles.tagText}>{skill}</Text>
                     </View>
                   )) || (
-                    <Text style={styles.emptyText}>{t('common.noData')}</Text>
-                  )}
+                      <Text style={styles.emptyText}>{t('common.noData')}</Text>
+                    )}
                 </View>
 
                 <View style={styles.divider} />
@@ -978,7 +966,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                       t('settings.pushNotifications') || 'Push Notifications',
                     status:
                       user?.notificationPreferences?.push &&
-                      notificationPermission === 'granted'
+                        notificationPermission === 'granted'
                         ? 'granted'
                         : notificationPermission,
                     onValueChange: handleNotificationPermission,

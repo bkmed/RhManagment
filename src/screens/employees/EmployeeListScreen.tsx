@@ -241,6 +241,7 @@ export const EmployeeListScreen = ({ navigation }: any) => {
               setSelectionMode(false);
               await loadEmployees();
             } catch (error) {
+              console.log(error)
               notificationService.showAlert(
                 t('common.error'),
                 t('employees.deactivateError')
@@ -252,6 +253,41 @@ export const EmployeeListScreen = ({ navigation }: any) => {
     });
   };
 
+  const handleDeleteSelected = async () => {
+    if (selectedEmployees.size === 0) return;
+
+    showModal({
+      title: t('common.delete'),
+      message: `${t('employees.deleteConfirmMessage')} (${selectedEmployees.size})`,
+      buttons: [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              for (const empId of selectedEmployees) {
+                await employeesDb.delete(empId);
+              }
+              notificationService.showAlert(
+                t('common.success'),
+                t('employees.deletedSuccessfully')
+              );
+              setSelectedEmployees(new Set());
+              setSelectionMode(false);
+              await loadEmployees();
+            } catch (error) {
+              console.error(error)
+              notificationService.showAlert(
+                t('common.error'),
+                t('employees.deleteError')
+              );
+            }
+          },
+        },
+      ],
+    });
+  };
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
@@ -287,6 +323,18 @@ export const EmployeeListScreen = ({ navigation }: any) => {
 
         {/* Selection Mode Controls */}
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+          {/* Show/Hide Inactive Toggle */}
+          {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && (
+            <TouchableOpacity
+              style={[styles.actionButton, showInactive && styles.actionButtonActive]}
+              onPress={() => setShowInactive(!showInactive)}
+            >
+              <Text style={styles.actionButtonText}>
+                {showInactive ? '👁️ ' + t('common.hideInactive') : '👁️‍🗨️ ' + t('common.showInactive')}
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES) && (
             <TouchableOpacity
               style={[styles.actionButton, selectionMode && styles.actionButtonActive]}
@@ -316,14 +364,24 @@ export const EmployeeListScreen = ({ navigation }: any) => {
           )}
 
           {selectionMode && selectedEmployees.size > 0 && (
-            <TouchableOpacity
-              style={[styles.actionButton, styles.deleteActionButton]}
-              onPress={handleDeleteSelected}
-            >
-              <Text style={styles.actionButtonText}>
-                🗑️ {t('common.delete')} ({selectedEmployees.size})
-              </Text>
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.deactivateActionButton]}
+                onPress={handleDeactivateSelected}
+              >
+                <Text style={styles.actionButtonText}>
+                  🚫 {t('common.deactivate')} ({selectedEmployees.size})
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.deleteActionButton]}
+                onPress={handleDeleteSelected}
+              >
+                <Text style={styles.actionButtonText}>
+                  🗑️ {t('common.delete')} ({selectedEmployees.size})
+                </Text>
+              </TouchableOpacity>
+            </>
           )}
         </View>
       </View>
@@ -463,6 +521,9 @@ const createStyles = (theme: Theme) =>
     },
     actionButtonActive: {
       backgroundColor: theme.colors.secondary,
+    },
+    deactivateActionButton: {
+      backgroundColor: theme.colors.warning || '#FF9800',
     },
     deleteActionButton: {
       backgroundColor: theme.colors.error,
