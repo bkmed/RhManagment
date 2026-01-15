@@ -306,48 +306,52 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
             </View>
             {(rbacService.canEditEmployee(user, employee?.companyId) ||
               rbacService.canDeleteEmployee(user, employee?.companyId)) && (
-                <View style={styles.actions}>
-                  {rbacService.canEditEmployee(user, employee?.companyId) && (
-                    <TouchableOpacity
-                      onPress={handleEdit}
-                      style={styles.actionButton}
-                    >
-                      <Text style={styles.actionText}>{t('common.edit')}</Text>
-                    </TouchableOpacity>
-                  )}
-                  {rbacService.canDeleteEmployee(user, employee?.companyId) && (
-                    <>
-                      {employee.isActive !== false ? (
-                        <TouchableOpacity
-                          onPress={handleDeactivate}
-                          style={[styles.actionButton, styles.deactivateButton]}
-                        >
-                          <Text style={[styles.actionText, styles.deactivateText]}>
-                            {t('common.deactivate')}
-                          </Text>
-                        </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity
-                          onPress={handleReactivate}
-                          style={[styles.actionButton, styles.reactivateButton]}
-                        >
-                          <Text style={[styles.actionText, styles.reactivateText]}>
-                            {t('common.reactivate')}
-                          </Text>
-                        </TouchableOpacity>
-                      )}
+              <View style={styles.actions}>
+                {rbacService.canEditEmployee(user, employee?.companyId) && (
+                  <TouchableOpacity
+                    onPress={handleEdit}
+                    style={styles.actionButton}
+                  >
+                    <Text style={styles.actionText}>{t('common.edit')}</Text>
+                  </TouchableOpacity>
+                )}
+                {rbacService.canDeleteEmployee(user, employee?.companyId) && (
+                  <>
+                    {employee.isActive !== false ? (
                       <TouchableOpacity
-                        onPress={handleDelete}
-                        style={[styles.actionButton, styles.deleteButton]}
+                        onPress={handleDeactivate}
+                        style={[styles.actionButton, styles.deactivateButton]}
                       >
-                        <Text style={[styles.actionText, styles.deleteText]}>
-                          {t('common.delete')}
+                        <Text
+                          style={[styles.actionText, styles.deactivateText]}
+                        >
+                          {t('common.deactivate')}
                         </Text>
                       </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-              )}
+                    ) : (
+                      <TouchableOpacity
+                        onPress={handleReactivate}
+                        style={[styles.actionButton, styles.reactivateButton]}
+                      >
+                        <Text
+                          style={[styles.actionText, styles.reactivateText]}
+                        >
+                          {t('common.reactivate')}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    <TouchableOpacity
+                      onPress={handleDelete}
+                      style={[styles.actionButton, styles.deleteButton]}
+                    >
+                      <Text style={[styles.actionText, styles.deleteText]}>
+                        {t('common.delete')}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </View>
+            )}
           </View>
 
           <View style={styles.divider} />
@@ -370,9 +374,9 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.detailValue}>
                   {employee.birthDate
                     ? Math.floor(
-                      (Date.now() - new Date(employee.birthDate).getTime()) /
-                      (365.25 * 24 * 60 * 60 * 1000),
-                    )
+                        (Date.now() - new Date(employee.birthDate).getTime()) /
+                          (365.25 * 24 * 60 * 60 * 1000),
+                      )
                     : employee.age || '-'}
                 </Text>
               </View>
@@ -381,10 +385,11 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.detailValue}>
                   {employee.gender
                     ? t(
-                      `employees.gender${employee.gender.charAt(0).toUpperCase() +
-                      employee.gender.slice(1)
-                      }`,
-                    )
+                        `employees.gender${
+                          employee.gender.charAt(0).toUpperCase() +
+                          employee.gender.slice(1)
+                        }`,
+                      )
                     : '-'}
                 </Text>
               </View>
@@ -527,27 +532,27 @@ export const EmployeeDetailsScreen = ({ navigation, route }: any) => {
           <Text style={styles.sectionTitle}>{t('leaves.title')}</Text>
           {(rbacService.hasPermission(user, Permission.MANAGE_PAYROLL) ||
             rbacService.hasPermission(user, Permission.APPROVE_LEAVES)) && (
-              <View style={styles.headerActions}>
-                <TouchableOpacity
-                  onPress={() => navigateToAddIllness(employee)}
-                  style={[styles.addButton, styles.secondaryButton]}
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                onPress={() => navigateToAddIllness(employee)}
+                style={[styles.addButton, styles.secondaryButton]}
+              >
+                <Text
+                  style={[styles.addButtonText, styles.secondaryButtonText]}
                 >
-                  <Text
-                    style={[styles.addButtonText, styles.secondaryButtonText]}
-                  >
-                    + {t('employees.addIllness')}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={navigateToAddLeave}
-                  style={styles.addButton}
-                >
-                  <Text style={styles.addButtonText}>
-                    + {t('employees.addLeave')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+                  + {t('employees.addIllness')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={navigateToAddLeave}
+                style={styles.addButton}
+              >
+                <Text style={styles.addButtonText}>
+                  + {t('employees.addLeave')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {leaves.length > 0 ? (

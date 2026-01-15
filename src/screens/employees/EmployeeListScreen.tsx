@@ -44,7 +44,9 @@ export const EmployeeListScreen = ({ navigation }: any) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectionMode, setSelectionMode] = useState(false);
-  const [selectedEmployees, setSelectedEmployees] = useState<Set<string>>(new Set());
+  const [selectedEmployees, setSelectedEmployees] = useState<Set<string>>(
+    new Set(),
+  );
   const [companyFilter, setCompanyFilter] = useState<string>('');
   const [showInactive, setShowInactive] = useState(false);
 
@@ -106,7 +108,8 @@ export const EmployeeListScreen = ({ navigation }: any) => {
           ? t(`departments.${emp.position}`, { defaultValue: emp.position })
           : '';
         const companyName =
-          companies.find(c => String(c.id) === String(emp.companyId))?.name || '';
+          companies.find(c => String(c.id) === String(emp.companyId))?.name ||
+          '';
         const teamName =
           teams.find(t => String(t.id) === String(emp.teamId))?.name || '';
 
@@ -139,7 +142,10 @@ export const EmployeeListScreen = ({ navigation }: any) => {
 
     return (
       <TouchableOpacity
-        style={[styles.card, isSelected && selectionMode && styles.cardSelected]}
+        style={[
+          styles.card,
+          isSelected && selectionMode && styles.cardSelected,
+        ]}
         onPress={() => {
           if (selectionMode) {
             toggleSelection(item.id || '');
@@ -163,7 +169,9 @@ export const EmployeeListScreen = ({ navigation }: any) => {
               {isSelected && <Text style={styles.checkmark}>✓</Text>}
             </TouchableOpacity>
           )}
-          <Text style={[styles.name, selectionMode && { flex: 0.8 }]}>{item.name}</Text>
+          <Text style={[styles.name, selectionMode && { flex: 0.8 }]}>
+            {item.name}
+          </Text>
           <View style={styles.badges}>
             <AbsenceStatusBadge
               status={getUserAbsenceStatus(item.id || '', illnesses, leaves)}
@@ -222,7 +230,9 @@ export const EmployeeListScreen = ({ navigation }: any) => {
 
     showModal({
       title: t('common.deactivate'),
-      message: `${t('employees.deactivateConfirmMessage')} (${selectedEmployees.size})`,
+      message: `${t('employees.deactivateConfirmMessage')} (${
+        selectedEmployees.size
+      })`,
       buttons: [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -235,16 +245,16 @@ export const EmployeeListScreen = ({ navigation }: any) => {
               }
               notificationService.showAlert(
                 t('common.success'),
-                t('employees.deactivatedSuccessfully')
+                t('employees.deactivatedSuccessfully'),
               );
               setSelectedEmployees(new Set());
               setSelectionMode(false);
               await loadEmployees();
             } catch (error) {
-              console.log(error)
+              console.log(error);
               notificationService.showAlert(
                 t('common.error'),
-                t('employees.deactivateError')
+                t('employees.deactivateError'),
               );
             }
           },
@@ -258,7 +268,9 @@ export const EmployeeListScreen = ({ navigation }: any) => {
 
     showModal({
       title: t('common.delete'),
-      message: `${t('employees.deleteConfirmMessage')} (${selectedEmployees.size})`,
+      message: `${t('employees.deleteConfirmMessage')} (${
+        selectedEmployees.size
+      })`,
       buttons: [
         { text: t('common.cancel'), style: 'cancel' },
         {
@@ -271,16 +283,16 @@ export const EmployeeListScreen = ({ navigation }: any) => {
               }
               notificationService.showAlert(
                 t('common.success'),
-                t('employees.deletedSuccessfully')
+                t('employees.deletedSuccessfully'),
               );
               setSelectedEmployees(new Set());
               setSelectionMode(false);
               await loadEmployees();
             } catch (error) {
-              console.error(error)
+              console.error(error);
               notificationService.showAlert(
                 t('common.error'),
-                t('employees.deleteError')
+                t('employees.deleteError'),
               );
             }
           },
@@ -306,45 +318,66 @@ export const EmployeeListScreen = ({ navigation }: any) => {
         />
 
         {/* Company Filter */}
-        {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && companies.length > 1 && (
-          <View style={{ marginTop: 8 }}>
-            <Dropdown
-              label=""
-              data={[
-                { label: t('common.allCompanies'), value: '' },
-                ...companies.map(c => ({ label: c.name, value: String(c.id) }))
-              ]}
-              value={companyFilter}
-              onSelect={setCompanyFilter}
-              placeholder={t('common.company')}
-            />
-          </View>
-        )}
+        {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) &&
+          companies.length > 1 && (
+            <View style={{ marginTop: 8 }}>
+              <Dropdown
+                label=""
+                data={[
+                  { label: t('common.allCompanies'), value: '' },
+                  ...companies.map(c => ({
+                    label: c.name,
+                    value: String(c.id),
+                  })),
+                ]}
+                value={companyFilter}
+                onSelect={setCompanyFilter}
+                placeholder={t('common.company')}
+              />
+            </View>
+          )}
 
         {/* Selection Mode Controls */}
-        <View style={{ flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: 8,
+            marginTop: 8,
+            flexWrap: 'wrap',
+          }}
+        >
           {/* Show/Hide Inactive Toggle */}
           {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && (
             <TouchableOpacity
-              style={[styles.actionButton, showInactive && styles.actionButtonActive]}
+              style={[
+                styles.actionButton,
+                showInactive && styles.actionButtonActive,
+              ]}
               onPress={() => setShowInactive(!showInactive)}
             >
               <Text style={styles.actionButtonText}>
-                {showInactive ? '👁️ ' + t('common.hideInactive') : '👁️‍🗨️ ' + t('common.showInactive')}
+                {showInactive
+                  ? '👁️ ' + t('common.hideInactive')
+                  : '👁️‍🗨️ ' + t('common.showInactive')}
               </Text>
             </TouchableOpacity>
           )}
 
           {rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES) && (
             <TouchableOpacity
-              style={[styles.actionButton, selectionMode && styles.actionButtonActive]}
+              style={[
+                styles.actionButton,
+                selectionMode && styles.actionButtonActive,
+              ]}
               onPress={() => {
                 setSelectionMode(!selectionMode);
                 setSelectedEmployees(new Set());
               }}
             >
               <Text style={styles.actionButtonText}>
-                {selectionMode ? t('common.cancel') : '☑️ ' + t('common.select')}
+                {selectionMode
+                  ? t('common.cancel')
+                  : '☑️ ' + t('common.select')}
               </Text>
             </TouchableOpacity>
           )}
@@ -355,7 +388,9 @@ export const EmployeeListScreen = ({ navigation }: any) => {
               onPress={toggleSelectAll}
             >
               <Text style={styles.actionButtonText}>
-                {selectedEmployees.size === filteredEmployees.length ? '☐ ' : '☑️ '}
+                {selectedEmployees.size === filteredEmployees.length
+                  ? '☐ '
+                  : '☑️ '}
                 {selectedEmployees.size === filteredEmployees.length
                   ? t('common.deselectAll') || 'Deselect All'
                   : t('common.selectAll') || 'Select All'}

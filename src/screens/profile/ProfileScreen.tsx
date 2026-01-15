@@ -315,24 +315,24 @@ export const ProfileScreen = ({ navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-            name: emergencyName,
-            phone: emergencyPhone,
-            relationship: emergencyRelationship,
-          }
+              name: emergencyName,
+              phone: emergencyPhone,
+              relationship: emergencyRelationship,
+            }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-              linkedin,
-              skype,
-              website,
-            }
+                linkedin,
+                skype,
+                website,
+              }
             : undefined,
         skills: skills
           ? skills
-            .split(',')
-            .map(s => s.trim())
-            .filter(s => s)
+              .split(',')
+              .map(s => s.trim())
+              .filter(s => s)
           : undefined,
       });
       setIsEditing(false);
@@ -660,8 +660,9 @@ export const ProfileScreen = ({ navigation }: any) => {
                 <View style={styles.responsiveRow}>
                   <View style={styles.fieldContainerFlex}>
                     <DateTimePickerField
-                      label={`${t('profile.birthDate') || 'Birth Date'} ${userAge ? `(${userAge} ${t('common.years')})` : ''
-                        }`}
+                      label={`${t('profile.birthDate') || 'Birth Date'} ${
+                        userAge ? `(${userAge} ${t('common.years')})` : ''
+                      }`}
                       value={birthDate ? new Date(birthDate) : null}
                       onChange={(date: Date | null) =>
                         setBirthDate(date ? date.toISOString() : '')
@@ -859,7 +860,8 @@ export const ProfileScreen = ({ navigation }: any) => {
                     <Text style={styles.fieldLabel}>{t('profile.gender')}</Text>
                     <Text style={styles.fieldValue}>
                       {t(
-                        `employees.gender${gender.charAt(0).toUpperCase() + gender.slice(1)
+                        `employees.gender${
+                          gender.charAt(0).toUpperCase() + gender.slice(1)
                         }`,
                       )}
                     </Text>
@@ -905,8 +907,8 @@ export const ProfileScreen = ({ navigation }: any) => {
                       <Text style={styles.tagText}>{skill}</Text>
                     </View>
                   )) || (
-                      <Text style={styles.emptyText}>{t('common.noData')}</Text>
-                    )}
+                    <Text style={styles.emptyText}>{t('common.noData')}</Text>
+                  )}
                 </View>
 
                 <View style={styles.divider} />
@@ -966,7 +968,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                       t('settings.pushNotifications') || 'Push Notifications',
                     status:
                       user?.notificationPreferences?.push &&
-                        notificationPermission === 'granted'
+                      notificationPermission === 'granted'
                         ? 'granted'
                         : notificationPermission,
                     onValueChange: handleNotificationPermission,

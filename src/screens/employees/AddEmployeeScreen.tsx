@@ -269,8 +269,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         country,
         hiringDate: hiringDate ? hiringDate.toISOString() : undefined,
         // Admins should not have company or team assignments
-        companyId: role === 'admin' ? undefined : (companyId || undefined),
-        teamId: role === 'admin' ? undefined : (teamId || undefined),
+        companyId: role === 'admin' ? undefined : companyId || undefined,
+        teamId: role === 'admin' ? undefined : teamId || undefined,
 
         // Extended fields
         alias,
@@ -283,24 +283,24 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-            name: emergencyName,
-            phone: emergencyPhone,
-            relationship: emergencyRelationship,
-          }
+              name: emergencyName,
+              phone: emergencyPhone,
+              relationship: emergencyRelationship,
+            }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-              linkedin,
-              skype,
-              website,
-            }
+                linkedin,
+                skype,
+                website,
+              }
             : undefined,
         skills: skills
           ? skills
-            .split(',')
-            .map(s => s.trim())
-            .filter(s => s)
+              .split(',')
+              .map(s => s.trim())
+              .filter(s => s)
           : undefined,
       };
 
@@ -606,8 +606,10 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                     <View style={{ flex: 1 }}>
                       <Dropdown
                         label={t('teams.title')}
-                        data={teams
-                          .map(t => ({ label: t.name, value: String(t.id) }))}
+                        data={teams.map(t => ({
+                          label: t.name,
+                          value: String(t.id),
+                        }))}
                         value={teamId ? String(teamId) : ''}
                         onSelect={val => setTeamId(val)}
                         placeholder={t('teams.selectTeam')}
@@ -777,8 +779,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
             {loading
               ? t('common.loading')
               : employeeId
-                ? t('common.save')
-                : t('common.add')}
+              ? t('common.save')
+              : t('common.add')}
           </Text>
         </TouchableOpacity>
 
