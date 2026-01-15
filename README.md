@@ -2,6 +2,8 @@
 
 A premium, comprehensive HR management solution built with **React Native Web**. This project provides a seamless experience across Web, iOS, and Android from a single codebase.
 
+[Demo](https://bkmed.github.io/RhManagment/)
+
 ## 🌟 Key Features
 
 ### 🏢 Core HR Modules
@@ -113,4 +115,3 @@ npm run build-gh-pages
 
 This project is licensed under the MIT License.
 
-[Demo](https://bkmed.github.io/RhManagment/)
