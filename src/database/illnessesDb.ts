@@ -6,36 +6,7 @@ import {
   selectAllIllnesses,
   selectExpiringSoonIllnesses,
 } from '../store/slices/illnessesSlice';
-import { Illness, IllnessHistory } from './schema';
-import { storageService } from '../services/storage';
-
-const ILLNESSES_HISTORY_KEY = 'illnesses_history';
-
-const getAllHistory = (): IllnessHistory[] => {
-  const json = storageService.getString(ILLNESSES_HISTORY_KEY);
-  return json ? JSON.parse(json) : [];
-};
-
-const saveAllHistory = (history: IllnessHistory[]): void => {
-  storageService.setString(ILLNESSES_HISTORY_KEY, JSON.stringify(history));
-};
-
-const recordHistory = (
-  illnessId: string,
-  action: IllnessHistory['action'],
-  notes?: string,
-) => {
-  const history = getAllHistory();
-  const newRecord: IllnessHistory = {
-    id: Date.now().toString(),
-    illnessId,
-    action,
-    date: new Date().toISOString(),
-    notes,
-  };
-  history.push(newRecord);
-  saveAllHistory(history);
-};
+import { Illness } from './schema';
 
 export const illnessesDb = {
   // Get all illnesses
@@ -73,7 +44,6 @@ export const illnessesDb = {
     };
 
     store.dispatch(addIllnessAction(newIllness));
-    recordHistory(id, 'created', 'Initial illness record created');
 
     return id;
   },
@@ -90,25 +60,11 @@ export const illnessesDb = {
         updatedAt: new Date().toISOString(),
       };
       store.dispatch(updateIllnessAction(updated));
-      recordHistory(id, 'updated', 'Illness details updated');
     }
   },
 
   // Delete illness
   delete: async (id: string): Promise<void> => {
     store.dispatch(deleteIllnessAction(id));
-
-    // Also delete associated history
-    const history = getAllHistory();
-    const filteredHistory = history.filter(h => h.illnessId !== id);
-    saveAllHistory(filteredHistory);
-  },
-
-  // Get history
-  getHistory: async (id: string): Promise<IllnessHistory[]> => {
-    const history = getAllHistory();
-    return history
-      .filter(h => h.illnessId === id)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   },
 };

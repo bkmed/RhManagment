@@ -170,7 +170,7 @@
     "search": "Search",
     "searchPlaceholder": "Search...",
     "searchPlaceholderGlobal": "Search employees, teams, news...",
-    "select": "Select...",
+    "select": "Select",
     "selectCountry": "Select Country",
     "selectDate": "Select Date",
     "selectDepartment": "Select Department",
@@ -204,7 +204,17 @@
     "other": "Other",
     "count": "Count",
     "unitPrice": "Unit Price",
-    "description": "Description"
+    "description": "Description",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "showInactive": "Show Inactive",
+    "hideInactive": "Hide Inactive",
+    "deactivated": "Deactivated",
+    "deactivatedBy": "Deactivated by",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "companies": {
     "add": "Add Company",
@@ -569,7 +579,9 @@
     "titlePlaceholder": "e.g., Summer Vacation",
     "upcoming": "Upcoming",
     "update": "Update",
-    "updateSuccess": "Leave request updated successfully"
+    "updateSuccess": "Leave request updated successfully",
+    "approve": "Approve",
+    "decline": "Decline"
   },
   "login": {
     "admin": "Admin",
@@ -954,5 +966,9 @@
       "minMembers": "Select at least 2 members",
       "noMembers": "No members selected"
     }
+  },
+  "search": {
+    "noResults": "No results found",
+    "noResultsFor": "No results found for \"{{query}}\""
   }
 }

@@ -268,8 +268,9 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         statePaidLeaves: 0,
         country,
         hiringDate: hiringDate ? hiringDate.toISOString() : undefined,
-        companyId: companyId || undefined,
-        teamId: teamId || undefined,
+        // Admins should not have company or team assignments
+        companyId: role === 'admin' ? undefined : (companyId || undefined),
+        teamId: role === 'admin' ? undefined : (teamId || undefined),
 
         // Extended fields
         alias,
@@ -282,24 +283,24 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
         gender,
         emergencyContact: emergencyName
           ? {
-              name: emergencyName,
-              phone: emergencyPhone,
-              relationship: emergencyRelationship,
-            }
+            name: emergencyName,
+            phone: emergencyPhone,
+            relationship: emergencyRelationship,
+          }
           : undefined,
         socialLinks:
           linkedin || skype || website
             ? {
-                linkedin,
-                skype,
-                website,
-              }
+              linkedin,
+              skype,
+              website,
+            }
             : undefined,
         skills: skills
           ? skills
-              .split(',')
-              .map(s => s.trim())
-              .filter(s => s)
+            .split(',')
+            .map(s => s.trim())
+            .filter(s => s)
           : undefined,
       };
 
@@ -592,39 +593,41 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
                 </View>
               </View>
 
-              <View style={styles.fieldContainer}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'flex-end',
-                    gap: 10,
-                  }}
-                >
-                  <View style={{ flex: 1 }}>
-                    <Dropdown
-                      label={t('teams.title')}
-                      data={teams
-                        .filter(t => !companyId || t.companyId === companyId)
-                        .map(t => ({ label: t.name, value: String(t.id) }))}
-                      value={teamId ? String(teamId) : ''}
-                      onSelect={val => setTeamId(val)}
-                      placeholder={t('teams.selectTeam')}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={() => {
-                      if (Platform.OS === 'web') {
-                        setActiveTab('Teams', 'AddTeam');
-                      } else {
-                        navigation.navigate('AddTeam');
-                      }
+              {/* Only show company/team assignment for non-admin roles */}
+              {role !== 'admin' && (
+                <View style={styles.fieldContainer}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'flex-end',
+                      gap: 10,
                     }}
                   >
-                    <Text style={styles.addButtonText}>➕</Text>
-                  </TouchableOpacity>
+                    <View style={{ flex: 1 }}>
+                      <Dropdown
+                        label={t('teams.title')}
+                        data={teams
+                          .map(t => ({ label: t.name, value: String(t.id) }))}
+                        value={teamId ? String(teamId) : ''}
+                        onSelect={val => setTeamId(val)}
+                        placeholder={t('teams.selectTeam')}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={() => {
+                        if (Platform.OS === 'web') {
+                          setActiveTab('Teams', 'AddTeam');
+                        } else {
+                          navigation.navigate('AddTeam');
+                        }
+                      }}
+                    >
+                      <Text style={styles.addButtonText}>➕</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
+              )}
             </View>
 
             <View style={styles.responsiveRow}>
@@ -774,8 +777,8 @@ export const AddEmployeeScreen = ({ route, navigation }: any) => {
             {loading
               ? t('common.loading')
               : employeeId
-              ? t('common.save')
-              : t('common.add')}
+                ? t('common.save')
+                : t('common.add')}
           </Text>
         </TouchableOpacity>
 

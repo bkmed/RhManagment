@@ -26,11 +26,14 @@ import { illnessesDb } from '../../database/illnessesDb';
 import { Illness, Leave } from '../../database/schema';
 import { AbsenceStatusBadge } from '../../components/AbsenceStatusBadge';
 import { getUserAbsenceStatus } from '../../utils/absenceStatus';
+import { useModal } from '../../context/ModalContext';
+import { Dropdown } from '../../components/Dropdown';
 
 export const EmployeeListScreen = ({ navigation }: any) => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { showModal } = useModal();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { setActiveTab } = useContext(WebNavigationContext);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -40,12 +43,16 @@ export const EmployeeListScreen = ({ navigation }: any) => {
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedEmployees, setSelectedEmployees] = useState<Set<string>>(new Set());
+  const [companyFilter, setCompanyFilter] = useState<string>('');
+  const [showInactive, setShowInactive] = useState(false);
 
   const loadEmployees = async () => {
     try {
       const [empData, compData, teamData, illData, leaveData] =
         await Promise.all([
-          employeesDb.getAll(),
+          employeesDb.getAll(showInactive), // Pass showInactive flag
           companiesDb.getAll(),
           teamsDb.getAll(),
           illnessesDb.getAll(),
@@ -80,47 +87,83 @@ export const EmployeeListScreen = ({ navigation }: any) => {
   useFocusEffect(
     useCallback(() => {
       loadEmployees();
-    }, []),
+    }, [showInactive]), // Reload when showInactive toggles
   );
 
   const filteredEmployees = useMemo(() => {
-    if (!searchQuery) return employees;
-    const lowerQuery = searchQuery.toLowerCase();
-    return employees.filter(emp => {
-      const position = emp.position
-        ? t(`departments.${emp.position}`, { defaultValue: emp.position })
-        : '';
-      const companyName =
-        companies.find(c => String(c.id) === String(emp.companyId))?.name || '';
-      const teamName =
-        teams.find(t => String(t.id) === String(emp.teamId))?.name || '';
+    let result = employees;
 
-      return (
-        emp.name.toLowerCase().includes(lowerQuery) ||
-        position.toLowerCase().includes(lowerQuery) ||
-        (emp.email && emp.email.toLowerCase().includes(lowerQuery)) ||
-        companyName.toLowerCase().includes(lowerQuery) ||
-        teamName.toLowerCase().includes(lowerQuery)
-      );
-    });
-  }, [employees, searchQuery, t, companies, teams]);
+    // Apply company filter
+    if (companyFilter) {
+      result = result.filter(emp => String(emp.companyId) === companyFilter);
+    }
+
+    // Apply search filter
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter(emp => {
+        const position = emp.position
+          ? t(`departments.${emp.position}`, { defaultValue: emp.position })
+          : '';
+        const companyName =
+          companies.find(c => String(c.id) === String(emp.companyId))?.name || '';
+        const teamName =
+          teams.find(t => String(t.id) === String(emp.teamId))?.name || '';
+
+        return (
+          emp.name.toLowerCase().includes(lowerQuery) ||
+          position.toLowerCase().includes(lowerQuery) ||
+          (emp.email && emp.email.toLowerCase().includes(lowerQuery)) ||
+          companyName.toLowerCase().includes(lowerQuery) ||
+          teamName.toLowerCase().includes(lowerQuery)
+        );
+      });
+    }
+
+    return result;
+  }, [employees, searchQuery, companyFilter, t, companies, teams]);
+
+  const toggleSelectAll = () => {
+    if (selectedEmployees.size === filteredEmployees.length) {
+      // Deselect all
+      setSelectedEmployees(new Set());
+    } else {
+      // Select all
+      const allIds = new Set(filteredEmployees.map(emp => emp.id || ''));
+      setSelectedEmployees(allIds);
+    }
+  };
 
   const renderEmployee = ({ item }: { item: Employee }) => {
+    const isSelected = selectedEmployees.has(item.id || '');
+
     return (
       <TouchableOpacity
-        style={styles.card}
+        style={[styles.card, isSelected && selectionMode && styles.cardSelected]}
         onPress={() => {
-          if (Platform.OS === 'web') {
-            setActiveTab('Employees', 'EmployeeDetails', {
-              employeeId: item.id,
-            });
+          if (selectionMode) {
+            toggleSelection(item.id || '');
           } else {
-            navigation.navigate('EmployeeDetails', { employeeId: item.id });
+            if (Platform.OS === 'web') {
+              setActiveTab('Employees', 'EmployeeDetails', {
+                employeeId: item.id,
+              });
+            } else {
+              navigation.navigate('EmployeeDetails', { employeeId: item.id });
+            }
           }
         }}
       >
         <View style={styles.headerRow}>
-          <Text style={styles.name}>{item.name}</Text>
+          {selectionMode && (
+            <TouchableOpacity
+              style={[styles.checkbox, isSelected && styles.checkboxSelected]}
+              onPress={() => toggleSelection(item.id || '')}
+            >
+              {isSelected && <Text style={styles.checkmark}>✓</Text>}
+            </TouchableOpacity>
+          )}
+          <Text style={[styles.name, selectionMode && { flex: 0.8 }]}>{item.name}</Text>
           <View style={styles.badges}>
             <AbsenceStatusBadge
               status={getUserAbsenceStatus(item.id || '', illnesses, leaves)}
@@ -164,6 +207,52 @@ export const EmployeeListScreen = ({ navigation }: any) => {
     );
   };
 
+  const toggleSelection = (employeeId: string) => {
+    const newSelected = new Set(selectedEmployees);
+    if (newSelected.has(employeeId)) {
+      newSelected.delete(employeeId);
+    } else {
+      newSelected.add(employeeId);
+    }
+    setSelectedEmployees(newSelected);
+  };
+
+  const handleDeactivateSelected = async () => {
+    if (selectedEmployees.size === 0) return;
+
+    showModal({
+      title: t('common.deactivate'),
+      message: `${t('employees.deactivateConfirmMessage')} (${selectedEmployees.size})`,
+      buttons: [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.deactivate'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              for (const empId of selectedEmployees) {
+                await employeesDb.deactivate(empId, user?.id || '');
+              }
+              notificationService.showAlert(
+                t('common.success'),
+                t('employees.deactivatedSuccessfully')
+              );
+              setSelectedEmployees(new Set());
+              setSelectionMode(false);
+              await loadEmployees();
+            } catch (error) {
+              notificationService.showAlert(
+                t('common.error'),
+                t('employees.deactivateError')
+              );
+            }
+          },
+        },
+      ],
+    });
+  };
+
+
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyText}>{t('employees.empty')}</Text>
@@ -179,6 +268,64 @@ export const EmployeeListScreen = ({ navigation }: any) => {
           onChangeText={setSearchQuery}
           placeholder={t('common.searchPlaceholder')}
         />
+
+        {/* Company Filter */}
+        {rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES) && companies.length > 1 && (
+          <View style={{ marginTop: 8 }}>
+            <Dropdown
+              label=""
+              data={[
+                { label: t('common.allCompanies'), value: '' },
+                ...companies.map(c => ({ label: c.name, value: String(c.id) }))
+              ]}
+              value={companyFilter}
+              onSelect={setCompanyFilter}
+              placeholder={t('common.company')}
+            />
+          </View>
+        )}
+
+        {/* Selection Mode Controls */}
+        <View style={{ flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+          {rbacService.hasPermission(user, Permission.DELETE_EMPLOYEES) && (
+            <TouchableOpacity
+              style={[styles.actionButton, selectionMode && styles.actionButtonActive]}
+              onPress={() => {
+                setSelectionMode(!selectionMode);
+                setSelectedEmployees(new Set());
+              }}
+            >
+              <Text style={styles.actionButtonText}>
+                {selectionMode ? t('common.cancel') : '☑️ ' + t('common.select')}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {selectionMode && (
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={toggleSelectAll}
+            >
+              <Text style={styles.actionButtonText}>
+                {selectedEmployees.size === filteredEmployees.length ? '☐ ' : '☑️ '}
+                {selectedEmployees.size === filteredEmployees.length
+                  ? t('common.deselectAll') || 'Deselect All'
+                  : t('common.selectAll') || 'Select All'}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {selectionMode && selectedEmployees.size > 0 && (
+            <TouchableOpacity
+              style={[styles.actionButton, styles.deleteActionButton]}
+              onPress={handleDeleteSelected}
+            >
+              <Text style={styles.actionButtonText}>
+                🗑️ {t('common.delete')} ({selectedEmployees.size})
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
       <FlatList
         data={filteredEmployees}
@@ -305,5 +452,49 @@ const createStyles = (theme: Theme) =>
       color: theme.colors.surface,
       fontWeight: '300',
       marginTop: -2,
+    },
+    actionButton: {
+      backgroundColor: theme.colors.primary,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 8,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    actionButtonActive: {
+      backgroundColor: theme.colors.secondary,
+    },
+    deleteActionButton: {
+      backgroundColor: theme.colors.error,
+    },
+    actionButtonText: {
+      color: theme.colors.surface,
+      fontWeight: '600',
+      fontSize: 14,
+    },
+    checkbox: {
+      width: 24,
+      height: 24,
+      borderRadius: 4,
+      borderWidth: 2,
+      borderColor: theme.colors.primary,
+      marginRight: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.colors.surface,
+    },
+    checkboxSelected: {
+      backgroundColor: theme.colors.primary,
+      borderColor: theme.colors.primary,
+    },
+    checkmark: {
+      color: theme.colors.surface,
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    cardSelected: {
+      borderWidth: 2,
+      borderColor: theme.colors.primary,
+      backgroundColor: theme.colors.primary + '10', // Semi-transparent overlay
     },
   });

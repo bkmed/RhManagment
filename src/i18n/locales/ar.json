@@ -169,7 +169,7 @@
     "search": "بحث",
     "searchPlaceholder": "بحث...",
     "searchPlaceholderGlobal": "بحث عن الموظفين، الفرق، الأخبار...",
-    "select": "تحديد...",
+    "select": "تحديد",
     "selectCountry": "اختر البلد",
     "selectDate": "تحديد التاريخ",
     "selectDepartment": "اختر القسم",
@@ -204,7 +204,17 @@
     "invalidAmount": "مبلغ غير صالح",
     "count": "العدد",
     "unitPrice": "سعر الوحدة",
-    "description": "الوصف"
+    "description": "الوصف",
+    "selectAll": "تحديد الكل",
+    "deselectAll": "إلغاء تحديد الكل",
+    "deactivate": "تعطيل",
+    "reactivate": "إعادة تفعيل",
+    "showInactive": "إظهار المعطلين",
+    "hideInactive": "إخفاء المعطلين",
+    "deactivated": "معطل",
+    "deactivatedBy": "تم التعطيل بواسطة",
+    "active": "نشط",
+    "inactive": "غير نشط"
   },
   "companies": {
     "add": "إضافة شركة",
@@ -569,7 +579,9 @@
     "titlePlaceholder": "مثل: إجازة صيفية",
     "upcoming": "القادمة",
     "update": "تحديث",
-    "updateSuccess": "تم تحديث طلب الإجازة بنجاح"
+    "updateSuccess": "تم تحديث طلب الإجازة بنجاح",
+    "approve": "موافقة",
+    "decline": "رفض"
   },
   "login": {
     "admin": "مسؤول",
@@ -954,5 +966,9 @@
     },
     "selectedCount": "تم اختيار {{count}} موظف",
     "selectedCount_plural": "تم اختيار {{count}} موظفين"
+  },
+  "search": {
+    "noResults": "لم يتم العثور على نتائج",
+    "noResultsFor": "لم يتم العثور على نتائج لـ \"{{query}}\""
   }
 }

@@ -169,7 +169,7 @@
     "search": "Buscar",
     "searchPlaceholder": "Buscar...",
     "searchPlaceholderGlobal": "Buscar empleados, equipos, noticias...",
-    "select": "Seleccionar...",
+    "select": "Seleccionar",
     "selectCountry": "Seleccionar país",
     "selectDate": "Seleccionar fecha",
     "selectDepartment": "Seleccionar departamento",
@@ -204,7 +204,17 @@
     "invalidAmount": "Monto inválido",
     "count": "Cantidad",
     "unitPrice": "Precio Unitario",
-    "description": "Descripción"
+    "description": "Descripción",
+    "selectAll": "Seleccionar todo",
+    "deselectAll": "Deseleccionar todo",
+    "deactivate": "Desactivar",
+    "reactivate": "Reactivar",
+    "showInactive": "Mostrar inactivos",
+    "hideInactive": "Ocultar inactivos",
+    "deactivated": "Desactivado",
+    "deactivatedBy": "Desactivado por",
+    "active": "Activo",
+    "inactive": "Inactivo"
   },
   "companies": {
     "add": "Añadir empresa",
@@ -569,7 +579,9 @@
     "titlePlaceholder": "ej. Vacaciones de verano",
     "upcoming": "Próximas",
     "update": "Actualizar",
-    "updateSuccess": "Solicitud de vacaciones actualizada con éxito"
+    "updateSuccess": "Solicitud de vacaciones actualizada con éxito",
+    "approve": "Aprobar",
+    "decline": "Rechazar"
   },
   "login": {
     "admin": "Admin",
@@ -954,5 +966,9 @@
     },
     "selectedCount": "{{count}} empleado seleccionado",
     "selectedCount_plural": "{{count}} empleados seleccionados"
+  },
+  "search": {
+    "noResults": "No se encontraron resultados",
+    "noResultsFor": "No se encontraron resultados para \"{{query}}\""
   }
 }

@@ -170,7 +170,7 @@
     "search": "Rechercher",
     "searchPlaceholder": "Rechercher...",
     "searchPlaceholderGlobal": "Rechercher employés, équipes, news...",
-    "select": "Sélectionner...",
+    "select": "Sélectionner",
     "selectCountry": "Sélectionner le pays",
     "selectDate": "Sélectionner une date",
     "selectDepartment": "Sélectionner le département",
@@ -204,7 +204,17 @@
     "other": "Autre",
     "count": "Nombre",
     "unitPrice": "Prix unitaire",
-    "description": "Description"
+    "description": "Description",
+    "selectAll": "Tout sélectionner",
+    "deselectAll": "Tout désélectionner",
+    "deactivate": "Désactiver",
+    "reactivate": "Réactiver",
+    "showInactive": "Afficher inactifs",
+    "hideInactive": "Masquer inactifs",
+    "deactivated": "Désactivé",
+    "deactivatedBy": "Désactivé par",
+    "active": "Actif",
+    "inactive": "Inactif"
   },
   "companies": {
     "add": "Ajouter une entreprise",
@@ -569,7 +579,9 @@
     "titlePlaceholder": "ex: Congés payés été",
     "upcoming": "À venir",
     "update": "Mettre à jour",
-    "updateSuccess": "Demande de congé mise à jour avec succès"
+    "updateSuccess": "Demande de congé mise à jour avec succès",
+    "approve": "Approuver",
+    "decline": "Refuser"
   },
   "login": {
     "admin": "Admin",
@@ -954,5 +966,9 @@
     },
     "selectedCount": "{{count}} employé sélectionné",
     "selectedCount_plural": "{{count}} employés sélectionnés"
+  },
+  "search": {
+    "noResults": "Aucun résultat trouvé",
+    "noResultsFor": "Aucun résultat pour \"{{query}}\""
   }
 }

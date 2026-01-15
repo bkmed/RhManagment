@@ -32,21 +32,22 @@ import {
   Claim,
   Illness,
 } from '../../database/schema';
+import { WebNavigationContext } from '../../navigation/WebNavigationContext';
 
 interface SearchResult {
   id: string;
   title: string;
   subtitle: string;
   type:
-    | 'employee'
-    | 'team'
-    | 'announcement'
-    | 'company'
-    | 'department'
-    | 'service'
-    | 'leave'
-    | 'claim'
-    | 'illness';
+  | 'employee'
+  | 'team'
+  | 'announcement'
+  | 'company'
+  | 'department'
+  | 'service'
+  | 'leave'
+  | 'claim'
+  | 'illness';
   originalItem: any;
 }
 
@@ -65,6 +66,7 @@ export const SearchOverlay = ({
   const { theme } = useTheme();
   const { user } = useAuth();
   const [query, setQuery] = useState('');
+  const { setActiveTab } = React.useContext(WebNavigationContext);
 
   const employees = useSelector(selectAllEmployees);
   const teams = useSelector(selectAllTeams);
@@ -339,7 +341,47 @@ export const SearchOverlay = ({
   const renderItem = ({ item }: { item: SearchResult }) => (
     <TouchableOpacity
       style={[styles.resultItem, { borderBottomColor: theme.colors.border }]}
-      onPress={() => onSelect(item)}
+      onPress={() => {
+        // Handle navigation based on platform and result type
+        if (Platform.OS === 'web') {
+          // Web platform - use setActiveTab
+          switch (item.type) {
+            case 'employee':
+              setActiveTab('Employees', 'EmployeeDetails', {
+                employeeId: item.id,
+              });
+              break;
+            case 'team':
+              setActiveTab('Teams', 'TeamList');
+              break;
+            case 'announcement':
+              setActiveTab('Home', 'Announcements');
+              break;
+            case 'leave':
+              setActiveTab('Leaves', 'LeaveDetails', {
+                leaveId: item.id,
+              });
+              break;
+            case 'claim':
+              setActiveTab('Claims', 'ClaimDetails', {
+                claimId: item.id,
+              });
+              break;
+            case 'illness':
+              setActiveTab('Illnesses', 'IllnessDetails', {
+                illnessId: item.id,
+              });
+              break;
+            default:
+              // Fallback to onSelect for other types
+              onSelect(item);
+          }
+        } else {
+          // Native platform - use onSelect callback
+          onSelect(item);
+        }
+        onClose();
+      }}
     >
       <View
         style={[
@@ -359,20 +401,19 @@ export const SearchOverlay = ({
       </View>
       <Text style={[styles.typeLabel, { color: theme.colors.subText }]}>
         {t(
-          `navigation.${
-            item.type === 'employee'
-              ? 'employees'
-              : item.type === 'team'
+          `navigation.${item.type === 'employee'
+            ? 'employees'
+            : item.type === 'team'
               ? 'teams'
               : item.type === 'announcement'
-              ? 'announcements'
-              : item.type === 'leave'
-              ? 'leaves'
-              : item.type === 'claim'
-              ? 'claims'
-              : item.type === 'illness'
-              ? 'illness'
-              : item.title
+                ? 'announcements'
+                : item.type === 'leave'
+                  ? 'leaves'
+                  : item.type === 'claim'
+                    ? 'claims'
+                    : item.type === 'illness'
+                      ? 'illness'
+                      : item.title
           }`,
         )}
       </Text>
@@ -423,7 +464,7 @@ export const SearchOverlay = ({
               query ? (
                 <View style={styles.emptyContainer}>
                   <Text style={{ color: theme.colors.subText }}>
-                    No results found for "{query}"
+                    {t('search.noResultsFor', { query })}
                   </Text>
                 </View>
               ) : null

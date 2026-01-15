@@ -10,7 +10,7 @@ import { Employee } from './schema';
 
 export const employeesDb = {
   // Get all employees
-  getAll: async (): Promise<Employee[]> => {
+  getAll: async (includeInactive = false): Promise<Employee[]> => {
     let employees = selectAllEmployees(store.getState());
 
     // Seed employees if empty
@@ -125,6 +125,11 @@ export const employeesDb = {
       employees = generated;
     }
 
+    // Filter out inactive employees unless requested
+    if (!includeInactive) {
+      employees = employees.filter(emp => emp.isActive !== false);
+    }
+
     return [...employees].sort((a, b) => a.name.localeCompare(b.name));
   },
 
@@ -154,6 +159,7 @@ export const employeesDb = {
     const newEmployee: Employee = {
       ...employee,
       id,
+      isActive: true, // Default to active
       createdAt: now,
       updatedAt: now,
     };
@@ -192,8 +198,40 @@ export const employeesDb = {
     }
   },
 
-  // Delete employee
+  // Delete employee (hard delete - NOT RECOMMENDED, use deactivate instead)
   delete: async (id: string): Promise<void> => {
     store.dispatch(deleteEmployeeAction(id));
+  },
+
+  // Deactivate employee (soft delete)
+  deactivate: async (id: string, deactivatedById: string): Promise<void> => {
+    const existing = selectEmployeeById(id)(store.getState());
+
+    if (existing) {
+      const updated = {
+        ...existing,
+        isActive: false,
+        deactivatedAt: new Date().toISOString(),
+        deactivatedBy: deactivatedById,
+        updatedAt: new Date().toISOString(),
+      };
+      store.dispatch(updateEmployeeAction(updated));
+    }
+  },
+
+  // Reactivate employee
+  reactivate: async (id: string): Promise<void> => {
+    const existing = selectEmployeeById(id)(store.getState());
+
+    if (existing) {
+      const updated = {
+        ...existing,
+        isActive: true,
+        deactivatedAt: undefined,
+        deactivatedBy: undefined,
+        updatedAt: new Date().toISOString(),
+      };
+      store.dispatch(updateEmployeeAction(updated));
+    }
   },
 };

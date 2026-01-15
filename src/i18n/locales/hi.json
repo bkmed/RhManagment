@@ -169,7 +169,7 @@
     "search": "खोजें",
     "searchPlaceholder": "खोजें...",
     "searchPlaceholderGlobal": "कर्मचारियों, टीमों, समाचारों की खोज करें...",
-    "select": "चुनें...",
+    "select": "चुनें",
     "selectCountry": "देश चुनें",
     "selectDate": "तिथि चुनें",
     "selectDepartment": "विभाग चुनें",
@@ -204,7 +204,17 @@
     "invalidAmount": "अमान्य रा शि",
     "count": "गिनती",
     "unitPrice": "इकाई मूल्य",
-    "description": "विवरण"
+    "description": "विवरण",
+    "selectAll": "सभी चुनें",
+    "deselectAll": "सभी अचयनित करें",
+    "deactivate": "निष्क्रिय करें",
+    "reactivate": "पुनः सक्रिय करें",
+    "showInactive": "निष्क्रिय दिखाएं",
+    "hideInactive": "निष्क्रिय छुपाएं",
+    "deactivated": "निष्क्रिय",
+    "deactivatedBy": "द्वारा निष्क्रिय",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय"
   },
   "companies": {
     "add": "कंपनी जोड़ें",
@@ -569,7 +579,9 @@
     "titlePlaceholder": "उदा., गर्मी की छुट्टियां",
     "upcoming": "आगामी",
     "update": "अपडेट करें",
-    "updateSuccess": "छुट्टी का अनुरोध सफलतापूर्वक अपडेट किया गया"
+    "updateSuccess": "छुट्टी का अनुरोध सफलतापूर्वक अपडेट किया गया",
+    "approve": "अनुमोदित करें",
+    "decline": "अस्वीकार"
   },
   "login": {
     "admin": "प्रशासक",
@@ -954,5 +966,9 @@
     },
     "selectedCount": "{{count}} कर्मचारी चयनित",
     "selectedCount_plural": "{{count}} कर्मचारी चयनित"
+  },
+  "search": {
+    "noResults": "कोई परिणाम नहीं मिला",
+    "noResultsFor": "\"{{query}}\" के लिए कोई परिणाम नहीं मिला"
   }
 }

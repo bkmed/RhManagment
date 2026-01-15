@@ -273,6 +273,11 @@ export interface Employee {
   skills?: string[];
   tag?: string; // e.g. "company-name_1"
 
+  // Soft Delete
+  isActive?: boolean; // Default: true
+  deactivatedAt?: string; // ISO timestamp
+  deactivatedBy?: string; // Employee ID who deactivated
+
   createdAt: string;
   updatedAt: string;
   location?: string;

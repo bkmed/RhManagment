@@ -39,7 +39,6 @@ import { CompanyAbsencesScreen } from '../screens/leaves/CompanyAbsencesScreen';
 import { IllnessListScreen } from '../screens/illnesses/IllnessListScreen';
 import { AddIllnessScreen } from '../screens/illnesses/AddIllnessScreen';
 import { IllnessDetailsScreen } from '../screens/illnesses/IllnessDetailsScreen';
-import { IllnessHistoryScreen } from '../screens/illnesses/IllnessHistoryScreen';
 import { EmployeeListScreen } from '../screens/employees/EmployeeListScreen';
 import { AddEmployeeScreen } from '../screens/employees/AddEmployeeScreen';
 import { EmployeeDetailsScreen } from '../screens/employees/EmployeeDetailsScreen';
@@ -211,11 +210,6 @@ const IllnessesStack = () => {
         name="IllnessDetails"
         component={IllnessDetailsScreen}
         options={{ title: t('illnesses.details') }}
-      />
-      <Stack.Screen
-        name="IllnessHistory"
-        component={IllnessHistoryScreen}
-        options={{ title: t('common.viewHistory') }}
       />
     </Stack.Navigator>
   );
@@ -631,12 +625,12 @@ const useNavigationSections = () => {
           { key: 'Home', label: t('navigation.home'), icon: '🏠' },
           ...(rbacService.hasPermission(user, Permission.VIEW_EMPLOYEES)
             ? [
-                {
-                  key: 'Analytics',
-                  label: t('navigation.analytics'),
-                  icon: '📊',
-                },
-              ]
+              {
+                key: 'Analytics',
+                label: t('navigation.analytics'),
+                icon: '📊',
+              },
+            ]
             : []),
         ],
       },
@@ -713,23 +707,23 @@ const useNavigationSections = () => {
       items: [
         ...(user?.companyId
           ? [
-              {
-                key: 'Announcements',
-                label: t('navigation.announcements'),
-                icon: '📢',
-              },
-            ]
+            {
+              key: 'Announcements',
+              label: t('navigation.announcements'),
+              icon: '📢',
+            },
+          ]
           : []),
         ...(rbacService.isAdmin(user) ||
-        rbacService.isRH(user) ||
-        rbacService.isManager(user)
+          rbacService.isRH(user) ||
+          rbacService.isManager(user)
           ? [
-              {
-                key: 'ManageNotifications',
-                label: t('notifications.broadcast') || 'Broadcast',
-                icon: '📡',
-              },
-            ]
+            {
+              key: 'ManageNotifications',
+              label: t('notifications.broadcast') || 'Broadcast',
+              icon: '📡',
+            },
+          ]
           : []),
         ...(user?.companyId
           ? [{ key: 'Chat', label: t('navigation.chat'), icon: '💬' }]
@@ -872,9 +866,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                         : 'transparent',
                       ...(isFocused &&
                         themeMode === 'premium' && {
-                          borderWidth: 1,
-                          borderColor: theme.colors.primary,
-                        }),
+                        borderWidth: 1,
+                        borderColor: theme.colors.primary,
+                      }),
                     }}
                     onPress={() => navigation.navigate(item.key)}
                   >
@@ -1106,7 +1100,6 @@ const WebNavigator = () => {
               navigation={mockNavigation}
             />
           );
-        if (subScreen === 'IllnessHistory') return <IllnessHistoryScreen />;
         return <IllnessesStack />;
       case 'Remote':
         return <RemoteCalendarScreen />;
@@ -1273,7 +1266,7 @@ const WebNavigator = () => {
 
   return (
     <WebNavigationContext.Provider value={contextValue}>
-      {}
+      { }
       <View
         style={
           [
@@ -1287,7 +1280,7 @@ const WebNavigator = () => {
           ] as any
         }
       >
-        {}
+        { }
 
         {/* Desktop Sidebar OR Mobile Header */}
         {!isMobile ? (

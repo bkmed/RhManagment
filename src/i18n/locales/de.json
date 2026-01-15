@@ -169,7 +169,7 @@
     "search": "Suchen",
     "searchPlaceholder": "Suchen...",
     "searchPlaceholderGlobal": "Mitarbeiter, Teams, News suchen...",
-    "select": "Auswählen...",
+    "select": "Auswählen",
     "selectCountry": "Land auswählen",
     "selectDate": "Datum auswählen",
     "selectDepartment": "Abteilung auswählen",
@@ -204,7 +204,17 @@
     "invalidAmount": "Ungültiger Betrag",
     "count": "Anzahl",
     "unitPrice": "Stückpreis",
-    "description": "Beschreibung"
+    "description": "Beschreibung",
+    "selectAll": "Alle auswählen",
+    "deselectAll": "Alle abwählen",
+    "deactivate": "Deaktivieren",
+    "reactivate": "Reaktivieren",
+    "showInactive": "Inaktive anzeigen",
+    "hideInactive": "Inaktive ausblenden",
+    "deactivated": "Deaktiviert",
+    "deactivatedBy": "Deaktiviert von",
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
   },
   "companies": {
     "add": "Unternehmen hinzufügen",
@@ -569,7 +579,9 @@
     "titlePlaceholder": "z.B. Sommerurlaub",
     "upcoming": "Anstehend",
     "update": "Aktualisieren",
-    "updateSuccess": "Urlaubsantrag erfolgreich aktualisiert"
+    "updateSuccess": "Urlaubsantrag erfolgreich aktualisiert",
+    "approve": "Genehmigen",
+    "decline": "Ablehnen"
   },
   "login": {
     "admin": "Admin",
@@ -954,5 +966,9 @@
     },
     "selectedCount": "{{count}} Mitarbeiter ausgewählt",
     "selectedCount_plural": "{{count}} Mitarbeiter ausgewählt"
+  },
+  "search": {
+    "noResults": "Keine Ergebnisse gefunden",
+    "noResultsFor": "Keine Ergebnisse für \"{{query}}\" gefunden"
   }
 }

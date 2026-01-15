@@ -169,7 +169,7 @@
     "search": "搜索",
     "searchPlaceholder": "搜索...",
     "searchPlaceholderGlobal": "搜索员工、团队、新闻...",
-    "select": "选择...",
+    "select": "选择",
     "selectCountry": "选择国家",
     "selectDate": "选择日期",
     "selectDepartment": "选择部门",
@@ -204,7 +204,17 @@
     "invalidAmount": "金额无效",
     "count": "数量",
     "unitPrice": "单价",
-    "description": "描述"
+    "description": "描述",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "deactivate": "停用",
+    "reactivate": "重新激活",
+    "showInactive": "显示已停用",
+    "hideInactive": "隐藏已停用",
+    "deactivated": "已停用",
+    "deactivatedBy": "停用者",
+    "active": "激活",
+    "inactive": "未激活"
   },
   "companies": {
     "add": "添加公司",
@@ -569,7 +579,9 @@
     "titlePlaceholder": "例如：暑假",
     "upcoming": "即将到来",
     "update": "更新",
-    "updateSuccess": "休假申请更新成功"
+    "updateSuccess": "休假申请更新成功",
+    "approve": "批准",
+    "decline": "拒绝"
   },
   "login": {
     "admin": "管理员",
@@ -954,5 +966,9 @@
     },
     "selectedCount": "已选择 {{count}} 名员工",
     "selectedCount_plural": "已选择 {{count}} 名员工"
+  },
+  "search": {
+    "noResults": "未找到结果",
+    "noResultsFor": "未找到 \"{{query}}\" 的结果"
   }
 }
